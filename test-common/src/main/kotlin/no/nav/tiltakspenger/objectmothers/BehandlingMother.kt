@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.objectmothers
 
+import kotlinx.coroutines.runBlocking
 import no.nav.tiltakspenger.common.TestApplicationContext
 import no.nav.tiltakspenger.felles.AttesteringId
 import no.nav.tiltakspenger.felles.Saksbehandler
@@ -12,6 +13,8 @@ import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.tiltak.TiltakstypeSomGirRett
+import no.nav.tiltakspenger.meldekort.domene.IverksettMeldekortKommando
+import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personSøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler
@@ -21,7 +24,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attesteringsstatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
-import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
@@ -363,4 +365,82 @@ fun TestApplicationContext.førstegangsbehandlingUnderBeslutning(
         beslutter,
     )
     return this.sakContext.sakService.hentForSakId(vilkårsvurdert.id, saksbehandler)!!
+}
+
+fun TestApplicationContext.førstegangsbehandlingIverksatt(
+    periode: Periode = ObjectMother.vurderingsperiode(),
+    fnr: Fnr = Fnr.random(),
+    saksbehandler: Saksbehandler = saksbehandler(),
+    erSkjermet: Boolean = false,
+    beslutter: Saksbehandler = beslutter(),
+): Sak {
+    val tac = this
+    val underBeslutning =
+        førstegangsbehandlingUnderBeslutning(
+            periode = periode,
+            fnr = fnr,
+            saksbehandler = saksbehandler,
+            erSkjermet = erSkjermet,
+            beslutter = beslutter,
+        )
+    runBlocking {
+        tac.førstegangsbehandlingContext.behandlingService.iverksett(
+            behandlingId = underBeslutning.førstegangsbehandling.id,
+            utøvendeBeslutter = beslutter,
+        )
+    }
+    return this.sakContext.sakService.hentForSakId(underBeslutning.id, saksbehandler)!!
+}
+
+fun TestApplicationContext.meldekortTilBeslutter(
+    periode: Periode = ObjectMother.vurderingsperiode(),
+    fnr: Fnr = Fnr.random(),
+    saksbehandler: Saksbehandler = saksbehandler(),
+    erSkjermet: Boolean = false,
+    beslutter: Saksbehandler = beslutter(),
+): Sak {
+    val tac = this
+    val sak =
+        førstegangsbehandlingIverksatt(
+            periode = periode,
+            fnr = fnr,
+            saksbehandler = saksbehandler,
+            erSkjermet = erSkjermet,
+            beslutter = beslutter,
+        )
+    tac.meldekortContext.sendMeldekortTilBeslutterService.sendMeldekortTilBeslutter(
+        (sak.meldekort.first() as Meldekort.IkkeUtfyltMeldekort).tilSendMeldekortTilBeslutterKommando(saksbehandler),
+    )
+    return this.sakContext.sakService.hentForSakId(sak.id, saksbehandler)!!
+}
+
+/**
+ * Genererer også utbetalingsvedtak, men sender ikke til utbetaling.
+ */
+fun TestApplicationContext.meldekortIverksatt(
+    periode: Periode = ObjectMother.vurderingsperiode(),
+    fnr: Fnr = Fnr.random(),
+    saksbehandler: Saksbehandler = saksbehandler(),
+    erSkjermet: Boolean = false,
+    beslutter: Saksbehandler = beslutter(),
+): Sak {
+    val tac = this
+    val sak =
+        meldekortTilBeslutter(
+            periode = periode,
+            fnr = fnr,
+            saksbehandler = saksbehandler,
+            erSkjermet = erSkjermet,
+            beslutter = beslutter,
+        )
+    tac.meldekortContext.iverksettMeldekortService.iverksettMeldekort(
+        IverksettMeldekortKommando(
+            meldekortId = (sak.meldekort.first() as Meldekort.UtfyltMeldekort).id,
+            sakId = sak.id,
+            beslutter = beslutter,
+        ),
+    )
+    // TODO post-mvp jah: Denne kan heller flyttes inn i transaksjonen i meldekortContext.iverksettMeldekortService.iverksettMeldekort
+    tac.utbetalingContext.opprettUtbetalingsvedtakService.opprettUtbetalingsvedtak()
+    return this.sakContext.sakService.hentForSakId(sak.id, saksbehandler)!!
 }

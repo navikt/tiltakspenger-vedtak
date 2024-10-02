@@ -1,12 +1,14 @@
 package no.nav.tiltakspenger.fakes.repos
 
 import arrow.atomic.Atomic
+import arrow.core.nonEmptyListOf
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
+import no.nav.tiltakspenger.meldekort.domene.Meldeperioder
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.SakDetaljer
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saker
@@ -25,7 +27,8 @@ class SakFakeRepo(
 
     override fun hentForFnr(fnr: Fnr): Saker = Saker(fnr, data.get().values.filter { it.fnr == fnr })
 
-    override fun hentForSaksnummer(saksnummer: Saksnummer): Sak? = data.get().values.find { it.saksnummer == saksnummer }
+    override fun hentForSaksnummer(saksnummer: Saksnummer): Sak? =
+        data.get().values.find { it.saksnummer == saksnummer }
 
     override fun lagre(
         sak: Sak,
@@ -36,7 +39,15 @@ class SakFakeRepo(
         behandlingRepo.lagre(sak.førstegangsbehandling)
     }
 
-    override fun hentForSakId(sakId: SakId): Sak? = data.get()[sakId]
+    override fun hentForSakId(sakId: SakId): Sak? {
+        val behandlinger = nonEmptyListOf(behandlingRepo.hentFørstegangsbehandlingForSakId(sakId)!!)
+        return data.get()[sakId]?.copy(
+            personopplysninger = personopplysningerRepo.hent(sakId),
+            behandlinger = behandlinger,
+            vedtak = rammevedtakRepo.hentForSakId(sakId)?.let { listOf(it) } ?: emptyList(),
+            meldekort = meldekortRepo.hentForSakId(sakId) ?: Meldeperioder.empty(behandlinger.first().tiltakstype),
+        )
+    }
 
     override fun hentDetaljerForSakId(sakId: SakId): SakDetaljer? =
         data.get()[sakId]?.let {

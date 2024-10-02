@@ -5,6 +5,7 @@ import arrow.core.nonEmptyListOf
 import arrow.core.toNonEmptyListOrNull
 import no.nav.tiltakspenger.common.getOrFail
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.erHelg
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
@@ -220,4 +221,38 @@ interface MeldekortMother {
             ),
         ).sendTilBeslutter(kommando).getOrFail().first
     }
+}
+
+fun Meldekort.IkkeUtfyltMeldekort.tilSendMeldekortTilBeslutterKommando(
+    saksbehandler: Saksbehandler,
+): SendMeldekortTilBeslutterKommando {
+    val dager = meldeperiode.map { dag ->
+        SendMeldekortTilBeslutterKommando.Dag(
+            dag = dag.dato,
+            status = when (dag) {
+                is Meldekortdag.IkkeUtfylt -> if (dag.dato.erHelg()) {
+                    SendMeldekortTilBeslutterKommando.Status.IKKE_DELTATT
+                } else {
+                    SendMeldekortTilBeslutterKommando.Status.DELTATT_UTEN_LØNN_I_TILTAKET
+                }
+
+                is Meldekortdag.Utfylt -> when (dag) {
+                    is Meldekortdag.Utfylt.Deltatt.DeltattMedLønnITiltaket -> SendMeldekortTilBeslutterKommando.Status.DELTATT_MED_LØNN_I_TILTAKET
+                    is Meldekortdag.Utfylt.Deltatt.DeltattUtenLønnITiltaket -> SendMeldekortTilBeslutterKommando.Status.DELTATT_UTEN_LØNN_I_TILTAKET
+                    is Meldekortdag.Utfylt.Fravær.Syk.SykBruker -> SendMeldekortTilBeslutterKommando.Status.FRAVÆR_SYK
+                    is Meldekortdag.Utfylt.Fravær.Syk.SyktBarn -> SendMeldekortTilBeslutterKommando.Status.FRAVÆR_SYKT_BARN
+                    is Meldekortdag.Utfylt.Fravær.Velferd.VelferdGodkjentAvNav -> SendMeldekortTilBeslutterKommando.Status.FRAVÆR_VELFERD_GODKJENT_AV_NAV
+                    is Meldekortdag.Utfylt.Fravær.Velferd.VelferdIkkeGodkjentAvNav -> SendMeldekortTilBeslutterKommando.Status.FRAVÆR_VELFERD_IKKE_GODKJENT_AV_NAV
+                    is Meldekortdag.Utfylt.IkkeDeltatt -> SendMeldekortTilBeslutterKommando.Status.IKKE_DELTATT
+                    is Meldekortdag.Utfylt.Sperret -> SendMeldekortTilBeslutterKommando.Status.SPERRET
+                }
+            },
+        )
+    }
+    return SendMeldekortTilBeslutterKommando(
+        sakId = sakId,
+        meldekortId = id,
+        saksbehandler = saksbehandler,
+        dager = dager,
+    )
 }

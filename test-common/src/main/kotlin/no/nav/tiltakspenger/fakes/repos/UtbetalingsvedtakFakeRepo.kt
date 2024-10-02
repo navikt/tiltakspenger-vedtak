@@ -53,8 +53,10 @@ class UtbetalingsvedtakFakeRepo(
     }
 
     override fun hentGodkjenteMeldekortUtenUtbetalingsvedtak(limit: Int): List<UtfyltMeldekort> =
-        meldekortFakeRepo.hentAlle().filter {
-            data.get().values.none { utbetalingsvedtak -> utbetalingsvedtak.meldekort.id == it.id }
+        meldekortFakeRepo.hentAlle().filter { utfyltMeldekort ->
+            data.get().values.let {
+                it.none { utbetalingsvedtak -> utbetalingsvedtak.meldekort.id == utfyltMeldekort.id } && utfyltMeldekort.beslutter != null
+            }
         }
 
     override fun hentUtbetalingsvedtakForUtsjekk(limit: Int): List<Utbetalingsvedtak> =

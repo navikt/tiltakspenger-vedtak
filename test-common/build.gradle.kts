@@ -1,5 +1,6 @@
 val felleslibVersion = "0.0.225"
 val kotestVersion = "5.9.1"
+val kotlinxCoroutinesVersion = "1.9.0"
 
 dependencies {
     api(project(":domene"))
@@ -14,4 +15,5 @@ dependencies {
     api("com.github.navikt.tiltakspenger-libs:tiltak-dtos:$felleslibVersion")
     api("io.arrow-kt:arrow-core:1.2.4")
     api("io.kotest:kotest-assertions-core:$kotestVersion")
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinxCoroutinesVersion")
 }

@@ -23,6 +23,9 @@ class IverksettMeldekortService(
         val meldekort: Meldekort = sak.hentMeldekort(meldekortId)
             ?: throw IllegalArgumentException("Fant ikke meldekort med id $meldekortId i sak $sakId")
         meldekort as Meldekort.UtfyltMeldekort
+        require(meldekort.beslutter == null) {
+            "Meldekort $meldekortId er allerede iverksatt"
+        }
 
         val rammevedtak = sak.hentRammevedtak()
             ?: throw IllegalArgumentException("Fant ikke rammevedtak for sak $sakId")
