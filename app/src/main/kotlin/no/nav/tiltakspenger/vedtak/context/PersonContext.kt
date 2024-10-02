@@ -2,10 +2,10 @@ package no.nav.tiltakspenger.vedtak.context
 
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
-import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonService
 import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
 import no.nav.tiltakspenger.saksbehandling.ports.PersonRepo
 import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
+import no.nav.tiltakspenger.saksbehandling.service.person.PersonService
 import no.nav.tiltakspenger.saksbehandling.service.personopplysning.PersonopplysningService
 import no.nav.tiltakspenger.saksbehandling.service.personopplysning.PersonopplysningServiceImpl
 import no.nav.tiltakspenger.vedtak.Configuration

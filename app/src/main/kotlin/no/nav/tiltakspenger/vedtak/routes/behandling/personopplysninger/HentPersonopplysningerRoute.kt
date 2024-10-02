@@ -9,7 +9,7 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.SakId
-import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonService
+import no.nav.tiltakspenger.saksbehandling.service.person.PersonService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
@@ -33,7 +33,7 @@ fun Route.hentPersonRoute(
 
             require(fnr != null) { "Fant ikke fødselsnummer på sak med sakId: $sakId" }
 
-            val personopplysninger = personService.hentEnkelPersonForFnr(fnr).toDTO()
+            val personopplysninger = personService.hentEnkelPersonForFnr(fnr, saksbehandler, sakId).toDTO(skjerming = false)
 
             auditService.logMedSakId(
                 sakId = sakId,
