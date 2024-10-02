@@ -1,16 +1,16 @@
-package no.nav.tiltakspenger.vedtak.clients.tilgang
+package no.nav.tiltakspenger.vedtak.clients.poaotilgang
 
 import no.nav.poao_tilgang.client.NavAnsattNavIdentBehandleFortroligBrukerePolicyInput
 import no.nav.poao_tilgang.client.NavAnsattNavIdentBehandleSkjermedePersonerPolicyInput
 import no.nav.poao_tilgang.client.NavAnsattNavIdentBehandleStrengtFortroligBrukerePolicyInput
 import no.nav.poao_tilgang.client.PoaoTilgangClient
 import no.nav.poao_tilgang.client.PoaoTilgangHttpClient
-import no.nav.tiltakspenger.saksbehandling.ports.TilgangGateway
+import no.nav.tiltakspenger.saksbehandling.ports.PoaoTilgangGateway
 
-class TilgangClient(
+class PoaoTilgangClient(
     baseUrl: String,
     val getToken: () -> String,
-) : TilgangGateway {
+) : PoaoTilgangGateway {
     private val poaoTilgangclient: PoaoTilgangClient =
         PoaoTilgangHttpClient(
             baseUrl = baseUrl,
@@ -30,5 +30,13 @@ class TilgangClient(
     override suspend fun evaluerTilgangTilStrengtFortrolig(navAnsattIdent: String): Boolean {
         val response = poaoTilgangclient.evaluatePolicy(NavAnsattNavIdentBehandleStrengtFortroligBrukerePolicyInput(navAnsattIdent)).getOrThrow()
         return response.isPermit
+    }
+
+    override suspend fun erSkjermet(fnr: String): Boolean {
+        return poaoTilgangclient.erSkjermetPerson(fnr).getOrThrow()
+    }
+
+    override suspend fun erSkjermetBolk(fnrListe: List<String>): Map<String, Boolean> {
+        return poaoTilgangclient.erSkjermetPerson(fnrListe).getOrThrow()
     }
 }

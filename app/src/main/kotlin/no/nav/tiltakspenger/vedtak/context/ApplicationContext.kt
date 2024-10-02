@@ -22,8 +22,9 @@ open class ApplicationContext(
             sessionFactory = sessionFactory,
             personGateway = personContext.personGateway,
             søknadService = søknadContext.søknadService,
-            skjermingGateway = tilgangsstyringContext.skjermingGateway,
             statistikkSakRepo = statistikkContext.statistikkSakRepo,
+            tilgangsstyringService = tilgangsstyringContext.tilgangsstyringService,
+            poaoTilgangGateway = tilgangsstyringContext.poaoTilgangGateway,
             tiltakGateway = tiltakContext.tiltakGateway,
             gitHash = gitHash,
         )

@@ -238,7 +238,7 @@ object Configuration {
         wellknownUrl = wellknownUrl,
     )
 
-    fun oauthConfigTilgang(
+    fun oauthConfigPoaoTilgang(
         scope: String = config()[Key("POAO_TILGANG_SCOPE", stringType)],
         clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
         clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
