@@ -140,12 +140,25 @@ internal class UtbetalingsvedtakPostgresRepo(
         return sessionFactory.withSession { session ->
             session.run(
                 queryOf(
-                    "select u.*, s.saksnummer, s.ident as fnr from utbetalingsvedtak u join sak s on s.id = u.sakid where u.sakId = :sakId",
+                    "select u.*, s.saksnummer, s.ident as fnr from utbetalingsvedtak u join sak s on s.id = u.sakid where u.sakId = :sakId order by u.vedtakstidspunkt",
                     mapOf("sakId" to sakId.toString()),
                 ).map { row ->
                     row.toVedtak(session)
                 }.asList,
             )
+        }.also {
+            // TODO post-mvp jah: Siden vi ikke har en Utbetalinger type som kan passe på dette, forsikrer vi oss om dette her.
+            if (it.isNotEmpty()) {
+                require(it.first().forrigeUtbetalingsvedtakId == null) {
+                    "Databaseintegrasjonsfeil: Forventer at den første utbetalingen (${it.first().id}) for en sak ikke har en forrigeUtbetalingsvedtakId, men var: ${it.first().forrigeUtbetalingsvedtakId}"
+                }
+
+                it.drop(1).forEachIndexed { index, element ->
+                    require(element.forrigeUtbetalingsvedtakId != null) {
+                        "Databaseintegrasjonsfeil: Forventer at utbetaling ${index + 2} (${element.id}) har en forrigeUtbetalingsvedtakId, men var null"
+                    }
+                }
+            }
         }
     }
 
