@@ -6,7 +6,6 @@ import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.nonEmptyListOf
 import arrow.core.right
-import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
@@ -20,17 +19,21 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
-
-private val LOG = KotlinLogging.logger {}
+import no.nav.tiltakspenger.utbetaling.domene.Utbetalinger
 
 data class Sak(
     val sakDetaljer: SakDetaljer,
+    // TODO post-mvp jah: Foreløpig kan vi kun ha én førstegangsbehandling.
     val behandlinger: NonEmptyList<Behandling>,
     val personopplysninger: SakPersonopplysninger,
-    // TODO pre-mvp: Endre til val rammevedtak: Rammevedtak? siden vi kun har et rammevedtak per sak.
-    val vedtak: List<Rammevedtak>,
-    val meldekort: Meldeperioder,
+    val rammevedtak: Rammevedtak?,
+    val meldeperioder: Meldeperioder,
+    val utbetalinger: Utbetalinger,
 ) : SakDetaljer by sakDetaljer {
+
+    // Kommentar jah: Etter MVP, når vi legger til revurdering, så må vil sakens periode også påvirkes av stansvedtak og forlengelser.
+    val vedtaksperiode: Periode? = rammevedtak?.periode
+
     init {
         if (behandlinger.isNotEmpty()) {
             require(behandlinger.first() is Førstegangsbehandling) { "Første behandlingen må være en førstegangsbehandling" }
@@ -51,15 +54,7 @@ data class Sak(
     fun harTilgang(saksbehandler: Saksbehandler): Boolean = personopplysninger.harTilgang(saksbehandler)
 
     fun hentMeldekort(meldekortId: MeldekortId): Meldekort? {
-        return meldekort.hentMeldekort(meldekortId)
-    }
-
-    fun hentRammevedtak(): Rammevedtak? {
-        return vedtak.lastOrNull()
-    }
-
-    fun hentVedtaksperiode(): Periode {
-        return vedtak.first().periode
+        return meldeperioder.hentMeldekort(meldekortId)
     }
 
     companion object {
@@ -92,8 +87,9 @@ data class Sak(
                 ),
                 behandlinger = nonEmptyListOf(førstegangsbehandling),
                 personopplysninger = sakPersonopplysninger,
-                vedtak = emptyList(),
-                meldekort = Meldeperioder.empty(førstegangsbehandling.tiltakstype),
+                rammevedtak = null,
+                meldeperioder = Meldeperioder.empty(førstegangsbehandling.tiltakstype),
+                utbetalinger = Utbetalinger(emptyList()),
             ).right()
         }
     }

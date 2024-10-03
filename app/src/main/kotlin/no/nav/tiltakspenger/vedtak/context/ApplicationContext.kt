@@ -28,11 +28,20 @@ open class ApplicationContext(
             gitHash = gitHash,
         )
     }
+    open val utbetalingContext by lazy {
+        UtbetalingContext(
+            sessionFactory = sessionFactory,
+            genererMeldekortPdfGateway = dokumentContext.genererMeldekortPdfGateway,
+            journalførMeldekortGateway = dokumentContext.journalførMeldekortGateway,
+        )
+    }
     open val meldekortContext by lazy {
         MeldekortContext(
             sessionFactory = sessionFactory,
             sakService = sakContext.sakService,
             tilgangsstyringService = tilgangsstyringContext.tilgangsstyringService,
+            utbetalingsvedtakRepo = utbetalingContext.utbetalingsvedtakRepo,
+            statistikkStønadRepo = statistikkContext.statistikkStønadRepo,
         )
     }
     open val førstegangsbehandlingContext by lazy {
@@ -47,15 +56,6 @@ open class ApplicationContext(
             journalførVedtaksbrevGateway = dokumentContext.journalførVedtaksbrevGateway,
             genererVedtaksbrevGateway = dokumentContext.genererVedtaksbrevGateway,
             dokdistGateway = dokumentContext.dokdistGateway,
-        )
-    }
-    open val utbetalingContext by lazy {
-        UtbetalingContext(
-            sessionFactory = sessionFactory,
-            rammevedtakRepo = førstegangsbehandlingContext.rammevedtakRepo,
-            statistikkStønadRepo = statistikkContext.statistikkStønadRepo,
-            genererMeldekortPdfGateway = dokumentContext.genererMeldekortPdfGateway,
-            journalførMeldekortGateway = dokumentContext.journalførMeldekortGateway,
         )
     }
 }

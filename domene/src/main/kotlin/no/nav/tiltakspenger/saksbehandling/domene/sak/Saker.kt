@@ -23,9 +23,6 @@ data class Saker(
         saker.flatMap { sak -> sak.behandlinger.map { it.id } }.also {
             require(it.size == it.toSet().size) { "Saker inneholder duplikate behandlingsid'er: $it" }
         }
-        saker.flatMap { sak -> sak.vedtak.map { it.id } }.also {
-            require(it.size == it.toSet().size) { "Saker inneholder duplikate vedtaksid'er: $it" }
-        }
     }
 
     fun hentForSaksnummer(saksnummer: Saksnummer): Sak? = saker.find { it.saksnummer == saksnummer }

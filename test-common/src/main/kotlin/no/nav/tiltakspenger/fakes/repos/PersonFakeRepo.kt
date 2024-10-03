@@ -25,11 +25,11 @@ class PersonFakeRepo(
     }
 
     override fun hentFnrForVedtakId(vedtakId: VedtakId): Fnr? {
-        return sakFakeRepo.data.get().values.find { it.vedtak.any { it.id == vedtakId } }?.fnr
+        return sakFakeRepo.data.get().values.find { it.rammevedtak!!.id == vedtakId }?.fnr
     }
 
     override fun hentFnrForMeldekortId(meldekortId: MeldekortId): Fnr? {
-        return sakFakeRepo.data.get().values.find { it.meldekort.any { it.id == meldekortId } }?.fnr
+        return sakFakeRepo.data.get().values.find { it.meldeperioder.any { it.id == meldekortId } }?.fnr
     }
 
     override fun hentFnrForSøknadId(søknadId: SøknadId): Fnr? {

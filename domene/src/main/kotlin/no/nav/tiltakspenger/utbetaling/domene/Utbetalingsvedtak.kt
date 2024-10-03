@@ -43,7 +43,7 @@ data class Utbetalingsvedtak(
     }
 }
 
-fun Meldekort.UtfyltMeldekort.tilUtbetalingsperiode(
+fun Meldekort.UtfyltMeldekort.opprettUtbetalingsvedtak(
     rammevedtak: Rammevedtak,
     forrigeUtbetalingsvedtak: VedtakId?,
 ): Utbetalingsvedtak =

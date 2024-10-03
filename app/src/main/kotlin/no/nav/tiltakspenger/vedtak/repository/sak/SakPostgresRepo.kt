@@ -21,6 +21,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.sak.TynnSak
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingPostgresRepo
 import no.nav.tiltakspenger.vedtak.repository.meldekort.MeldekortPostgresRepo
+import no.nav.tiltakspenger.vedtak.repository.utbetaling.UtbetalingsvedtakPostgresRepo
 import no.nav.tiltakspenger.vedtak.repository.vedtak.RammevedtakPostgresRepo
 import org.intellij.lang.annotations.Language
 import java.time.LocalDate
@@ -260,9 +261,10 @@ internal class SakPostgresRepo(
                     sakDetaljer = toSakDetaljer(),
                     behandlinger = behandlinger,
                     personopplysninger = PersonopplysningerPostgresRepo.hentForSakId(id, session),
-                    vedtak = RammevedtakPostgresRepo.hentForSakId(id, sessionContext),
-                    meldekort = MeldekortPostgresRepo.hentForSakId(id, session)
+                    rammevedtak = RammevedtakPostgresRepo.hentForSakId(id, session),
+                    meldeperioder = MeldekortPostgresRepo.hentForSakId(id, session)
                         ?: Meldeperioder.empty(behandlinger.first().tiltakstype),
+                    utbetalinger = UtbetalingsvedtakPostgresRepo.hentForSakId(id, session),
                 )
             }
         }

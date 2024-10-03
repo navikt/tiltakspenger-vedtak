@@ -7,7 +7,9 @@ import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo
 import no.nav.tiltakspenger.meldekort.service.HentMeldekortService
 import no.nav.tiltakspenger.meldekort.service.IverksettMeldekortService
 import no.nav.tiltakspenger.meldekort.service.SendMeldekortTilBeslutterService
+import no.nav.tiltakspenger.saksbehandling.ports.StatistikkStønadRepo
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
+import no.nav.tiltakspenger.utbetaling.ports.UtbetalingsvedtakRepo
 import no.nav.tiltakspenger.vedtak.repository.meldekort.MeldekortPostgresRepo
 
 /**
@@ -18,6 +20,8 @@ open class MeldekortContext(
     sessionFactory: SessionFactory,
     sakService: SakService,
     tilgangsstyringService: TilgangsstyringService,
+    utbetalingsvedtakRepo: UtbetalingsvedtakRepo,
+    statistikkStønadRepo: StatistikkStønadRepo,
 ) {
     open val meldekortRepo: MeldekortRepo by lazy {
         MeldekortPostgresRepo(
@@ -36,6 +40,9 @@ open class MeldekortContext(
             meldekortRepo = meldekortRepo,
             sessionFactory = sessionFactory,
             sakService = sakService,
+            utbetalingsvedtakRepo = utbetalingsvedtakRepo,
+            statistikkStønadRepo = statistikkStønadRepo,
+
         )
     }
     val sendMeldekortTilBeslutterService by lazy { SendMeldekortTilBeslutterService(meldekortRepo = meldekortRepo) }

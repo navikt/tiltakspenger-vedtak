@@ -14,7 +14,7 @@ class MeldekortRepoImplTest {
             val meldekort =
                 ObjectMother.utfyltMeldekort(
                     sakId = sak.id,
-                    rammevedtakId = sak.vedtak.single().id,
+                    rammevedtakId = sak.rammevedtak!!.id,
                     fnr = sak.fnr,
                 )
             val meldekortRepo = testDataHelper.meldekortRepo

@@ -12,14 +12,12 @@ import no.nav.tiltakspenger.libs.common.VedtakId
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.meldekort.domene.Meldekort.UtfyltMeldekort
-import no.nav.tiltakspenger.meldekort.domene.Meldeperiode
-import no.nav.tiltakspenger.meldekort.domene.MeldeperiodeId
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.ports.SendtUtbetaling
+import no.nav.tiltakspenger.utbetaling.domene.Utbetalinger
 import no.nav.tiltakspenger.utbetaling.domene.Utbetalingsvedtak
 import no.nav.tiltakspenger.utbetaling.ports.UtbetalingsvedtakRepo
 import no.nav.tiltakspenger.vedtak.repository.meldekort.MeldekortPostgresRepo
-import no.nav.tiltakspenger.vedtak.repository.meldekort.toMeldekortStatus
 import java.time.LocalDateTime
 
 internal class UtbetalingsvedtakPostgresRepo(
@@ -136,33 +134,7 @@ internal class UtbetalingsvedtakPostgresRepo(
         }
     }
 
-    override fun hentForSakId(sakId: SakId): List<Utbetalingsvedtak> {
-        return sessionFactory.withSession { session ->
-            session.run(
-                queryOf(
-                    "select u.*, s.saksnummer, s.ident as fnr from utbetalingsvedtak u join sak s on s.id = u.sakid where u.sakId = :sakId order by u.vedtakstidspunkt",
-                    mapOf("sakId" to sakId.toString()),
-                ).map { row ->
-                    row.toVedtak(session)
-                }.asList,
-            )
-        }.also {
-            // TODO post-mvp jah: Siden vi ikke har en Utbetalinger type som kan passe på dette, forsikrer vi oss om dette her.
-            if (it.isNotEmpty()) {
-                require(it.first().forrigeUtbetalingsvedtakId == null) {
-                    "Databaseintegrasjonsfeil: Forventer at den første utbetalingen (${it.first().id}) for en sak ikke har en forrigeUtbetalingsvedtakId, men var: ${it.first().forrigeUtbetalingsvedtakId}"
-                }
-
-                it.drop(1).forEachIndexed { index, element ->
-                    require(element.forrigeUtbetalingsvedtakId != null) {
-                        "Databaseintegrasjonsfeil: Forventer at utbetaling ${index + 2} (${element.id}) har en forrigeUtbetalingsvedtakId, men var null"
-                    }
-                }
-            }
-        }
-    }
-
-    override fun hentForFørstegangsbehandlingId(behandlingId: BehandlingId): List<Utbetalingsvedtak> {
+    override fun hentForFørstegangsbehandlingId(behandlingId: BehandlingId): Utbetalinger {
         return sessionFactory.withSession { session ->
             session.run(
                 queryOf(
@@ -177,48 +149,9 @@ internal class UtbetalingsvedtakPostgresRepo(
                 ).map { row ->
                     row.toVedtak(session)
                 }.asList,
-            )
+            ).let { Utbetalinger(it) }
         }
     }
-
-    override fun hentGodkjenteMeldekortUtenUtbetalingsvedtak(limit: Int): List<UtfyltMeldekort> =
-        sessionFactory.withSession { session ->
-            session.run(
-                queryOf(
-                    """
-                    select m.*, s.ident as fnr from meldekort m
-                    join sak s on s.id = m.sakId
-                    left join utbetalingsvedtak u on m.id = u.meldekortId
-                    where u.id is null and m.beslutter is not null
-                    limit :limit
-                    """.trimIndent(),
-                    mapOf("limit" to limit),
-                ).map { row ->
-                    val meldekortperiode =
-                        MeldekortPostgresRepo
-                            .hentForMeldekortId(
-                                MeldekortId.fromString(row.string("id")),
-                                session,
-                            )!!
-                            .meldeperiode as Meldeperiode.UtfyltMeldeperiode
-                    UtfyltMeldekort(
-                        id = MeldekortId.fromString(row.string("id")),
-                        meldeperiodeId = MeldeperiodeId(row.string("meldeperiode_id")),
-                        sakId = SakId.fromString(row.string("sakId")),
-                        fnr = Fnr.fromString(row.string("fnr")),
-                        rammevedtakId = VedtakId.fromString(row.string("rammevedtakId")),
-                        meldeperiode =
-                        meldekortperiode,
-                        saksbehandler = row.string("saksbehandler"),
-                        beslutter = row.string("beslutter"),
-                        forrigeMeldekortId = row.stringOrNull("forrigeMeldekortId")?.let { MeldekortId.fromString(it) },
-                        tiltakstype = meldekortperiode.tiltakstype,
-                        status = row.string("status").toMeldekortStatus(),
-                        iverksattTidspunkt = row.localDateTimeOrNull("iverksatt_tidspunkt"),
-                    )
-                }.asList,
-            )
-        }
 
     override fun hentUtbetalingsvedtakForUtsjekk(limit: Int): List<Utbetalingsvedtak> =
         sessionFactory.withSession { session ->
@@ -235,7 +168,7 @@ internal class UtbetalingsvedtakPostgresRepo(
                 ).map { row ->
                     row.toVedtak(session)
                 }.asList,
-            )
+            ).let { Utbetalinger(it) }
         }
 
     override fun hentDeSomSkalJournalføres(limit: Int): List<Utbetalingsvedtak> =
@@ -256,26 +189,39 @@ internal class UtbetalingsvedtakPostgresRepo(
             )
         }
 
-    private fun Row.toVedtak(session: Session): Utbetalingsvedtak {
-        val vedtakId = VedtakId.fromString(string("id"))
-        return Utbetalingsvedtak(
-            id = vedtakId,
-            sakId = SakId.fromString(string("sakId")),
-            saksnummer = Saksnummer(string("saksnummer")),
-            fnr = Fnr.fromString(string("fnr")),
-            rammevedtakId = VedtakId.fromString(string("rammevedtakId")),
-            brukerNavkontor = string("brukerNavkontor"),
-            vedtakstidspunkt = localDateTime("vedtakstidspunkt"),
-            forrigeUtbetalingsvedtakId = stringOrNull("forrigeVedtakId")?.let { VedtakId.fromString(it) },
-            meldekort =
-            MeldekortPostgresRepo
-                .hentForMeldekortId(
-                    MeldekortId.fromString(string("meldekortId")),
-                    session,
-                )!! as UtfyltMeldekort,
-            sendtTilUtbetaling = localDateTimeOrNull("sendt_til_utbetaling_tidspunkt"),
-            journalpostId = stringOrNull("journalpost_id")?.let { JournalpostId(it) },
-            journalføringstidspunkt = localDateTimeOrNull("journalføringstidspunkt"),
-        )
+    companion object {
+        fun hentForSakId(sakId: SakId, session: Session): Utbetalinger {
+            return session.run(
+                queryOf(
+                    "select u.*, s.saksnummer, s.ident as fnr from utbetalingsvedtak u join sak s on s.id = u.sakid where u.sakId = :sakId order by u.vedtakstidspunkt",
+                    mapOf("sakId" to sakId.toString()),
+                ).map { row ->
+                    row.toVedtak(session)
+                }.asList,
+            ).let { Utbetalinger(it) }
+        }
+
+        private fun Row.toVedtak(session: Session): Utbetalingsvedtak {
+            val vedtakId = VedtakId.fromString(string("id"))
+            return Utbetalingsvedtak(
+                id = vedtakId,
+                sakId = SakId.fromString(string("sakId")),
+                saksnummer = Saksnummer(string("saksnummer")),
+                fnr = Fnr.fromString(string("fnr")),
+                rammevedtakId = VedtakId.fromString(string("rammevedtakId")),
+                brukerNavkontor = string("brukerNavkontor"),
+                vedtakstidspunkt = localDateTime("vedtakstidspunkt"),
+                forrigeUtbetalingsvedtakId = stringOrNull("forrigeVedtakId")?.let { VedtakId.fromString(it) },
+                meldekort =
+                MeldekortPostgresRepo
+                    .hentForMeldekortId(
+                        MeldekortId.fromString(string("meldekortId")),
+                        session,
+                    )!! as UtfyltMeldekort,
+                sendtTilUtbetaling = localDateTimeOrNull("sendt_til_utbetaling_tidspunkt"),
+                journalpostId = stringOrNull("journalpost_id")?.let { JournalpostId(it) },
+                journalføringstidspunkt = localDateTimeOrNull("journalføringstidspunkt"),
+            )
+        }
     }
 }

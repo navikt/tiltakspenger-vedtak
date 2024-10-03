@@ -22,6 +22,7 @@ class SakFakeRepo(
     private val behandlingRepo: BehandlingFakeRepo,
     private val rammevedtakRepo: RammevedtakFakeRepo,
     private val meldekortRepo: MeldekortFakeRepo,
+    private val utbetalingsvedtakRepo: UtbetalingsvedtakFakeRepo,
 ) : SakRepo {
     val data = Atomic(mutableMapOf<SakId, Sak>())
 
@@ -44,8 +45,9 @@ class SakFakeRepo(
         return data.get()[sakId]?.copy(
             personopplysninger = personopplysningerRepo.hent(sakId),
             behandlinger = behandlinger,
-            vedtak = rammevedtakRepo.hentForSakId(sakId)?.let { listOf(it) } ?: emptyList(),
-            meldekort = meldekortRepo.hentForSakId(sakId) ?: Meldeperioder.empty(behandlinger.first().tiltakstype),
+            rammevedtak = rammevedtakRepo.hentForSakId(sakId),
+            meldeperioder = meldekortRepo.hentForSakId(sakId) ?: Meldeperioder.empty(behandlinger.first().tiltakstype),
+            utbetalinger = utbetalingsvedtakRepo.hentForSakId(sakId),
         )
     }
 

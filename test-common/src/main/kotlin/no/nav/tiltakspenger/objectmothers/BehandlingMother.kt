@@ -409,7 +409,7 @@ fun TestApplicationContext.meldekortTilBeslutter(
             beslutter = beslutter,
         )
     tac.meldekortContext.sendMeldekortTilBeslutterService.sendMeldekortTilBeslutter(
-        (sak.meldekort.first() as Meldekort.IkkeUtfyltMeldekort).tilSendMeldekortTilBeslutterKommando(saksbehandler),
+        (sak.meldeperioder.first() as Meldekort.IkkeUtfyltMeldekort).tilSendMeldekortTilBeslutterKommando(saksbehandler),
     )
     return this.sakContext.sakService.hentForSakId(sak.id, saksbehandler)!!
 }
@@ -435,12 +435,10 @@ fun TestApplicationContext.meldekortIverksatt(
         )
     tac.meldekortContext.iverksettMeldekortService.iverksettMeldekort(
         IverksettMeldekortKommando(
-            meldekortId = (sak.meldekort.first() as Meldekort.UtfyltMeldekort).id,
+            meldekortId = (sak.meldeperioder.first() as Meldekort.UtfyltMeldekort).id,
             sakId = sak.id,
             beslutter = beslutter,
         ),
     )
-    // TODO post-mvp jah: Denne kan heller flyttes inn i transaksjonen i meldekortContext.iverksettMeldekortService.iverksettMeldekort
-    tac.utbetalingContext.opprettUtbetalingsvedtakService.opprettUtbetalingsvedtak()
     return this.sakContext.sakService.hentForSakId(sak.id, saksbehandler)!!
 }
