@@ -4,9 +4,7 @@ import arrow.core.Either
 import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
@@ -51,10 +49,7 @@ class SakServiceImpl(
     ): Either<KanIkkeStarteFørstegangsbehandling, Sak> {
         val fnr = personService.hentFnrForSøknadId(søknadId)
 
-        val harTilgang = sjekkTilgangTilSøknad(fnr, søknadId, saksbehandler, correlationId)
-        if (!harTilgang) {
-            throw TilgangException("Saksbehandler har ikke tilgsng til person. SøknadId: $søknadId")
-        }
+        sjekkTilgangTilSøknad(fnr, søknadId, saksbehandler, correlationId)
 
         sakRepo.hentForSøknadId(søknadId)?.also {
             return KanIkkeStarteFørstegangsbehandling.HarAlleredeStartetBehandlingen(it.førstegangsbehandling.id).left()
@@ -88,7 +83,7 @@ class SakServiceImpl(
                 ).getOrElse { return KanIkkeStarteFørstegangsbehandling.OppretteBehandling(it).left() }
         val statistikk =
             opprettBehandlingMapper(
-                sak = sak,
+                sak = sak.hentTynnSak(),
                 behandling = sak.førstegangsbehandling,
                 gjelderKode6 = adressebeskyttelseGradering.harStrengtFortroligAdresse(),
                 versjon = gitHash,
@@ -109,10 +104,7 @@ class SakServiceImpl(
     ): Sak {
         val sak = sakRepo.hentForFørstegangsbehandlingId(behandlingId) ?: throw IkkeFunnetException("Sak ikke funnet")
 
-        val harTilgang = sjekkTilgangTilSak(sak.id, saksbehandler, correlationId)
-        if (!harTilgang) {
-            throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til sak ${sak.id}")
-        }
+        sjekkTilgangTilSak(sak.id, saksbehandler, correlationId)
 
         return sak
     }
@@ -125,10 +117,7 @@ class SakServiceImpl(
         val sak =
             sakRepo.hentForSaksnummer(saksnummer)
                 ?: throw IkkeFunnetException("Fant ikke sak med saksnummer $saksnummer")
-        val harTilgang = sjekkTilgangTilSak(sak.id, saksbehandler, correlationId)
-        if (!harTilgang) {
-            throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til sak med saksnummer $saksnummer")
-        }
+        sjekkTilgangTilSak(sak.id, saksbehandler, correlationId)
 
         return sak
     }
@@ -145,10 +134,7 @@ class SakServiceImpl(
         if (saker.size > 1) throw IllegalStateException("Vi støtter ikke flere saker per søker i piloten. fnr: $fnr")
 
         val sak = saker.single()
-        val harTilgang = sjekkTilgangTilSak(sak.id, saksbehandler, correlationId)
-        if (!harTilgang) {
-            throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til sak ${sak.id}")
-        }
+        sjekkTilgangTilSak(sak.id, saksbehandler, correlationId)
 
         return sak.right()
     }
@@ -160,10 +146,7 @@ class SakServiceImpl(
         saksbehandler: Saksbehandler,
         correlationId: CorrelationId,
     ): Sak? {
-        val harTilgang = sjekkTilgangTilSak(sakId, saksbehandler, correlationId)
-        if (!harTilgang) {
-            throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til sak $sakId")
-        }
+        sjekkTilgangTilSak(sakId, saksbehandler, correlationId)
 
         val sak = sakRepo.hentForSakId(sakId) ?: return null
 
@@ -177,26 +160,25 @@ class SakServiceImpl(
         return saksoversikt
     }
 
-    private suspend fun sjekkTilgangTilSak(sakId: SakId, saksbehandler: Saksbehandler, correlationId: CorrelationId): Boolean {
-        return withContext(Dispatchers.IO) {
-            val fnr = personService.hentFnrForSakId(sakId)
-            tilgangsstyringService
-                .harTilgangTilPerson(
-                    fnr = fnr,
-                    roller = saksbehandler.roller,
-                    correlationId = correlationId,
-                ).getOrElse { throw IkkeFunnetException("Kunne ikke sjekke tilgang til person. SakId: $sakId. CorrelationId: $correlationId") }
-        }
+    private suspend fun sjekkTilgangTilSak(sakId: SakId, saksbehandler: Saksbehandler, correlationId: CorrelationId) {
+        val fnr = personService.hentFnrForSakId(sakId)
+        tilgangsstyringService
+            .harTilgangTilPerson(
+                fnr = fnr,
+                roller = saksbehandler.roller,
+                correlationId = correlationId,
+            )
+            .onLeft { throw IkkeFunnetException("Feil ved sjekk av tilgang til person. SakId: $sakId. CorrelationId: $correlationId") }
+            .onRight { if (!it) throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til person") }
     }
 
-    private suspend fun sjekkTilgangTilSøknad(fnr: Fnr, søknadId: SøknadId, saksbehandler: Saksbehandler, correlationId: CorrelationId): Boolean {
-        return withContext(Dispatchers.IO) {
-            tilgangsstyringService
-                .harTilgangTilPerson(
-                    fnr = fnr,
-                    roller = saksbehandler.roller,
-                    correlationId = correlationId,
-                ).getOrElse { throw IkkeFunnetException("Kunne ikke sjekke tilgang til person. SøknadId: $søknadId. CorrelationId: $correlationId") }
-        }
+    private suspend fun sjekkTilgangTilSøknad(fnr: Fnr, søknadId: SøknadId, saksbehandler: Saksbehandler, correlationId: CorrelationId) {
+        tilgangsstyringService
+            .harTilgangTilPerson(
+                fnr = fnr,
+                roller = saksbehandler.roller,
+                correlationId = correlationId,
+            ).onLeft { throw IkkeFunnetException("Feil ved sjekk av tilgang til person. SøknadId: $søknadId. CorrelationId: $correlationId") }
+            .onRight { if (!it) throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til person") }
     }
 }

@@ -30,7 +30,6 @@ data class Sak(
     val fnr: Fnr,
     val saksnummer: Saksnummer,
     val behandlinger: NonEmptyList<Behandling>,
-    // TODO pre-mvp: Endre til val rammevedtak: Rammevedtak? siden vi kun har et rammevedtak per sak.
     val rammevedtak: Rammevedtak?,
     val meldeperioder: Meldeperioder,
     val utbetalinger: Utbetalinger,
@@ -56,6 +55,8 @@ data class Sak(
         return meldeperioder.hentMeldekort(meldekortId)
     }
 
+    fun hentTynnSak(): TynnSak = TynnSak(this.id, this.fnr, this.saksnummer)
+
     companion object {
         fun lagSak(
             sakId: SakId = SakId.random(),
@@ -66,7 +67,7 @@ data class Sak(
             registrerteTiltak: List<Tiltak>,
         ): Either<KanIkkeOppretteBehandling, Sak> {
             if (!saksbehandler.roller.harRolle(Rolle.SAKSBEHANDLER)) {
-                throw TilgangException("Saksbehandler ${saksbehandler.navIdent} må ha rollen SAKSBEHANDLER/BESLUTTER. søknadId: ${søknad.id} roller: ${saksbehandler.roller}")
+                throw TilgangException("Saksbehandler ${saksbehandler.navIdent} må ha rollen SAKSBEHANDLER. søknadId: ${søknad.id} roller: ${saksbehandler.roller}")
             }
             val fnr = søknad.fnr
             val førstegangsbehandling =

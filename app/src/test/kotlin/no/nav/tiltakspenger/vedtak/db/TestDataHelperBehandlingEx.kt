@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.vedtak.db
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.SøknadId
@@ -121,6 +122,7 @@ internal fun TestDataHelper.persisterIverksattFørstegangsbehandling(
                         harYtelse = false,
                     ),
                     årsakTilEndring = null,
+                    correlationId = CorrelationId.generate(),
                 ),
             ).getOrNull()!!
             .tilBeslutning(saksbehandler)

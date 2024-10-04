@@ -4,6 +4,7 @@ import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.common.TestApplicationContext
 import no.nav.tiltakspenger.fakes.repos.UtbetalingsvedtakFakeRepo
+import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.meldekort.domene.IverksettMeldekortKommando
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.objectmothers.ObjectMother
@@ -26,6 +27,7 @@ internal class OpprettUtbetalingsvedtakServiceTest {
                     meldekortId = sak.meldeperioder[1].id,
                     sakId = sakId,
                     beslutter = ObjectMother.beslutter(),
+                    correlationId = CorrelationId.generate(),
                 ),
             )
             (utbetalingContext.utbetalingsvedtakRepo as UtbetalingsvedtakFakeRepo).hentForSakId(sakId).let {

@@ -26,7 +26,7 @@ open class TilgangsstyringContext(
 
     val poaoTilgangGateway: PoaoTilgangGateway by lazy {
         PoaoTilgangClient(
-            baseUrl = Configuration.tilgangClientConfig().baseUrl,
+            baseUrl = Configuration.poaoTilgangClientConfig().baseUrl,
             getToken = { getPoaoTilgangToken.toString() },
         )
     }

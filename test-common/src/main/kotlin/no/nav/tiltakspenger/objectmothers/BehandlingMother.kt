@@ -36,6 +36,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltakskilde.Komet
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndring
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.leggTilLivsoppholdSaksopplysning
+import no.nav.tiltakspenger.vedtak.routes.correlationId
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -80,6 +81,7 @@ interface BehandlingMother {
         søknad: Søknad = ObjectMother.nySøknad(periode = vurderingsperiode),
         saksbehandler: Saksbehandler = saksbehandler(),
         årsakTilEndring: ÅrsakTilEndring = ÅrsakTilEndring.ENDRING_ETTER_SØKNADSTIDSPUNKT,
+        correlationId: CorrelationId = CorrelationId.generate(),
         behandling: Førstegangsbehandling =
             behandlingUnderBehandlingUavklart(
                 periode = vurderingsperiode,
@@ -97,6 +99,7 @@ interface BehandlingMother {
                     harYtelse = false,
                 ),
                 årsakTilEndring = årsakTilEndring,
+                correlationId = correlationId,
             ),
     ): Førstegangsbehandling =
         behandlingUnderBehandlingUavklart(
@@ -113,6 +116,7 @@ interface BehandlingMother {
         sakId: SakId = SakId.random(),
         søknad: Søknad = ObjectMother.nySøknad(periode = periode),
         saksbehandler: Saksbehandler = saksbehandler(),
+        correlationId: CorrelationId = CorrelationId.generate(),
     ): Førstegangsbehandling {
         val behandling =
             behandlingUnderBehandlingUavklart(
@@ -132,6 +136,7 @@ interface BehandlingMother {
                     periode = behandling.vurderingsperiode,
                     harYtelse = true,
                 ),
+                correlationId = correlationId,
             ),
         )
 
@@ -298,6 +303,7 @@ suspend fun TestApplicationContext.førstegangsbehandlingVilkårsvurdert(
     periode: Periode = ObjectMother.vurderingsperiode(),
     fnr: Fnr = Fnr.random(),
     saksbehandler: Saksbehandler = saksbehandler(),
+    correlationId: CorrelationId = CorrelationId.generate(),
 ): Sak {
     val uavklart =
         førstegangsbehandlingUavklart(
@@ -315,6 +321,7 @@ suspend fun TestApplicationContext.førstegangsbehandlingVilkårsvurdert(
                 harYtelse = false,
             ),
             årsakTilEndring = ÅrsakTilEndring.ENDRING_ETTER_SØKNADSTIDSPUNKT,
+            correlationId = correlationId,
         ),
     )
     return this.sakContext.sakService.hentForSakId(uavklart.id, saksbehandler, correlationId = CorrelationId.generate())!!
@@ -426,6 +433,7 @@ suspend fun TestApplicationContext.meldekortIverksatt(
             meldekortId = (sak.meldeperioder.first() as Meldekort.UtfyltMeldekort).id,
             sakId = sak.id,
             beslutter = beslutter,
+            correlationId = CorrelationId.generate(),
         ),
     )
     return this.sakContext.sakService.hentForSakId(sak.id, saksbehandler, correlationId = CorrelationId.generate())!!

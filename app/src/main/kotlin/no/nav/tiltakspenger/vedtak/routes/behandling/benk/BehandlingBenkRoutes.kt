@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.vedtak.routes.behandling.benk
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
-import io.ktor.server.plugins.callid.callId
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -10,7 +9,6 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
-import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling.FantIkkeTiltak
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling.StøtterIkkeBarnetillegg
@@ -21,6 +19,7 @@ import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLINGER_PATH
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
+import no.nav.tiltakspenger.vedtak.routes.correlationId
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.ExceptionResponse
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
@@ -45,7 +44,7 @@ fun Route.behandlingBenkRoutes(
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val søknadId = SøknadId.fromString(call.receive<BehandlingIdDTO>().id)
 
-        sakService.startFørstegangsbehandling(søknadId, saksbehandler, correlationId = CorrelationId.generate()).fold(
+        sakService.startFørstegangsbehandling(søknadId, saksbehandler, correlationId = call.correlationId()).fold(
             {
                 when (it) {
                     is KanIkkeStarteFørstegangsbehandling.HarAlleredeStartetBehandlingen -> {
@@ -82,7 +81,7 @@ fun Route.behandlingBenkRoutes(
                     navIdent = saksbehandler.navIdent,
                     action = AuditLogEvent.Action.CREATE,
                     contextMessage = "Oppretter behandling fra søknad og starter behandlingen",
-                    callId = call.callId,
+                    correlationId = call.correlationId(),
                 )
 
                 call.respond(HttpStatusCode.OK, BehandlingIdDTO(it.førstegangsbehandling.id.toString()))
@@ -96,7 +95,7 @@ fun Route.behandlingBenkRoutes(
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.receive<BehandlingIdDTO>().id)
 
-        behandlingService.taBehandling(behandlingId, saksbehandler, correlationId = CorrelationId.generate())
+        behandlingService.taBehandling(behandlingId, saksbehandler, correlationId = call.correlationId())
 
         val response = BehandlingIdDTO(behandlingId.toString())
 
@@ -105,7 +104,7 @@ fun Route.behandlingBenkRoutes(
             navIdent = saksbehandler.navIdent,
             action = AuditLogEvent.Action.UPDATE,
             contextMessage = "Saksbehandler tar behandlingen",
-            callId = call.callId,
+            correlationId = call.correlationId(),
         )
 
         call.respond(status = HttpStatusCode.OK, response)

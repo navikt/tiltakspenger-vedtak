@@ -126,6 +126,8 @@ object Configuration {
                 "DOKDIST_URL" to "https://dokdistfordeling.prod-fss-pub.nais.io",
                 "PDFGEN_SCOPE" to "api://prod-gcp.tpts.tiltakspenger-pdfgen/.default",
                 "PDFGEN_URL" to "http://tiltakspenger-pdfgen",
+                "POAO_TILGANG_URL" to "https://poao-tilgang.nais.io",
+                "POAO_TILGANG_SCOPE" to "api://prod-gcp.poao.poao-tilgang/.default",
             ),
         )
 
@@ -272,7 +274,7 @@ object Configuration {
     fun dokdistClientConfig(baseUrl: String = config()[Key("DOKDIST_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
     fun pdfgenClientConfig(baseUrl: String = config()[Key("PDFGEN_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
 
-    fun tilgangClientConfig(baseUrl: String = config()[Key("POAO_TILGANG_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
+    fun poaoTilgangClientConfig(baseUrl: String = config()[Key("POAO_TILGANG_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
 
     fun utbetalingClientConfig(baseUrl: String = config()[Key("UTBETALING_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
 

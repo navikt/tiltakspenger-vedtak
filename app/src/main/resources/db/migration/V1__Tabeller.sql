@@ -61,6 +61,52 @@ CREATE TABLE rammevedtak
     distribusjonstidspunkt  TIMESTAMPTZ              NULL
 );
 
+CREATE TABLE sak_personopplysninger_søker
+(
+    id                       VARCHAR                  PRIMARY KEY,
+    sakId                    VARCHAR                  NOT NULL REFERENCES sak (id),
+    ident                    VARCHAR                  NOT NULL,
+    fødselsdato              DATE                     NOT NULL,
+    fornavn                  VARCHAR                  NOT NULL,
+    mellomnavn               VARCHAR                  NULL,
+    etternavn                VARCHAR                  NOT NULL,
+    fortrolig                BOOLEAN                  NOT NULL,
+    strengt_fortrolig        BOOLEAN                  NOT NULL,
+    strengt_fortrolig_utland BOOLEAN                  NOT NULL,
+    skjermet                 BOOLEAN                  NULL,
+    kommune                  VARCHAR                  NULL,
+    bydel                    VARCHAR                  NULL,
+    tidsstempel_hos_oss      TIMESTAMPTZ              NOT NULL
+);
+
+CREATE TABLE sak_personopplysninger_barn_med_ident
+(
+    id                       VARCHAR PRIMARY KEY,
+    sakId                    VARCHAR                  NOT NULL REFERENCES sak (id),
+    ident                    VARCHAR                  NOT NULL,
+    fødselsdato              DATE                     NOT NULL,
+    fornavn                  VARCHAR                  NOT NULL,
+    mellomnavn               VARCHAR                  NULL,
+    etternavn                VARCHAR                  NOT NULL,
+    fortrolig                BOOLEAN                  NOT NULL,
+    strengt_fortrolig        BOOLEAN                  NOT NULL,
+    strengt_fortrolig_utland BOOLEAN                  NOT NULL,
+    oppholdsland             VARCHAR                  NULL,
+    skjermet                 BOOLEAN                  NULL,
+    tidsstempel_hos_oss      TIMESTAMPTZ              NOT NULL
+);
+
+CREATE TABLE sak_personopplysninger_barn_uten_ident
+(
+    id                  VARCHAR PRIMARY KEY,
+    sakId               VARCHAR                  NOT NULL REFERENCES sak (id),
+    fødselsdato         DATE                     NULL,
+    fornavn             VARCHAR                  NULL,
+    mellomnavn          VARCHAR                  NULL,
+    etternavn           VARCHAR                  NULL,
+    tidsstempel_hos_oss TIMESTAMPTZ              NOT NULL
+);
+
 CREATE TABLE søknad
 (
     id                  VARCHAR                  PRIMARY KEY,

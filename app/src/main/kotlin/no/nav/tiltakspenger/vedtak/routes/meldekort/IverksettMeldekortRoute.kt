@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.vedtak.routes.meldekort
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
-import io.ktor.server.plugins.callid.callId
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
@@ -15,6 +14,7 @@ import no.nav.tiltakspenger.meldekort.domene.KanIkkeIverksetteMeldekort
 import no.nav.tiltakspenger.meldekort.service.IverksettMeldekortService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
+import no.nav.tiltakspenger.vedtak.routes.correlationId
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
 fun Route.iverksettMeldekortRoute(
@@ -39,6 +39,7 @@ fun Route.iverksettMeldekortRoute(
                 meldekortId = meldekortId,
                 beslutter = saksbehandler,
                 sakId = sakId,
+                correlationId = call.correlationId(),
             ),
         )
 
@@ -47,7 +48,7 @@ fun Route.iverksettMeldekortRoute(
             navIdent = saksbehandler.navIdent,
             action = AuditLogEvent.Action.UPDATE,
             contextMessage = "Iverksetter meldekort",
-            callId = call.callId,
+            correlationId = call.correlationId(),
         )
         meldekort.fold(
             {

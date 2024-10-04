@@ -2,14 +2,13 @@ package no.nav.tiltakspenger.saksbehandling.service.statistikk.sak
 
 import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
-import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.TynnSak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtakstype
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.UtfallForPeriode
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 
-fun opprettBehandlingMapper(sak: Sak, behandling: Behandling, gjelderKode6: Boolean, versjon: String) =
+fun opprettBehandlingMapper(sak: TynnSak, behandling: Behandling, gjelderKode6: Boolean, versjon: String) =
     StatistikkSakDTO(
         sakId = sak.id.toString(),
         saksnummer = sak.saksnummer.toString(),

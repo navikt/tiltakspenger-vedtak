@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.alder
 
-import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder.LeggTilAlderSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder.leggTilAlderSaksopplysning
@@ -14,7 +13,7 @@ class AlderVilkårServiceImpl(
 ) : AlderVilkårService {
     override suspend fun leggTilSaksopplysning(command: LeggTilAlderSaksopplysningCommand): Førstegangsbehandling {
         val behandling =
-            behandlingService.hentBehandling(command.behandlingId, command.saksbehandler, correlationId = CorrelationId.generate()) as Førstegangsbehandling
+            behandlingService.hentBehandling(command.behandlingId, command.saksbehandler, correlationId = command.correlationId) as Førstegangsbehandling
         return behandling.leggTilAlderSaksopplysning(command).also {
             behandlingRepo.lagre(it)
         }

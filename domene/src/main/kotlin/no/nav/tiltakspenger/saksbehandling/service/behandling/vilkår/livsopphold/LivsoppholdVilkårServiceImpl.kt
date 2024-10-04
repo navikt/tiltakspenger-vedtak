@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold
 
 import arrow.core.Either
-import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LivsoppholdVilkår
@@ -17,7 +16,7 @@ class LivsoppholdVilkårServiceImpl(
         command: LeggTilLivsoppholdSaksopplysningCommand,
     ): Either<LivsoppholdVilkår.PeriodenMåVæreLikVurderingsperioden, Førstegangsbehandling> {
         val behandling =
-            behandlingService.hentBehandling(command.behandlingId, command.saksbehandler, correlationId = CorrelationId.generate()) as Førstegangsbehandling
+            behandlingService.hentBehandling(command.behandlingId, command.saksbehandler, correlationId = command.correlationId) as Førstegangsbehandling
         return behandling.leggTilLivsoppholdSaksopplysning(command).onRight {
             behandlingRepo.lagre(it)
         }

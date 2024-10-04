@@ -1,12 +1,10 @@
 package no.nav.tiltakspenger.saksbehandling.service.behandling
 
-import arrow.core.Either
 import arrow.core.getOrElse
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
-import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
@@ -58,12 +56,7 @@ class BehandlingServiceImpl(
         correlationId: CorrelationId,
         sessionContext: SessionContext?,
     ): Behandling {
-        val harTilgang = Either.catch { sjekkTilgang(behandlingId, saksbehandler, correlationId) }.getOrElse {
-            logger.error { "Feil ved sjekk av tilgang til person. BehandlingId: $behandlingId. CorrelationId: $correlationId" }
-            sikkerlogg.error(it) { "Feil ved sjekk av tilgang til person. Respons: $this " }
-            throw it
-        }
-        if (!harTilgang) throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til bruker")
+        sjekkTilgang(behandlingId, saksbehandler, correlationId)
 
         val behandling = hentBehandling(behandlingId, sessionContext)
         return behandling
@@ -175,13 +168,15 @@ class BehandlingServiceImpl(
                 )
             }
 
-    private suspend fun sjekkTilgang(behandlingId: BehandlingId, saksbehandler: Saksbehandler, correlationId: CorrelationId): Boolean {
+    private suspend fun sjekkTilgang(behandlingId: BehandlingId, saksbehandler: Saksbehandler, correlationId: CorrelationId) {
         val fnr = personService.hentFnrForBehandlingId(behandlingId)
-        return tilgangsstyringService
+        tilgangsstyringService
             .harTilgangTilPerson(
                 fnr = fnr,
                 roller = saksbehandler.roller,
                 correlationId = correlationId,
-            ).getOrElse { throw IkkeFunnetException("Kunne ikke sjekke tilgang til person. BehandlingId: $behandlingId") }
+            )
+            .onLeft { throw IkkeFunnetException("Feil ved sjekk av tilgang til person. BehandlingId: $behandlingId. CorrelationId: $correlationId") }
+            .onRight { if (!it) throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til person") }
     }
 }

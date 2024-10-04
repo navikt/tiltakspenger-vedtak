@@ -11,6 +11,8 @@ CREATE INDEX saks_ident
          ident
             );
 
+CREATE INDEX sakPersonopplysningerSøker
+
 CREATE INDEX søknad_ident
     ON søknad
         (

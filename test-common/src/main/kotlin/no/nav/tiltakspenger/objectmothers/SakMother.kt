@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.objectmothers
 import arrow.core.nonEmptyListOf
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.januar
+import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.random
@@ -67,6 +68,7 @@ interface SakMother {
         saksnummer: Saksnummer = Saksnummer(iDag, løpenummer),
         saksbehandler: Saksbehandler = saksbehandler(),
         vedtak: List<Rammevedtak> = emptyList(),
+        correlationId: CorrelationId = CorrelationId.generate(),
     ): Sak {
         return sakMedOpprettetBehandling(
             sakId = sakId,
@@ -82,6 +84,7 @@ interface SakMother {
                         harYtelse = false,
                     ),
                     årsakTilEndring = null,
+                    correlationId = correlationId,
 
                 ),
             ).getOrNull()!!

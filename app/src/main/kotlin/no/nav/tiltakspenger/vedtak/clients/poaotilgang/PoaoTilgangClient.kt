@@ -5,6 +5,7 @@ import no.nav.poao_tilgang.client.NavAnsattNavIdentBehandleSkjermedePersonerPoli
 import no.nav.poao_tilgang.client.NavAnsattNavIdentBehandleStrengtFortroligBrukerePolicyInput
 import no.nav.poao_tilgang.client.PoaoTilgangClient
 import no.nav.poao_tilgang.client.PoaoTilgangHttpClient
+import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.saksbehandling.ports.PoaoTilgangGateway
 
 class PoaoTilgangClient(
@@ -32,11 +33,12 @@ class PoaoTilgangClient(
         return response.isPermit
     }
 
-    override suspend fun erSkjermet(fnr: String): Boolean {
-        return poaoTilgangclient.erSkjermetPerson(fnr).getOrThrow()
+    override suspend fun erSkjermet(fnr: Fnr): Boolean {
+        return poaoTilgangclient.erSkjermetPerson(fnr.toString()).getOrThrow()
     }
 
-    override suspend fun erSkjermetBolk(fnrListe: List<String>): Map<String, Boolean> {
-        return poaoTilgangclient.erSkjermetPerson(fnrListe).getOrThrow()
+    override suspend fun erSkjermetBolk(fnrListe: List<Fnr>): Map<Fnr, Boolean> {
+        val fnrSomStringsListe = fnrListe.map { it.toString() }
+        return poaoTilgangclient.erSkjermetPerson(fnrSomStringsListe).getOrThrow().mapKeys { Fnr.fromString(it.key) }
     }
 }

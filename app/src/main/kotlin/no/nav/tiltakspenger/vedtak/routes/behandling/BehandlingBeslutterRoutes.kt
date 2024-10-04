@@ -2,17 +2,16 @@ package no.nav.tiltakspenger.vedtak.routes.behandling
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
-import io.ktor.server.plugins.callid.callId
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
-import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
+import no.nav.tiltakspenger.vedtak.routes.correlationId
 import no.nav.tiltakspenger.vedtak.routes.parameter
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
@@ -32,14 +31,14 @@ fun Route.behandlingBeslutterRoutes(
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
         val begrunnelse = call.receive<BegrunnelseDTO>().begrunnelse
 
-        behandlingService.sendTilbakeTilSaksbehandler(behandlingId, saksbehandler, begrunnelse, correlationId = CorrelationId.generate())
+        behandlingService.sendTilbakeTilSaksbehandler(behandlingId, saksbehandler, begrunnelse, correlationId = call.correlationId())
 
         auditService.logMedBehandlingId(
             behandlingId = behandlingId,
             navIdent = saksbehandler.navIdent,
             action = AuditLogEvent.Action.UPDATE,
             contextMessage = "Beslutter underkjenner behandling",
-            callId = call.callId,
+            correlationId = call.correlationId(),
         )
 
         call.respond(status = HttpStatusCode.OK, message = "{}")
@@ -51,14 +50,14 @@ fun Route.behandlingBeslutterRoutes(
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
 
-        behandlingService.iverksett(behandlingId, saksbehandler, correlationId = CorrelationId.generate())
+        behandlingService.iverksett(behandlingId, saksbehandler, correlationId = call.correlationId())
 
         auditService.logMedBehandlingId(
             behandlingId = behandlingId,
             navIdent = saksbehandler.navIdent,
             action = AuditLogEvent.Action.UPDATE,
             contextMessage = "Beslutter godkjenner behandlingen",
-            callId = call.callId,
+            correlationId = call.correlationId(),
         )
 
         call.respond(message = "{}", status = HttpStatusCode.OK)

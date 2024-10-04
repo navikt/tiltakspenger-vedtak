@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.vedtak.routes.behandling
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
-import io.ktor.server.plugins.callid.callId
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
@@ -11,7 +10,6 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
-import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårService
@@ -28,6 +26,7 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kravfrist.kravfrist
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.kvpRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.livsopphold.livsoppholdRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.tiltakdeltagelse.tiltakDeltagelseRoutes
+import no.nav.tiltakspenger.vedtak.routes.correlationId
 import no.nav.tiltakspenger.vedtak.routes.parameter
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
@@ -50,14 +49,14 @@ fun Route.behandlingRoutes(
         val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
 
-        val behandling = behandlingService.hentBehandling(behandlingId, saksbehandler, correlationId = CorrelationId.generate()).toDTO()
+        val behandling = behandlingService.hentBehandling(behandlingId, saksbehandler, call.correlationId()).toDTO()
 
         auditService.logMedBehandlingId(
             behandlingId = behandlingId,
             navIdent = saksbehandler.navIdent,
             action = AuditLogEvent.Action.ACCESS,
             contextMessage = "Henter hele behandlingen",
-            callId = call.callId,
+            correlationId = call.correlationId(),
         )
 
         call.respond(status = HttpStatusCode.OK, behandling)
@@ -69,14 +68,14 @@ fun Route.behandlingRoutes(
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
 
-        behandlingService.sendTilBeslutter(behandlingId, saksbehandler, correlationId = CorrelationId.generate())
+        behandlingService.sendTilBeslutter(behandlingId, saksbehandler, correlationId = call.correlationId())
 
         auditService.logMedBehandlingId(
             behandlingId = behandlingId,
             navIdent = saksbehandler.navIdent,
             action = AuditLogEvent.Action.UPDATE,
             contextMessage = "Sender behandlingen til beslutter",
-            callId = call.callId,
+            correlationId = call.correlationId(),
         )
 
         call.respond(status = HttpStatusCode.OK, message = "{}")

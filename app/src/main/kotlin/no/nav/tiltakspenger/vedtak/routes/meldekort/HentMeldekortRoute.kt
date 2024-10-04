@@ -2,19 +2,18 @@ package no.nav.tiltakspenger.vedtak.routes.meldekort
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
-import io.ktor.server.plugins.callid.callId
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.meldekort.service.HentMeldekortService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
+import no.nav.tiltakspenger.vedtak.routes.correlationId
 import no.nav.tiltakspenger.vedtak.routes.meldekort.dto.toDTO
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
@@ -32,7 +31,7 @@ fun Route.hentMeldekortRoute(
         val sakId =
             call.parameters["sakId"]
                 ?: return@get call.respond(message = "sakId mangler", status = HttpStatusCode.NotFound)
-        val meldekortperioder = hentMeldekortService.hentForSakId(SakId.fromString(sakId), saksbehandler)
+        val meldekortperioder = hentMeldekortService.hentForSakId(SakId.fromString(sakId), saksbehandler, correlationId = call.correlationId())
 
         val message = meldekortperioder.toDTO()
         logger.info { "respons på request /sak/{sakId}/meldekort - henter alle meldekort for sak: $message" }
@@ -42,7 +41,7 @@ fun Route.hentMeldekortRoute(
             navIdent = saksbehandler.navIdent,
             action = AuditLogEvent.Action.ACCESS,
             contextMessage = "Henter alle meldekortene for en sak",
-            callId = call.callId,
+            correlationId = call.correlationId(),
         )
 
         call.respond(status = HttpStatusCode.OK, message = message)
@@ -54,9 +53,9 @@ fun Route.hentMeldekortRoute(
         val meldekortId =
             call.parameters["meldekortId"]
                 ?: return@get call.respond(message = "meldekortId mangler", status = HttpStatusCode.NotFound)
-        val meldekort = hentMeldekortService.hentForMeldekortId(MeldekortId.fromString(meldekortId), saksbehandler)
+        val meldekort = hentMeldekortService.hentForMeldekortId(MeldekortId.fromString(meldekortId), saksbehandler, correlationId = call.correlationId())
         checkNotNull(meldekort) { "Meldekort med id $meldekortId eksisterer ikke i databasen" }
-        val sak = sakService.hentForSakId(meldekort.sakId, saksbehandler, correlationId = CorrelationId.generate())
+        val sak = sakService.hentForSakId(meldekort.sakId, saksbehandler, correlationId = call.correlationId())
         checkNotNull(sak) { "Sak med saksId ${meldekort.sakId} fra meldekort med iden $meldekortId finnes ikke." }
 
         auditService.logMedMeldekortId(
@@ -64,7 +63,7 @@ fun Route.hentMeldekortRoute(
             navIdent = saksbehandler.navIdent,
             action = AuditLogEvent.Action.ACCESS,
             contextMessage = "Henter meldekort",
-            callId = call.callId,
+            correlationId = call.correlationId(),
         )
         // TODO pre-mvp: Her blir det mer riktig og bruke den totale perioden det skal meldes for.
         call.respond(status = HttpStatusCode.OK, message = meldekort.toDTO(sak.vedtaksperiode!!))
