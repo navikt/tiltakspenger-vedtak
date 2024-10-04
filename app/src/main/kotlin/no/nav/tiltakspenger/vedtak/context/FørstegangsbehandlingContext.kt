@@ -4,6 +4,7 @@ import no.nav.tiltakspenger.distribusjon.ports.DokdistGateway
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonService
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.GenererVedtaksbrevGateway
 import no.nav.tiltakspenger.saksbehandling.ports.JournalførVedtaksbrevGateway
@@ -36,6 +37,7 @@ open class FørstegangsbehandlingContext(
     journalførVedtaksbrevGateway: JournalførVedtaksbrevGateway,
     genererVedtaksbrevGateway: GenererVedtaksbrevGateway,
     dokdistGateway: DokdistGateway,
+    personService: PersonService,
 ) {
     open val rammevedtakRepo: RammevedtakRepo by lazy { RammevedtakPostgresRepo(sessionFactory as PostgresSessionFactory) }
     open val behandlingRepo: BehandlingRepo by lazy { BehandlingPostgresRepo(sessionFactory as PostgresSessionFactory) }
@@ -71,6 +73,7 @@ open class FørstegangsbehandlingContext(
             journalførVedtaksbrevGateway = journalførVedtaksbrevGateway,
             rammevedtakRepo = rammevedtakRepo,
             genererVedtaksbrevGateway = genererVedtaksbrevGateway,
+            personService = personService,
         )
     }
 

@@ -5,6 +5,7 @@ val testContainersVersion = "1.20.2"
 val felleslibVersion = "0.0.229"
 val tokenSupportVersion = "3.2.0"
 val iverksettVersjon = "1.0_20240926140513_d75b2a0"
+val kotlinxCoroutinesVersion = "1.8.1"
 
 plugins {
     application
@@ -101,6 +102,7 @@ dependencies {
     testImplementation("io.kotest:kotest-extensions:$kotestVersion")
     testImplementation("org.skyscreamer:jsonassert:1.5.3")
     testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinxCoroutinesVersion")
     testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
     testImplementation("org.testcontainers:postgresql:$testContainersVersion")
     // need quarkus-junit-4-mock because of https://github.com/testcontainers/testcontainers-java/issues/970

@@ -33,6 +33,7 @@ open class ApplicationContext(
             sessionFactory = sessionFactory,
             genererMeldekortPdfGateway = dokumentContext.genererMeldekortPdfGateway,
             journalførMeldekortGateway = dokumentContext.journalførMeldekortGateway,
+            personService = personContext.personService,
         )
     }
     open val meldekortContext by lazy {
@@ -56,6 +57,7 @@ open class ApplicationContext(
             journalførVedtaksbrevGateway = dokumentContext.journalførVedtaksbrevGateway,
             genererVedtaksbrevGateway = dokumentContext.genererVedtaksbrevGateway,
             dokdistGateway = dokumentContext.dokdistGateway,
+            personService = personContext.personService,
         )
     }
 }

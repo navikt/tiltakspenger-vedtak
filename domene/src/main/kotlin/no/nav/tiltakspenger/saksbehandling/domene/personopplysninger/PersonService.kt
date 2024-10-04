@@ -41,4 +41,10 @@ class PersonService(
             ?: throw IkkeFunnetException("Fant ikke fnr på søknadId: søknadId")
 
     suspend fun hentEnkelPersonForFnr(fnr: Fnr): EnkelPerson = personClient.hentEnkelPerson(fnr)
+
+    suspend fun hentNavn(fnr: Fnr): Navn {
+        personClient.hentEnkelPerson(fnr).let {
+            return Navn(it.fornavn, it.mellomnavn, it.etternavn)
+        }
+    }
 }
