@@ -1,13 +1,21 @@
 package no.nav.tiltakspenger.saksbehandling.service.behandling
 
+import arrow.core.Either
+import arrow.core.getOrElse
+import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
+import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
+import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
-import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
+import no.nav.tiltakspenger.libs.person.AdressebeskyttelseGradering
+import no.nav.tiltakspenger.libs.person.harStrengtFortroligAdresse
+import no.nav.tiltakspenger.libs.personklient.pdl.TilgangsstyringService
 import no.nav.tiltakspenger.meldekort.domene.opprettFørsteMeldekortForEnSak
 import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attestering
@@ -16,11 +24,11 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.opprettVedtak
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
-import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.RammevedtakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.StatistikkSakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.StatistikkStønadRepo
+import no.nav.tiltakspenger.saksbehandling.service.person.PersonService
 import no.nav.tiltakspenger.saksbehandling.service.statistikk.sak.iverksettBehandlingMapper
 import no.nav.tiltakspenger.saksbehandling.service.statistikk.stønad.stønadStatistikkMapper
 import java.time.LocalDate
@@ -28,57 +36,66 @@ import java.time.LocalDate
 class BehandlingServiceImpl(
     private val førstegangsbehandlingRepo: BehandlingRepo,
     private val rammevedtakRepo: RammevedtakRepo,
-    private val personopplysningRepo: PersonopplysningerRepo,
     private val meldekortRepo: MeldekortRepo,
     private val sakRepo: SakRepo,
     private val sessionFactory: SessionFactory,
     private val statistikkSakRepo: StatistikkSakRepo,
     private val statistikkStønadRepo: StatistikkStønadRepo,
+    private val tilgangsstyringService: TilgangsstyringService,
+    private val personService: PersonService,
     private val gitHash: String,
 ) : BehandlingService {
+    val logger = KotlinLogging.logger { }
+
     override fun hentBehandling(
         behandlingId: BehandlingId,
         sessionContext: SessionContext?,
     ): Behandling = førstegangsbehandlingRepo.hent(behandlingId, sessionContext)
 
-    override fun hentBehandling(
+    override suspend fun hentBehandling(
         behandlingId: BehandlingId,
         saksbehandler: Saksbehandler,
+        correlationId: CorrelationId,
         sessionContext: SessionContext?,
     ): Behandling {
-        val behandling = hentBehandling(behandlingId, sessionContext)
-        val sakPersonopplysninger = personopplysningRepo.hent(behandling.sakId)
-        if (!sakPersonopplysninger.harTilgang(saksbehandler)) {
-            throw TilgangException("Saksbehandler har ikke tilgang til behandling")
+        val harTilgang = Either.catch{ sjekkTilgang(behandlingId, saksbehandler, correlationId)}.getOrElse {
+            logger.error { "Feil ved sjekk av tilgang til person. BehandlingId: $behandlingId. CorrelationId: $correlationId" }
+            sikkerlogg.error(it) { "Feil ved sjekk av tilgang til person. Respons: $this " }
+            throw it
         }
+        if (!harTilgang) throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til bruker")
+
+        val behandling = hentBehandling(behandlingId, sessionContext)
         return behandling
     }
 
-    override fun hentBehandlingForSøknadId(søknadId: SøknadId): Førstegangsbehandling? {
-        // TODO pre-mvp tilgang jah: Legg på sjekk på kode 6/7/skjermet.
-        return førstegangsbehandlingRepo.hentForSøknadId(søknadId)
-    }
-
-    override fun sendTilBeslutter(
+    override suspend fun sendTilBeslutter(
         behandlingId: BehandlingId,
-        utøvendeSaksbehandler: Saksbehandler,
+        saksbehandler: Saksbehandler,
+        correlationId: CorrelationId,
     ) {
-        val behandling = hentBehandling(behandlingId, utøvendeSaksbehandler).tilBeslutning(utøvendeSaksbehandler)
+        val behandling = hentBehandling(behandlingId, saksbehandler, correlationId)
+
+        behandling.tilBeslutning(saksbehandler)
         førstegangsbehandlingRepo.lagre(behandling)
     }
 
-    override fun sendTilbakeTilSaksbehandler(
+    override suspend fun sendTilbakeTilSaksbehandler(
         behandlingId: BehandlingId,
-        utøvendeBeslutter: Saksbehandler,
+        beslutter: Saksbehandler,
         begrunnelse: String,
+        correlationId: CorrelationId,
+
     ) {
+        val behandling = hentBehandling(behandlingId, beslutter, correlationId)
+
         val attestering =
             Attestering(
                 status = Attesteringsstatus.SENDT_TILBAKE,
                 begrunnelse = begrunnelse,
-                beslutter = utøvendeBeslutter.navIdent,
+                beslutter = beslutter.navIdent,
             )
-        val behandling = hentBehandling(behandlingId, utøvendeBeslutter).sendTilbake(utøvendeBeslutter, attestering)
+        hentBehandling(behandlingId, beslutter, correlationId).sendTilbake(beslutter, attestering)
         sessionFactory.withTransactionContext { tx ->
             førstegangsbehandlingRepo.lagre(behandling, tx)
         }
@@ -86,28 +103,38 @@ class BehandlingServiceImpl(
 
     override suspend fun iverksett(
         behandlingId: BehandlingId,
-        utøvendeBeslutter: Saksbehandler,
+        beslutter: Saksbehandler,
+        correlationId: CorrelationId,
     ) {
-        val behandling = hentBehandling(behandlingId, utøvendeBeslutter) as Førstegangsbehandling
+        val behandling = hentBehandling(behandlingId, beslutter, correlationId) as Førstegangsbehandling
         val sak =
             sakRepo.hentDetaljerForSakId(behandling.sakId)
-                ?: throw IllegalStateException("iverksett finner ikke sak ${behandling.sakId}")
+                ?: throw IllegalStateException("Iverksett finner ikke sak ${behandling.sakId}")
         val attestering =
             Attestering(
                 status = Attesteringsstatus.GODKJENT,
                 begrunnelse = "",
-                beslutter = utøvendeBeslutter.navIdent,
+                beslutter = beslutter.navIdent,
             )
-        val iverksattBehandling = behandling.iverksett(utøvendeBeslutter, attestering)
-
-        val personopplysninger = personopplysningRepo.hent(sakId = sak.id)
+        val iverksattBehandling = behandling.iverksett(beslutter, attestering)
 
         val vedtak = iverksattBehandling.opprettVedtak()
+
+        val fnr = personService.hentFnrForBehandlingId(behandlingId)
+        val adressebeskyttelseGradering: List<AdressebeskyttelseGradering>? = tilgangsstyringService.adressebeskyttelseEnkel(fnr)
+            .getOrElse {
+                throw IllegalArgumentException(
+                    "Kunne ikke hente adressebeskyttelsegradering for person. BehandlingId: $behandlingId",
+                )
+            }
+
+        require(adressebeskyttelseGradering != null) { "Fant ikke adressebeskyttelse for person. BehandlingId: $behandlingId" }
+
         val sakStatistikk = iverksettBehandlingMapper(
             sak = sak,
             behandling = iverksattBehandling,
             vedtak = vedtak,
-            gjelderKode6 = personopplysninger.erSøkerStrengtFortrolig(),
+            gjelderKode6 = adressebeskyttelseGradering.harStrengtFortroligAdresse(),
             versjon = gitHash,
         )
         val stønadStatistikk = stønadStatistikkMapper(sak, vedtak)
@@ -122,22 +149,15 @@ class BehandlingServiceImpl(
         // journalføring og dokumentdistribusjon skjer i egen jobb
     }
 
-    override fun taBehandling(
+    override suspend fun taBehandling(
         behandlingId: BehandlingId,
-        utøvendeSaksbehandler: Saksbehandler,
+        saksbehandler: Saksbehandler,
+        correlationId: CorrelationId,
     ): Behandling {
-        val behandling = hentBehandling(behandlingId, utøvendeSaksbehandler)
-        return behandling.taBehandling(utøvendeSaksbehandler).also {
+        val behandling = hentBehandling(behandlingId, saksbehandler, correlationId)
+        return behandling.taBehandling(saksbehandler).also {
             førstegangsbehandlingRepo.lagre(it)
         }
-    }
-
-    override fun frataBehandling(
-        behandlingId: BehandlingId,
-        utøvendeSaksbehandler: Saksbehandler,
-    ) {
-        val behandling = hentBehandling(behandlingId, utøvendeSaksbehandler)
-        førstegangsbehandlingRepo.lagre(behandling.taSaksbehandlerAvBehandlingen(utøvendeSaksbehandler))
     }
 
     // er tenkt brukt fra datadeling og henter alle behandlinger som ikke er iverksatt for en ident
@@ -157,4 +177,14 @@ class BehandlingServiceImpl(
                     ),
                 )
             }
+
+    private suspend fun sjekkTilgang(behandlingId: BehandlingId, saksbehandler: Saksbehandler, correlationId: CorrelationId): Boolean {
+        val fnr = personService.hentFnrForBehandlingId(behandlingId)
+        return tilgangsstyringService
+            .harTilgangTilPerson(
+                fnr = fnr,
+                roller = saksbehandler.roller,
+                correlationId = correlationId,
+            ).getOrElse { throw IkkeFunnetException("Kunne ikke sjekke tilgang til person. BehandlingId: $behandlingId") }
+    }
 }

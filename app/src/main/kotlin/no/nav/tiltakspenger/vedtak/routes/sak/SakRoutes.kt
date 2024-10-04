@@ -9,6 +9,7 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
@@ -39,7 +40,7 @@ fun Route.sakRoutes(
             contextMessage = "Henter hele saken til brukeren",
             callId = call.callId,
         )
-        val sakDTO = sakService.hentForSaksnummer(saksnummer, saksbehandler).toDTO()
+        val sakDTO = sakService.hentForSaksnummer(saksnummer, saksbehandler, correlationId = CorrelationId.generate()).toDTO()
         call.respond(message = sakDTO, status = HttpStatusCode.OK)
     }
 
@@ -56,7 +57,7 @@ fun Route.sakRoutes(
             callId = call.callId,
         )
 
-        sakService.hentForFnr(fnr, saksbehandler).fold(
+        sakService.hentForFnr(fnr, saksbehandler, correlationId = CorrelationId.generate()).fold(
             ifLeft = {
                 call.respond(
                     message = Standardfeil.fantIkkeFnr(),

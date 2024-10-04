@@ -6,9 +6,11 @@ import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.nonEmptyListOf
 import arrow.core.right
-import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.exceptions.TilgangException
+import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
+import no.nav.tiltakspenger.libs.common.Rolle
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
@@ -17,20 +19,19 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
-import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
-
-private val LOG = KotlinLogging.logger {}
+import java.time.LocalDate
 
 data class Sak(
-    val sakDetaljer: SakDetaljer,
+    val id: SakId,
+    val fnr: Fnr,
+    val saksnummer: Saksnummer,
     val behandlinger: NonEmptyList<Behandling>,
-    val personopplysninger: SakPersonopplysninger,
     // TODO pre-mvp: Endre til val rammevedtak: Rammevedtak? siden vi kun har et rammevedtak per sak.
     val vedtak: List<Rammevedtak>,
     val meldekort: Meldeperioder,
-) : SakDetaljer by sakDetaljer {
+) {
     init {
         if (behandlinger.isNotEmpty()) {
             require(behandlinger.first() is Førstegangsbehandling) { "Første behandlingen må være en førstegangsbehandling" }
@@ -44,11 +45,6 @@ data class Sak(
      */
     val førstegangsbehandling: Førstegangsbehandling =
         behandlinger.filterIsInstance<Førstegangsbehandling>().single()
-
-    /**
-     * Sjekker kode 6, 7 og skjermet
-     */
-    fun harTilgang(saksbehandler: Saksbehandler): Boolean = personopplysninger.harTilgang(saksbehandler)
 
     fun hentMeldekort(meldekortId: MeldekortId): Meldekort? {
         return meldekort.hentMeldekort(meldekortId)
@@ -66,11 +62,14 @@ data class Sak(
         fun lagSak(
             sakId: SakId = SakId.random(),
             saksnummer: Saksnummer,
-            sakPersonopplysninger: SakPersonopplysninger,
             søknad: Søknad,
+            fødselsdato: LocalDate,
             saksbehandler: Saksbehandler,
             registrerteTiltak: List<Tiltak>,
         ): Either<KanIkkeOppretteBehandling, Sak> {
+            if (!saksbehandler.roller.harRolle(Rolle.SAKSBEHANDLER)) {
+                throw TilgangException("Saksbehandler ${saksbehandler.navIdent} må ha rollen SAKSBEHANDLER/BESLUTTER. søknadId: ${søknad.id} roller: ${saksbehandler.roller}")
+            }
             val fnr = søknad.fnr
             val førstegangsbehandling =
                 Førstegangsbehandling
@@ -79,19 +78,15 @@ data class Sak(
                         saksnummer = saksnummer,
                         fnr = fnr,
                         søknad = søknad,
-                        fødselsdato = sakPersonopplysninger.søker().fødselsdato,
+                        fødselsdato = fødselsdato,
                         saksbehandler = saksbehandler,
                         registrerteTiltak = registrerteTiltak,
                     ).getOrElse { return it.left() }
             return Sak(
-                sakDetaljer =
-                TynnSak(
-                    id = sakId,
-                    fnr = fnr,
-                    saksnummer = saksnummer,
-                ),
+                id = sakId,
+                fnr = fnr,
+                saksnummer = saksnummer,
                 behandlinger = nonEmptyListOf(førstegangsbehandling),
-                personopplysninger = sakPersonopplysninger,
                 vedtak = emptyList(),
                 meldekort = Meldeperioder.empty(førstegangsbehandling.tiltakstype),
             ).right()

@@ -1,7 +1,7 @@
 val jacksonVersion = "2.18.0"
 val kotestVersion = "5.9.1"
 val mockkVersion = "1.13.12"
-val felleslibVersion = "0.0.225"
+val felleslibVersion = "0.0.229"
 val kotlinxCoroutinesVersion = "1.9.0"
 
 dependencies {
@@ -20,6 +20,7 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:persistering-domene:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:tiltak-dtos:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:person-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:personklient-domene:$felleslibVersion")
 
     implementation("io.arrow-kt:arrow-core:1.2.4")
@@ -38,4 +39,5 @@ dependencies {
     testApi("com.github.navikt.tiltakspenger-libs:test-common:$felleslibVersion")
     testImplementation("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")
     testImplementation("com.github.navikt.tiltakspenger-libs:persistering-domene:$felleslibVersion")
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
 }

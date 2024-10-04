@@ -25,7 +25,7 @@ internal class SakRepoTest {
             sakRepo.hentForFnr(sak1.fnr) shouldBe Saker(sak1.fnr, listOf(sak1))
             sakRepo.hentForSaksnummer(saksnummer = sak1.saksnummer)!! shouldBe sak1
             sakRepo.hentForSakId(sak1.id) shouldBe sak1
-            sakRepo.hentDetaljerForSakId(sak1.id) shouldBe sak1.sakDetaljer
+            sakRepo.hentDetaljerForSakId(sak1.id) shouldBe sak1
         }
     }
 

@@ -2,11 +2,10 @@ package no.nav.tiltakspenger.saksbehandling.service.behandling
 
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.common.BehandlingId
+import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
-import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import java.time.LocalDate
 
 interface BehandlingService {
@@ -24,39 +23,37 @@ interface BehandlingService {
      * Her gjør vi en sjekk på om saksbehandler har skjermet/kode6/kode7 tilgang dersom det er relevant.
      * Vi gjør ikke tilgangskontroll utover dette. Det må gjøres i kallene som bruker denne metoden.
      */
-    fun hentBehandling(
+    suspend fun hentBehandling(
         behandlingId: BehandlingId,
         saksbehandler: Saksbehandler,
+        correlationId: CorrelationId,
         sessionContext: SessionContext? = null,
     ): Behandling
 
-    fun hentBehandlingForSøknadId(søknadId: SøknadId): Førstegangsbehandling?
-
-    fun sendTilBeslutter(
+    suspend fun sendTilBeslutter(
         behandlingId: BehandlingId,
-        utøvendeSaksbehandler: Saksbehandler,
+        saksbehandler: Saksbehandler,
+        correlationId: CorrelationId,
     )
 
-    fun sendTilbakeTilSaksbehandler(
+    suspend fun sendTilbakeTilSaksbehandler(
         behandlingId: BehandlingId,
-        utøvendeBeslutter: Saksbehandler,
+        beslutter: Saksbehandler,
         begrunnelse: String,
+        correlationId: CorrelationId,
     )
 
     suspend fun iverksett(
         behandlingId: BehandlingId,
-        utøvendeBeslutter: Saksbehandler,
+        beslutter: Saksbehandler,
+        correlationId: CorrelationId,
     )
 
-    fun taBehandling(
+    suspend fun taBehandling(
         behandlingId: BehandlingId,
-        utøvendeSaksbehandler: Saksbehandler,
+        saksbehandler: Saksbehandler,
+        correlationId: CorrelationId,
     ): Behandling
-
-    fun frataBehandling(
-        behandlingId: BehandlingId,
-        utøvendeSaksbehandler: Saksbehandler,
-    )
 
     fun hentBehandlingerUnderBehandlingForIdent(
         ident: Fnr,

@@ -9,6 +9,7 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
+import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
@@ -31,7 +32,7 @@ fun Route.behandlingBeslutterRoutes(
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
         val begrunnelse = call.receive<BegrunnelseDTO>().begrunnelse
 
-        behandlingService.sendTilbakeTilSaksbehandler(behandlingId, saksbehandler, begrunnelse)
+        behandlingService.sendTilbakeTilSaksbehandler(behandlingId, saksbehandler, begrunnelse, correlationId = CorrelationId.generate())
 
         auditService.logMedBehandlingId(
             behandlingId = behandlingId,
@@ -50,7 +51,7 @@ fun Route.behandlingBeslutterRoutes(
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
 
-        behandlingService.iverksett(behandlingId, saksbehandler)
+        behandlingService.iverksett(behandlingId, saksbehandler, correlationId = CorrelationId.generate())
 
         auditService.logMedBehandlingId(
             behandlingId = behandlingId,

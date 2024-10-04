@@ -4,5 +4,5 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandl
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.introduksjonsprogrammet.LeggTilIntroSaksopplysningCommand
 
 interface IntroVilkårService {
-    fun leggTilSaksopplysning(command: LeggTilIntroSaksopplysningCommand): Førstegangsbehandling
+    suspend fun leggTilSaksopplysning(command: LeggTilIntroSaksopplysningCommand): Førstegangsbehandling
 }

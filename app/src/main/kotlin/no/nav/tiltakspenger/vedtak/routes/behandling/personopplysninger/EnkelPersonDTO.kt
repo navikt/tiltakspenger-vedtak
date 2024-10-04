@@ -18,7 +18,7 @@ internal data class PdlResponse(
     val hentPerson: PdlPerson,
 )
 
-fun EnkelPerson.toDTO(): EnkelPersonDTO = EnkelPersonDTO(
+fun EnkelPerson.toDTO(skjerming: Boolean?): EnkelPersonDTO = EnkelPersonDTO(
     fnr = fnr.verdi,
     fornavn = fornavn,
     mellomnavn = mellomnavn,
@@ -26,5 +26,5 @@ fun EnkelPerson.toDTO(): EnkelPersonDTO = EnkelPersonDTO(
     fortrolig = fortrolig,
     strengtFortrolig = strengtFortrolig,
     strengtFortroligUtland = strengtFortroligUtland,
-    skjermet = null,
+    skjermet = skjerming,
 )

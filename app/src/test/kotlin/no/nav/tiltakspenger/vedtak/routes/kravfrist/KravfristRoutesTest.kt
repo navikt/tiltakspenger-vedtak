@@ -13,6 +13,7 @@ import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.common.TestApplicationContext
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.januar
@@ -43,7 +44,7 @@ internal class KravfristRoutesTest {
         )
 
     @Test
-    fun `test at endepunkt for henting av kravfrist fungerer og blir OPPFYLT`() {
+    fun `test at endepunkt for henting av kravfrist fungerer og blir OPPFYLT`() = runTest {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
         with(TestApplicationContext()) {
@@ -80,7 +81,7 @@ internal class KravfristRoutesTest {
     }
 
     @Test
-    fun `test at kravdato gir IKKE_OPPFYLT om det er søkt for lenge etter fristen`() {
+    fun `test at kravdato gir IKKE_OPPFYLT om det er søkt for lenge etter fristen`() = runTest {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
         with(TestApplicationContext()) {

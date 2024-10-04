@@ -11,10 +11,11 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
-import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonService
+import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårService
+import no.nav.tiltakspenger.saksbehandling.service.person.PersonService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
@@ -49,7 +50,7 @@ fun Route.behandlingRoutes(
         val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
 
-        val behandling = behandlingService.hentBehandling(behandlingId, saksbehandler).toDTO()
+        val behandling = behandlingService.hentBehandling(behandlingId, saksbehandler, correlationId = CorrelationId.generate()).toDTO()
 
         auditService.logMedBehandlingId(
             behandlingId = behandlingId,
@@ -68,7 +69,7 @@ fun Route.behandlingRoutes(
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
 
-        behandlingService.sendTilBeslutter(behandlingId, saksbehandler)
+        behandlingService.sendTilBeslutter(behandlingId, saksbehandler, correlationId = CorrelationId.generate())
 
         auditService.logMedBehandlingId(
             behandlingId = behandlingId,
@@ -79,25 +80,6 @@ fun Route.behandlingRoutes(
         )
 
         call.respond(status = HttpStatusCode.OK, message = "{}")
-    }
-
-    post("$BEHANDLING_PATH/avbrytbehandling/{behandlingId}") {
-        sikkerlogg.debug { "Mottatt request om å fjerne saksbehandler på behandlingen" }
-
-        val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
-        val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
-
-        behandlingService.frataBehandling(behandlingId, saksbehandler)
-
-        auditService.logMedBehandlingId(
-            behandlingId = behandlingId,
-            navIdent = saksbehandler.navIdent,
-            action = AuditLogEvent.Action.UPDATE,
-            contextMessage = "Avbryter behandling",
-            callId = call.callId,
-        )
-
-        call.respond(message = "{}", status = HttpStatusCode.OK)
     }
 
     hentPersonRoute(innloggetSaksbehandlerProvider, sakService, personService, auditService)

@@ -33,7 +33,7 @@ fun Route.hentPersonRoute(
 
             require(fnr != null) { "Fant ikke fødselsnummer på sak med sakId: $sakId" }
 
-            val personopplysninger = personService.hentEnkelPersonForFnr(fnr, saksbehandler, sakId).toDTO(skjerming = false)
+            val personopplysninger = personService.hentEnkelPersonForFnr(fnr).toDTO(skjerming = false)
 
             auditService.logMedSakId(
                 sakId = sakId,

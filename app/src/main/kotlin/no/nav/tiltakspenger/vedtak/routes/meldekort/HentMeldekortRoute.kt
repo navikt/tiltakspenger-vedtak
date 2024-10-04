@@ -8,6 +8,7 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.meldekort.service.HentMeldekortService
@@ -55,7 +56,7 @@ fun Route.hentMeldekortRoute(
                 ?: return@get call.respond(message = "meldekortId mangler", status = HttpStatusCode.NotFound)
         val meldekort = hentMeldekortService.hentForMeldekortId(MeldekortId.fromString(meldekortId), saksbehandler)
         checkNotNull(meldekort) { "Meldekort med id $meldekortId eksisterer ikke i databasen" }
-        val sak = sakService.hentForSakId(meldekort.sakId, saksbehandler)
+        val sak = sakService.hentForSakId(meldekort.sakId, saksbehandler, correlationId = CorrelationId.generate())
         checkNotNull(sak) { "Sak med saksId ${meldekort.sakId} fra meldekort med iden $meldekortId finnes ikke." }
 
         auditService.logMedMeldekortId(

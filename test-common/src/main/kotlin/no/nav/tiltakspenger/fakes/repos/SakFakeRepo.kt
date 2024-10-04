@@ -8,7 +8,6 @@ import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
-import no.nav.tiltakspenger.saksbehandling.domene.sak.SakDetaljer
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saker
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.sak.TynnSak
@@ -16,7 +15,6 @@ import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import java.time.LocalDate
 
 class SakFakeRepo(
-    private val personopplysningerRepo: PersonopplysningerFakeRepo,
     private val behandlingRepo: BehandlingFakeRepo,
     private val rammevedtakRepo: RammevedtakFakeRepo,
     private val meldekortRepo: MeldekortFakeRepo,
@@ -32,13 +30,12 @@ class SakFakeRepo(
         transactionContext: TransactionContext?,
     ) {
         data.get()[sak.id] = sak
-        personopplysningerRepo.lagre(sak.id, sak.personopplysninger)
         behandlingRepo.lagre(sak.førstegangsbehandling)
     }
 
     override fun hentForSakId(sakId: SakId): Sak? = data.get()[sakId]
 
-    override fun hentDetaljerForSakId(sakId: SakId): SakDetaljer? =
+    override fun hentDetaljerForSakId(sakId: SakId): TynnSak? =
         data.get()[sakId]?.let {
             TynnSak(
                 id = it.id,

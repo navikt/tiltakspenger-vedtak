@@ -2,13 +2,14 @@ package no.nav.tiltakspenger.saksbehandling.service.statistikk.sak
 
 import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
-import no.nav.tiltakspenger.saksbehandling.domene.sak.SakDetaljer
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
+import no.nav.tiltakspenger.saksbehandling.domene.sak.TynnSak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtakstype
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.UtfallForPeriode
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 
-fun opprettBehandlingMapper(sak: SakDetaljer, behandling: Behandling, gjelderKode6: Boolean, versjon: String) =
+fun opprettBehandlingMapper(sak: Sak, behandling: Behandling, gjelderKode6: Boolean, versjon: String) =
     StatistikkSakDTO(
         sakId = sak.id.toString(),
         saksnummer = sak.saksnummer.toString(),
@@ -46,7 +47,7 @@ fun opprettBehandlingMapper(sak: SakDetaljer, behandling: Behandling, gjelderKod
         hendelse = "opprettet_behandling",
     )
 
-fun iverksettBehandlingMapper(sak: SakDetaljer, behandling: Behandling, vedtak: Rammevedtak, gjelderKode6: Boolean, versjon: String): StatistikkSakDTO {
+fun iverksettBehandlingMapper(sak: TynnSak, behandling: Behandling, vedtak: Rammevedtak, gjelderKode6: Boolean, versjon: String): StatistikkSakDTO {
     return StatistikkSakDTO(
         sakId = sak.id.toString(),
         saksnummer = sak.saksnummer.toString(),

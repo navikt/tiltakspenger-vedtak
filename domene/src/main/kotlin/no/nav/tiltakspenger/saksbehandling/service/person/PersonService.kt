@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.saksbehandling.service.person
 
-import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
@@ -8,13 +7,16 @@ import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.common.VedtakId
+import no.nav.tiltakspenger.libs.personklient.pdl.TilgangsstyringService
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.EnkelPerson
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
 import no.nav.tiltakspenger.saksbehandling.ports.PersonRepo
 
 class PersonService(
     private val personRepo: PersonRepo,
+    private val tilgangsstyringService: TilgangsstyringService,
     private val personClient: PersonGateway,
 ) {
 
@@ -42,7 +44,10 @@ class PersonService(
         personRepo.hentFnrForSøknadId(søknadId)
             ?: throw IkkeFunnetException("Fant ikke fnr på søknadId: søknadId")
 
-    suspend fun hentEnkelPersonForFnr(fnr: Fnr, saksbehandler: Saksbehandler, sakId: SakId): EnkelPerson {
+    suspend fun hentPersonopplysninger(fnr: Fnr): PersonopplysningerSøker {
+        return personClient.hentPerson(fnr)
+    }
+    suspend fun hentEnkelPersonForFnr(fnr: Fnr): EnkelPerson {
         return personClient.hentEnkelPerson(fnr)
     }
 }

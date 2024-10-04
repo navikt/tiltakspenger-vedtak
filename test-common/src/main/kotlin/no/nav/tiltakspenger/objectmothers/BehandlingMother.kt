@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.random
@@ -21,7 +22,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attesteringsstatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
-import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
@@ -33,6 +33,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltakskilde.Komet
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndring
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.leggTilLivsoppholdSaksopplysning
+import no.nav.tiltakspenger.servicemothers.withBehandlingService
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -206,7 +207,6 @@ fun TestApplicationContext.nySøknad(
     fnr: Fnr = Fnr.random(),
     fornavn: String = "Fornavn",
     etternavn: String = "Etternavn",
-    erSkjermet: Boolean = false,
     personopplysningerFraSøknad: Søknad.Personopplysninger =
         personSøknad(
             fnr = fnr,
@@ -216,7 +216,6 @@ fun TestApplicationContext.nySøknad(
     personopplysningerForBrukerFraPdl: PersonopplysningerSøker =
         ObjectMother.personopplysningKjedeligFyr(
             fnr = fnr,
-            skjermet = erSkjermet,
         ),
     deltarPåIntroduksjonsprogram: Boolean = false,
     deltarPåKvp: Boolean = false,
@@ -238,23 +237,21 @@ fun TestApplicationContext.nySøknad(
         ),
 ): Søknad {
     this.søknadContext.søknadService.nySøknad(søknad)
-    this.leggTilPerson(fnr, erSkjermet, personopplysningerForBrukerFraPdl, tiltak)
+    this.leggTilPerson(fnr, personopplysningerForBrukerFraPdl, tiltak)
     return søknad
 }
 
 /**
  * @param søknad Dersom du sender inn denne, bør du og sende inn tiltak+fnr for at de skal henge sammen.
  */
-fun TestApplicationContext.førstegangsbehandlingUavklart(
+suspend fun TestApplicationContext.førstegangsbehandlingUavklart(
     periode: Periode = ObjectMother.vurderingsperiode(),
     fnr: Fnr = Fnr.random(),
     saksbehandler: Saksbehandler = saksbehandler(),
-    erSkjermet: Boolean = false,
     fødselsdato: LocalDate = 1.januar(2000),
     personopplysningerForBrukerFraPdl: PersonopplysningerSøker =
         ObjectMother.personopplysningKjedeligFyr(
             fnr = fnr,
-            skjermet = erSkjermet,
             fødselsdato = fødselsdato,
         ),
     deltarPåIntroduksjonsprogram: Boolean = false,
@@ -285,29 +282,26 @@ fun TestApplicationContext.førstegangsbehandlingUavklart(
         ),
 ): Sak {
     this.nySøknad(
-        erSkjermet = erSkjermet,
         fnr = fnr,
         søknad = søknad,
         personopplysningerForBrukerFraPdl = personopplysningerForBrukerFraPdl,
         tiltak = tiltak,
     )
     return this.sakContext.sakService
-        .startFørstegangsbehandling(søknad.id, saksbehandler)
+        .startFørstegangsbehandling(søknad.id, saksbehandler, correlationId = CorrelationId.generate())
         .getOrNull()!!
 }
 
-fun TestApplicationContext.førstegangsbehandlingVilkårsvurdert(
+suspend fun TestApplicationContext.førstegangsbehandlingVilkårsvurdert(
     periode: Periode = ObjectMother.vurderingsperiode(),
     fnr: Fnr = Fnr.random(),
     saksbehandler: Saksbehandler = saksbehandler(),
-    erSkjermet: Boolean = false,
 ): Sak {
     val uavklart =
         førstegangsbehandlingUavklart(
             periode = periode,
             fnr = fnr,
             saksbehandler = saksbehandler,
-            erSkjermet = erSkjermet,
         )
     this.førstegangsbehandlingContext.livsoppholdVilkårService.leggTilSaksopplysning(
         LeggTilLivsoppholdSaksopplysningCommand(
@@ -321,34 +315,33 @@ fun TestApplicationContext.førstegangsbehandlingVilkårsvurdert(
             årsakTilEndring = ÅrsakTilEndring.ENDRING_ETTER_SØKNADSTIDSPUNKT,
         ),
     )
-    return this.sakContext.sakService.hentForSakId(uavklart.id, saksbehandler)!!
+    return this.sakContext.sakService.hentForSakId(uavklart.id, saksbehandler, correlationId = CorrelationId.generate())!!
 }
 
-fun TestApplicationContext.førstegangsbehandlingTilBeslutter(
+suspend fun TestApplicationContext.førstegangsbehandlingTilBeslutter(
     periode: Periode = ObjectMother.vurderingsperiode(),
     fnr: Fnr = Fnr.random(),
     saksbehandler: Saksbehandler = saksbehandler(),
-    erSkjermet: Boolean = false,
 ): Sak {
     val vilkårsvurdert =
         førstegangsbehandlingVilkårsvurdert(
             periode = periode,
             fnr = fnr,
             saksbehandler = saksbehandler,
-            erSkjermet = erSkjermet,
         )
+
     this.førstegangsbehandlingContext.behandlingService.sendTilBeslutter(
-        vilkårsvurdert.førstegangsbehandling.id,
-        saksbehandler,
-    )
-    return this.sakContext.sakService.hentForSakId(vilkårsvurdert.id, saksbehandler)!!
+            vilkårsvurdert.førstegangsbehandling.id,
+            saksbehandler,
+            correlationId = CorrelationId.generate()
+        )
+    return this.sakContext.sakService.hentForSakId(vilkårsvurdert.id, saksbehandler, correlationId = CorrelationId.generate())!!
 }
 
-fun TestApplicationContext.førstegangsbehandlingUnderBeslutning(
+suspend fun TestApplicationContext.førstegangsbehandlingUnderBeslutning(
     periode: Periode = ObjectMother.vurderingsperiode(),
     fnr: Fnr = Fnr.random(),
     saksbehandler: Saksbehandler = saksbehandler(),
-    erSkjermet: Boolean = false,
     beslutter: Saksbehandler = beslutter(),
 ): Sak {
     val vilkårsvurdert =
@@ -356,11 +349,11 @@ fun TestApplicationContext.førstegangsbehandlingUnderBeslutning(
             periode = periode,
             fnr = fnr,
             saksbehandler = saksbehandler,
-            erSkjermet = erSkjermet,
         )
     this.førstegangsbehandlingContext.behandlingService.taBehandling(
         vilkårsvurdert.førstegangsbehandling.id,
         beslutter,
+        correlationId = CorrelationId.generate()
     )
-    return this.sakContext.sakService.hentForSakId(vilkårsvurdert.id, saksbehandler)!!
+    return this.sakContext.sakService.hentForSakId(vilkårsvurdert.id, saksbehandler, correlationId = CorrelationId.generate())!!
 }

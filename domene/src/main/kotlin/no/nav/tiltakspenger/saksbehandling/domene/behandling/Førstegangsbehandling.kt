@@ -148,8 +148,8 @@ data class Førstegangsbehandling(
     override fun taBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling =
         when (this.status) {
             KLAR_TIL_BEHANDLING, UNDER_BEHANDLING -> {
-                check(saksbehandler.isSaksbehandler()) {
-                    "Saksbehandler må ha saksbehandlerrolle. Utøvende saksbehandler: $saksbehandler"
+                check(saksbehandler.isSaksbehandler() || saksbehandler.isBeslutter()) {
+                    "Saksbehandler må ha rolle saksbehandler eller beslutter. Utøvende saksbehandler: $saksbehandler"
                 }
                 this.copy(saksbehandler = saksbehandler.navIdent, status = UNDER_BEHANDLING).let {
                     // Dersom utøvende saksbehandler er beslutter, fjern beslutter fra behandlingen.

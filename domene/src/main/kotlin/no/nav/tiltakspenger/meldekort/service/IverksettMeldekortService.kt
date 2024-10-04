@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.meldekort.service
 
 import arrow.core.Either
+import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 import no.nav.tiltakspenger.meldekort.domene.IverksettMeldekortKommando
 import no.nav.tiltakspenger.meldekort.domene.KanIkkeIverksetteMeldekort
@@ -13,12 +14,12 @@ class IverksettMeldekortService(
     val meldekortRepo: MeldekortRepo,
     val sessionFactory: SessionFactory,
 ) {
-    fun iverksettMeldekort(
+    suspend fun iverksettMeldekort(
         kommando: IverksettMeldekortKommando,
     ): Either<KanIkkeIverksetteMeldekort, Meldekort.UtfyltMeldekort> {
         val meldekortId = kommando.meldekortId
         val sakId = kommando.sakId
-        val sak = sakService.hentForSakId(sakId, kommando.beslutter)
+        val sak = sakService.hentForSakId(sakId, kommando.beslutter, correlationId = CorrelationId.generate())
             ?: throw IllegalArgumentException("Fant ikke sak med id $sakId")
         val meldekort: Meldekort = sak.hentMeldekort(meldekortId)
             ?: throw IllegalArgumentException("Fant ikke meldekort med id $meldekortId i sak $sakId")
