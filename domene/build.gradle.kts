@@ -1,7 +1,7 @@
 val jacksonVersion = "2.18.0"
 val kotestVersion = "5.9.1"
 val mockkVersion = "1.13.12"
-val felleslibVersion = "0.0.229"
+val felleslibVersion = "0.0.230"
 val kotlinxCoroutinesVersion = "1.9.0"
 
 dependencies {
