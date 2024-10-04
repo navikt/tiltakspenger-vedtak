@@ -23,8 +23,6 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:soknad-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:tiltak-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:person-dtos:$felleslibVersion")
-    implementation("com.github.navikt.tiltakspenger-libs:skjerming-dtos:$felleslibVersion")
-    implementation("com.github.navikt.tiltakspenger-libs:dokument-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:periodisering:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:personklient-domene:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:personklient-infrastruktur:$felleslibVersion")
