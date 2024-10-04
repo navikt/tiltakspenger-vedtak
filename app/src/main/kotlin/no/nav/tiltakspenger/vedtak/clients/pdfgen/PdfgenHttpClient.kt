@@ -15,10 +15,12 @@ import no.nav.tiltakspenger.meldekort.ports.GenererMeldekortPdfGateway
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import no.nav.tiltakspenger.saksbehandling.ports.GenererVedtaksbrevGateway
 import no.nav.tiltakspenger.saksbehandling.ports.KunneIkkeGenererePdf
+import org.apache.pdfbox.pdfwriter.compress.CompressParameters
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.PDPageContentStream
 import org.apache.pdfbox.pdmodel.font.PDType1Font
+import org.apache.pdfbox.pdmodel.font.Standard14Fonts.FontName
 import java.io.ByteArrayOutputStream
 import java.net.URI
 import java.net.http.HttpRequest
@@ -102,7 +104,7 @@ private fun genererPdfFraJson(jsonNode: JsonNode): PdfOgJson {
             val side = PDPage()
             document.addPage(side)
             PDPageContentStream(document, side).use { contentStream ->
-                contentStream.setFont(PDType1Font.HELVETICA, 12f)
+                contentStream.setFont(PDType1Font(FontName.HELVETICA), 12f)
                 contentStream.beginText()
                 contentStream.newLineAtOffset(margin, 700f)
                 linjer.forEach { linje ->
@@ -114,7 +116,7 @@ private fun genererPdfFraJson(jsonNode: JsonNode): PdfOgJson {
         }
 
         val byteArray: ByteArray = ByteArrayOutputStream().use { byteArrayOutputStream ->
-            document.save(byteArrayOutputStream)
+            document.save(byteArrayOutputStream, CompressParameters.NO_COMPRESSION)
             byteArrayOutputStream.toByteArray()
         }
         return PdfOgJson(PdfA(byteArray), jsonNode.toString())
