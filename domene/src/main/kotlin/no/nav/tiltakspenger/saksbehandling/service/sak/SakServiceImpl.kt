@@ -47,7 +47,7 @@ class SakServiceImpl(
     override suspend fun startFørstegangsbehandling(
         søknadId: SøknadId,
         saksbehandler: Saksbehandler,
-        correlationId: CorrelationId
+        correlationId: CorrelationId,
     ): Either<KanIkkeStarteFørstegangsbehandling, Sak> {
         val fnr = personService.hentFnrForSøknadId(søknadId)
 
@@ -105,7 +105,7 @@ class SakServiceImpl(
     override suspend fun hentForFørstegangsbehandlingId(
         behandlingId: BehandlingId,
         saksbehandler: Saksbehandler,
-        correlationId: CorrelationId
+        correlationId: CorrelationId,
     ): Sak {
         val sak = sakRepo.hentForFørstegangsbehandlingId(behandlingId) ?: throw IkkeFunnetException("Sak ikke funnet")
 
@@ -120,7 +120,7 @@ class SakServiceImpl(
     override suspend fun hentForSaksnummer(
         saksnummer: Saksnummer,
         saksbehandler: Saksbehandler,
-        correlationId: CorrelationId
+        correlationId: CorrelationId,
     ): Sak {
         val sak =
             sakRepo.hentForSaksnummer(saksnummer)
@@ -138,7 +138,7 @@ class SakServiceImpl(
     override suspend fun hentForFnr(
         fnr: Fnr,
         saksbehandler: Saksbehandler,
-        correlationId: CorrelationId
+        correlationId: CorrelationId,
     ): Either<FantIkkeFnr, Sak> {
         val saker = sakRepo.hentForFnr(fnr)
         if (saker.saker.isEmpty()) FantIkkeFnr.left()
@@ -158,7 +158,7 @@ class SakServiceImpl(
     override suspend fun hentForSakId(
         sakId: SakId,
         saksbehandler: Saksbehandler,
-        correlationId: CorrelationId
+        correlationId: CorrelationId,
     ): Sak? {
         val harTilgang = sjekkTilgangTilSak(sakId, saksbehandler, correlationId)
         if (!harTilgang) {

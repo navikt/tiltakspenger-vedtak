@@ -10,12 +10,12 @@ import no.nav.tiltakspenger.libs.person.AdressebeskyttelseGradering
 import no.nav.tiltakspenger.libs.personklient.pdl.KunneIkkeGjøreTilgangskontroll
 import no.nav.tiltakspenger.libs.personklient.pdl.TilgangsstyringService
 
-class TilgangsstyringFakeGateway : TilgangsstyringService{
+class TilgangsstyringFakeGateway : TilgangsstyringService {
     private val data = Atomic(mutableMapOf<Fnr, List<AdressebeskyttelseGradering>>())
 
     fun lagre(
         fnr: Fnr,
-        adressebeskyttelseGradering: List<AdressebeskyttelseGradering>
+        adressebeskyttelseGradering: List<AdressebeskyttelseGradering>,
     ) {
         data.get()[fnr] = adressebeskyttelseGradering
     }
@@ -28,11 +28,12 @@ class TilgangsstyringFakeGateway : TilgangsstyringService{
         roller: Roller,
         correlationId: CorrelationId,
     ): Either<KunneIkkeGjøreTilgangskontroll, Boolean> {
-        return data.get()[fnr]!!.all { when (it) {
+        return data.get()[fnr]!!.all {
+            when (it) {
                 AdressebeskyttelseGradering.FORTROLIG -> roller.harFortroligAdresse()
                 AdressebeskyttelseGradering.STRENGT_FORTROLIG, AdressebeskyttelseGradering.STRENGT_FORTROLIG_UTLAND -> roller.harStrengtFortroligAdresse()
                 AdressebeskyttelseGradering.UGRADERT -> true
             }
         }.right()
-        }
     }
+}

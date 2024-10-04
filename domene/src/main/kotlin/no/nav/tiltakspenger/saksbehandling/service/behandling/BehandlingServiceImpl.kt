@@ -58,7 +58,7 @@ class BehandlingServiceImpl(
         correlationId: CorrelationId,
         sessionContext: SessionContext?,
     ): Behandling {
-        val harTilgang = Either.catch{ sjekkTilgang(behandlingId, saksbehandler, correlationId)}.getOrElse {
+        val harTilgang = Either.catch { sjekkTilgang(behandlingId, saksbehandler, correlationId) }.getOrElse {
             logger.error { "Feil ved sjekk av tilgang til person. BehandlingId: $behandlingId. CorrelationId: $correlationId" }
             sikkerlogg.error(it) { "Feil ved sjekk av tilgang til person. Respons: $this " }
             throw it
@@ -85,7 +85,6 @@ class BehandlingServiceImpl(
         beslutter: Saksbehandler,
         begrunnelse: String,
         correlationId: CorrelationId,
-
     ) {
         val behandling = hentBehandling(behandlingId, beslutter, correlationId)
 

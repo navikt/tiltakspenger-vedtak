@@ -17,25 +17,25 @@ interface SakService {
     suspend fun startFørstegangsbehandling(
         søknadId: SøknadId,
         saksbehandler: Saksbehandler,
-        correlationId: CorrelationId
+        correlationId: CorrelationId,
     ): Either<KanIkkeStarteFørstegangsbehandling, Sak>
 
     suspend fun hentForFørstegangsbehandlingId(
         behandlingId: BehandlingId,
         saksbehandler: Saksbehandler,
-        correlationId: CorrelationId
+        correlationId: CorrelationId,
     ): Sak
 
     suspend fun hentForSaksnummer(
         saksnummer: Saksnummer,
         saksbehandler: Saksbehandler,
-        correlationId: CorrelationId
+        correlationId: CorrelationId,
     ): Sak
 
     suspend fun hentForFnr(
         fnr: Fnr,
         saksbehandler: Saksbehandler,
-        correlationId: CorrelationId
+        correlationId: CorrelationId,
     ): Either<FantIkkeFnr, Sak>
 
     fun hentFnrForSakId(sakId: SakId): Fnr?
@@ -43,7 +43,7 @@ interface SakService {
     suspend fun hentForSakId(
         sakId: SakId,
         saksbehandler: Saksbehandler,
-        correlationId: CorrelationId
+        correlationId: CorrelationId,
     ): Sak?
 
     fun hentSaksoversikt(saksbehandler: Saksbehandler): Saksoversikt
