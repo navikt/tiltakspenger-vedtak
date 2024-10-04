@@ -74,9 +74,7 @@ class BehandlingServiceImpl(
         saksbehandler: Saksbehandler,
         correlationId: CorrelationId,
     ) {
-        val behandling = hentBehandling(behandlingId, saksbehandler, correlationId)
-
-        behandling.tilBeslutning(saksbehandler)
+        val behandling = hentBehandling(behandlingId, saksbehandler, correlationId).tilBeslutning(saksbehandler)
         førstegangsbehandlingRepo.lagre(behandling)
     }
 
@@ -86,15 +84,15 @@ class BehandlingServiceImpl(
         begrunnelse: String,
         correlationId: CorrelationId,
     ) {
-        val behandling = hentBehandling(behandlingId, beslutter, correlationId)
-
         val attestering =
             Attestering(
                 status = Attesteringsstatus.SENDT_TILBAKE,
                 begrunnelse = begrunnelse,
                 beslutter = beslutter.navIdent,
             )
-        hentBehandling(behandlingId, beslutter, correlationId).sendTilbake(beslutter, attestering)
+
+        val behandling = hentBehandling(behandlingId, beslutter, correlationId).sendTilbake(beslutter, attestering)
+
         sessionFactory.withTransactionContext { tx ->
             førstegangsbehandlingRepo.lagre(behandling, tx)
         }

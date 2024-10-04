@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.utbetaling.service
 
 import io.kotest.matchers.shouldBe
+import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.common.TestApplicationContext
 import no.nav.tiltakspenger.fakes.repos.UtbetalingsvedtakFakeRepo
 import no.nav.tiltakspenger.meldekort.domene.IverksettMeldekortKommando
@@ -13,7 +14,7 @@ import kotlin.test.Test
 internal class OpprettUtbetalingsvedtakServiceTest {
 
     @Test
-    fun `neste utbetalingsvedtak peker på forrige`() {
+    fun `neste utbetalingsvedtak peker på forrige`() = runTest {
         with(TestApplicationContext()) {
             val sak = this.meldekortIverksatt()
             val sakId = sak.id
