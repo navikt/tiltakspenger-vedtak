@@ -66,7 +66,7 @@ fun Route.hentMeldekortRoute(
             contextMessage = "Henter meldekort",
             callId = call.callId,
         )
-
-        call.respond(status = HttpStatusCode.OK, message = meldekort.toDTO(sak.hentVedtaksperiode()))
+        // TODO pre-mvp: Her blir det mer riktig og bruke den totale perioden det skal meldes for.
+        call.respond(status = HttpStatusCode.OK, message = meldekort.toDTO(sak.vedtaksperiode!!))
     }
 }

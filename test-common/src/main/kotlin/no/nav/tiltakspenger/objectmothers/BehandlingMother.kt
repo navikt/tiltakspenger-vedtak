@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.objectmothers
 
+import kotlinx.coroutines.runBlocking
 import no.nav.tiltakspenger.common.TestApplicationContext
 import no.nav.tiltakspenger.felles.AttesteringId
 import no.nav.tiltakspenger.felles.Saksbehandler
@@ -13,6 +14,8 @@ import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.tiltak.TiltakstypeSomGirRett
+import no.nav.tiltakspenger.meldekort.domene.IverksettMeldekortKommando
+import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personSøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler
@@ -33,7 +36,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltakskilde.Komet
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndring
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.leggTilLivsoppholdSaksopplysning
-import no.nav.tiltakspenger.servicemothers.withBehandlingService
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -331,10 +333,10 @@ suspend fun TestApplicationContext.førstegangsbehandlingTilBeslutter(
         )
 
     this.førstegangsbehandlingContext.behandlingService.sendTilBeslutter(
-            vilkårsvurdert.førstegangsbehandling.id,
-            saksbehandler,
-            correlationId = CorrelationId.generate()
-        )
+        vilkårsvurdert.førstegangsbehandling.id,
+        saksbehandler,
+        correlationId = CorrelationId.generate(),
+    )
     return this.sakContext.sakService.hentForSakId(vilkårsvurdert.id, saksbehandler, correlationId = CorrelationId.generate())!!
 }
 
@@ -353,7 +355,78 @@ suspend fun TestApplicationContext.førstegangsbehandlingUnderBeslutning(
     this.førstegangsbehandlingContext.behandlingService.taBehandling(
         vilkårsvurdert.førstegangsbehandling.id,
         beslutter,
-        correlationId = CorrelationId.generate()
+        correlationId = CorrelationId.generate(),
     )
     return this.sakContext.sakService.hentForSakId(vilkårsvurdert.id, saksbehandler, correlationId = CorrelationId.generate())!!
+}
+
+suspend fun TestApplicationContext.førstegangsbehandlingIverksatt(
+    periode: Periode = ObjectMother.vurderingsperiode(),
+    fnr: Fnr = Fnr.random(),
+    saksbehandler: Saksbehandler = saksbehandler(),
+    beslutter: Saksbehandler = beslutter(),
+): Sak {
+    val tac = this
+    val underBeslutning =
+        førstegangsbehandlingUnderBeslutning(
+            periode = periode,
+            fnr = fnr,
+            saksbehandler = saksbehandler,
+            beslutter = beslutter,
+        )
+    runBlocking {
+        tac.førstegangsbehandlingContext.behandlingService.iverksett(
+            behandlingId = underBeslutning.førstegangsbehandling.id,
+            beslutter = beslutter,
+            correlationId = CorrelationId.generate(),
+        )
+    }
+    return this.sakContext.sakService.hentForSakId(underBeslutning.id, saksbehandler, correlationId = CorrelationId.generate())!!
+}
+
+suspend fun TestApplicationContext.meldekortTilBeslutter(
+    periode: Periode = ObjectMother.vurderingsperiode(),
+    fnr: Fnr = Fnr.random(),
+    saksbehandler: Saksbehandler = saksbehandler(),
+    beslutter: Saksbehandler = beslutter(),
+): Sak {
+    val tac = this
+    val sak =
+        førstegangsbehandlingIverksatt(
+            periode = periode,
+            fnr = fnr,
+            saksbehandler = saksbehandler,
+            beslutter = beslutter,
+        )
+    tac.meldekortContext.sendMeldekortTilBeslutterService.sendMeldekortTilBeslutter(
+        (sak.meldeperioder.first() as Meldekort.IkkeUtfyltMeldekort).tilSendMeldekortTilBeslutterKommando(saksbehandler),
+    )
+    return this.sakContext.sakService.hentForSakId(sak.id, saksbehandler, correlationId = CorrelationId.generate())!!
+}
+
+/**
+ * Genererer også utbetalingsvedtak, men sender ikke til utbetaling.
+ */
+suspend fun TestApplicationContext.meldekortIverksatt(
+    periode: Periode = ObjectMother.vurderingsperiode(),
+    fnr: Fnr = Fnr.random(),
+    saksbehandler: Saksbehandler = saksbehandler(),
+    beslutter: Saksbehandler = beslutter(),
+): Sak {
+    val tac = this
+    val sak =
+        meldekortTilBeslutter(
+            periode = periode,
+            fnr = fnr,
+            saksbehandler = saksbehandler,
+            beslutter = beslutter,
+        )
+    tac.meldekortContext.iverksettMeldekortService.iverksettMeldekort(
+        IverksettMeldekortKommando(
+            meldekortId = (sak.meldeperioder.first() as Meldekort.UtfyltMeldekort).id,
+            sakId = sak.id,
+            beslutter = beslutter,
+        ),
+    )
+    return this.sakContext.sakService.hentForSakId(sak.id, saksbehandler, correlationId = CorrelationId.generate())!!
 }

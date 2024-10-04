@@ -1,11 +1,11 @@
 val ktorVersion = "2.3.12"
 val kotestVersion = "5.9.1"
 val mockkVersion = "1.13.12"
-val testContainersVersion = "1.20.1"
+val testContainersVersion = "1.20.2"
 val felleslibVersion = "0.0.229"
 val tokenSupportVersion = "3.2.0"
-val iverksettVersjon = "1.0_20240829083905_36ac417"
 val poaoTilgangVersjon = "2024.09.26_13.02-767203f889ef"
+val iverksettVersjon = "1.0_20240926140513_d75b2a0"
 
 plugins {
     application
@@ -76,7 +76,7 @@ dependencies {
     implementation("no.nav.security:token-client-core:$tokenSupportVersion")
 
     // DB
-    implementation("org.flywaydb:flyway-database-postgresql:10.18.2")
+    implementation("org.flywaydb:flyway-database-postgresql:10.19.0")
     implementation("com.zaxxer:HikariCP:6.0.0")
     implementation("org.postgresql:postgresql:42.7.4")
     implementation("com.github.seratch:kotliquery:1.9.0")
@@ -89,7 +89,7 @@ dependencies {
 
     // DIV
     // TODO post-mvp jah: Fjern denne når meldekort er over på pdfgen
-    implementation("org.apache.pdfbox:pdfbox:2.0.28")
+    implementation("org.apache.pdfbox:pdfbox:3.0.3")
 
     // Arrow
     implementation("io.arrow-kt:arrow-core:1.2.4")

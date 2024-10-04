@@ -11,7 +11,6 @@ import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.VedtakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
-import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionContext.Companion.withSession
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
@@ -25,8 +24,9 @@ import java.time.LocalDateTime
 class RammevedtakPostgresRepo(
     private val sessionFactory: PostgresSessionFactory,
 ) : RammevedtakRepo {
-    override fun hentForVedtakId(vedtakId: VedtakId): Rammevedtak? =
-        sessionFactory.withSession { session ->
+
+    override fun hentForVedtakId(vedtakId: VedtakId): Rammevedtak? {
+        return sessionFactory.withSession { session ->
             session.run(
                 queryOf(
                     "select v.*, s.saksnummer from rammevedtak v join sak s on s.id = v.sak_id where v.id = :id",
@@ -38,6 +38,7 @@ class RammevedtakPostgresRepo(
                 }.asSingle,
             )
         }
+    }
 
     override fun hentForFnr(fnr: Fnr): List<Rammevedtak> {
         return sessionFactory
@@ -164,20 +165,19 @@ class RammevedtakPostgresRepo(
     companion object {
         fun hentForSakId(
             sakId: SakId,
-            sessionContext: SessionContext,
-        ): List<Rammevedtak> =
-            sessionContext.withSession { session ->
-                session.run(
-                    queryOf(
-                        "select v.*, s.saksnummer from rammevedtak v join sak s on s.id = v.sak_id where v.sak_id = :sakId",
-                        mapOf(
-                            "sakId" to sakId.toString(),
-                        ),
-                    ).map { row ->
-                        row.toVedtak(session)
-                    }.asList,
-                )
-            }
+            session: Session,
+        ): Rammevedtak? {
+            return session.run(
+                queryOf(
+                    "select v.*, s.saksnummer from rammevedtak v join sak s on s.id = v.sak_id where v.sak_id = :sakId",
+                    mapOf(
+                        "sakId" to sakId.toString(),
+                    ),
+                ).map { row ->
+                    row.toVedtak(session)
+                }.asSingle,
+            )
+        }
 
         internal fun lagreVedtak(
             vedtak: Rammevedtak,

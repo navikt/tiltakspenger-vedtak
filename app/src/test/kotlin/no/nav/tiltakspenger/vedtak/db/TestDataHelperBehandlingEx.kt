@@ -176,7 +176,7 @@ internal fun TestDataHelper.persisterRammevedtakMedUtfyltMeldekort(
     val utfyltMeldekort =
         ObjectMother.utfyltMeldekort(
             sakId = sak.id,
-            rammevedtakId = sak.vedtak.single().id,
+            rammevedtakId = sak.rammevedtak!!.id,
             fnr = sak.fnr,
         )
     meldekortRepo.lagre(utfyltMeldekort)

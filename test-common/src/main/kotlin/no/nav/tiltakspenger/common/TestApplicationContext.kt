@@ -54,7 +54,7 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-gi
     private val tiltakGatewayFake = TiltakFakeGateway()
     private val behandlingFakeRepo = BehandlingFakeRepo()
     private val personGatewayFake = PersonFakeGateway()
-    private val tilgangsstyringFakeGateway  = TilgangsstyringFakeGateway()
+    private val tilgangsstyringFakeGateway = TilgangsstyringFakeGateway()
     private val genererFakeMeldekortPdfGateway = GenererFakeMeldekortPdfGateway()
     private val genererFakeVedtaksbrevGateway = GenererFakeVedtaksbrevGateway()
     private val journalførFakeMeldekortGateway = JournalførFakeMeldekortGateway(journalpostIdGenerator)
@@ -81,6 +81,7 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-gi
             behandlingRepo = behandlingFakeRepo,
             rammevedtakRepo = rammevedtakFakeRepo,
             meldekortRepo = meldekortFakeRepo,
+            utbetalingsvedtakRepo = utbetalingsvedtakFakeRepo,
         )
 
     private val personFakeRepo = PersonFakeRepo(sakFakeRepo, søknadFakeRepo)
@@ -134,7 +135,14 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-gi
 
     override val meldekortContext by lazy {
         object :
-            MeldekortContext(sessionFactory, sakContext.sakService, tilgangsstyringFakeGateway) {
+            MeldekortContext(
+                sessionFactory = sessionFactory,
+                sakService = sakContext.sakService,
+                tilgangsstyringService = personContext.tilgangsstyringService,
+                utbetalingsvedtakRepo = utbetalingsvedtakFakeRepo,
+                statistikkStønadRepo = statistikkStønadFakeRepo,
+
+            ) {
             override val meldekortRepo = meldekortFakeRepo
         }
     }
@@ -147,11 +155,11 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-gi
             statistikkSakRepo = statistikkSakFakeRepo,
             statistikkStønadRepo = statistikkStønadFakeRepo,
             gitHash = "fake-git-hash",
-            journalførVedtaksbrevGateway = dokumentContext.journalførVedtaksbrevGateway,
-            genererVedtaksbrevGateway = dokumentContext.genererVedtaksbrevGateway,
+            journalførVedtaksbrevGateway = journalførFakeVedtaksbrevGateway,
+            genererVedtaksbrevGateway = genererFakeVedtaksbrevGateway,
             personService = personContext.personService,
             tilgangsstyringService = tilgangsstyringFakeGateway,
-            dokdistGateway = dokumentContext.dokdistGateway,
+            dokdistGateway = dokdistFakeGateway,
         ) {
             override val rammevedtakRepo = rammevedtakFakeRepo
             override val behandlingRepo = behandlingFakeRepo
@@ -161,8 +169,6 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-gi
     override val utbetalingContext by lazy {
         object : UtbetalingContext(
             sessionFactory = sessionFactory,
-            rammevedtakRepo = rammevedtakFakeRepo,
-            statistikkStønadRepo = statistikkStønadFakeRepo,
             genererMeldekortPdfGateway = genererFakeMeldekortPdfGateway,
             journalførMeldekortGateway = journalførFakeMeldekortGateway,
         ) {

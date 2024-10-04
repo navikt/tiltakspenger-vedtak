@@ -29,6 +29,9 @@ data class Meldeperioder(
     ): Either<KanIkkeSendeMeldekortTilBeslutter, Pair<Meldeperioder, UtfyltMeldekort>> {
         val meldekortperiode = kommando.beregnUtbetalingsdager(eksisterendeMeldekort = this)
         val ikkeUtfyltMeldekort = this.ikkeUtfyltMeldekort!!
+        require(ikkeUtfyltMeldekort.id == kommando.meldekortId) {
+            "MeldekortId i kommando (${kommando.meldekortId}) samsvarer ikke med siste meldekortperiode (${ikkeUtfyltMeldekort.id})"
+        }
         return ikkeUtfyltMeldekort.sendTilBeslutter(meldekortperiode, kommando.saksbehandler).map {
             Pair(
                 Meldeperioder(
@@ -49,7 +52,7 @@ data class Meldeperioder(
     val utfylteMeldekort: List<UtfyltMeldekort> = verdi.filterIsInstance<UtfyltMeldekort>()
 
     /** Vil kun returnere hele meldekortperioder som er utfylt. Dersom siste meldekortperiode er delvis utfylt, vil ikke disse komme med. */
-    val utfylteDager: List<Meldekortdag.Utfylt> = utfylteMeldekort.flatMap { it.meldekortperiode.verdi }
+    val utfylteDager: List<Meldekortdag.Utfylt> = utfylteMeldekort.flatMap { it.meldeperiode.verdi }
 
     /** Så lenge saken er aktiv, vil det siste meldekortet være i tilstanden ikke utfylt. Vil også være null fram til første innvilgelse. */
     val ikkeUtfyltMeldekort: Meldekort.IkkeUtfyltMeldekort? =

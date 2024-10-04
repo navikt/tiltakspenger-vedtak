@@ -56,6 +56,7 @@ spec:
     outbound:
       rules:
         - application: tiltakspenger-tiltak
+        - application: tiltakspenger-pdfgen
         - application: utsjekk
           namespace: helved
       external:

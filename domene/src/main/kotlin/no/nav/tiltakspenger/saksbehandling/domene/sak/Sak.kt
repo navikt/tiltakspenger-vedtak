@@ -21,17 +21,23 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBeha
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
+import no.nav.tiltakspenger.utbetaling.domene.Utbetalinger
 import java.time.LocalDate
 
 data class Sak(
+    // TODO post-mvp jah: Foreløpig kan vi kun ha én førstegangsbehandling.
     val id: SakId,
     val fnr: Fnr,
     val saksnummer: Saksnummer,
     val behandlinger: NonEmptyList<Behandling>,
     // TODO pre-mvp: Endre til val rammevedtak: Rammevedtak? siden vi kun har et rammevedtak per sak.
-    val vedtak: List<Rammevedtak>,
-    val meldekort: Meldeperioder,
+    val rammevedtak: Rammevedtak?,
+    val meldeperioder: Meldeperioder,
+    val utbetalinger: Utbetalinger,
 ) {
+    // Kommentar jah: Etter MVP, når vi legger til revurdering, så må vil sakens periode også påvirkes av stansvedtak og forlengelser.
+    val vedtaksperiode: Periode? = rammevedtak?.periode
+
     init {
         if (behandlinger.isNotEmpty()) {
             require(behandlinger.first() is Førstegangsbehandling) { "Første behandlingen må være en førstegangsbehandling" }
@@ -47,15 +53,7 @@ data class Sak(
         behandlinger.filterIsInstance<Førstegangsbehandling>().single()
 
     fun hentMeldekort(meldekortId: MeldekortId): Meldekort? {
-        return meldekort.hentMeldekort(meldekortId)
-    }
-
-    fun hentRammevedtak(): Rammevedtak? {
-        return vedtak.lastOrNull()
-    }
-
-    fun hentVedtaksperiode(): Periode {
-        return vedtak.first().periode
+        return meldeperioder.hentMeldekort(meldekortId)
     }
 
     companion object {
@@ -87,8 +85,9 @@ data class Sak(
                 fnr = fnr,
                 saksnummer = saksnummer,
                 behandlinger = nonEmptyListOf(førstegangsbehandling),
-                vedtak = emptyList(),
-                meldekort = Meldeperioder.empty(førstegangsbehandling.tiltakstype),
+                rammevedtak = null,
+                meldeperioder = Meldeperioder.empty(førstegangsbehandling.tiltakstype),
+                utbetalinger = Utbetalinger(emptyList()),
             ).right()
         }
     }

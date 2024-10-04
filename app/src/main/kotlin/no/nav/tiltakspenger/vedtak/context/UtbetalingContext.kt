@@ -4,14 +4,11 @@ import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.meldekort.ports.GenererMeldekortPdfGateway
 import no.nav.tiltakspenger.meldekort.ports.JournalførMeldekortGateway
-import no.nav.tiltakspenger.saksbehandling.ports.RammevedtakRepo
-import no.nav.tiltakspenger.saksbehandling.ports.StatistikkStønadRepo
 import no.nav.tiltakspenger.saksbehandling.ports.UtbetalingGateway
 import no.nav.tiltakspenger.utbetaling.client.iverksett.UtbetalingHttpClient
 import no.nav.tiltakspenger.utbetaling.ports.UtbetalingsvedtakRepo
 import no.nav.tiltakspenger.utbetaling.service.HentUtbetalingsvedtakService
 import no.nav.tiltakspenger.utbetaling.service.JournalførUtbetalingsvedtakService
-import no.nav.tiltakspenger.utbetaling.service.OpprettUtbetalingsvedtakService
 import no.nav.tiltakspenger.utbetaling.service.SendUtbetalingerService
 import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.auth.AzureTokenProvider
@@ -20,8 +17,6 @@ import no.nav.tiltakspenger.vedtak.repository.utbetaling.UtbetalingsvedtakPostgr
 @Suppress("unused")
 open class UtbetalingContext(
     sessionFactory: SessionFactory,
-    rammevedtakRepo: RammevedtakRepo,
-    statistikkStønadRepo: StatistikkStønadRepo,
     genererMeldekortPdfGateway: GenererMeldekortPdfGateway,
     journalførMeldekortGateway: JournalførMeldekortGateway,
 ) {
@@ -35,14 +30,6 @@ open class UtbetalingContext(
     open val utbetalingsvedtakRepo: UtbetalingsvedtakRepo by lazy {
         UtbetalingsvedtakPostgresRepo(
             sessionFactory as PostgresSessionFactory,
-        )
-    }
-    val opprettUtbetalingsvedtakService by lazy {
-        OpprettUtbetalingsvedtakService(
-            utbetalingsvedtakRepo = utbetalingsvedtakRepo,
-            rammevedtakRepo = rammevedtakRepo,
-            statistikkStønadRepo = statistikkStønadRepo,
-            sessionFactory = sessionFactory,
         )
     }
     val hentUtbetalingsvedtakService by lazy {

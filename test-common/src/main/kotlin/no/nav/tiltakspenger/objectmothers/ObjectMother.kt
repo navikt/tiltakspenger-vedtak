@@ -7,4 +7,5 @@ object ObjectMother :
     SakMother,
     VilkårMother,
     PersonMother,
-    MeldekortMother
+    MeldekortMother,
+    UtbetalingsvedtakMother
