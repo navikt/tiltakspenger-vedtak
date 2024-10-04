@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.vedtak.routes.meldekort
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
-import io.ktor.server.plugins.callid.callId
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -16,6 +15,7 @@ import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando.D
 import no.nav.tiltakspenger.meldekort.service.SendMeldekortTilBeslutterService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
+import no.nav.tiltakspenger.vedtak.routes.correlationId
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import java.time.LocalDate
 
@@ -93,7 +93,7 @@ fun Route.sendMeldekortTilBeslutterRoute(
                     navIdent = saksbehandler.navIdent,
                     action = AuditLogEvent.Action.UPDATE,
                     contextMessage = "Oppdaterer meldekort og sender til beslutter",
-                    callId = call.callId,
+                    correlationId = call.correlationId(),
                 )
 
                 call.respond(message = {}, status = HttpStatusCode.OK)

@@ -15,16 +15,15 @@ open class ApplicationContext(
     open val dokumentContext by lazy { DokumentContext() }
     open val statistikkContext by lazy { StatistikkContext(sessionFactory) }
     open val søknadContext by lazy { SøknadContext(sessionFactory) }
-    open val tilgangsstyringContext by lazy { TilgangsstyringContext(personContext.tokenProviderPdl::getToken) }
     open val tiltakContext by lazy { TiltakContext() }
     open val sakContext by lazy {
         SakContext(
             sessionFactory = sessionFactory,
-            personGateway = personContext.personGateway,
             søknadService = søknadContext.søknadService,
-            skjermingGateway = tilgangsstyringContext.skjermingGateway,
             statistikkSakRepo = statistikkContext.statistikkSakRepo,
+            tilgangsstyringService = personContext.tilgangsstyringService,
             tiltakGateway = tiltakContext.tiltakGateway,
+            personService = personContext.personService,
             gitHash = gitHash,
         )
     }
@@ -39,7 +38,7 @@ open class ApplicationContext(
         MeldekortContext(
             sessionFactory = sessionFactory,
             sakService = sakContext.sakService,
-            tilgangsstyringService = tilgangsstyringContext.tilgangsstyringService,
+            tilgangsstyringService = personContext.tilgangsstyringService,
             utbetalingsvedtakRepo = utbetalingContext.utbetalingsvedtakRepo,
             statistikkStønadRepo = statistikkContext.statistikkStønadRepo,
         )
@@ -47,7 +46,6 @@ open class ApplicationContext(
     open val førstegangsbehandlingContext by lazy {
         FørstegangsbehandlingContext(
             sessionFactory = sessionFactory,
-            personopplysningRepo = personContext.personopplysningerRepo,
             meldekortRepo = meldekortContext.meldekortRepo,
             sakRepo = sakContext.sakRepo,
             statistikkSakRepo = statistikkContext.statistikkSakRepo,
@@ -55,6 +53,8 @@ open class ApplicationContext(
             gitHash = gitHash,
             journalførVedtaksbrevGateway = dokumentContext.journalførVedtaksbrevGateway,
             genererVedtaksbrevGateway = dokumentContext.genererVedtaksbrevGateway,
+            personService = personContext.personService,
+            tilgangsstyringService = personContext.tilgangsstyringService,
             dokdistGateway = dokumentContext.dokdistGateway,
         )
     }

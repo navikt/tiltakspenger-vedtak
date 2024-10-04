@@ -19,12 +19,12 @@ class IverksettMeldekortService(
     private val utbetalingsvedtakRepo: UtbetalingsvedtakRepo,
     private val statistikkStønadRepo: StatistikkStønadRepo,
 ) {
-    fun iverksettMeldekort(
+    suspend fun iverksettMeldekort(
         kommando: IverksettMeldekortKommando,
     ): Either<KanIkkeIverksetteMeldekort, Meldekort.UtfyltMeldekort> {
         val meldekortId = kommando.meldekortId
         val sakId = kommando.sakId
-        val sak = sakService.hentForSakId(sakId, kommando.beslutter)
+        val sak = sakService.hentForSakId(sakId, kommando.beslutter, correlationId = kommando.correlationId)
             ?: throw IllegalArgumentException("Fant ikke sak med id $sakId")
         val meldekort: Meldekort = sak.hentMeldekort(meldekortId)
             ?: throw IllegalArgumentException("Fant ikke meldekort med id $meldekortId i sak $sakId")

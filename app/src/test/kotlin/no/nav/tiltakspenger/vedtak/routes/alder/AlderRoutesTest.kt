@@ -15,6 +15,7 @@ import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.common.TestApplicationContext
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
@@ -47,7 +48,7 @@ class AlderRoutesTest {
         )
 
     @Test
-    fun `test at endepunkt for henting og lagring av alder fungerer`() {
+    fun `test at endepunkt for henting og lagring av alder fungerer`() = runTest {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
         with(TestApplicationContext()) {
@@ -84,7 +85,7 @@ class AlderRoutesTest {
     }
 
     @Test
-    fun `test at søknaden blir gjenspeilet i alder vilkåret`() {
+    fun `test at søknaden blir gjenspeilet i alder vilkåret`() = runTest {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
         with(TestApplicationContext()) {
@@ -121,7 +122,7 @@ class AlderRoutesTest {
     }
 
     @Test
-    fun `test at behandlingen ikke kan opprettes om bruker fyller 18 år midt i vurderingsperioden`() {
+    fun `test at behandlingen ikke kan opprettes om bruker fyller 18 år midt i vurderingsperioden`() = runTest {
         val vurderingsperiode = Periode(fraOgMed = 1.januar(2018), tilOgMed = 10.januar(2018))
         val fødselsdato = 5.januar(2000)
         with(TestApplicationContext()) {

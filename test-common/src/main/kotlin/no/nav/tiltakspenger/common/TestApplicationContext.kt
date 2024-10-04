@@ -1,20 +1,17 @@
 package no.nav.tiltakspenger.common
 
 import no.nav.tiltakspenger.fakes.clients.DokdistFakeGateway
-import no.nav.tiltakspenger.fakes.clients.FellesFakeAdressebeskyttelseKlient
-import no.nav.tiltakspenger.fakes.clients.FellesFakeSkjermingsklient
 import no.nav.tiltakspenger.fakes.clients.GenererFakeMeldekortPdfGateway
 import no.nav.tiltakspenger.fakes.clients.GenererFakeVedtaksbrevGateway
 import no.nav.tiltakspenger.fakes.clients.JournalførFakeMeldekortGateway
 import no.nav.tiltakspenger.fakes.clients.JournalførFakeVedtaksbrevGateway
 import no.nav.tiltakspenger.fakes.clients.PersonFakeGateway
-import no.nav.tiltakspenger.fakes.clients.SkjermingFakeGateway
+import no.nav.tiltakspenger.fakes.clients.TilgangsstyringFakeGateway
 import no.nav.tiltakspenger.fakes.clients.TiltakFakeGateway
 import no.nav.tiltakspenger.fakes.clients.UtbetalingFakeGateway
 import no.nav.tiltakspenger.fakes.repos.BehandlingFakeRepo
 import no.nav.tiltakspenger.fakes.repos.MeldekortFakeRepo
 import no.nav.tiltakspenger.fakes.repos.PersonFakeRepo
-import no.nav.tiltakspenger.fakes.repos.PersonopplysningerFakeRepo
 import no.nav.tiltakspenger.fakes.repos.RammevedtakFakeRepo
 import no.nav.tiltakspenger.fakes.repos.SakFakeRepo
 import no.nav.tiltakspenger.fakes.repos.SaksoversiktFakeRepo
@@ -22,10 +19,9 @@ import no.nav.tiltakspenger.fakes.repos.StatistikkSakFakeRepo
 import no.nav.tiltakspenger.fakes.repos.StatistikkStønadFakeRepo
 import no.nav.tiltakspenger.fakes.repos.SøknadFakeRepo
 import no.nav.tiltakspenger.fakes.repos.UtbetalingsvedtakFakeRepo
-import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.TestSessionFactory
-import no.nav.tiltakspenger.libs.personklient.tilgangsstyring.TilgangsstyringServiceImpl
+import no.nav.tiltakspenger.libs.person.AdressebeskyttelseGradering
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
 import no.nav.tiltakspenger.vedtak.context.ApplicationContext
@@ -36,7 +32,6 @@ import no.nav.tiltakspenger.vedtak.context.PersonContext
 import no.nav.tiltakspenger.vedtak.context.SakContext
 import no.nav.tiltakspenger.vedtak.context.StatistikkContext
 import no.nav.tiltakspenger.vedtak.context.SøknadContext
-import no.nav.tiltakspenger.vedtak.context.TilgangsstyringContext
 import no.nav.tiltakspenger.vedtak.context.TiltakContext
 import no.nav.tiltakspenger.vedtak.context.UtbetalingContext
 
@@ -55,14 +50,11 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-gi
     private val utbetalingGatewayFake = UtbetalingFakeGateway()
     private val meldekortFakeRepo = MeldekortFakeRepo()
     private val utbetalingsvedtakFakeRepo = UtbetalingsvedtakFakeRepo(rammevedtakFakeRepo, meldekortFakeRepo)
-    private val personopplysningerFakeRepo = PersonopplysningerFakeRepo()
     private val søknadFakeRepo = SøknadFakeRepo()
     private val tiltakGatewayFake = TiltakFakeGateway()
     private val behandlingFakeRepo = BehandlingFakeRepo()
-    private val skjermingFakeGateway = SkjermingFakeGateway()
     private val personGatewayFake = PersonFakeGateway()
-    private val fellesPersonTilgangsstyringsklient = FellesFakeAdressebeskyttelseKlient()
-    private val fellesFakeSkjermingsklient = FellesFakeSkjermingsklient()
+    private val tilgangsstyringFakeGateway = TilgangsstyringFakeGateway()
     private val genererFakeMeldekortPdfGateway = GenererFakeMeldekortPdfGateway()
     private val genererFakeVedtaksbrevGateway = GenererFakeVedtaksbrevGateway()
     private val journalførFakeMeldekortGateway = JournalførFakeMeldekortGateway(journalpostIdGenerator)
@@ -71,13 +63,11 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-gi
 
     fun leggTilPerson(
         fnr: Fnr,
-        erSkjermet: Boolean,
         personopplysningerForBruker: PersonopplysningerSøker,
         tiltak: Tiltak,
     ) {
-        skjermingFakeGateway.leggTil(fnr = fnr, skjermet = erSkjermet)
-        fellesFakeSkjermingsklient.leggTil(fnr = fnr, skjermet = erSkjermet)
-        personGatewayFake.leggTilPersonopplysning(fnr = fnr, personopplysninger = listOf(personopplysningerForBruker))
+        personGatewayFake.leggTilPersonopplysning(fnr = fnr, personopplysninger = personopplysningerForBruker)
+        tilgangsstyringFakeGateway.lagre(fnr = fnr, adressebeskyttelseGradering = listOf(AdressebeskyttelseGradering.UGRADERT))
         tiltakGatewayFake.lagre(fnr = fnr, tiltak = tiltak)
     }
 
@@ -88,18 +78,16 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-gi
         )
     private val sakFakeRepo =
         SakFakeRepo(
-            personopplysningerRepo = personopplysningerFakeRepo,
             behandlingRepo = behandlingFakeRepo,
             rammevedtakRepo = rammevedtakFakeRepo,
             meldekortRepo = meldekortFakeRepo,
             utbetalingsvedtakRepo = utbetalingsvedtakFakeRepo,
         )
 
-    private val personFakeRepo = PersonFakeRepo(sakFakeRepo)
+    private val personFakeRepo = PersonFakeRepo(sakFakeRepo, søknadFakeRepo)
 
     override val personContext =
         object : PersonContext(sessionFactory) {
-            override val personopplysningerRepo = personopplysningerFakeRepo
             override val personGateway = personGatewayFake
             override val personRepo = personFakeRepo
         }
@@ -124,15 +112,6 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-gi
             override val søknadRepo = søknadFakeRepo
         }
     }
-    override val tilgangsstyringContext by lazy {
-        object : TilgangsstyringContext({ AccessToken("fake-access-token") }) {
-            override val tilgangsstyringService =
-                TilgangsstyringServiceImpl(
-                    fellesPersonTilgangsstyringsklient = fellesPersonTilgangsstyringsklient,
-                    skjermingClient = fellesFakeSkjermingsklient,
-                )
-        }
-    }
 
     override val tiltakContext by lazy {
         object : TiltakContext() {
@@ -142,11 +121,11 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-gi
     override val sakContext by lazy {
         object : SakContext(
             sessionFactory = sessionFactory,
-            personGateway = personGatewayFake,
+            personService = personContext.personService,
             søknadService = søknadContext.søknadService,
-            skjermingGateway = skjermingFakeGateway,
             statistikkSakRepo = statistikkSakFakeRepo,
             tiltakGateway = tiltakGatewayFake,
+            tilgangsstyringService = tilgangsstyringFakeGateway,
             gitHash = "fake-git-hash",
         ) {
             override val sakRepo = sakFakeRepo
@@ -159,7 +138,7 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-gi
             MeldekortContext(
                 sessionFactory = sessionFactory,
                 sakService = sakContext.sakService,
-                tilgangsstyringService = tilgangsstyringContext.tilgangsstyringService,
+                tilgangsstyringService = personContext.tilgangsstyringService,
                 utbetalingsvedtakRepo = utbetalingsvedtakFakeRepo,
                 statistikkStønadRepo = statistikkStønadFakeRepo,
 
@@ -171,7 +150,6 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-gi
     override val førstegangsbehandlingContext by lazy {
         object : FørstegangsbehandlingContext(
             sessionFactory = sessionFactory,
-            personopplysningRepo = personopplysningerFakeRepo,
             meldekortRepo = meldekortFakeRepo,
             sakRepo = sakFakeRepo,
             statistikkSakRepo = statistikkSakFakeRepo,
@@ -179,6 +157,8 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-gi
             gitHash = "fake-git-hash",
             journalførVedtaksbrevGateway = journalførFakeVedtaksbrevGateway,
             genererVedtaksbrevGateway = genererFakeVedtaksbrevGateway,
+            personService = personContext.personService,
+            tilgangsstyringService = tilgangsstyringFakeGateway,
             dokdistGateway = dokdistFakeGateway,
         ) {
             override val rammevedtakRepo = rammevedtakFakeRepo

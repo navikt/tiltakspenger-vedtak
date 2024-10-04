@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.vedtak.routes.sak
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
-import io.ktor.server.plugins.callid.callId
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -15,6 +14,7 @@ import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.routes.Standardfeil
+import no.nav.tiltakspenger.vedtak.routes.correlationId
 import no.nav.tiltakspenger.vedtak.routes.parameter
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
@@ -37,9 +37,9 @@ fun Route.sakRoutes(
             navIdent = saksbehandler.navIdent,
             action = AuditLogEvent.Action.ACCESS,
             contextMessage = "Henter hele saken til brukeren",
-            callId = call.callId,
+            correlationId = call.correlationId(),
         )
-        val sakDTO = sakService.hentForSaksnummer(saksnummer, saksbehandler).toDTO()
+        val sakDTO = sakService.hentForSaksnummer(saksnummer, saksbehandler, correlationId = call.correlationId()).toDTO()
         call.respond(message = sakDTO, status = HttpStatusCode.OK)
     }
 
@@ -53,10 +53,10 @@ fun Route.sakRoutes(
             navIdent = saksbehandler.navIdent,
             action = AuditLogEvent.Action.ACCESS,
             contextMessage = "Henter alle saker på brukeren",
-            callId = call.callId,
+            correlationId = call.correlationId(),
         )
 
-        sakService.hentForFnr(fnr, saksbehandler).fold(
+        sakService.hentForFnr(fnr, saksbehandler, correlationId = call.correlationId()).fold(
             ifLeft = {
                 call.respond(
                     message = Standardfeil.fantIkkeFnr(),

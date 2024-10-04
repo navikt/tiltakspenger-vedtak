@@ -4,6 +4,7 @@ val mockkVersion = "1.13.12"
 val testContainersVersion = "1.20.2"
 val felleslibVersion = "0.0.229"
 val tokenSupportVersion = "3.2.0"
+val poaoTilgangVersjon = "2024.09.26_13.02-767203f889ef"
 val iverksettVersjon = "1.0_20240926140513_d75b2a0"
 
 plugins {
@@ -81,9 +82,12 @@ dependencies {
     // Helved/Utsjekk/Utbetaling
     implementation("no.nav.utsjekk.kontrakter:iverksett:$iverksettVersjon")
 
+    //POAO tilgang
+    implementation("no.nav.poao-tilgang:client:$poaoTilgangVersjon")
+
+    // DIV
     // TODO post-mvp jah: Fjern denne når meldekort er over på pdfgen
     implementation("org.apache.pdfbox:pdfbox:3.0.3")
-
 
     // Arrow
     implementation("io.arrow-kt:arrow-core:1.2.4")
@@ -94,6 +98,7 @@ dependencies {
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("io.mockk:mockk-dsl-jvm:$mockkVersion")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
     testImplementation("io.kotest:kotest-assertions-json:$kotestVersion")
     testImplementation("io.kotest:kotest-extensions:$kotestVersion")

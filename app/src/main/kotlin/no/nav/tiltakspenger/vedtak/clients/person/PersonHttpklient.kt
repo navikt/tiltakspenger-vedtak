@@ -7,13 +7,14 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.json.JsonMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.personklient.pdl.FellesPersonklient
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.EnkelPerson
-import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
 import no.nav.tiltakspenger.vedtak.auth.AzureTokenProvider
-import java.time.LocalDateTime
 
 class PersonHttpklient(
     endepunkt: String,
@@ -39,19 +40,23 @@ class PersonHttpklient(
      * Benytter seg av [AzureTokenProvider] for å hente token for å hente personopplysninger vha. systembruker.
      * TODO pre-mvp jah: Dersom vi ønsker og sende saksbehandler sitt OBO-token, kan vi lage en egen metode for dette.
      */
-    override suspend fun hentPerson(fnr: Fnr): List<Personopplysninger> {
-        val token = azureTokenProvider::getToken
-        val body = objectMapper.writeValueAsString(hentPersonQuery(fnr))
-        return personklient
-            .hentPerson(fnr, token(), body)
-            .map { mapPersonopplysninger(it, LocalDateTime.now(), fnr) }
-            .getOrElse { it.mapError() }
+    override suspend fun hentPerson(fnr: Fnr): PersonopplysningerSøker {
+        return withContext(Dispatchers.IO) {
+            val token = azureTokenProvider::getToken
+            val body = objectMapper.writeValueAsString(hentPersonQuery(fnr))
+            personklient
+                .hentPerson(fnr, token(), body)
+                .map { mapPersonopplysninger(it, fnr) }
+                .getOrElse { it.mapError() }
+        }
     }
 
     override suspend fun hentEnkelPerson(fnr: Fnr): EnkelPerson {
-        val token = azureTokenProvider::getToken
-        val body = objectMapper.writeValueAsString(hentEnkelPersonQuery(fnr))
-        return personklient.hentPerson(fnr, token(), body).map { it.toEnkelPerson(fnr) }.getOrElse { it.mapError() }
+        return withContext(Dispatchers.IO) {
+            val token = azureTokenProvider::getToken
+            val body = objectMapper.writeValueAsString(hentEnkelPersonQuery(fnr))
+            personklient.hentPerson(fnr, token(), body).map { it.toEnkelPerson(fnr) }.getOrElse { it.mapError() }
+        }
     }
 
     // TODO: hent navn på person (etternavn + fornavn)

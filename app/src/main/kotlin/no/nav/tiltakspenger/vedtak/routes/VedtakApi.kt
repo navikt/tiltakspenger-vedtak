@@ -45,6 +45,7 @@ import java.net.URI
 import java.util.UUID
 
 private val LOG = KotlinLogging.logger {}
+const val CALL_ID_MDC_KEY = "call-id"
 
 internal fun Application.vedtakApi(
     config: Configuration.TokenVerificationConfig,
@@ -53,7 +54,7 @@ internal fun Application.vedtakApi(
 ) {
     install(CallId)
     install(CallLogging) {
-        callIdMdc("call-id")
+        callIdMdc(CALL_ID_MDC_KEY)
         disableDefaultColors()
         filter { call ->
             !call.request.path().startsWith("/isalive") &&

@@ -11,6 +11,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.PersonRepo
 
 class PersonFakeRepo(
     private val sakFakeRepo: SakFakeRepo,
+    private val søknadFakeRepo: SøknadFakeRepo,
 ) : PersonRepo {
     override fun hentFnrForSakId(sakId: SakId): Fnr? {
         return sakFakeRepo.data.get()[sakId]!!.fnr
@@ -33,6 +34,6 @@ class PersonFakeRepo(
     }
 
     override fun hentFnrForSøknadId(søknadId: SøknadId): Fnr? {
-        return sakFakeRepo.data.get().values.find { it.førstegangsbehandling.søknad.id == søknadId }?.fnr
+        return søknadFakeRepo.hentForSøknadId(søknadId).fnr
     }
 }

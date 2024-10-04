@@ -12,6 +12,7 @@ internal fun hentPersonQuery(fnr: Fnr): GraphqlQuery {
     )
 }
 
+// B: Burde vi fjerne barn fra queryet når vi ikke bruker det enda?
 private val query = """
 query(${'$'}ident: ID!){
     hentGeografiskTilknytning(ident: ${'$'}ident) {

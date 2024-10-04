@@ -13,6 +13,7 @@ import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.common.TestApplicationContext
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.common.Rolle
@@ -42,7 +43,7 @@ class IntroRoutesTest {
         )
 
     @Test
-    fun `test at endepunkt for henting og lagring av intro fungerer`() {
+    fun `test at endepunkt for henting og lagring av intro fungerer`() = runTest {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
 
         with(TestApplicationContext()) {
@@ -78,7 +79,7 @@ class IntroRoutesTest {
     }
 
     @Test
-    fun `test at søknaden blir gjenspeilet i introduksjonsprogrammet vilkåret`() {
+    fun `test at søknaden blir gjenspeilet i introduksjonsprogrammet vilkåret`() = runTest {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
 
         with(TestApplicationContext()) {

@@ -17,18 +17,6 @@ CREATE INDEX sakPersonopplysningerSøker
          sakId
             );
 
-CREATE INDEX sakPersonopplysningerBarnMedIdent
-    ON sak_personopplysninger_barn_med_ident
-        (
-         sakId
-            );
-
-CREATE INDEX sakPersonopplysningerBarnUtenIdent
-    ON sak_personopplysninger_barn_uten_ident
-        (
-         sakId
-            );
-
 CREATE INDEX søknad_ident
     ON søknad
         (

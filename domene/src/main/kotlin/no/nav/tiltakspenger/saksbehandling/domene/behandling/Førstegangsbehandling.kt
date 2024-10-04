@@ -149,7 +149,7 @@ data class Førstegangsbehandling(
         when (this.status) {
             KLAR_TIL_BEHANDLING, UNDER_BEHANDLING -> {
                 check(saksbehandler.isSaksbehandler()) {
-                    "Saksbehandler må ha saksbehandlerrolle. Utøvende saksbehandler: $saksbehandler"
+                    "Saksbehandler må ha rolle saksbehandler. Utøvende saksbehandler: $saksbehandler"
                 }
                 this.copy(saksbehandler = saksbehandler.navIdent, status = UNDER_BEHANDLING).let {
                     // Dersom utøvende saksbehandler er beslutter, fjern beslutter fra behandlingen.
