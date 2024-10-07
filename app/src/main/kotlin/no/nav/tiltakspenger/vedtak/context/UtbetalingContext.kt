@@ -5,13 +5,13 @@ import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFacto
 import no.nav.tiltakspenger.meldekort.ports.GenererMeldekortPdfGateway
 import no.nav.tiltakspenger.meldekort.ports.JournalførMeldekortGateway
 import no.nav.tiltakspenger.saksbehandling.ports.UtbetalingGateway
-import no.nav.tiltakspenger.utbetaling.client.iverksett.UtbetalingHttpClient
 import no.nav.tiltakspenger.utbetaling.ports.UtbetalingsvedtakRepo
 import no.nav.tiltakspenger.utbetaling.service.HentUtbetalingsvedtakService
 import no.nav.tiltakspenger.utbetaling.service.JournalførUtbetalingsvedtakService
 import no.nav.tiltakspenger.utbetaling.service.SendUtbetalingerService
 import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.auth.AzureTokenProvider
+import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtbetalingHttpClient
 import no.nav.tiltakspenger.vedtak.repository.utbetaling.UtbetalingsvedtakPostgresRepo
 
 @Suppress("unused")
