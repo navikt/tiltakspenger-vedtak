@@ -5,6 +5,7 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
+import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
@@ -111,12 +112,13 @@ class BehandlingServiceImpl(
         val vedtak = iverksattBehandling.opprettVedtak()
 
         val fnr = personService.hentFnrForBehandlingId(behandlingId)
-        val adressebeskyttelseGradering: List<AdressebeskyttelseGradering>? = tilgangsstyringService.adressebeskyttelseEnkel(fnr)
-            .getOrElse {
-                throw IllegalArgumentException(
-                    "Kunne ikke hente adressebeskyttelsegradering for person. BehandlingId: $behandlingId",
-                )
-            }
+        val adressebeskyttelseGradering: List<AdressebeskyttelseGradering>? =
+            tilgangsstyringService.adressebeskyttelseEnkel(fnr)
+                .getOrElse {
+                    throw IllegalArgumentException(
+                        "Kunne ikke hente adressebeskyttelsegradering for person. BehandlingId: $behandlingId",
+                    )
+                }
 
         require(adressebeskyttelseGradering != null) { "Fant ikke adressebeskyttelse for person. BehandlingId: $behandlingId" }
 
@@ -168,7 +170,11 @@ class BehandlingServiceImpl(
                 )
             }
 
-    private suspend fun sjekkTilgang(behandlingId: BehandlingId, saksbehandler: Saksbehandler, correlationId: CorrelationId) {
+    private suspend fun sjekkTilgang(
+        behandlingId: BehandlingId,
+        saksbehandler: Saksbehandler,
+        correlationId: CorrelationId,
+    ) {
         val fnr = personService.hentFnrForBehandlingId(behandlingId)
         tilgangsstyringService
             .harTilgangTilPerson(
@@ -176,7 +182,10 @@ class BehandlingServiceImpl(
                 roller = saksbehandler.roller,
                 correlationId = correlationId,
             )
-            .onLeft { throw IkkeFunnetException("Feil ved sjekk av tilgang til person. BehandlingId: $behandlingId. CorrelationId: $correlationId") }
+            .onLeft { underliggendeFeil ->
+                throw IkkeFunnetException("Feil ved sjekk av tilgang til person. BehandlingId: $behandlingId. CorrelationId: $correlationId. Se sikkerlogg for mer context")
+                sikkerlogg.error("Feil ved sjekk av tilgang til person. BehandlingId: $behandlingId. CorrelationId: $correlationId. Underliggende feil: $underliggendeFeil")
+            }
             .onRight { if (!it) throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til person") }
     }
 }
