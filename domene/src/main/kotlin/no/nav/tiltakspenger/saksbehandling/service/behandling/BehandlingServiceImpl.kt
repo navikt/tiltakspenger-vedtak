@@ -183,8 +183,8 @@ class BehandlingServiceImpl(
                 correlationId = correlationId,
             )
             .onLeft { underliggendeFeil ->
-                throw IkkeFunnetException("Feil ved sjekk av tilgang til person. BehandlingId: $behandlingId. CorrelationId: $correlationId. Se sikkerlogg for mer context")
-                sikkerlogg.error("Feil ved sjekk av tilgang til person. BehandlingId: $behandlingId. CorrelationId: $correlationId. Underliggende feil: $underliggendeFeil")
+                sikkerlogg.error(IllegalArgumentException("Trigger en stacktrace for debugging")) { "Feil ved sjekk av tilgang til person. BehandlingId: $behandlingId. CorrelationId: $correlationId. Underliggende feil: $underliggendeFeil" }
+                throw IkkeFunnetException("Feil ved sjekk av tilgang til person. BehandlingId: $behandlingId. CorrelationId: $correlationId. Feiltype: ${underliggendeFeil::class.simpleName} Se sikkerlogg for mer context")
             }
             .onRight { if (!it) throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til person") }
     }
