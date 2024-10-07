@@ -33,7 +33,7 @@ data class KravfristVilkår private constructor(
             datoDetKanInnvilgesFra <= vurderingsperiode.fraOgMed -> Periodisering(UtfallForPeriode.OPPFYLT, vurderingsperiode)
             datoDetKanInnvilgesFra > vurderingsperiode.tilOgMed -> Periodisering(UtfallForPeriode.IKKE_OPPFYLT, vurderingsperiode)
             else -> throw IkkeImplementertException(
-                "Støtter ikke at kravdatoen ($datoDetKanInnvilgesFra) er midt i vurderingsperioden ($vurderingsperiode)",
+                "Tidligste dato det kan innvilges fra er $datoDetKanInnvilgesFra, ettersom kravdato er (${avklartSaksopplysning.kravdato}). Tiltaksperioden det er søkt for er ($vurderingsperiode). Vi støtter ikke delvis innvilgelse på nåværende tidspunkt.",
             )
         }
     }
