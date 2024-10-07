@@ -61,6 +61,7 @@ spec:
           namespace: helved
       external:
         - host: {{ urlPdl }}
+        - host: {{ urlPdlPip }}
         - host: {{ urlSkjerming }}
         - host: {{ urlJoark }}
         - host: {{ urlDokdist }}
