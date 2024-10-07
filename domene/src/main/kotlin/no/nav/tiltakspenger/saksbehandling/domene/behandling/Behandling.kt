@@ -34,8 +34,6 @@ interface Behandling {
 
     fun taBehandling(saksbehandler: Saksbehandler): Behandling
 
-    fun taSaksbehandlerAvBehandlingen(utøvendeSaksbehandler: Saksbehandler): Behandling
-
     fun tilBeslutning(saksbehandler: Saksbehandler): Behandling
 
     fun iverksett(

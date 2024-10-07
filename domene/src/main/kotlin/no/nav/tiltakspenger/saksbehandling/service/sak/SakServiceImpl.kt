@@ -131,7 +131,7 @@ class SakServiceImpl(
     ): Either<FantIkkeFnr, Sak> {
         val saker = sakRepo.hentForFnr(fnr)
         if (saker.saker.isEmpty()) FantIkkeFnr.left()
-        if (saker.size > 1) throw IllegalStateException("Vi støtter ikke flere saker per søker i piloten. fnr: $fnr")
+        if (saker.size > 1) throw IllegalStateException("Vi støtter ikke flere saker per søker i piloten.")
 
         val sak = saker.single()
         sjekkTilgangTilSak(sak.id, saksbehandler, correlationId)

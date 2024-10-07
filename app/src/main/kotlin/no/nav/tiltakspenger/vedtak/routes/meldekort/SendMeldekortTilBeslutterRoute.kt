@@ -7,6 +7,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.meldekort.domene.KanIkkeSendeMeldekortTilBeslutter
@@ -31,9 +32,11 @@ private data class Body(
         saksbehandler: Saksbehandler,
         meldekortId: MeldekortId,
         sakId: SakId,
+        correlationId: CorrelationId,
     ) = SendMeldekortTilBeslutterKommando(
         sakId = sakId,
         saksbehandler = saksbehandler,
+        correlationId = correlationId,
         dager =
         this.dager.map { dag ->
             Dag(
@@ -75,6 +78,7 @@ fun Route.sendMeldekortTilBeslutterRoute(
                     saksbehandler = saksbehandler,
                     meldekortId = MeldekortId.fromString(meldekortId),
                     sakId = SakId.fromString(sakId),
+                    correlationId = call.correlationId(),
                 ),
             )
         meldekort.fold(

@@ -12,8 +12,9 @@ import no.nav.tiltakspenger.saksbehandling.ports.PersonRepo
 class PersonFakeRepo(
     private val sakFakeRepo: SakFakeRepo,
     private val søknadFakeRepo: SøknadFakeRepo,
+    private val meldekortFakeRepo: MeldekortFakeRepo,
 ) : PersonRepo {
-    override fun hentFnrForSakId(sakId: SakId): Fnr? {
+    override fun hentFnrForSakId(sakId: SakId): Fnr {
         return sakFakeRepo.data.get()[sakId]!!.fnr
     }
 
@@ -30,10 +31,10 @@ class PersonFakeRepo(
     }
 
     override fun hentFnrForMeldekortId(meldekortId: MeldekortId): Fnr? {
-        return sakFakeRepo.data.get().values.find { it.meldeperioder.any { it.id == meldekortId } }?.fnr
+        return meldekortFakeRepo.hentFnrForMeldekortId(meldekortId)
     }
 
-    override fun hentFnrForSøknadId(søknadId: SøknadId): Fnr? {
+    override fun hentFnrForSøknadId(søknadId: SøknadId): Fnr {
         return søknadFakeRepo.hentForSøknadId(søknadId).fnr
     }
 }

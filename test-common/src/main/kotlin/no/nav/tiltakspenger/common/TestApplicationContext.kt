@@ -84,7 +84,7 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-gi
             utbetalingsvedtakRepo = utbetalingsvedtakFakeRepo,
         )
 
-    private val personFakeRepo = PersonFakeRepo(sakFakeRepo, søknadFakeRepo)
+    private val personFakeRepo = PersonFakeRepo(sakFakeRepo, søknadFakeRepo, meldekortFakeRepo)
 
     override val personContext =
         object : PersonContext(sessionFactory) {
@@ -138,9 +138,10 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-gi
             MeldekortContext(
                 sessionFactory = sessionFactory,
                 sakService = sakContext.sakService,
-                tilgangsstyringService = personContext.tilgangsstyringService,
+                tilgangsstyringService = tilgangsstyringFakeGateway,
                 utbetalingsvedtakRepo = utbetalingsvedtakFakeRepo,
                 statistikkStønadRepo = statistikkStønadFakeRepo,
+                personService = personContext.personService,
 
             ) {
             override val meldekortRepo = meldekortFakeRepo

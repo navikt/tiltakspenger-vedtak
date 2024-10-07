@@ -41,6 +41,7 @@ open class ApplicationContext(
             tilgangsstyringService = personContext.tilgangsstyringService,
             utbetalingsvedtakRepo = utbetalingContext.utbetalingsvedtakRepo,
             statistikkStønadRepo = statistikkContext.statistikkStønadRepo,
+            personService = personContext.personService,
         )
     }
     open val førstegangsbehandlingContext by lazy {
