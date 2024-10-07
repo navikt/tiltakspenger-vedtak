@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.context
 
+import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
@@ -35,6 +36,7 @@ open class PersonContext(
             pdlPipBaseUrl = Configuration.pdlPipClientConfig().baseUrl,
             skjermingBaseUrl = Configuration.skjermingClientConfig().baseUrl,
             getSkjermingToken = tokenProviderSkjerming::getToken,
+            sikkerlogg = sikkerlogg,
         )
     }
     private val tokenProviderSkjerming: AzureTokenProvider by lazy { AzureTokenProvider(config = Configuration.oauthConfigSkjerming()) }

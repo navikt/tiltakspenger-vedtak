@@ -9,6 +9,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.personklient.pdl.FellesPersonklient
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.EnkelPerson
@@ -23,6 +24,7 @@ class PersonHttpklient(
     private val personklient =
         FellesPersonklient.create(
             endepunkt = endepunkt,
+            sikkerlogg = sikkerlogg,
         )
 
     private val objectMapper: ObjectMapper =
