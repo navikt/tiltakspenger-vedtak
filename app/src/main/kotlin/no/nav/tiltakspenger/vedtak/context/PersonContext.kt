@@ -21,6 +21,7 @@ open class PersonContext(
     sessionFactory: SessionFactory,
 ) {
     val tokenProviderPdl by lazy { AzureTokenProvider(config = Configuration.ouathConfigPdl()) }
+    val tokenProviderPdlPip by lazy { AzureTokenProvider(config = Configuration.ouathConfigPdlPip()) }
 
     open val personGateway: PersonGateway by lazy {
         PersonHttpklient(
@@ -30,15 +31,15 @@ open class PersonContext(
     }
     open val tilgangsstyringService: TilgangsstyringService by lazy {
         TilgangsstyringServiceImpl.create(
-            skjermingBaseUrl = Configuration.skjermingClientConfig().baseUrl,
-            getPdlPipToken = tokenProviderPdl::getToken,
+            getPdlPipToken = tokenProviderPdlPip::getToken,
             pdlPipBaseUrl = Configuration.pdlPipClientConfig().baseUrl,
+            skjermingBaseUrl = Configuration.skjermingClientConfig().baseUrl,
             getSkjermingToken = tokenProviderSkjerming::getToken,
         )
     }
     private val tokenProviderSkjerming: AzureTokenProvider by lazy { AzureTokenProvider(config = Configuration.oauthConfigSkjerming()) }
-    private val tokenProviderTilgang: AzureTokenProvider by lazy { AzureTokenProvider(config = Configuration.oauthConfigPoaoTilgang()) }
-    private val getPoaoTilgangToken: suspend () -> AccessToken = { tokenProviderTilgang.getToken() }
+    private val tokenProviderPoaoTilgang: AzureTokenProvider by lazy { AzureTokenProvider(config = Configuration.oauthConfigPoaoTilgang()) }
+    private val getPoaoTilgangToken: suspend () -> AccessToken = { tokenProviderPoaoTilgang.getToken() }
 
     val poaoTilgangGateway: PoaoTilgangGateway by lazy {
         PoaoTilgangClient(

@@ -60,6 +60,7 @@ object Configuration {
                 "POAO_TILGANG_SCOPE" to "localhost",
                 "PDL_SCOPE" to "localhost",
                 "PDL_ENDPOINT_URL" to "https://host.docker.internal:8091/graphql",
+                "PDL_PIP_SCOPE" to "localhost",
                 "PDL_PIP_ENDPOINT_URL" to "http://host.docker.internal:8091",
                 "SKJERMING_SCOPE" to "localhost",
                 "SKJERMING_URL" to "http://host.docker.internal:8091",
@@ -93,6 +94,7 @@ object Configuration {
                 "application.profile" to Profile.DEV.toString(),
                 "PDL_SCOPE" to "api://dev-fss.pdl.pdl-api/.default",
                 "PDL_ENDPOINT_URL" to "https://pdl-api.dev-fss-pub.nais.io/graphql",
+                "PDL_PIP_SCOPE" to "api://dev-fss.pdl.pdl-pip-api/.default",
                 "PDL_PIP_ENDPOINT_URL" to "https://pdl-pip-api.dev-fss-pub.nais.io",
                 "SKJERMING_SCOPE" to "api://dev-gcp.nom.skjermede-personer-pip/.default",
                 "SKJERMING_URL" to "https://skjermede-personer-pip.intern.dev.nav.no",
@@ -116,6 +118,7 @@ object Configuration {
                 "application.profile" to Profile.PROD.toString(),
                 "PDL_SCOPE" to "api://prod-fss.pdl.pdl-api/.default",
                 "PDL_ENDPOINT_URL" to "https://pdl-api.prod-fss-pub.nais.io/graphql",
+                "PDL_PIP_SCOPE" to "api://prod-fss.pdl.pdl-pip-api/.default",
                 "PDL_PIP_ENDPOINT_URL" to "https://pdl-pip-api.prod-fss-pub.nais.io",
                 "SKJERMING_SCOPE" to "api://prod-gcp.nom.skjermede-personer-pip/.default",
                 "SKJERMING_URL" to "https://skjermede-personer-pip.intern.nav.no",
@@ -186,6 +189,18 @@ object Configuration {
 
     fun ouathConfigPdl(
         scope: String = config()[Key("PDL_SCOPE", stringType)],
+        clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
+        clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
+        wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
+    ) = AzureTokenProvider.OauthConfig(
+        scope = scope,
+        clientId = clientId,
+        clientSecret = clientSecret,
+        wellknownUrl = wellknownUrl,
+    )
+
+    fun ouathConfigPdlPip(
+        scope: String = config()[Key("PDL_PIP_SCOPE", stringType)],
         clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
         clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
         wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
