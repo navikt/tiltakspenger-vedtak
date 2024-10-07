@@ -59,7 +59,8 @@ object Configuration {
                 "POAO_TILGANG_URL" to "http://host.docker.internal:8091",
                 "POAO_TILGANG_SCOPE" to "localhost",
                 "PDL_SCOPE" to "localhost",
-                "PDL_ENDPOINT_URL" to "https://localhost:8091/graphql",
+                "PDL_ENDPOINT_URL" to "https://host.docker.internal:8091/graphql",
+                "PDL_PIP_ENDPOINT_URL" to "http://host.docker.internal:8091",
                 "SKJERMING_SCOPE" to "localhost",
                 "SKJERMING_URL" to "http://host.docker.internal:8091",
                 "TILTAK_SCOPE" to "localhost",
@@ -92,6 +93,7 @@ object Configuration {
                 "application.profile" to Profile.DEV.toString(),
                 "PDL_SCOPE" to "api://dev-fss.pdl.pdl-api/.default",
                 "PDL_ENDPOINT_URL" to "https://pdl-api.dev-fss-pub.nais.io/graphql",
+                "PDL_PIP_ENDPOINT_URL" to "https://pdl-pip-api.dev-fss-pub.nais.io",
                 "SKJERMING_SCOPE" to "api://dev-gcp.nom.skjermede-personer-pip/.default",
                 "SKJERMING_URL" to "https://skjermede-personer-pip.intern.dev.nav.no",
                 "TILTAK_SCOPE" to "api://dev-gcp.tpts.tiltakspenger-tiltak/.default",
@@ -114,6 +116,7 @@ object Configuration {
                 "application.profile" to Profile.PROD.toString(),
                 "PDL_SCOPE" to "api://prod-fss.pdl.pdl-api/.default",
                 "PDL_ENDPOINT_URL" to "https://pdl-api.prod-fss-pub.nais.io/graphql",
+                "PDL_PIP_ENDPOINT_URL" to "https://pdl-pip-api.prod-fss-pub.nais.io",
                 "SKJERMING_SCOPE" to "api://prod-gcp.nom.skjermede-personer-pip/.default",
                 "SKJERMING_URL" to "https://skjermede-personer-pip.intern.nav.no",
                 "TILTAK_SCOPE" to "api://prod-gcp.tpts.tiltakspenger-tiltak/.default",
@@ -179,6 +182,7 @@ object Configuration {
     )
 
     fun pdlClientConfig(baseUrl: String = config()[Key("PDL_ENDPOINT_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
+    fun pdlPipClientConfig(baseUrl: String = config()[Key("PDL_PIP_ENDPOINT_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
 
     fun ouathConfigPdl(
         scope: String = config()[Key("PDL_SCOPE", stringType)],

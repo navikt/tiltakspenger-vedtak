@@ -32,7 +32,7 @@ open class PersonContext(
         TilgangsstyringServiceImpl.create(
             skjermingBaseUrl = Configuration.skjermingClientConfig().baseUrl,
             getPdlPipToken = tokenProviderPdl::getToken,
-            pdlPipUrl = Configuration.pdlClientConfig().baseUrl,
+            pdlPipBaseUrl = Configuration.pdlPipClientConfig().baseUrl,
             getSkjermingToken = tokenProviderSkjerming::getToken,
         )
     }

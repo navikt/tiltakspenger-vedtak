@@ -16,7 +16,7 @@ open class TilgangsstyringContext(
         TilgangsstyringServiceImpl.create(
             skjermingBaseUrl = Configuration.skjermingClientConfig().baseUrl,
             getPdlPipToken = getPdlPipToken,
-            pdlPipUrl = Configuration.pdlClientConfig().baseUrl,
+            pdlPipBaseUrl = Configuration.pdlClientConfig().baseUrl,
             getSkjermingToken = tokenProviderSkjerming::getToken,
         )
     }
