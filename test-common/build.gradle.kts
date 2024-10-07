@@ -1,4 +1,4 @@
-val felleslibVersion = "0.0.235"
+val felleslibVersion = "0.0.236"
 val kotestVersion = "5.9.1"
 val kotlinxCoroutinesVersion = "1.9.0"
 
