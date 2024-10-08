@@ -1,4 +1,4 @@
-INSERT INTO public.søknad_tiltak (id,søknad_id,ekstern_id,arrangørnavn,typekode,typenavn,deltakelse_fom,deltakelse_tom) VALUES
+INSERT INTO public.søknadstiltak (id,søknad_id,ekstern_id,arrangørnavn,typekode,typenavn,deltakelse_fom,deltakelse_tom) VALUES
     ('tilt_01HSJYVBZNMK4MTEK4R627VWQ3','soknad_01HSJYVBXDSY6JF7HGQ3FY8ZVN','TA6418334','Kommunerevisjonen','ENKFAGYRKE','Enkeltplass Fag- og yrkesopplæring VGS og høyere yrkesfaglig utdanning','2024-01-01','2024-06-30'),
     ('tilt_01HSK4RT3JPHYTMKQAV6BBCBPX','soknad_01HSK4RT0GQ3KKBMH8VSB5Y5T7','TA6418385','Kommunerevisjonen','ENKFAGYRKE','Enkeltplass Fag- og yrkesopplæring VGS og høyere yrkesfaglig utdanning','2024-01-01','2024-06-30'),
     ('tilt_01HSTQN8KVKGTT18P9C5ZPSD47','soknad_01HSTQN8CH9NAESA311XJTHSQN','2f49374d-909f-4d59-94d0-fcefc3a3229d','TINN KOMMUNE ENHET FOR SKOLE OG BARNEHAGE','GRUPPEAMO','Gruppe AMO','2023-12-02','2024-06-07'),

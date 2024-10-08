@@ -12,7 +12,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
 import no.nav.tiltakspenger.objectmothers.ObjectMother.godkjentAttestering
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler
-import no.nav.tiltakspenger.objectmothers.ObjectMother.søknadTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.søknadstiltak
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
@@ -36,8 +36,8 @@ interface SakMother {
         saksbehandler: Saksbehandler = saksbehandler(),
         søknad: Søknad =
             nySøknad(
-                tiltak =
-                søknadTiltak(
+                søknadstiltak =
+                søknadstiltak(
                     deltakelseFom = vurderingsperiode.fraOgMed,
                     deltakelseTom = vurderingsperiode.tilOgMed,
                 ),

@@ -88,12 +88,10 @@ internal class TestDatabaseManager {
                   statistikk_sak,
                   statistikk_sak_vilkår,
                   meldekort,
-                  stønadsdager_tiltak,
-                  tiltak,
                   rammevedtak,
                   behandling,
                   sak,
-                  søknad_tiltak,
+                  søknadstiltak,
                   søknad_barnetillegg,
                   søknad
                 """.trimIndent(),

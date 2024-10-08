@@ -12,7 +12,7 @@ import no.nav.tiltakspenger.libs.soknad.SøknadDTO
 import no.nav.tiltakspenger.libs.soknad.SøknadsTiltakDTO
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Barnetillegg
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.SøknadsTiltak
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknadstiltak
 import java.time.LocalDateTime
 
 object SøknadDTOMapper {
@@ -78,8 +78,8 @@ object SøknadDTOMapper {
         }
     }
 
-    private fun mapTiltak(dto: SøknadsTiltakDTO): SøknadsTiltak =
-        SøknadsTiltak(
+    private fun mapTiltak(dto: SøknadsTiltakDTO): Søknadstiltak =
+        Søknadstiltak(
             id = dto.id,
             deltakelseFom = dto.deltakelseFom,
             deltakelseTom = dto.deltakelseTom,
