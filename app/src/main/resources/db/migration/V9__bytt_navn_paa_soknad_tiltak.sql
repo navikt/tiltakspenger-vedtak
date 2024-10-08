@@ -1,1 +1,0 @@
-ALTER TABLE søknad_tiltak RENAME TO søknadstiltak;
