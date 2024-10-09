@@ -17,6 +17,7 @@ import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.common.TestApplicationContext
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.januar
@@ -57,7 +58,7 @@ class LivsoppholdRoutesTest {
         )
 
     @Test
-    fun `test at endepunkt for henting og lagring av livsopphold fungerer`() {
+    fun `test at endepunkt for henting og lagring av livsopphold fungerer`() = runTest {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
         with(TestApplicationContext()) {
@@ -122,7 +123,7 @@ class LivsoppholdRoutesTest {
     }
 
     @Test
-    fun `test at sbh ikke kan si at bruker har livsoppholdytelser`() {
+    fun `test at sbh ikke kan si at bruker har livsoppholdytelser`() = runTest {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
         with(TestApplicationContext()) {
@@ -163,7 +164,7 @@ class LivsoppholdRoutesTest {
     }
 
     @Test
-    fun `test at livsoppholdytelser blir uavklart om man bare har data fra søknaden`() {
+    fun `test at livsoppholdytelser blir uavklart om man bare har data fra søknaden`() = runTest {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
         with(TestApplicationContext()) {
@@ -229,7 +230,7 @@ class LivsoppholdRoutesTest {
     }
 
     @Test
-    fun `test alle livsoppholdytelser stemmer overens med søknadsdata`() {
+    fun `test alle livsoppholdytelser stemmer overens med søknadsdata`() = runTest {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
         val søknadMedSykepenger =
@@ -299,7 +300,7 @@ class LivsoppholdRoutesTest {
         livsoppholdVilkårAlderpensjon.samletUtfall shouldBe SamletUtfallDTO.UAVKLART
     }
 
-    private fun opprettSakOgKjørGetPåLivsopphold(
+    private suspend fun opprettSakOgKjørGetPåLivsopphold(
         søknad: Søknad,
     ): LivsoppholdVilkårDTO {
         lateinit var livsoppholdVilkårDTO: LivsoppholdVilkårDTO

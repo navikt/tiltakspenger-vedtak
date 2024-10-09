@@ -11,6 +11,7 @@ import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.common.TestApplicationContext
 import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
 import no.nav.tiltakspenger.objectmothers.førstegangsbehandlingUnderBeslutning
@@ -24,7 +25,7 @@ class BehandlingBeslutterRoutesTest {
     private val innloggetSaksbehandlerProviderMock = mockk<InnloggetSaksbehandlerProvider>()
 
     @Test
-    fun `sjekk at begrunnelse kan sendes inn`() {
+    fun `sjekk at begrunnelse kan sendes inn`() = runTest {
         with(TestApplicationContext()) {
             val tac = this
             val sak = this.førstegangsbehandlingUnderBeslutning()

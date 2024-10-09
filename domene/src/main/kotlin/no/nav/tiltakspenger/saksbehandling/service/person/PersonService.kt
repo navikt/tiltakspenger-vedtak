@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.saksbehandling.domene.personopplysninger
+package no.nav.tiltakspenger.saksbehandling.service.person
 
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.libs.common.BehandlingId
@@ -7,6 +7,9 @@ import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.common.VedtakId
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.EnkelPerson
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Navn
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
 import no.nav.tiltakspenger.saksbehandling.ports.PersonRepo
@@ -46,5 +49,9 @@ class PersonService(
         personClient.hentEnkelPerson(fnr).let {
             return Navn(it.fornavn, it.mellomnavn, it.etternavn)
         }
+    }
+
+    suspend fun hentPersonopplysninger(fnr: Fnr): PersonopplysningerSøker {
+        return personClient.hentPerson(fnr)
     }
 }

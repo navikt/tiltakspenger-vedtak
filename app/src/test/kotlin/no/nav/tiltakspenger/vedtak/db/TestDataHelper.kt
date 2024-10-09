@@ -8,7 +8,6 @@ import no.nav.tiltakspenger.utbetaling.ports.UtbetalingsvedtakRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingPostgresRepo
 import no.nav.tiltakspenger.vedtak.repository.benk.SaksoversiktPostgresRepo
 import no.nav.tiltakspenger.vedtak.repository.meldekort.MeldekortPostgresRepo
-import no.nav.tiltakspenger.vedtak.repository.sak.PersonopplysningerPostgresRepo
 import no.nav.tiltakspenger.vedtak.repository.sak.SakPostgresRepo
 import no.nav.tiltakspenger.vedtak.repository.statistikk.sak.StatistikkSakRepoImpl
 import no.nav.tiltakspenger.vedtak.repository.statistikk.stønad.StatistikkStønadPostgresRepo
@@ -24,7 +23,6 @@ internal class TestDataHelper(
     private val log = KotlinLogging.logger {}
     private val sessionCounter = SessionCounter(log)
     private val sessionFactory = PostgresSessionFactory(dataSource, sessionCounter)
-    val personopplysningerRepo = PersonopplysningerPostgresRepo(sessionFactory)
     val søknadRepo = PostgresSøknadRepo(sessionFactory)
     val behandlingRepo = BehandlingPostgresRepo(sessionFactory)
     val vedtakRepo = RammevedtakPostgresRepo(sessionFactory)

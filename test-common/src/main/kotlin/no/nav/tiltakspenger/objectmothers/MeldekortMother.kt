@@ -6,6 +6,7 @@ import arrow.core.toNonEmptyListOrNull
 import no.nav.tiltakspenger.common.getOrFail
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.erHelg
+import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
@@ -139,6 +140,7 @@ interface MeldekortMother {
                 meldekortId = MeldekortId.random(),
                 saksbehandler = saksbehandler,
                 dager = dager,
+                correlationId = CorrelationId.generate(),
             )
         }
         return kommandoer.drop(1).fold(
@@ -254,5 +256,6 @@ fun Meldekort.IkkeUtfyltMeldekort.tilSendMeldekortTilBeslutterKommando(
         meldekortId = id,
         saksbehandler = saksbehandler,
         dager = dager,
+        correlationId = CorrelationId.generate(),
     )
 }

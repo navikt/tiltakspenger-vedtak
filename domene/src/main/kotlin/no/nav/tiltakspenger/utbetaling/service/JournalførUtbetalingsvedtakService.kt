@@ -5,7 +5,7 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.meldekort.ports.GenererMeldekortPdfGateway
 import no.nav.tiltakspenger.meldekort.ports.JournalførMeldekortGateway
-import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonService
+import no.nav.tiltakspenger.saksbehandling.service.person.PersonService
 import no.nav.tiltakspenger.utbetaling.ports.UtbetalingsvedtakRepo
 import java.time.LocalDateTime
 

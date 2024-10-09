@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.vedtak.db
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.SøknadId
@@ -10,9 +11,7 @@ import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.objectmothers.ObjectMother
-import no.nav.tiltakspenger.objectmothers.ObjectMother.personopplysningKjedeligFyr
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
-import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.SakPersonopplysninger
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.opprettVedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
@@ -29,9 +28,6 @@ internal fun TestDataHelper.persisterOpprettetFørstegangsbehandling(
     journalpostId: String = random.nextInt().toString(),
     saksbehandler: Saksbehandler = ObjectMother.saksbehandler(),
     tiltaksOgVurderingsperiode: Periode = Periode(fraOgMed = deltakelseFom, tilOgMed = deltakelseTom),
-    fødselsdato: LocalDate = ObjectMother.fødselsdato(),
-    sakPersonopplysninger: SakPersonopplysninger =
-        SakPersonopplysninger(listOf(personopplysningKjedeligFyr(fnr = fnr, fødselsdato = fødselsdato))),
     id: SøknadId = Søknad.randomId(),
     søknad: Søknad =
         ObjectMother.nySøknad(
@@ -42,8 +38,8 @@ internal fun TestDataHelper.persisterOpprettetFørstegangsbehandling(
                 fnr = fnr,
             ),
             id = id,
-            tiltak =
-            ObjectMother.søknadTiltak(
+            søknadstiltak =
+            ObjectMother.søknadstiltak(
                 deltakelseFom = deltakelseFom,
                 deltakelseTom = deltakelseTom,
             ),
@@ -59,7 +55,6 @@ internal fun TestDataHelper.persisterOpprettetFørstegangsbehandling(
             fnr = fnr,
             vurderingsperiode = tiltaksOgVurderingsperiode,
             saksnummer = this.saksnummerGenerator.neste(),
-            sakPersonopplysninger = sakPersonopplysninger,
             saksbehandler = saksbehandler,
             sakId = sakId,
         )
@@ -84,11 +79,6 @@ internal fun TestDataHelper.persisterIverksattFørstegangsbehandling(
     saksbehandler: Saksbehandler = ObjectMother.saksbehandler(),
     beslutter: Saksbehandler = ObjectMother.beslutter(),
     tiltaksOgVurderingsperiode: Periode = Periode(fraOgMed = deltakelseFom, tilOgMed = deltakelseTom),
-    fødselsdato: LocalDate = ObjectMother.fødselsdato(),
-    sakPersonopplysninger: SakPersonopplysninger =
-        SakPersonopplysninger(
-            listOf(personopplysningKjedeligFyr(fnr = fnr, fødselsdato = fødselsdato)),
-        ),
     id: SøknadId = Søknad.randomId(),
     søknad: Søknad =
         ObjectMother.nySøknad(
@@ -99,8 +89,8 @@ internal fun TestDataHelper.persisterIverksattFørstegangsbehandling(
                 fnr = fnr,
             ),
             id = id,
-            tiltak =
-            ObjectMother.søknadTiltak(
+            søknadstiltak =
+            ObjectMother.søknadstiltak(
                 deltakelseFom = deltakelseFom,
                 deltakelseTom = deltakelseTom,
             ),
@@ -116,8 +106,6 @@ internal fun TestDataHelper.persisterIverksattFørstegangsbehandling(
             journalpostId = journalpostId,
             saksbehandler = saksbehandler,
             tiltaksOgVurderingsperiode = tiltaksOgVurderingsperiode,
-            fødselsdato = fødselsdato,
-            sakPersonopplysninger = sakPersonopplysninger,
             id = id,
             søknad = søknad,
         )
@@ -134,6 +122,7 @@ internal fun TestDataHelper.persisterIverksattFørstegangsbehandling(
                         harYtelse = false,
                     ),
                     årsakTilEndring = null,
+                    correlationId = CorrelationId.generate(),
                 ),
             ).getOrNull()!!
             .tilBeslutning(saksbehandler)
@@ -155,11 +144,6 @@ internal fun TestDataHelper.persisterRammevedtakMedUtfyltMeldekort(
     saksbehandler: Saksbehandler = ObjectMother.saksbehandler(),
     beslutter: Saksbehandler = ObjectMother.beslutter(),
     tiltaksOgVurderingsperiode: Periode = Periode(fraOgMed = deltakelseFom, tilOgMed = deltakelseTom),
-    fødselsdato: LocalDate = ObjectMother.fødselsdato(),
-    sakPersonopplysninger: SakPersonopplysninger =
-        SakPersonopplysninger(
-            listOf(personopplysningKjedeligFyr(fnr = fnr, fødselsdato = fødselsdato)),
-        ),
     id: SøknadId = Søknad.randomId(),
     søknad: Søknad =
         ObjectMother.nySøknad(
@@ -170,8 +154,8 @@ internal fun TestDataHelper.persisterRammevedtakMedUtfyltMeldekort(
                 fnr = fnr,
             ),
             id = id,
-            tiltak =
-            ObjectMother.søknadTiltak(
+            søknadstiltak =
+            ObjectMother.søknadstiltak(
                 deltakelseFom = deltakelseFom,
                 deltakelseTom = deltakelseTom,
             ),
@@ -187,8 +171,6 @@ internal fun TestDataHelper.persisterRammevedtakMedUtfyltMeldekort(
             journalpostId = journalpostId,
             saksbehandler = saksbehandler,
             tiltaksOgVurderingsperiode = tiltaksOgVurderingsperiode,
-            fødselsdato = fødselsdato,
-            sakPersonopplysninger = sakPersonopplysninger,
             id = id,
             søknad = søknad,
             beslutter = beslutter,

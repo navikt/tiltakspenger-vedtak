@@ -11,9 +11,9 @@ class IntroVilkårServiceImpl(
     private val behandlingRepo: BehandlingRepo,
     private val behandlingService: BehandlingService,
 ) : IntroVilkårService {
-    override fun leggTilSaksopplysning(command: LeggTilIntroSaksopplysningCommand): Førstegangsbehandling {
+    override suspend fun leggTilSaksopplysning(command: LeggTilIntroSaksopplysningCommand): Førstegangsbehandling {
         val behandling =
-            behandlingService.hentBehandling(command.behandlingId, command.saksbehandler) as Førstegangsbehandling
+            behandlingService.hentBehandling(command.behandlingId, command.saksbehandler, correlationId = command.correlationId) as Førstegangsbehandling
         return behandling.leggTilIntroSaksopplysning(command).also {
             behandlingRepo.lagre(it)
         }

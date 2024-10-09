@@ -9,7 +9,6 @@ import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.tiltak.TiltakstypeSomGirRett
-import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerBarnMedIdent
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.TiltakDeltakerstatus
@@ -34,8 +33,6 @@ interface PersonMother {
         strengtFortroligUtland: Boolean = false,
         kommune: String? = null,
         bydel: String? = null,
-        skjermet: Boolean? = false,
-        tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
     ): PersonopplysningerSøker =
         PersonopplysningerSøker(
             fnr = fnr,
@@ -46,10 +43,8 @@ interface PersonMother {
             fortrolig = fortrolig,
             strengtFortrolig = strengtFortrolig,
             strengtFortroligUtland = strengtFortroligUtland,
-            skjermet = skjermet,
             kommune = kommune,
             bydel = bydel,
-            tidsstempelHosOss = tidsstempelHosOss,
         )
 
     fun personopplysningMaxFyr(
@@ -63,8 +58,6 @@ interface PersonMother {
         strengtFortroligUtland: Boolean = false,
         kommune: String? = "Oslo",
         bydel: String? = "3440",
-        skjermet: Boolean? = true,
-        tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
     ): PersonopplysningerSøker =
         PersonopplysningerSøker(
             fnr = fnr,
@@ -75,37 +68,8 @@ interface PersonMother {
             fortrolig = fortrolig,
             strengtFortrolig = strengtFortrolig,
             strengtFortroligUtland = strengtFortroligUtland,
-            skjermet = skjermet,
             kommune = kommune,
             bydel = bydel,
-            tidsstempelHosOss = tidsstempelHosOss,
-        )
-
-    fun barn(
-        fnr: Fnr = Fnr.random(),
-        fødselsdato: LocalDate = fødselsdato(),
-        fornavn: String = "Fornavn",
-        mellomnavn: String? = null,
-        etternavn: String = "Etternavn",
-        fortrolig: Boolean = false,
-        strengtFortrolig: Boolean = false,
-        strengtFortroligUtland: Boolean = false,
-        skjermet: Boolean = false,
-        oppholdsland: String? = null,
-        tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
-    ): PersonopplysningerBarnMedIdent =
-        PersonopplysningerBarnMedIdent(
-            fnr = fnr,
-            fødselsdato = fødselsdato,
-            fornavn = fornavn,
-            mellomnavn = mellomnavn,
-            etternavn = etternavn,
-            fortrolig = fortrolig,
-            strengtFortrolig = strengtFortrolig,
-            strengtFortroligUtland = strengtFortroligUtland,
-            skjermet = skjermet,
-            oppholdsland = oppholdsland,
-            tidsstempelHosOss = tidsstempelHosOss,
         )
 
     fun tiltak(

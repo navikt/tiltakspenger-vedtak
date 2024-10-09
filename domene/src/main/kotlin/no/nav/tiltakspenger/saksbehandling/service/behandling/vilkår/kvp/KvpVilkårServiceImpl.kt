@@ -10,9 +10,9 @@ class KvpVilkårServiceImpl(
     private val behandlingRepo: BehandlingRepo,
     private val behandlingService: BehandlingService,
 ) : KvpVilkårService {
-    override fun leggTilSaksopplysning(command: LeggTilKvpSaksopplysningCommand): Førstegangsbehandling {
+    override suspend fun leggTilSaksopplysning(command: LeggTilKvpSaksopplysningCommand): Førstegangsbehandling {
         val behandling =
-            behandlingService.hentBehandling(command.behandlingId, command.saksbehandler) as Førstegangsbehandling
+            behandlingService.hentBehandling(command.behandlingId, command.saksbehandler, command.correlationId) as Førstegangsbehandling
         return behandling.leggTilKvpSaksopplysning(command).also {
             behandlingRepo.lagre(it)
         }

@@ -6,7 +6,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLiv
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LivsoppholdVilkår
 
 interface LivsoppholdVilkårService {
-    fun leggTilSaksopplysning(
+    suspend fun leggTilSaksopplysning(
         command: LeggTilLivsoppholdSaksopplysningCommand,
     ): Either<LivsoppholdVilkår.PeriodenMåVæreLikVurderingsperioden, Førstegangsbehandling>
 }

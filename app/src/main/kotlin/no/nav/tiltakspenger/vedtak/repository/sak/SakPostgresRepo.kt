@@ -133,11 +133,6 @@ internal class SakPostgresRepo(
             } else {
                 oppdaterSak(sistEndret, sak, txSession)
             }
-            PersonopplysningerPostgresRepo.lagre(
-                sakId = sak.id,
-                personopplysninger = sak.personopplysninger,
-                txSession = txSession,
-            )
             BehandlingPostgresRepo.lagre(sak.førstegangsbehandling, txSession)
         }
     }
@@ -258,9 +253,10 @@ internal class SakPostgresRepo(
             return sessionContext.withSession { session ->
                 val behandlinger = BehandlingPostgresRepo.hentForSakId(id, session)
                 Sak(
-                    sakDetaljer = toSakDetaljer(),
+                    id = SakId.fromString(string("id")),
+                    saksnummer = Saksnummer(verdi = string("saksnummer")),
+                    fnr = Fnr.fromString(string("ident")),
                     behandlinger = behandlinger,
-                    personopplysninger = PersonopplysningerPostgresRepo.hentForSakId(id, session),
                     rammevedtak = RammevedtakPostgresRepo.hentForSakId(id, session),
                     meldeperioder = MeldekortPostgresRepo.hentForSakId(id, session)
                         ?: Meldeperioder.empty(behandlinger.first().tiltakstype),

@@ -4,13 +4,14 @@ import arrow.core.Either
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
+import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.common.VedtakId
-import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonService
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
+import no.nav.tiltakspenger.saksbehandling.service.person.PersonService
 import java.lang.String.join
 import java.util.UUID
 
@@ -21,7 +22,7 @@ data class AuditLogEvent(
     val berørtBrukerId: String,
     val action: Action = Action.ACCESS,
     val message: String,
-    val callId: String?,
+    val correlationId: CorrelationId,
     val behandlingId: UUID? = null,
     val logLevel: Level = Level.INFO,
 ) {
@@ -181,7 +182,7 @@ object AuditLogger {
             CefField(CefFieldName.BERORT_BRUKER_ID, logEvent.berørtBrukerId),
             CefField(CefFieldName.DECISION_LABEL, "Decision"),
             CefField(CefFieldName.DECISION_VERDI, "Permit"),
-            CefField(CefFieldName.CALL_ID, logEvent.callId.toString()),
+            CefField(CefFieldName.CALL_ID, logEvent.correlationId.toString()),
             CefField(CefFieldName.MESSAGE, logEvent.message),
         ).plus(
             logEvent.behandlingId
@@ -202,7 +203,7 @@ class AuditService(
         navIdent: String,
         action: AuditLogEvent.Action,
         contextMessage: String,
-        callId: String?,
+        correlationId: CorrelationId,
     ) {
         Either.catch {
             val berørtBrukerId = personService.hentFnrForBehandlingId(behandlingId)
@@ -213,7 +214,7 @@ class AuditService(
                     berørtBrukerId = berørtBrukerId.verdi,
                     action = action,
                     behandlingId = behandlingId.uuid(),
-                    callId = callId,
+                    correlationId = correlationId,
                     message = contextMessage,
                     logLevel = AuditLogEvent.Level.INFO,
                 ),
@@ -225,7 +226,7 @@ class AuditService(
         meldekortId: MeldekortId,
         navIdent: String,
         action: AuditLogEvent.Action,
-        callId: String?,
+        correlationId: CorrelationId,
         contextMessage: String,
         behandlingUUID: UUID? = null,
     ) {
@@ -238,7 +239,7 @@ class AuditService(
                     berørtBrukerId = berørtBrukerId.verdi,
                     action = action,
                     behandlingId = behandlingUUID,
-                    callId = callId,
+                    correlationId = correlationId,
                     message = contextMessage,
                     logLevel = AuditLogEvent.Level.INFO,
                 ),
@@ -250,7 +251,7 @@ class AuditService(
         sakId: SakId,
         navIdent: String,
         action: AuditLogEvent.Action,
-        callId: String?,
+        correlationId: CorrelationId,
         contextMessage: String,
         behandlingUUID: UUID? = null,
     ) {
@@ -263,7 +264,7 @@ class AuditService(
                     berørtBrukerId = berørtBrukerId.verdi,
                     action = action,
                     behandlingId = behandlingUUID,
-                    callId = callId,
+                    correlationId = correlationId,
                     message = contextMessage,
                     logLevel = AuditLogEvent.Level.INFO,
                 ),
@@ -275,7 +276,7 @@ class AuditService(
         saksnummer: Saksnummer,
         navIdent: String,
         action: AuditLogEvent.Action,
-        callId: String?,
+        correlationId: CorrelationId,
         contextMessage: String,
         behandlingUUID: UUID? = null,
     ) {
@@ -288,7 +289,7 @@ class AuditService(
                     berørtBrukerId = berørtBrukerId.verdi,
                     action = action,
                     behandlingId = behandlingUUID,
-                    callId = callId,
+                    correlationId = correlationId,
                     message = contextMessage,
                     logLevel = AuditLogEvent.Level.INFO,
                 ),
@@ -300,7 +301,7 @@ class AuditService(
         brukerId: Fnr,
         navIdent: String,
         action: AuditLogEvent.Action,
-        callId: String?,
+        correlationId: CorrelationId,
         contextMessage: String,
         behandlingUUID: UUID? = null,
     ) {
@@ -311,7 +312,7 @@ class AuditService(
                     berørtBrukerId = brukerId.verdi,
                     action = action,
                     behandlingId = behandlingUUID,
-                    callId = callId,
+                    correlationId = correlationId,
                     message = contextMessage,
                     logLevel = AuditLogEvent.Level.INFO,
                 ),
@@ -323,7 +324,7 @@ class AuditService(
         søknadId: SøknadId,
         navIdent: String,
         action: AuditLogEvent.Action,
-        callId: String?,
+        correlationId: CorrelationId,
         contextMessage: String,
         behandlingUUID: UUID? = null,
     ) {
@@ -336,7 +337,7 @@ class AuditService(
                     berørtBrukerId = berørtBrukerFnr.verdi,
                     action = action,
                     behandlingId = behandlingUUID,
-                    callId = callId,
+                    correlationId = correlationId,
                     message = contextMessage,
                     logLevel = AuditLogEvent.Level.INFO,
                 ),
@@ -348,7 +349,7 @@ class AuditService(
         vedtakId: VedtakId,
         navIdent: String,
         action: AuditLogEvent.Action,
-        callId: String?,
+        correlationId: CorrelationId,
         contextMessage: String,
         behandlingUUID: UUID? = null,
     ) {
@@ -361,7 +362,7 @@ class AuditService(
                     berørtBrukerId = berørtBrukerId.verdi,
                     action = action,
                     behandlingId = behandlingUUID,
-                    callId = callId,
+                    correlationId = correlationId,
                     message = contextMessage,
                     logLevel = AuditLogEvent.Level.INFO,
                 ),

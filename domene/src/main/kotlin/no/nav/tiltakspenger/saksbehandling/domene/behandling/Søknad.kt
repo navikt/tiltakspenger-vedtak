@@ -14,7 +14,7 @@ data class Søknad(
     // TODO ?-mvp: Skille ut i Vedlegg-klasse, som bør få annet navn. Trenger å få med filnavn fra mottak!
     val journalpostId: String,
     val personopplysninger: Personopplysninger,
-    val tiltak: SøknadsTiltak,
+    val tiltak: Søknadstiltak,
     val barnetillegg: List<Barnetillegg>,
     val opprettet: LocalDateTime,
     val tidsstempelHosOss: LocalDateTime,
@@ -99,7 +99,7 @@ data class Søknad(
     }
 }
 
-data class SøknadsTiltak(
+data class Søknadstiltak(
     val id: String,
     val deltakelseFom: LocalDate,
     val deltakelseTom: LocalDate,

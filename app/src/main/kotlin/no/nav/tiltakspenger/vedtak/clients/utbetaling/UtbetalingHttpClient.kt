@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.utbetaling.client.iverksett
+package no.nav.tiltakspenger.vedtak.clients.utbetaling
 
 import arrow.core.Either
 import arrow.core.flatten
@@ -8,14 +8,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.saksbehandling.ports.KunneIkkeUtbetale
 import no.nav.tiltakspenger.saksbehandling.ports.SendtUtbetaling
 import no.nav.tiltakspenger.saksbehandling.ports.UtbetalingGateway
 import no.nav.tiltakspenger.utbetaling.domene.Utbetalingsvedtak
-import no.nav.tiltakspenger.vedtak.clients.utbetaling.toDTO
 import java.net.URI
+import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import kotlin.time.Duration
@@ -35,10 +36,10 @@ class UtbetalingHttpClient(
 ) : UtbetalingGateway {
 
     private val client =
-        java.net.http.HttpClient
+        HttpClient
             .newBuilder()
             .connectTimeout(connectTimeout.toJavaDuration())
-            .followRedirects(java.net.http.HttpClient.Redirect.NEVER)
+            .followRedirects(HttpClient.Redirect.NEVER)
             .build()
 
     private val uri = URI.create("$baseUrl/api/iverksetting/v2")
@@ -64,7 +65,8 @@ class UtbetalingHttpClient(
                     )
                 }.mapLeft {
                     // Either.catch slipper igjennom CancellationException som er ønskelig.
-                    log.error(it) { "Feil ved utsjekk for utbetalingsvedtak ${vedtak.id}. Saksnummer ${vedtak.saksnummer}, sakId: ${vedtak.sakId}" }
+                    log.error(RuntimeException("Trigger stacktrace for enklere debug.")) { "Ukjent feil ved utsjekk for utbetalingsvedtak ${vedtak.id}. Saksnummer ${vedtak.saksnummer}, sakId: ${vedtak.sakId}" }
+                    sikkerlogg.error(it) { "Ukjent feil ved utsjekk for utbetalingsvedtak ${vedtak.id}. Saksnummer ${vedtak.saksnummer}, sakId: ${vedtak.sakId}" }
                     KunneIkkeUtbetale
                 }.flatten()
         }
@@ -94,7 +96,12 @@ private fun mapStatus(
 ): Either<KunneIkkeUtbetale, SendtUtbetaling> {
     when (status) {
         202 -> {
-            log.info("202 Accepted fra helved utsjekk for, utbetalingsvedtak ${vedtak.id}. Response: $response")
+            log.info(RuntimeException("Trigger stacktrace for enklere debug.")) {
+                "202 Accepted fra helved utsjekk for, utbetalingsvedtak ${vedtak.id}. Response: $response. Se sikkerlogg for mer kontekst."
+            }
+            sikkerlogg.info(RuntimeException("Trigger stacktrace for enklere debug.")) {
+                "202 Accepted fra helved utsjekk for, utbetalingsvedtak ${vedtak.id}. Response: $response. Request = $request"
+            }
             return SendtUtbetaling(
                 request = request,
                 response = response,
@@ -102,23 +109,32 @@ private fun mapStatus(
         }
 
         400 -> {
-            log.error(
-                "400 Bad Request fra helved utsjekk, for utbetalingsvedtak ${vedtak.id}. Denne vil bli prøvd på nytt. Response: $response",
-            )
+            log.error(RuntimeException("Trigger stacktrace for enklere debug.")) {
+                "400 Bad Request fra helved utsjekk, for utbetalingsvedtak ${vedtak.id}. Denne vil bli prøvd på nytt. Response: $response. Se sikkerlogg for mer kontekst."
+            }
+            sikkerlogg.error(RuntimeException("Trigger stacktrace for enklere debug.")) {
+                "400 Bad Request fra helved utsjekk, for utbetalingsvedtak ${vedtak.id}. Denne vil bli prøvd på nytt. Response: $response. Request = $request"
+            }
             return KunneIkkeUtbetale.left()
         }
 
         403 -> {
-            log.error(
-                "403 Forbidden fra helved utsjekk, for utbetalingsvedtak ${vedtak.id}. Denne vil bli prøvd på nytt. Response: $response",
-            )
+            log.error(RuntimeException("Trigger stacktrace for enklere debug.")) {
+                "403 Forbidden fra helved utsjekk, for utbetalingsvedtak ${vedtak.id}. Denne vil bli prøvd på nytt. Response: $response. Se sikkerlogg for mer kontekst."
+            }
+            sikkerlogg.error(RuntimeException("Trigger stacktrace for enklere debug.")) {
+                "403 Forbidden fra helved utsjekk, for utbetalingsvedtak ${vedtak.id}. Denne vil bli prøvd på nytt. Response: $response. Request = $request"
+            }
             return KunneIkkeUtbetale.left()
         }
 
         409 -> {
-            log.info(
-                "409 Conflict fra helved utsjekk, for utbetalingsvedtak ${vedtak.id}. Vi antar vi har sendt samme melding tidligere og behandler denne på samme måte som 202 Response: $response",
-            )
+            log.info(RuntimeException("Trigger stacktrace for enklere debug.")) {
+                "409 Conflict fra helved utsjekk, for utbetalingsvedtak ${vedtak.id}. Vi antar vi har sendt samme melding tidligere og behandler denne på samme måte som 202 Response: $response. Se sikkerlogg for mer kontekst."
+            }
+            sikkerlogg.error(RuntimeException("Trigger stacktrace for enklere debug.")) {
+                "409 Conflict fra helved utsjekk, for utbetalingsvedtak ${vedtak.id}. Vi antar vi har sendt samme melding tidligere og behandler denne på samme måte som 202 Response: $response. Request = $request"
+            }
             return SendtUtbetaling(
                 request = request,
                 response = response,
@@ -126,9 +142,12 @@ private fun mapStatus(
         }
 
         else -> {
-            log.error(
-                "Ukjent feil fra helved utsjekk, for utbetalingsvedtak ${vedtak.id}. Denne vil bli prøvd på nytt. Statuskode: $status, response: $response",
-            )
+            log.error(RuntimeException("Trigger stacktrace for enklere debug.")) {
+                "Ukjent feil fra helved utsjekk, for utbetalingsvedtak ${vedtak.id}. Denne vil bli prøvd på nytt. Statuskode: $status, response: $response. Se sikkerlogg for mer kontekst."
+            }
+            sikkerlogg.error(RuntimeException("Trigger stacktrace for enklere debug.")) {
+                "Ukjent feil fra helved utsjekk, for utbetalingsvedtak ${vedtak.id}. Denne vil bli prøvd på nytt. Statuskode: $status, response: $response. Request = $request"
+            }
             return KunneIkkeUtbetale.left()
         }
     }

@@ -4,10 +4,10 @@ import arrow.core.Either
 import arrow.core.getOrElse
 import mu.KotlinLogging
 import no.nav.tiltakspenger.libs.common.CorrelationId
-import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonService
 import no.nav.tiltakspenger.saksbehandling.ports.GenererVedtaksbrevGateway
 import no.nav.tiltakspenger.saksbehandling.ports.JournalførVedtaksbrevGateway
 import no.nav.tiltakspenger.saksbehandling.ports.RammevedtakRepo
+import no.nav.tiltakspenger.saksbehandling.service.person.PersonService
 import java.time.LocalDateTime
 
 class JournalførVedtaksbrevService(

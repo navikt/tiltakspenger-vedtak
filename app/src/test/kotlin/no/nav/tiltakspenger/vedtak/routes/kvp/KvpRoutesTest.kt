@@ -17,6 +17,7 @@ import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.common.TestApplicationContext
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.common.Rolle
@@ -50,7 +51,7 @@ class KvpRoutesTest {
         )
 
     @Test
-    fun `test at endepunkt for henting og lagring av kvp fungerer`() {
+    fun `test at endepunkt for henting og lagring av kvp fungerer`() = runTest {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
         with(TestApplicationContext()) {
@@ -120,7 +121,7 @@ class KvpRoutesTest {
     }
 
     @Test
-    fun `test at endring av kvp ikke endrer søknadsdata`() {
+    fun `test at endring av kvp ikke endrer søknadsdata`() = runTest {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
         lateinit var originalDatoForKvpFraSøknaden: KvpSaksopplysningDTO
@@ -188,7 +189,7 @@ class KvpRoutesTest {
     }
 
     @Test
-    fun `test at samlet utfall for kvp blir IKKE_OPPFYLT om bruker går på kvp i vurderingsperioden`() {
+    fun `test at samlet utfall for kvp blir IKKE_OPPFYLT om bruker går på kvp i vurderingsperioden`() = runTest {
         every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
 
         with(TestApplicationContext()) {

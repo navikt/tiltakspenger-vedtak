@@ -10,6 +10,7 @@ import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.jobber.RunCheckFactory
 import no.nav.tiltakspenger.libs.jobber.StoppableJob
 import no.nav.tiltakspenger.libs.jobber.startStoppableJob
+import no.nav.tiltakspenger.vedtak.routes.CALL_ID_MDC_KEY
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -37,8 +38,8 @@ internal class TaskExecutor(
                     intervall = intervall.toJavaDuration(),
                     logger = logger,
                     sikkerLogg = sikkerlogg,
-                    // Ref callIdMdc("call-id") i VedtakApi.kt
-                    mdcCallIdKey = "call-id",
+                    // Ref callIdMdc(CALL_ID_MDC_KEY) i VedtakApi.kt
+                    mdcCallIdKey = CALL_ID_MDC_KEY,
                     runJobCheck = listOf(runCheckFactory.leaderPod()),
                     // Denne kjører så ofte at vi ønsker ikke bli spammet av logging.
                     enableDebuggingLogging = false,

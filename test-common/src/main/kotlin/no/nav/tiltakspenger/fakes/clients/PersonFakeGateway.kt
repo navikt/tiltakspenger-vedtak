@@ -7,15 +7,15 @@ import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopply
 import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
 
 class PersonFakeGateway : PersonGateway {
-    private val data = Atomic(mutableMapOf<Fnr, List<PersonopplysningerSøker>>())
+    private val data = Atomic(mutableMapOf<Fnr, PersonopplysningerSøker>())
 
     private val kall = Atomic(mutableListOf<Fnr>())
     val antallKall: Int get() = kall.get().size
     val alleKall: List<Fnr> get() = kall.get().toList()
 
-    override suspend fun hentPerson(fnr: Fnr): List<PersonopplysningerSøker> = data.get()[fnr]!!
+    override suspend fun hentPerson(fnr: Fnr): PersonopplysningerSøker = data.get()[fnr]!!
 
-    override suspend fun hentEnkelPerson(fnr: Fnr): EnkelPerson = data.get()[fnr]!!.single().let {
+    override suspend fun hentEnkelPerson(fnr: Fnr): EnkelPerson = data.get()[fnr]!!.let {
         EnkelPerson(
             fnr = fnr,
             fornavn = it.fornavn,
@@ -24,8 +24,7 @@ class PersonFakeGateway : PersonGateway {
             fortrolig = it.fortrolig,
             strengtFortrolig = it.strengtFortrolig,
             strengtFortroligUtland = it.strengtFortroligUtland,
-            skjermet = it.skjermet,
-
+            skjermet = false,
         )
     }
 
@@ -35,7 +34,7 @@ class PersonFakeGateway : PersonGateway {
      */
     fun leggTilPersonopplysning(
         fnr: Fnr,
-        personopplysninger: List<PersonopplysningerSøker>,
+        personopplysninger: PersonopplysningerSøker,
     ) {
         data.get()[fnr] = personopplysninger
     }

@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.objectmothers
 
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.common.BehandlingId
+import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
@@ -301,6 +302,7 @@ interface VilkårMother {
         årsakTilEndring: ÅrsakTilEndring = ÅrsakTilEndring.FEIL_I_INNHENTET_DATA,
         saksbehandler: Saksbehandler = ObjectMother.saksbehandler(),
         behandlingId: BehandlingId = BehandlingId.random(),
+        correlationId: CorrelationId = CorrelationId.generate(),
         søknadSaksopplysning: LivsoppholdSaksopplysning.Søknad =
             livsoppholdSøknadSaksopplysning(
                 vurderingsperiode = vurderingsperiode,
@@ -318,6 +320,7 @@ interface VilkårMother {
                     harYtelse = harLivsoppholdYtelser,
                 ),
                 årsakTilEndring = årsakTilEndring,
+                correlationId = correlationId,
             ),
     ): LivsoppholdVilkår =
         LivsoppholdVilkår

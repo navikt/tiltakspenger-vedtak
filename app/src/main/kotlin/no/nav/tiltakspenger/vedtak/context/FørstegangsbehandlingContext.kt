@@ -3,12 +3,11 @@ package no.nav.tiltakspenger.vedtak.context
 import no.nav.tiltakspenger.distribusjon.ports.DokdistGateway
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
+import no.nav.tiltakspenger.libs.personklient.pdl.TilgangsstyringService
 import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo
-import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonService
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.GenererVedtaksbrevGateway
 import no.nav.tiltakspenger.saksbehandling.ports.JournalførVedtaksbrevGateway
-import no.nav.tiltakspenger.saksbehandling.ports.PersonopplysningerRepo
 import no.nav.tiltakspenger.saksbehandling.ports.RammevedtakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.StatistikkSakRepo
@@ -21,6 +20,7 @@ import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphol
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.distribuering.DistribuerVedtaksbrevService
 import no.nav.tiltakspenger.saksbehandling.service.journalføring.JournalførVedtaksbrevService
+import no.nav.tiltakspenger.saksbehandling.service.person.PersonService
 import no.nav.tiltakspenger.saksbehandling.service.vedtak.RammevedtakService
 import no.nav.tiltakspenger.saksbehandling.service.vedtak.RammevedtakServiceImpl
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingPostgresRepo
@@ -28,7 +28,6 @@ import no.nav.tiltakspenger.vedtak.repository.vedtak.RammevedtakPostgresRepo
 
 open class FørstegangsbehandlingContext(
     sessionFactory: SessionFactory,
-    personopplysningRepo: PersonopplysningerRepo,
     meldekortRepo: MeldekortRepo,
     sakRepo: SakRepo,
     statistikkSakRepo: StatistikkSakRepo,
@@ -36,8 +35,9 @@ open class FørstegangsbehandlingContext(
     gitHash: String,
     journalførVedtaksbrevGateway: JournalførVedtaksbrevGateway,
     genererVedtaksbrevGateway: GenererVedtaksbrevGateway,
-    dokdistGateway: DokdistGateway,
+    tilgangsstyringService: TilgangsstyringService,
     personService: PersonService,
+    dokdistGateway: DokdistGateway,
 ) {
     open val rammevedtakRepo: RammevedtakRepo by lazy { RammevedtakPostgresRepo(sessionFactory as PostgresSessionFactory) }
     open val behandlingRepo: BehandlingRepo by lazy { BehandlingPostgresRepo(sessionFactory as PostgresSessionFactory) }
@@ -45,12 +45,13 @@ open class FørstegangsbehandlingContext(
         BehandlingServiceImpl(
             førstegangsbehandlingRepo = behandlingRepo,
             rammevedtakRepo = rammevedtakRepo,
-            personopplysningRepo = personopplysningRepo,
             meldekortRepo = meldekortRepo,
             sakRepo = sakRepo,
             sessionFactory = sessionFactory,
             statistikkSakRepo = statistikkSakRepo,
             statistikkStønadRepo = statistikkStønadRepo,
+            tilgangsstyringService = tilgangsstyringService,
+            personService = personService,
             gitHash = gitHash,
         )
     }

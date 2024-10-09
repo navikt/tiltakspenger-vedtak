@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.vedtak.clients.person
 
 import arrow.core.getOrElse
-import arrow.core.raise.either
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -10,8 +9,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.tiltakspenger.libs.common.Fnr
-import no.nav.tiltakspenger.libs.person.BarnIFolkeregisteret
-import no.nav.tiltakspenger.libs.person.BarnUtenFolkeregisteridentifikator
 import no.nav.tiltakspenger.libs.personklient.pdl.FellesPersonklientError
 import no.nav.tiltakspenger.libs.personklient.pdl.FellesPersonklientError.AdressebeskyttelseKunneIkkeAvklares
 import no.nav.tiltakspenger.libs.personklient.pdl.FellesPersonklientError.DeserializationException
@@ -29,66 +26,34 @@ import no.nav.tiltakspenger.libs.personklient.pdl.dto.PdlPerson
 import no.nav.tiltakspenger.libs.personklient.pdl.dto.avklarFødsel
 import no.nav.tiltakspenger.libs.personklient.pdl.dto.avklarGradering
 import no.nav.tiltakspenger.libs.personklient.pdl.dto.avklarNavn
-import no.nav.tiltakspenger.libs.personklient.pdl.dto.toBarnUtenforFolkeregisteret
-import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopplysninger
-import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerBarnUtenIdent
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
-import java.time.LocalDate
-import java.time.LocalDateTime
 
 /**
  * Kopiert fra no.nav.tiltakspenger.vedtak.routes.rivers.PersonopplysningerRoutes.kt
  */
 internal fun mapPersonopplysninger(
     json: String,
-    innhentet: LocalDateTime,
     fnr: Fnr,
-): List<Personopplysninger> {
+): PersonopplysningerSøker {
     val data: PdlResponseData = objectMapper.readValue<PdlResponseData>(json)
     val person: PdlPerson = data.hentPerson
     val geografiskTilknytning: GeografiskTilknytning? = data.hentGeografiskTilknytning
-    return either {
-        val navn = avklarNavn(person.navn).bind()
-        val fødsel = avklarFødsel(person.foedselsdato).bind()
-        val adressebeskyttelse: AdressebeskyttelseGradering = avklarGradering(person.adressebeskyttelse).bind()
-        person.forelderBarnRelasjon
-            .toBarnUtenforFolkeregisteret()
-            .filter { it.kanGiRettPåBarnetillegg() }
-            .map { barn ->
-                PersonopplysningerBarnUtenIdent(
-                    fødselsdato = barn.fødselsdato,
-                    fornavn = barn.fornavn,
-                    mellomnavn = barn.mellomnavn,
-                    etternavn = barn.etternavn,
-                    tidsstempelHosOss = innhentet,
-                )
-            } +
-            PersonopplysningerSøker(
-                fnr = fnr,
-                fødselsdato = fødsel.foedselsdato,
-                fornavn = navn.fornavn,
-                mellomnavn = navn.mellomnavn,
-                etternavn = navn.etternavn,
-                fortrolig = adressebeskyttelse.erFortrolig(),
-                strengtFortrolig = adressebeskyttelse.erStrengtFortrolig(),
-                strengtFortroligUtland = adressebeskyttelse.erStrengtFortroligUtland(),
-                skjermet = null,
-                kommune = geografiskTilknytning?.gtKommune,
-                bydel = geografiskTilknytning?.gtBydel,
-                tidsstempelHosOss = innhentet,
-            )
-    }.getOrElse { it.mapError() }
+    val navn = avklarNavn(person.navn).getOrElse { it.mapError() }
+    val fødsel = avklarFødsel(person.foedselsdato).getOrElse { it.mapError() }
+    val adressebeskyttelse: AdressebeskyttelseGradering = avklarGradering(person.adressebeskyttelse).getOrElse { it.mapError() }
+    return PersonopplysningerSøker(
+        fnr = fnr,
+        fødselsdato = fødsel.foedselsdato,
+        fornavn = navn.fornavn,
+        mellomnavn = navn.mellomnavn,
+        etternavn = navn.etternavn,
+        fortrolig = adressebeskyttelse.erFortrolig(),
+        strengtFortrolig = adressebeskyttelse.erStrengtFortrolig(),
+        strengtFortroligUtland = adressebeskyttelse.erStrengtFortroligUtland(),
+        kommune = geografiskTilknytning?.gtKommune,
+        bydel = geografiskTilknytning?.gtBydel,
+    )
 }
-
-private const val ALDER_BARNETILLEGG = 16L
-private const val SIKKERHETSMARGIN_ÅR = 2L // søknaden sender med barn opp til 18 år. Vi lagrer det samme just in case
-
-private fun BarnIFolkeregisteret.kanGiRettPåBarnetillegg() =
-    fødselsdato.isAfter(LocalDate.now().minusYears(ALDER_BARNETILLEGG).minusYears(SIKKERHETSMARGIN_ÅR))
-
-// TODO pre-mvp jah: Vi kan ikke bruke LocalDate.now(). Vi må sammenligne med vurderingsperioden.
-private fun BarnUtenFolkeregisteridentifikator.kanGiRettPåBarnetillegg() =
-    fødselsdato?.isAfter(LocalDate.now().minusYears(ALDER_BARNETILLEGG).minusYears(SIKKERHETSMARGIN_ÅR)) ?: true
 
 private data class PdlResponseData(
     val hentGeografiskTilknytning: GeografiskTilknytning?,

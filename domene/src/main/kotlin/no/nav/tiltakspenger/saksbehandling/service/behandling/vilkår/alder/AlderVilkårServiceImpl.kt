@@ -11,9 +11,9 @@ class AlderVilkårServiceImpl(
     private val behandlingRepo: BehandlingRepo,
     private val behandlingService: BehandlingService,
 ) : AlderVilkårService {
-    override fun leggTilSaksopplysning(command: LeggTilAlderSaksopplysningCommand): Førstegangsbehandling {
+    override suspend fun leggTilSaksopplysning(command: LeggTilAlderSaksopplysningCommand): Førstegangsbehandling {
         val behandling =
-            behandlingService.hentBehandling(command.behandlingId, command.saksbehandler) as Førstegangsbehandling
+            behandlingService.hentBehandling(command.behandlingId, command.saksbehandler, correlationId = command.correlationId) as Førstegangsbehandling
         return behandling.leggTilAlderSaksopplysning(command).also {
             behandlingRepo.lagre(it)
         }

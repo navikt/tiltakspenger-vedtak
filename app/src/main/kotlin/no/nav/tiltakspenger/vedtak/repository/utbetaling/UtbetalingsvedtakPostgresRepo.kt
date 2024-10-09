@@ -168,7 +168,7 @@ internal class UtbetalingsvedtakPostgresRepo(
                 ).map { row ->
                     row.toVedtak(session)
                 }.asList,
-            ).let { Utbetalinger(it) }
+            )
         }
 
     override fun hentDeSomSkalJournalføres(limit: Int): List<Utbetalingsvedtak> =

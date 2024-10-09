@@ -82,21 +82,16 @@ internal class TestDatabaseManager {
             queryOf(
                 """
                 TRUNCATE
-                  sak_personopplysninger_søker,
-                  sak_personopplysninger_barn_med_ident,
-                  sak_personopplysninger_barn_uten_ident,
                   utbetalingsvedtak,
                   statistikk_utbetaling,
                   statistikk_stønad,
                   statistikk_sak,
                   statistikk_sak_vilkår,
                   meldekort,
-                  stønadsdager_tiltak,
-                  tiltak,
                   rammevedtak,
                   behandling,
                   sak,
-                  søknad_tiltak,
+                  søknadstiltak,
                   søknad_barnetillegg,
                   søknad
                 """.trimIndent(),

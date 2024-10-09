@@ -149,7 +149,7 @@ data class Førstegangsbehandling(
         when (this.status) {
             KLAR_TIL_BEHANDLING, UNDER_BEHANDLING -> {
                 check(saksbehandler.isSaksbehandler()) {
-                    "Saksbehandler må ha saksbehandlerrolle. Utøvende saksbehandler: $saksbehandler"
+                    "Saksbehandler må ha rolle saksbehandler. Utøvende saksbehandler: $saksbehandler"
                 }
                 this.copy(saksbehandler = saksbehandler.navIdent, status = UNDER_BEHANDLING).let {
                     // Dersom utøvende saksbehandler er beslutter, fjern beslutter fra behandlingen.
@@ -173,43 +173,6 @@ data class Førstegangsbehandling(
                 )
             }
         }
-
-    override fun taSaksbehandlerAvBehandlingen(utøvendeSaksbehandler: Saksbehandler): Førstegangsbehandling {
-        when (status) {
-            KLAR_TIL_BEHANDLING, UNDER_BEHANDLING -> {
-                // Her aksepterer vi at både saksbehandler og beslutter (kan ha underkjent) kan fjerne seg selv fra behandlingen.
-                if (this.saksbehandler == null && this.beslutter == null) {
-                    return this
-                }
-                if (this.saksbehandler == utøvendeSaksbehandler.navIdent) {
-                    return this.copy(saksbehandler = null, status = KLAR_TIL_BEHANDLING)
-                }
-                if (this.beslutter == utøvendeSaksbehandler.navIdent) {
-                    return this.copy(beslutter = null)
-                }
-                throw IllegalArgumentException(
-                    "Kan ikke ta saksbehandler/beslutter av behandlingen. Behandlingsstatus: ${this.status}. Utøvende saksbehandler: $utøvendeSaksbehandler. Beslutter på behandling: ${this.beslutter}",
-                )
-            }
-
-            KLAR_TIL_BESLUTNING, UNDER_BESLUTNING -> {
-                // Dersom en behandling er til beslutter, kan ikke saksbehandler fjernes, den må isåfall underkjennes først.
-                if (this.beslutter == null) {
-                    return this
-                }
-                if (this.beslutter == utøvendeSaksbehandler.navIdent) {
-                    return this.copy(beslutter = null, status = KLAR_TIL_BESLUTNING)
-                }
-                throw IllegalArgumentException(
-                    "Kan ikke ta beslutter av behandlingen. Behandlingsstatus: ${this.status}. Utøvende saksbehandler: $utøvendeSaksbehandler. Beslutter på behandling: ${this.beslutter}",
-                )
-            }
-
-            INNVILGET -> throw IllegalArgumentException(
-                "Kan ikke ta behandling når behandlingen er IVERKSATT. Behandlingsstatus: ${this.status}. Utøvende saksbehandler: $saksbehandler. Saksbehandler på behandling: ${this.saksbehandler}",
-            )
-        }
-    }
 
     override fun tilBeslutning(saksbehandler: Saksbehandler): Førstegangsbehandling {
         if (vilkårssett.samletUtfall != SamletUtfall.OPPFYLT) {

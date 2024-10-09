@@ -1,13 +1,13 @@
 package no.nav.tiltakspenger.saksbehandling.service.statistikk.stønad
 
-import no.nav.tiltakspenger.saksbehandling.domene.sak.SakDetaljer
+import no.nav.tiltakspenger.saksbehandling.domene.sak.TynnSak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 
 fun stønadStatistikkMapper(
-    sak: SakDetaljer,
+    sak: TynnSak,
     vedtak: Rammevedtak,
 ): StatistikkStønadDTO {
     val formatter = DateTimeFormatter.ofPattern("yyyyMMdd")

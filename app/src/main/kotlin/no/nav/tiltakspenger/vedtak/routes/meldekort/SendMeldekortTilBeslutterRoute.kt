@@ -2,12 +2,12 @@ package no.nav.tiltakspenger.vedtak.routes.meldekort
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
-import io.ktor.server.plugins.callid.callId
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.meldekort.domene.KanIkkeSendeMeldekortTilBeslutter
@@ -16,6 +16,7 @@ import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando.D
 import no.nav.tiltakspenger.meldekort.service.SendMeldekortTilBeslutterService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
+import no.nav.tiltakspenger.vedtak.routes.correlationId
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import java.time.LocalDate
 
@@ -31,9 +32,11 @@ private data class Body(
         saksbehandler: Saksbehandler,
         meldekortId: MeldekortId,
         sakId: SakId,
+        correlationId: CorrelationId,
     ) = SendMeldekortTilBeslutterKommando(
         sakId = sakId,
         saksbehandler = saksbehandler,
+        correlationId = correlationId,
         dager =
         this.dager.map { dag ->
             Dag(
@@ -75,6 +78,7 @@ fun Route.sendMeldekortTilBeslutterRoute(
                     saksbehandler = saksbehandler,
                     meldekortId = MeldekortId.fromString(meldekortId),
                     sakId = SakId.fromString(sakId),
+                    correlationId = call.correlationId(),
                 ),
             )
         meldekort.fold(
@@ -93,7 +97,7 @@ fun Route.sendMeldekortTilBeslutterRoute(
                     navIdent = saksbehandler.navIdent,
                     action = AuditLogEvent.Action.UPDATE,
                     contextMessage = "Oppdaterer meldekort og sender til beslutter",
-                    callId = call.callId,
+                    correlationId = call.correlationId(),
                 )
 
                 call.respond(message = {}, status = HttpStatusCode.OK)

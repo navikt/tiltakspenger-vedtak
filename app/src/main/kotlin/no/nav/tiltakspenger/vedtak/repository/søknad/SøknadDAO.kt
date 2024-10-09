@@ -164,7 +164,7 @@ internal object SøknadDAO {
         val tidsstempelHosOss = localDateTime("tidsstempel_hos_oss")
         val journalpostId = string("journalpost_id")
         val barnetillegg = BarnetilleggDAO.hentBarnetilleggListe(id, session)
-        val tiltak = SøknadTiltakDAO.hent(id, session)
+        val søknadstiltak = SøknadTiltakDAO.hent(id, session)
         val vedlegg = int("vedlegg")
         val kvp = periodeSpm(KVP_FELT)
         val intro = periodeSpm(INTRO_FELT)
@@ -187,7 +187,7 @@ internal object SøknadDAO {
                 fornavn = fornavn,
                 etternavn = etternavn,
             ),
-            tiltak = tiltak,
+            tiltak = søknadstiltak,
             barnetillegg = barnetillegg,
             opprettet = opprettet,
             tidsstempelHosOss = tidsstempelHosOss,

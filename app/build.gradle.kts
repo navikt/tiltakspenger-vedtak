@@ -2,8 +2,9 @@ val ktorVersion = "2.3.12"
 val kotestVersion = "5.9.1"
 val mockkVersion = "1.13.12"
 val testContainersVersion = "1.20.2"
-val felleslibVersion = "0.0.229"
+val felleslibVersion = "0.0.239"
 val tokenSupportVersion = "3.2.0"
+val poaoTilgangVersjon = "2024.10.04_12.38-e183cd9d187f"
 val iverksettVersjon = "1.0_20240926140513_d75b2a0"
 val kotlinxCoroutinesVersion = "1.8.1"
 
@@ -24,8 +25,6 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:soknad-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:tiltak-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:person-dtos:$felleslibVersion")
-    implementation("com.github.navikt.tiltakspenger-libs:skjerming-dtos:$felleslibVersion")
-    implementation("com.github.navikt.tiltakspenger-libs:dokument-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:periodisering:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:personklient-domene:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:personklient-infrastruktur:$felleslibVersion")
@@ -76,7 +75,7 @@ dependencies {
     implementation("no.nav.security:token-client-core:$tokenSupportVersion")
 
     // DB
-    implementation("org.flywaydb:flyway-database-postgresql:10.18.2")
+    implementation("org.flywaydb:flyway-database-postgresql:10.19.0")
     implementation("com.zaxxer:HikariCP:6.0.0")
     implementation("org.postgresql:postgresql:42.7.4")
     implementation("com.github.seratch:kotliquery:1.9.0")
@@ -84,19 +83,23 @@ dependencies {
     // Helved/Utsjekk/Utbetaling
     implementation("no.nav.utsjekk.kontrakter:iverksett:$iverksettVersjon")
 
+    //POAO tilgang
+    implementation("no.nav.poao-tilgang:client:$poaoTilgangVersjon")
+
+    // DIV
     // TODO post-mvp jah: Fjern denne når meldekort er over på pdfgen
     implementation("org.apache.pdfbox:pdfbox:3.0.3")
-
 
     // Arrow
     implementation("io.arrow-kt:arrow-core:1.2.4")
 
-    testImplementation(platform("org.junit:junit-bom:5.11.1"))
+    testImplementation(platform("org.junit:junit-bom:5.11.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.junit.jupiter:junit-jupiter-params")
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("io.mockk:mockk-dsl-jvm:$mockkVersion")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
     testImplementation("io.kotest:kotest-assertions-json:$kotestVersion")
     testImplementation("io.kotest:kotest-extensions:$kotestVersion")

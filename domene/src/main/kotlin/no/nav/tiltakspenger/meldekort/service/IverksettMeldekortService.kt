@@ -1,12 +1,19 @@
 package no.nav.tiltakspenger.meldekort.service
 
 import arrow.core.Either
+import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
+import no.nav.tiltakspenger.felles.exceptions.TilgangException
+import no.nav.tiltakspenger.libs.common.CorrelationId
+import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
+import no.nav.tiltakspenger.libs.personklient.pdl.TilgangsstyringService
 import no.nav.tiltakspenger.meldekort.domene.IverksettMeldekortKommando
 import no.nav.tiltakspenger.meldekort.domene.KanIkkeIverksetteMeldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo
 import no.nav.tiltakspenger.saksbehandling.ports.StatistikkStønadRepo
+import no.nav.tiltakspenger.saksbehandling.service.person.PersonService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.utbetaling.domene.opprettUtbetalingsvedtak
 import no.nav.tiltakspenger.utbetaling.domene.tilStatistikk
@@ -16,15 +23,21 @@ class IverksettMeldekortService(
     val sakService: SakService,
     val meldekortRepo: MeldekortRepo,
     val sessionFactory: SessionFactory,
+    private val tilgangsstyringService: TilgangsstyringService,
+    private val personService: PersonService,
     private val utbetalingsvedtakRepo: UtbetalingsvedtakRepo,
     private val statistikkStønadRepo: StatistikkStønadRepo,
 ) {
-    fun iverksettMeldekort(
+    suspend fun iverksettMeldekort(
         kommando: IverksettMeldekortKommando,
     ): Either<KanIkkeIverksetteMeldekort, Meldekort.UtfyltMeldekort> {
+        require(kommando.beslutter.isBeslutter()) { "Saksbehandler ${kommando.beslutter.navIdent} må ha rollen beslutter" }
+
         val meldekortId = kommando.meldekortId
         val sakId = kommando.sakId
-        val sak = sakService.hentForSakId(sakId, kommando.beslutter)
+        kastHvisIkkeTilgang(kommando.beslutter, meldekortId, kommando.correlationId)
+
+        val sak = sakService.hentForSakId(sakId, kommando.beslutter, correlationId = kommando.correlationId)
             ?: throw IllegalArgumentException("Fant ikke sak med id $sakId")
         val meldekort: Meldekort = sak.hentMeldekort(meldekortId)
             ?: throw IllegalArgumentException("Fant ikke meldekort med id $meldekortId i sak $sakId")
@@ -49,5 +62,23 @@ class IverksettMeldekortService(
                 statistikkStønadRepo.lagre(utbetalingsstatistikk, tx)
             }
         }
+    }
+
+    private suspend fun kastHvisIkkeTilgang(
+        saksbehandler: Saksbehandler,
+        meldekortId: MeldekortId,
+        correlationId: CorrelationId,
+    ) {
+        val fnr = personService.hentFnrForMeldekortId(meldekortId)
+        tilgangsstyringService
+            .harTilgangTilPerson(
+                fnr = fnr,
+                roller = saksbehandler.roller,
+                correlationId = correlationId,
+            ).onLeft {
+                throw IkkeFunnetException("Feil ved sjekk av tilgang til person. meldekortId: $meldekortId. CorrelationId: $correlationId")
+            }.onRight {
+                if (!it) throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til person")
+            }
     }
 }
