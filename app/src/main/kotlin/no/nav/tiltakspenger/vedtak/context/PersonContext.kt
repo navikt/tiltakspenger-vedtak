@@ -58,6 +58,7 @@ open class PersonContext(
         PersonService(
             personRepo = personRepo,
             personClient = personGateway,
+            tilgangsstyringService = tilgangsstyringService,
         )
     }
     val auditService by lazy {
