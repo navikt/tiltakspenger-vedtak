@@ -63,7 +63,7 @@ fun main() {
             runCheckFactory = runCheckFactory,
             tasks =
             listOf { correlationId ->
-                // applicationContext.utbetalingContext.sendUtbetalingerService.send(correlationId)
+                applicationContext.utbetalingContext.sendUtbetalingerService.send(correlationId)
                 applicationContext.utbetalingContext.journalførUtbetalingsvedtakService.journalfør(correlationId)
                 applicationContext.førstegangsbehandlingContext.journalførVedtaksbrevService.journalfør(correlationId)
                 applicationContext.førstegangsbehandlingContext.distribuerVedtaksbrevService.distribuer(correlationId)
