@@ -77,7 +77,7 @@ internal class UtbetalingsvedtakPostgresRepo(
                     mapOf(
                         "id" to vedtakId.toString(),
                         "tidspunkt" to tidspunkt,
-                        "metadata" to """{"request": "${utbetalingsrespons.request}", "response": "${utbetalingsrespons.response}"}""",
+                        "metadata" to utbetalingsrespons.toJson(),
                     ),
                 ).asUpdate,
             )
