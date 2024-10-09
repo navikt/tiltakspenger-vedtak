@@ -10,8 +10,10 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.PdfA
 import no.nav.tiltakspenger.felles.journalføring.PdfOgJson
 import no.nav.tiltakspenger.felles.sikkerlogg
+import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.meldekort.ports.GenererMeldekortPdfGateway
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Navn
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import no.nav.tiltakspenger.saksbehandling.ports.GenererVedtaksbrevGateway
 import no.nav.tiltakspenger.saksbehandling.ports.KunneIkkeGenererePdf
@@ -49,9 +51,12 @@ internal class PdfgenHttpClient(
 
     private val vedtakInnvilgelseUri = URI.create("$baseUrl/api/v1/genpdf/tpts/vedtakInnvilgelse")
 
-    override suspend fun genererVedtaksbrev(vedtak: Rammevedtak): Either<KunneIkkeGenererePdf, PdfOgJson> {
+    override suspend fun genererVedtaksbrev(
+        vedtak: Rammevedtak,
+        hentNavn: suspend (Fnr) -> Navn,
+    ): Either<KunneIkkeGenererePdf, PdfOgJson> {
         return withContext(Dispatchers.IO) {
-            val jsonPayload = vedtak.tobrevDTO()
+            val jsonPayload = vedtak.tobrevDTO(hentNavn)
             Either
                 .catch {
                     val request = createPdfgenRequest(jsonPayload, vedtakInnvilgelseUri)
@@ -73,8 +78,11 @@ internal class PdfgenHttpClient(
         }
     }
 
-    override fun genererMeldekortPdf(meldekort: Meldekort.UtfyltMeldekort): PdfOgJson {
-        val data = meldekort.toPdf()
+    override suspend fun genererMeldekortPdf(
+        meldekort: Meldekort.UtfyltMeldekort,
+        hentNavn: suspend (Fnr) -> Navn,
+    ): PdfOgJson {
+        val data = meldekort.toPdf(hentNavn)
         return genererPdfFraJson(data)
     }
 
@@ -93,32 +101,34 @@ internal class PdfgenHttpClient(
 }
 
 // TODO post-mvp jah: Skal bruke pdfgen-core for å generere PDF-er
-private fun genererPdfFraJson(jsonNode: JsonNode): PdfOgJson {
-    PDDocument().use { document ->
-        val margin = 50f
-        val linjeAvstand = 15f
-        val sideStørrelse = PDPage().mediaBox.height - margin * 3f
-        val linjerPerSide = (sideStørrelse / linjeAvstand).toInt()
-        val peneLinjer = jsonNode.toPrettyString().split("\n")
-        peneLinjer.chunked(linjerPerSide).forEach { linjer ->
-            val side = PDPage()
-            document.addPage(side)
-            PDPageContentStream(document, side).use { contentStream ->
-                contentStream.setFont(PDType1Font(FontName.HELVETICA), 12f)
-                contentStream.beginText()
-                contentStream.newLineAtOffset(margin, 700f)
-                linjer.forEach { linje ->
-                    contentStream.showText(linje)
-                    contentStream.newLineAtOffset(0f, -linjeAvstand)
+private suspend fun genererPdfFraJson(jsonNode: JsonNode): PdfOgJson {
+    return withContext(Dispatchers.IO) {
+        PDDocument().use { document ->
+            val margin = 50f
+            val linjeAvstand = 15f
+            val sideStørrelse = PDPage().mediaBox.height - margin * 3f
+            val linjerPerSide = (sideStørrelse / linjeAvstand).toInt()
+            val peneLinjer = jsonNode.toPrettyString().split("\n")
+            peneLinjer.chunked(linjerPerSide).forEach { linjer ->
+                val side = PDPage()
+                document.addPage(side)
+                PDPageContentStream(document, side).use { contentStream ->
+                    contentStream.setFont(PDType1Font(FontName.HELVETICA), 12f)
+                    contentStream.beginText()
+                    contentStream.newLineAtOffset(margin, 700f)
+                    linjer.forEach { linje ->
+                        contentStream.showText(linje)
+                        contentStream.newLineAtOffset(0f, -linjeAvstand)
+                    }
+                    contentStream.endText()
                 }
-                contentStream.endText()
             }
-        }
 
-        val byteArray: ByteArray = ByteArrayOutputStream().use { byteArrayOutputStream ->
-            document.save(byteArrayOutputStream, CompressParameters.NO_COMPRESSION)
-            byteArrayOutputStream.toByteArray()
+            val byteArray: ByteArray = ByteArrayOutputStream().use { byteArrayOutputStream ->
+                document.save(byteArrayOutputStream, CompressParameters.NO_COMPRESSION)
+                byteArrayOutputStream.toByteArray()
+            }
+            PdfOgJson(PdfA(byteArray), jsonNode.toString())
         }
-        return PdfOgJson(PdfA(byteArray), jsonNode.toString())
     }
 }

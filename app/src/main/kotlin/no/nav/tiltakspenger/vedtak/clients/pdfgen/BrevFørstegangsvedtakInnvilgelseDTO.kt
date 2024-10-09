@@ -1,5 +1,7 @@
 package no.nav.tiltakspenger.vedtak.clients.pdfgen
 
+import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Navn
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import no.nav.tiltakspenger.vedtak.clients.pdfgen.formattering.norskDatoFormatter
 import no.nav.tiltakspenger.vedtak.db.serialize
@@ -21,12 +23,15 @@ private class BrevFørstegangsvedtakInnvilgelseDTO(
     val satsBarn: Int,
 )
 
-internal fun Rammevedtak.tobrevDTO(): String {
+internal suspend fun Rammevedtak.tobrevDTO(
+    hentNavn: suspend (Fnr) -> Navn,
+): String {
+    val navn = hentNavn(fnr)
     return BrevFørstegangsvedtakInnvilgelseDTO(
         personalia = BrevPersonaliaDTO(
             ident = this.fnr.verdi,
-            fornavn = "TODO pre-mvp jah: Hent fra PDL",
-            etternavn = "TODO pre-mvp",
+            fornavn = navn.fornavn,
+            etternavn = navn.mellomnavnOgEtternavn,
             antallBarn = 0,
         ),
         tiltaksinfo = BrevTiltaksinfoDTO(
