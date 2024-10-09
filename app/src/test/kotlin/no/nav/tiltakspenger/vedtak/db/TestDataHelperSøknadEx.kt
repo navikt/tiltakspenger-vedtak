@@ -22,8 +22,8 @@ internal fun TestDataHelper.persisterSøknad(
             ObjectMother.personSøknad(
                 fnr = fnr,
             ),
-            tiltak =
-            ObjectMother.søknadTiltak(
+            søknadstiltak =
+            ObjectMother.søknadstiltak(
                 deltakelseFom = deltakelseFom,
                 deltakelseTom = deltakelseTom,
             ),

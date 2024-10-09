@@ -38,8 +38,8 @@ internal fun TestDataHelper.persisterOpprettetFørstegangsbehandling(
                 fnr = fnr,
             ),
             id = id,
-            tiltak =
-            ObjectMother.søknadTiltak(
+            søknadstiltak =
+            ObjectMother.søknadstiltak(
                 deltakelseFom = deltakelseFom,
                 deltakelseTom = deltakelseTom,
             ),
@@ -89,8 +89,8 @@ internal fun TestDataHelper.persisterIverksattFørstegangsbehandling(
                 fnr = fnr,
             ),
             id = id,
-            tiltak =
-            ObjectMother.søknadTiltak(
+            søknadstiltak =
+            ObjectMother.søknadstiltak(
                 deltakelseFom = deltakelseFom,
                 deltakelseTom = deltakelseTom,
             ),
@@ -154,8 +154,8 @@ internal fun TestDataHelper.persisterRammevedtakMedUtfyltMeldekort(
                 fnr = fnr,
             ),
             id = id,
-            tiltak =
-            ObjectMother.søknadTiltak(
+            søknadstiltak =
+            ObjectMother.søknadstiltak(
                 deltakelseFom = deltakelseFom,
                 deltakelseTom = deltakelseTom,
             ),

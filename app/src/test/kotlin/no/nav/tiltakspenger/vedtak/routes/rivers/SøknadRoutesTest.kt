@@ -18,7 +18,7 @@ import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Barnetillegg
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.SøknadsTiltak
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknadstiltak
 import no.nav.tiltakspenger.saksbehandling.service.SøknadServiceImpl
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
@@ -75,7 +75,7 @@ class SøknadRoutesTest {
                     etternavn = "HOFTE",
                 ),
                 tiltak =
-                SøknadsTiltak(
+                Søknadstiltak(
                     id = "123",
                     deltakelseFom = 1.april(2025),
                     deltakelseTom = 10.april(2025),

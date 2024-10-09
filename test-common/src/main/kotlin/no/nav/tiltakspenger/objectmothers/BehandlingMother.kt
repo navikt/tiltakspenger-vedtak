@@ -20,7 +20,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
 import no.nav.tiltakspenger.objectmothers.ObjectMother.personSøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler123
-import no.nav.tiltakspenger.objectmothers.ObjectMother.søknadTiltak
+import no.nav.tiltakspenger.objectmothers.ObjectMother.søknadstiltak
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attesteringsstatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
@@ -36,7 +36,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltakskilde.Komet
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndring
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.leggTilLivsoppholdSaksopplysning
-import no.nav.tiltakspenger.vedtak.routes.correlationId
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -231,7 +230,7 @@ fun TestApplicationContext.nySøknad(
         ObjectMother.nySøknad(
             fnr = fnr,
             personopplysninger = personopplysningerFraSøknad,
-            tiltak = søknadTiltak(
+            søknadstiltak = søknadstiltak(
                 id = tiltak.eksternId,
                 deltakelseFom = periode.fraOgMed,
                 deltakelseTom = periode.tilOgMed,
@@ -276,7 +275,7 @@ suspend fun TestApplicationContext.førstegangsbehandlingUavklart(
         ObjectMother.nySøknad(
             fnr = fnr,
             personopplysninger = personopplysningerFraSøknad,
-            tiltak = søknadTiltak(
+            søknadstiltak = søknadstiltak(
                 id = tiltak.eksternId,
                 deltakelseFom = periode.fraOgMed,
                 deltakelseTom = periode.tilOgMed,

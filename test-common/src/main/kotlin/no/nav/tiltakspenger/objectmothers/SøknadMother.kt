@@ -9,20 +9,20 @@ import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Barnetillegg
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.SøknadsTiltak
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknadstiltak
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 interface SøknadMother {
-    fun søknadTiltak(
+    fun søknadstiltak(
         id: String = "arenaId",
         deltakelseFom: LocalDate = 1.januar(2022),
         deltakelseTom: LocalDate = 31.januar(2022),
         arrangør: String = "arrangørnavn",
         typeKode: String = "JOBBK",
         typeNavn: String = "JOBBK",
-    ): SøknadsTiltak =
-        SøknadsTiltak(
+    ): Søknadstiltak =
+        Søknadstiltak(
             id = id,
             deltakelseFom = deltakelseFom,
             deltakelseTom = deltakelseTom,
@@ -79,7 +79,7 @@ interface SøknadMother {
         opprettet: LocalDateTime = 1.januarDateTime(2022),
         barnetillegg: List<Barnetillegg> = listOf(),
         tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
-        tiltak: SøknadsTiltak = søknadTiltak(deltakelseFom = periode.fraOgMed, deltakelseTom = periode.tilOgMed),
+        søknadstiltak: Søknadstiltak = søknadstiltak(deltakelseFom = periode.fraOgMed, deltakelseTom = periode.tilOgMed),
         trygdOgPensjon: Søknad.PeriodeSpm = periodeNei(),
         vedlegg: Int = 0,
         etterlønn: Søknad.JaNeiSpm = nei(),
@@ -95,7 +95,7 @@ interface SøknadMother {
             id = id,
             journalpostId = journalpostId,
             personopplysninger = personopplysninger,
-            tiltak = tiltak,
+            tiltak = søknadstiltak,
             barnetillegg = barnetillegg,
             opprettet = opprettet,
             tidsstempelHosOss = tidsstempelHosOss,
