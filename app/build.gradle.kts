@@ -5,7 +5,7 @@ val testContainersVersion = "1.20.2"
 val felleslibVersion = "0.0.239"
 val tokenSupportVersion = "3.2.0"
 val poaoTilgangVersjon = "2024.10.04_12.38-e183cd9d187f"
-val iverksettVersjon = "1.0_20240926140513_d75b2a0"
+val iverksettVersjon = "1.0_20241009152720_6229329"
 val kotlinxCoroutinesVersion = "1.8.1"
 
 plugins {
