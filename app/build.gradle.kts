@@ -6,7 +6,7 @@ val felleslibVersion = "0.0.239"
 val tokenSupportVersion = "3.2.0"
 val poaoTilgangVersjon = "2024.10.04_12.38-e183cd9d187f"
 val iverksettVersjon = "1.0_20241009152720_6229329"
-val kotlinxCoroutinesVersion = "1.8.1"
+val kotlinxCoroutinesVersion = "1.9.0"
 
 plugins {
     application
