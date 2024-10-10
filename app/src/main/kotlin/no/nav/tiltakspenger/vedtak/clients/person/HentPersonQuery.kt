@@ -12,7 +12,7 @@ internal fun hentPersonQuery(fnr: Fnr): GraphqlQuery {
     )
 }
 
-// B: Burde vi fjerne barn fra queryet når vi ikke bruker det enda?
+// Kew: fjernet forelderBarnRelasjon siden vi ikke skal behandle data om dette i første omgang.
 private val query = """
 query(${'$'}ident: ID!){
     hentGeografiskTilknytning(ident: ${'$'}ident) {
@@ -25,26 +25,6 @@ query(${'$'}ident: ID!){
     hentPerson(ident: ${'$'}ident) {
         adressebeskyttelse(historikk: false) {
             gradering
-            folkeregistermetadata {
-                ...folkeregistermetadataDetails
-            }
-            metadata {
-                ...metadataDetails
-            }
-        }
-        forelderBarnRelasjon {
-            relatertPersonsIdent
-            relatertPersonsRolle
-            minRolleForPerson
-            relatertPersonUtenFolkeregisteridentifikator {
-                navn {
-                    fornavn
-                    mellomnavn
-                    etternavn
-                }
-                foedselsdato
-                statsborgerskap
-            }
             folkeregistermetadata {
                 ...folkeregistermetadataDetails
             }
