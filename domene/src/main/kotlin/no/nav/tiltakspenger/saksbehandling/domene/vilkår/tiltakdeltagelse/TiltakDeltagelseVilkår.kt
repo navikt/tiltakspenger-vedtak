@@ -18,7 +18,7 @@ data class TiltakDeltagelseVilkår private constructor(
     private val logger = KotlinLogging.logger { }
 
     init {
-        check(vurderingsperiode == registerSaksopplysning.deltagelsePeriode) { "Vurderingsperioden må være lik deltagelsesperioden" }
+        check(vurderingsperiode == registerSaksopplysning.deltagelsePeriode) { "Vurderingsperioden ($vurderingsperiode) må være lik deltagelsesperioden (${registerSaksopplysning.deltagelsePeriode})" }
     }
 
     override fun utfall(): Periodisering<UtfallForPeriode> {
