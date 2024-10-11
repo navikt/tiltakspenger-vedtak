@@ -74,13 +74,50 @@ private data class MeldekortdagDbJson(
         return when (status) {
             SPERRET -> Sperret(meldekortId, parsedDato, parsedTiltakstype)
             IKKE_UTFYLT -> IkkeUtfylt(meldekortId, parsedDato, parsedTiltakstype)
-            DELTATT_UTEN_LØNN_I_TILTAKET -> DeltattUtenLønnITiltaket.fromDb(meldekortId, parsedDato, parsedTiltakstype, parsedBeregningsdag!!)
-            DELTATT_MED_LØNN_I_TILTAKET -> DeltattMedLønnITiltaket.fromDb(meldekortId, parsedDato, parsedTiltakstype, parsedBeregningsdag!!)
+            DELTATT_UTEN_LØNN_I_TILTAKET -> DeltattUtenLønnITiltaket.fromDb(
+                meldekortId,
+                parsedDato,
+                parsedTiltakstype,
+                parsedBeregningsdag!!,
+            )
+
+            DELTATT_MED_LØNN_I_TILTAKET -> DeltattMedLønnITiltaket.fromDb(
+                meldekortId,
+                parsedDato,
+                parsedTiltakstype,
+                parsedBeregningsdag!!,
+            )
+
             IKKE_DELTATT -> IkkeDeltatt.fromDb(meldekortId, parsedDato, parsedTiltakstype, parsedBeregningsdag!!)
-            FRAVÆR_SYK -> SykBruker.fromDb(meldekortId, parsedDato, parsedTiltakstype, reduksjon!!.toDomain(), parsedBeregningsdag!!)
-            FRAVÆR_SYKT_BARN -> SyktBarn.fromDb(meldekortId, parsedDato, parsedTiltakstype, reduksjon!!.toDomain(), parsedBeregningsdag!!)
-            FRAVÆR_VELFERD_GODKJENT_AV_NAV -> VelferdGodkjentAvNav.fromDb(meldekortId, parsedDato, parsedTiltakstype, parsedBeregningsdag!!)
-            FRAVÆR_VELFERD_IKKE_GODKJENT_AV_NAV -> VelferdIkkeGodkjentAvNav.fromDb(meldekortId, parsedDato, parsedTiltakstype, parsedBeregningsdag!!)
+            FRAVÆR_SYK -> SykBruker.fromDb(
+                meldekortId,
+                parsedDato,
+                parsedTiltakstype,
+                reduksjon!!.toDomain(),
+                parsedBeregningsdag!!,
+            )
+
+            FRAVÆR_SYKT_BARN -> SyktBarn.fromDb(
+                meldekortId,
+                parsedDato,
+                parsedTiltakstype,
+                reduksjon!!.toDomain(),
+                parsedBeregningsdag!!,
+            )
+
+            FRAVÆR_VELFERD_GODKJENT_AV_NAV -> VelferdGodkjentAvNav.fromDb(
+                meldekortId,
+                parsedDato,
+                parsedTiltakstype,
+                parsedBeregningsdag!!,
+            )
+
+            FRAVÆR_VELFERD_IKKE_GODKJENT_AV_NAV -> VelferdIkkeGodkjentAvNav.fromDb(
+                meldekortId,
+                parsedDato,
+                parsedTiltakstype,
+                parsedBeregningsdag!!,
+            )
         }
     }
 }
@@ -150,7 +187,10 @@ internal fun String.toUtfyltMeldekortperiode(sakId: SakId, meldekortId: Meldekor
             Meldeperiode.UtfyltMeldeperiode(sakId, it.toNonEmptyListOrNull()!!)
         }
 
-internal fun String.toIkkeUtfyltMeldekortperiode(sakId: SakId, meldekortId: MeldekortId): Meldeperiode.IkkeUtfyltMeldeperiode =
+internal fun String.toIkkeUtfyltMeldekortperiode(
+    sakId: SakId,
+    meldekortId: MeldekortId,
+): Meldeperiode.IkkeUtfyltMeldeperiode =
     deserializeList<MeldekortdagDbJson>(this)
         .map {
             it.toMeldekortdag(meldekortId)

@@ -6,6 +6,7 @@ import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
+import no.nav.tiltakspenger.felles.Navkontor
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.MeldekortId
@@ -22,6 +23,7 @@ import java.time.LocalDate
 
 private data class Body(
     val dager: List<Dag>,
+    val navkontor: String? = null,
 ) {
     data class Dag(
         val dato: String,
@@ -37,6 +39,8 @@ private data class Body(
         sakId = sakId,
         saksbehandler = saksbehandler,
         correlationId = correlationId,
+        // TODO pre-mvp: fjern default-verdi for navkontor når vi sender dette fra frontend.
+        navkontor = Navkontor(navkontor ?: "0220"),
         dager =
         this.dager.map { dag ->
             Dag(

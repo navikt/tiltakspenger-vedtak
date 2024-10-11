@@ -4,6 +4,7 @@ import arrow.core.toNonEmptyListOrNull
 import kotliquery.Row
 import kotliquery.Session
 import kotliquery.queryOf
+import no.nav.tiltakspenger.felles.Navkontor
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
@@ -42,7 +43,8 @@ class MeldekortPostgresRepo(
                         meldekortdager,
                         saksbehandler,
                         beslutter,
-                        status
+                        status,
+                        navkontor
                     ) values (
                         :id,
                         :meldeperiode_id,
@@ -53,7 +55,8 @@ class MeldekortPostgresRepo(
                         to_jsonb(:meldekortdager::jsonb),
                         :saksbehandler,
                         :beslutter,
-                        :status
+                        :status,
+                        :navkontor
                     )
                     """.trimIndent(),
                     mapOf(
@@ -67,6 +70,7 @@ class MeldekortPostgresRepo(
                         "saksbehandler" to meldekort.saksbehandler,
                         "beslutter" to meldekort.beslutter,
                         "status" to meldekort.status.toDb(),
+                        "navkontor" to meldekort.navkontor?.enhetsnummer,
                     ),
                 ).asUpdate,
             )
@@ -74,7 +78,7 @@ class MeldekortPostgresRepo(
     }
 
     override fun oppdater(
-        meldekort: Meldekort,
+        meldekort: UtfyltMeldekort,
         transactionContext: TransactionContext?,
     ) {
         sessionFactory.withTransaction(transactionContext) { tx ->
@@ -85,7 +89,8 @@ class MeldekortPostgresRepo(
                         meldekortdager = to_jsonb(:meldekortdager::jsonb),
                         saksbehandler = :saksbehandler,
                         beslutter = :beslutter,
-                        status = :status
+                        status = :status,
+                        navkontor = :navkontor
                     where id = :id
                     """.trimIndent(),
                     mapOf(
@@ -94,6 +99,7 @@ class MeldekortPostgresRepo(
                         "saksbehandler" to meldekort.saksbehandler,
                         "beslutter" to meldekort.beslutter,
                         "status" to meldekort.status.toDb(),
+                        "navkontor" to meldekort.navkontor.enhetsnummer,
                     ),
                 ).asUpdate,
             )
@@ -179,6 +185,7 @@ class MeldekortPostgresRepo(
                 }.asSingle,
             )
         }
+
         internal fun hentForSakId(
             sakId: SakId,
             session: Session,
@@ -194,35 +201,44 @@ class MeldekortPostgresRepo(
         private fun fromRow(row: Row): Meldekort {
             val id = MeldekortId.fromString(row.string("id"))
             val sakId = SakId.fromString(row.string("sakId"))
+            val meldeperiodeId = MeldeperiodeId(row.string("meldeperiode_id"))
+            val navkontor = row.stringOrNull("navkontor")?.let { Navkontor(it) }
+            val rammevedtakId = VedtakId.fromString(row.string("rammevedtakId"))
+            val fnr = Fnr.fromString(row.string("fnr"))
+            val forrigeMeldekortId = row.stringOrNull("forrigeMeldekortId")?.let { MeldekortId.fromString(it) }
             return when (val status = row.string("status")) {
                 "GODKJENT", "KLAR_TIL_BESLUTNING" -> {
                     val meldekortperiode = row.string("meldekortdager").toUtfyltMeldekortperiode(sakId, id)
                     UtfyltMeldekort(
                         id = id,
-                        meldeperiodeId = MeldeperiodeId(row.string("meldeperiode_id")),
+                        meldeperiodeId = meldeperiodeId,
                         sakId = sakId,
-                        fnr = Fnr.fromString(row.string("fnr")),
-                        rammevedtakId = VedtakId.fromString(row.string("rammevedtakId")),
+                        fnr = fnr,
+                        rammevedtakId = rammevedtakId,
                         meldeperiode = meldekortperiode,
                         saksbehandler = row.string("saksbehandler"),
                         beslutter = row.stringOrNull("beslutter"),
-                        forrigeMeldekortId = row.stringOrNull("forrigeMeldekortId")?.let { MeldekortId.fromString(it) },
+                        forrigeMeldekortId = forrigeMeldekortId,
                         tiltakstype = meldekortperiode.tiltakstype,
                         status = row.string("status").toMeldekortStatus(),
                         iverksattTidspunkt = row.localDateTimeOrNull("iverksatt_tidspunkt"),
+                        navkontor = navkontor!!,
                     )
                 }
+
                 "KLAR_TIL_UTFYLLING" -> {
-                    val meldekortperiode = row.string("meldekortdager").toIkkeUtfyltMeldekortperiode(sakId, id)
+                    val meldekortperiode =
+                        row.string("meldekortdager").toIkkeUtfyltMeldekortperiode(sakId, id)
                     IkkeUtfyltMeldekort(
                         id = id,
-                        meldeperiodeId = MeldeperiodeId(row.string("meldeperiode_id")),
+                        meldeperiodeId = meldeperiodeId,
                         sakId = sakId,
-                        fnr = Fnr.fromString(row.string("fnr")),
-                        rammevedtakId = VedtakId.fromString(row.string("rammevedtakId")),
+                        fnr = fnr,
+                        rammevedtakId = rammevedtakId,
                         meldeperiode = meldekortperiode,
-                        forrigeMeldekortId = row.stringOrNull("forrigeMeldekortId")?.let { MeldekortId.fromString(it) },
+                        forrigeMeldekortId = forrigeMeldekortId,
                         tiltakstype = meldekortperiode.tiltakstype,
+                        navkontor = navkontor,
                     )
                 }
 

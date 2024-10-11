@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.clients.utbetaling
 
+import no.nav.tiltakspenger.felles.Navkontor
 import no.nav.tiltakspenger.libs.tiltak.TiltakstypeSomGirRett
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldekortdag
@@ -50,7 +51,7 @@ fun Utbetalingsvedtak.toDTO(
 }
 
 private fun Meldekort.UtfyltMeldekort.toUtbetalingDto(
-    brukersNavKontor: String,
+    brukersNavKontor: Navkontor,
 ): List<UtbetalingV2Dto> {
     return this.meldeperiode.fold((listOf<UtbetalingV2Dto>())) { acc: List<UtbetalingV2Dto>, meldekortdag ->
         meldekortdag as Meldekortdag.Utfylt
@@ -77,7 +78,7 @@ private fun Meldekort.UtfyltMeldekort.toUtbetalingDto(
 
 private fun Meldekortdag.Utfylt.genererUtbetalingsperiode(
     meldeperiodeId: MeldeperiodeId,
-    brukersNavKontor: String,
+    brukersNavKontor: Navkontor,
 ): UtbetalingV2Dto? {
     return when (this.reduksjon) {
         ReduksjonAvYtelsePåGrunnAvFravær.YtelsenFallerBort -> null
@@ -92,7 +93,7 @@ private fun Meldekortdag.Utfylt.genererUtbetalingsperiode(
                     stønadstype = this.tiltakstype.mapStønadstype(),
                     // TODO post-mvp: Legg til barnetillegg
                     barnetillegg = false,
-                    brukersNavKontor = brukersNavKontor,
+                    brukersNavKontor = brukersNavKontor.enhetsnummer,
                     meldekortId = meldeperiodeId.verdi,
                 ),
             )
@@ -102,7 +103,7 @@ private fun Meldekortdag.Utfylt.genererUtbetalingsperiode(
 private fun UtbetalingV2Dto.leggTil(
     meldekortdag: Meldekortdag.Utfylt,
     meldeperiodeId: MeldeperiodeId,
-    brukersNavKontor: String,
+    brukersNavKontor: Navkontor,
 ): Resultat {
     val neste = meldekortdag.genererUtbetalingsperiode(meldeperiodeId, brukersNavKontor)
         ?: return Resultat.SkalIkkeUtbetales

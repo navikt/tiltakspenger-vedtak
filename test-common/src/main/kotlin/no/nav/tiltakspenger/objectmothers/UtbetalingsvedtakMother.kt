@@ -21,7 +21,6 @@ interface UtbetalingsvedtakMother {
         fnr: Fnr = Fnr.random(),
         rammevedtakId: VedtakId = VedtakId.random(),
         vedtakstidspunkt: LocalDateTime = nå(),
-        brukerNavkontor: String = "NAV",
         meldekort: Meldekort.UtfyltMeldekort = ObjectMother.utfyltMeldekort(
             sakId = sakId,
             rammevedtakId = rammevedtakId,
@@ -39,7 +38,6 @@ interface UtbetalingsvedtakMother {
             fnr = fnr,
             rammevedtakId = rammevedtakId,
             vedtakstidspunkt = vedtakstidspunkt,
-            brukerNavkontor = brukerNavkontor,
             meldekort = meldekort,
             forrigeUtbetalingsvedtakId = forrigeUtbetalingsvedtakId,
             sendtTilUtbetaling = sendtTilUtbetaling,

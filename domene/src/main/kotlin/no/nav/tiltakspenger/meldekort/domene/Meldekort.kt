@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.meldekort.domene
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
+import no.nav.tiltakspenger.felles.Navkontor
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
@@ -32,6 +33,7 @@ sealed interface Meldekort {
     val saksbehandler: String?
     val beslutter: String?
     val status: MeldekortStatus
+    val navkontor: Navkontor?
 
     /** Totalsummen for meldeperioden */
     val beløpTotal: Int?
@@ -59,6 +61,7 @@ sealed interface Meldekort {
         override val beslutter: String?,
         override val status: MeldekortStatus,
         val iverksattTidspunkt: LocalDateTime?,
+        override val navkontor: Navkontor,
     ) : Meldekort {
 
         init {
@@ -85,6 +88,7 @@ sealed interface Meldekort {
                 rammevedtakId = this.rammevedtakId,
                 forrigeMeldekortId = this.id,
                 tiltakstype = this.tiltakstype,
+                navkontor = this.navkontor,
                 meldeperiode =
                 Meldeperiode.IkkeUtfyltMeldeperiode.fraPeriode(
                     meldeperiode = periode,
@@ -103,16 +107,7 @@ sealed interface Meldekort {
             if (saksbehandler == beslutter.navIdent) {
                 return KanIkkeIverksetteMeldekort.SaksbehandlerOgBeslutterKanIkkeVæreLik.left()
             }
-            return UtfyltMeldekort(
-                id = this.id,
-                meldeperiodeId = this.meldeperiodeId,
-                sakId = this.sakId,
-                fnr = this.fnr,
-                rammevedtakId = this.rammevedtakId,
-                forrigeMeldekortId = this.forrigeMeldekortId,
-                meldeperiode = this.meldeperiode,
-                tiltakstype = this.tiltakstype,
-                saksbehandler = this.saksbehandler,
+            return this.copy(
                 beslutter = beslutter.navIdent,
                 status = MeldekortStatus.GODKJENT,
                 iverksattTidspunkt = LocalDateTime.now(),
@@ -131,12 +126,14 @@ sealed interface Meldekort {
         override val forrigeMeldekortId: MeldekortId?,
         override val tiltakstype: TiltakstypeSomGirRett,
         override val meldeperiode: Meldeperiode.IkkeUtfyltMeldeperiode,
+        override val navkontor: Navkontor?,
     ) : Meldekort {
         override val beløpTotal = null
         override val status = MeldekortStatus.KLAR_TIL_UTFYLLING
         fun sendTilBeslutter(
             meldekortperiode: Meldeperiode.UtfyltMeldeperiode,
             saksbehandler: Saksbehandler,
+            navkontor: Navkontor,
         ): Either<KanIkkeSendeMeldekortTilBeslutter, UtfyltMeldekort> {
             if (!saksbehandler.isSaksbehandler()) {
                 return KanIkkeSendeMeldekortTilBeslutter.MåVæreSaksbehandler(saksbehandler.roller).left()
@@ -159,6 +156,7 @@ sealed interface Meldekort {
                 beslutter = this.beslutter,
                 status = MeldekortStatus.KLAR_TIL_BESLUTNING,
                 iverksattTidspunkt = null,
+                navkontor = navkontor,
             ).right()
         }
 
@@ -181,6 +179,8 @@ fun Rammevedtak.opprettFørsteMeldekortForEnSak(): Meldekort.IkkeUtfyltMeldekort
         rammevedtakId = this.id,
         forrigeMeldekortId = null,
         tiltakstype = tiltakstype,
+        // TODO post-mvp: Her har vi mulighet til å hente verdien fra brukers geografiske tilhørighet + norg2.
+        navkontor = null,
         meldeperiode =
         Meldeperiode.IkkeUtfyltMeldeperiode.fraPeriode(
             meldeperiode = periode,

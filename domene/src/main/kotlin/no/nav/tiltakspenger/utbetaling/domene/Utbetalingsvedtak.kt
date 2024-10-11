@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.utbetaling.domene
 
+import no.nav.tiltakspenger.felles.Navkontor
 import no.nav.tiltakspenger.felles.journalføring.JournalpostId
 import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.libs.common.Fnr
@@ -22,7 +23,6 @@ data class Utbetalingsvedtak(
     val fnr: Fnr,
     val rammevedtakId: VedtakId,
     val vedtakstidspunkt: LocalDateTime,
-    val brukerNavkontor: String,
     val meldekort: Meldekort.UtfyltMeldekort,
     val forrigeUtbetalingsvedtakId: VedtakId?,
     val sendtTilUtbetaling: LocalDateTime?,
@@ -35,6 +35,7 @@ data class Utbetalingsvedtak(
     val meldeperiodeId = meldekort.meldeperiodeId
     val saksbehandler: String = meldekort.saksbehandler
     val beslutter: String = meldekort.beslutter!!
+    val brukerNavkontor: Navkontor = meldekort.navkontor
 
     init {
         require(vedtakstidspunkt.truncatedTo(ChronoUnit.MICROS) == vedtakstidspunkt) {
@@ -54,8 +55,6 @@ fun Meldekort.UtfyltMeldekort.opprettUtbetalingsvedtak(
         fnr = rammevedtak.fnr,
         rammevedtakId = this.rammevedtakId,
         vedtakstidspunkt = nå(),
-        // TODO pre-mvp: Hent fra NORG
-        brukerNavkontor = "0220",
         meldekort = this,
         forrigeUtbetalingsvedtakId = forrigeUtbetalingsvedtak,
         sendtTilUtbetaling = null,

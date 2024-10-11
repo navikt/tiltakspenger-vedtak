@@ -32,7 +32,7 @@ data class Meldeperioder(
         require(ikkeUtfyltMeldekort.id == kommando.meldekortId) {
             "MeldekortId i kommando (${kommando.meldekortId}) samsvarer ikke med siste meldekortperiode (${ikkeUtfyltMeldekort.id})"
         }
-        return ikkeUtfyltMeldekort.sendTilBeslutter(meldekortperiode, kommando.saksbehandler).map {
+        return ikkeUtfyltMeldekort.sendTilBeslutter(meldekortperiode, kommando.saksbehandler, kommando.navkontor).map {
             Pair(
                 Meldeperioder(
                     tiltakstype = tiltakstype,

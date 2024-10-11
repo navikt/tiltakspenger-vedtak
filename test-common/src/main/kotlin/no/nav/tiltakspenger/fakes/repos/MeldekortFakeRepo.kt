@@ -23,7 +23,7 @@ class MeldekortFakeRepo : MeldekortRepo {
     }
 
     override fun oppdater(
-        meldekort: Meldekort,
+        meldekort: UtfyltMeldekort,
         transactionContext: TransactionContext?,
     ) {
         lagre(meldekort, transactionContext)

@@ -4,6 +4,7 @@ import arrow.core.NonEmptyList
 import arrow.core.nonEmptyListOf
 import arrow.core.toNonEmptyListOrNull
 import no.nav.tiltakspenger.common.getOrFail
+import no.nav.tiltakspenger.felles.Navkontor
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.erHelg
 import no.nav.tiltakspenger.libs.common.CorrelationId
@@ -45,6 +46,7 @@ interface MeldekortMother {
         tiltakstype: TiltakstypeSomGirRett = TiltakstypeSomGirRett.GRUPPE_AMO,
         status: MeldekortStatus = MeldekortStatus.GODKJENT,
         iverksattTidspunkt: LocalDateTime? = null,
+        navkontor: Navkontor = ObjectMother.navkontor(),
     ) = Meldekort.UtfyltMeldekort(
         id = id,
         meldeperiodeId = meldeperiodeId,
@@ -58,6 +60,7 @@ interface MeldekortMother {
         tiltakstype = tiltakstype,
         status = status,
         iverksattTidspunkt = iverksattTidspunkt,
+        navkontor = navkontor,
     )
 
     /**
@@ -133,6 +136,7 @@ interface MeldekortMother {
             initiellVerdi = AvklartUtfallForPeriode.OPPFYLT,
             totalePeriode = Periode(perioder.first().first().dag, perioder.first().last().dag),
         ),
+        navkontor: Navkontor = ObjectMother.navkontor(),
     ): Meldeperioder {
         val kommandoer = perioder.map { dager ->
             SendMeldekortTilBeslutterKommando(
@@ -141,6 +145,7 @@ interface MeldekortMother {
                 saksbehandler = saksbehandler,
                 dager = dager,
                 correlationId = CorrelationId.generate(),
+                navkontor = navkontor,
             )
         }
         return kommandoer.drop(1).fold(
@@ -168,6 +173,7 @@ interface MeldekortMother {
         kommando: SendMeldekortTilBeslutterKommando,
         meldeperiodeId: MeldeperiodeId = MeldeperiodeId.fraPeriode(kommando.periode),
         utfallsperioder: Periodisering<AvklartUtfallForPeriode>,
+        navkontor: Navkontor = ObjectMother.navkontor(),
     ) = Meldeperioder(
         tiltakstype = tiltakstype,
         verdi = nonEmptyListOf(
@@ -179,6 +185,7 @@ interface MeldekortMother {
                 rammevedtakId = rammevedtakId,
                 forrigeMeldekortId = null,
                 tiltakstype = tiltakstype,
+                navkontor = navkontor,
                 meldeperiode = Meldeperiode.IkkeUtfyltMeldeperiode.fraPeriode(
                     sakId = sakId,
                     meldeperiode = kommando.periode,
@@ -194,6 +201,7 @@ interface MeldekortMother {
         kommando: SendMeldekortTilBeslutterKommando,
         fnr: Fnr,
         meldeperiodeId: MeldeperiodeId = MeldeperiodeId.fraPeriode(kommando.periode),
+        navkontor: Navkontor = ObjectMother.navkontor(),
     ): Meldeperioder {
         val meldekortId = kommando.meldekortId
         val sakId = kommando.sakId
@@ -213,6 +221,7 @@ interface MeldekortMother {
                 rammevedtakId = rammevedtakId,
                 forrigeMeldekortId = null,
                 tiltakstype = tiltakstype,
+                navkontor = navkontor,
                 meldeperiode = Meldeperiode.IkkeUtfyltMeldeperiode.fraPeriode(
                     sakId = sakId,
                     meldeperiode = kommando.periode,
@@ -227,6 +236,7 @@ interface MeldekortMother {
 
 fun Meldekort.IkkeUtfyltMeldekort.tilSendMeldekortTilBeslutterKommando(
     saksbehandler: Saksbehandler,
+    navkontor: Navkontor = this.navkontor ?: ObjectMother.navkontor(),
 ): SendMeldekortTilBeslutterKommando {
     val dager = meldeperiode.map { dag ->
         SendMeldekortTilBeslutterKommando.Dag(
@@ -257,5 +267,6 @@ fun Meldekort.IkkeUtfyltMeldekort.tilSendMeldekortTilBeslutterKommando(
         saksbehandler = saksbehandler,
         dager = dager,
         correlationId = CorrelationId.generate(),
+        navkontor = navkontor,
     )
 }
