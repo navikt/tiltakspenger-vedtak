@@ -16,4 +16,8 @@ dependencies {
     api("io.arrow-kt:arrow-core:1.2.4")
     api("io.kotest:kotest-assertions-core:$kotestVersion")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinxCoroutinesVersion")
+    api("org.wiremock:wiremock:3.9.1")
+    api("com.marcinziolo:kotlin-wiremock:2.1.1")
+    api("io.kotest.extensions:kotest-extensions-wiremock:3.1.0")
+    api("io.kotest.extensions:kotest-assertions-arrow:1.4.0")
 }

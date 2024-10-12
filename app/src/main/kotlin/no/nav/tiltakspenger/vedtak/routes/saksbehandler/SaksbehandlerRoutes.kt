@@ -1,18 +1,21 @@
 package no.nav.tiltakspenger.vedtak.routes.saksbehandler
 
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.call
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
-import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
+import no.nav.tiltakspenger.vedtak.auth2.TokenService
+import no.nav.tiltakspenger.vedtak.routes.withSaksbehandler
 
 internal const val SAKSBEHANDLER_PATH = "/saksbehandler"
 
-fun Route.saksbehandlerRoutes(innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider) {
+internal fun Route.saksbehandlerRoutes(
+    tokenService: TokenService,
+) {
     get(SAKSBEHANDLER_PATH) {
-        val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
-        call.respond(message = saksbehandler, status = HttpStatusCode.OK)
+        call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
+            // TODO post-mvp jah: Bør ikke serialisere domeneobjekt direkte til json. Bør lage en DTO for saksbehandler.
+            call.respond(message = saksbehandler, status = HttpStatusCode.OK)
+        }
     }
 }
