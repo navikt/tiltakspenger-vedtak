@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.routes.rivers.søknad
+package no.nav.tiltakspenger.vedtak.routes.søknad
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
@@ -13,7 +13,7 @@ import no.nav.tiltakspenger.saksbehandling.service.SøknadService
 
 private val LOG = KotlinLogging.logger {}
 
-const val SØKNAD_PATH = "/rivers/soknad"
+const val SØKNAD_PATH = "/soknad"
 
 fun Route.søknadRoutes(søknadService: SøknadService) {
     post(SØKNAD_PATH) {
