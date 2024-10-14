@@ -26,6 +26,7 @@ import no.nav.tiltakspenger.vedtak.auth2.Valideringsfeil.UgyldigToken.KunneIkkeV
 import no.nav.tiltakspenger.vedtak.auth2.Valideringsfeil.UgyldigToken.ManglerClaim
 import no.nav.tiltakspenger.vedtak.auth2.Valideringsfeil.UgyldigToken.OidOgSubjectErUlike
 import no.nav.tiltakspenger.vedtak.auth2.Valideringsfeil.UgyldigToken.UlikKid
+import java.net.URI
 import java.security.interfaces.RSAPublicKey
 import java.util.concurrent.TimeUnit
 import kotlin.collections.mapNotNull
@@ -54,7 +55,7 @@ internal class MicrosoftEntraIdTokenService(
 ) : TokenService {
 
     // See: https://github.com/auth0/jwks-rsa-java
-    val provider = JwkProviderBuilder(url)
+    private val provider = JwkProviderBuilder(URI(url).toURL())
         .cached(10, 24, TimeUnit.HOURS)
         .rateLimited(10, 1, TimeUnit.MINUTES)
         .build()

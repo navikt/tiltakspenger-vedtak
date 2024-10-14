@@ -105,9 +105,9 @@ internal class MicrosoftEntraIdTokenServiceTest {
 
             runTest {
                 tokenService.validerOgHentBruker(jwt).getOrNull()!!
-                wiremock.verify(1, getRequestedFor(urlEqualTo("/.well-known/jwks.json")))
+                wiremock.verify(1, getRequestedFor(urlEqualTo("/")))
                 tokenService.validerOgHentBruker(jwt).getOrNull()!!
-                wiremock.verify(1, getRequestedFor(urlEqualTo("/.well-known/jwks.json")))
+                wiremock.verify(1, getRequestedFor(urlEqualTo("/")))
             }
         }
     }
@@ -135,9 +135,9 @@ internal class MicrosoftEntraIdTokenServiceTest {
 
             runTest {
                 tokenService.validerOgHentBruker(jwt1).getOrNull()!!
-                wiremock.verify(1, getRequestedFor(urlEqualTo("/.well-known/jwks.json")))
+                wiremock.verify(1, getRequestedFor(urlEqualTo("/")))
                 tokenService.validerOgHentBruker(jwt2) shouldBe UlikKid.left()
-                wiremock.verify(2, getRequestedFor(urlEqualTo("/.well-known/jwks.json")))
+                wiremock.verify(2, getRequestedFor(urlEqualTo("/")))
             }
         }
     }
@@ -430,7 +430,7 @@ internal class MicrosoftEntraIdTokenServiceTest {
                 autoriserteBrukerroller = emptyList(),
             )
             wiremock.get {
-                url equalTo "/.well-known/jwks.json"
+                url equalTo "/"
             } returns {
                 statusCode = 503
                 body = "Service Unavailable"
@@ -625,7 +625,7 @@ internal class MicrosoftEntraIdTokenServiceTest {
 
 private fun WireMockServer.prepareJwkResponse(jwk: String) {
     this.get {
-        url equalTo "/.well-known/jwks.json"
+        url equalTo "/"
     } returns {
         statusCode = 200
         header = "Content-Type" to "application/json"
