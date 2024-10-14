@@ -1,8 +1,11 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår
 
 import arrow.core.Either
+import arrow.core.getOrElse
+import arrow.core.left
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.StøtterIkkeUtfall
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder.AlderSaksopplysning.Register
@@ -64,7 +67,7 @@ data class Vilkårssett(
     fun utfallsperioder(): Periodisering<UtfallForPeriode> =
         vilkårliste.fold(
             Periodisering(UtfallForPeriode.OPPFYLT, vurderingsperiode),
-        ) { total, vilkår -> total.kombiner(vilkår.utfall(), UtfallForPeriode::kombiner).slåSammenTilstøtendePerioder() }
+        ) { total, vilkår -> total.kombiner(vilkår.utfall, UtfallForPeriode::kombiner).slåSammenTilstøtendePerioder() }
 
     init {
         require(vurderingsperiode == institusjonsoppholdVilkår.vurderingsperiode) {
@@ -121,7 +124,7 @@ data class Vilkårssett(
             fødselsdato: LocalDate,
             tiltak: Tiltak,
             vurderingsperiode: Periode,
-        ): Vilkårssett =
+        ): Either<StøtterIkkeUtfall, Vilkårssett> =
             Vilkårssett(
                 vurderingsperiode = vurderingsperiode,
                 institusjonsoppholdVilkår =
@@ -142,7 +145,7 @@ data class Vilkårssett(
                 AlderVilkår.opprett(
                     Register.opprett(fødselsdato = fødselsdato),
                     vurderingsperiode,
-                ),
+                ).getOrElse { return it.left() },
                 kravfristVilkår = KravfristVilkår.opprett(søknad.kravfristSaksopplysning(), vurderingsperiode),
                 tiltakDeltagelseVilkår =
                 TiltakDeltagelseVilkår.opprett(

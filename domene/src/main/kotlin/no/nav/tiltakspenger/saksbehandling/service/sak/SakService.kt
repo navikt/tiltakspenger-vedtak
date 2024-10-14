@@ -11,7 +11,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBeha
 import no.nav.tiltakspenger.saksbehandling.domene.benk.Saksoversikt
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
-import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl.FantIkkeFnr
+import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl.FantIkkeSakForFnr
 
 interface SakService {
     suspend fun startFørstegangsbehandling(
@@ -36,7 +36,7 @@ interface SakService {
         fnr: Fnr,
         saksbehandler: Saksbehandler,
         correlationId: CorrelationId,
-    ): Either<FantIkkeFnr, Sak>
+    ): Either<FantIkkeSakForFnr, Sak>
 
     fun hentFnrForSakId(sakId: SakId): Fnr?
 
