@@ -91,7 +91,7 @@ internal fun Application.vedtakApi(
                 auditService = applicationContext.personContext.auditService,
             )
             sakRoutes(
-                innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
+                tokenService = tokenService,
                 sakService = applicationContext.sakContext.sakService,
                 auditService = applicationContext.personContext.auditService,
             )
