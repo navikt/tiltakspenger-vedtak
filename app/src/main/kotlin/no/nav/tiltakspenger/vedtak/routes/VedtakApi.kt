@@ -30,6 +30,7 @@ import no.nav.tiltakspenger.libs.common.Rolle
 import no.nav.tiltakspenger.libs.common.Roller
 import no.nav.tiltakspenger.vedtak.AdRolle
 import no.nav.tiltakspenger.vedtak.Configuration
+import no.nav.tiltakspenger.vedtak.auth2.MicrosoftEntraIdTokenService
 import no.nav.tiltakspenger.vedtak.context.ApplicationContext
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBeslutterRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingRoutes
@@ -50,6 +51,7 @@ const val CALL_ID_MDC_KEY = "call-id"
 internal fun Application.vedtakApi(
     config: Configuration.TokenVerificationConfig,
     innloggetSaksbehandlerProvider: JWTInnloggetSaksbehandlerProvider,
+    tokenService: MicrosoftEntraIdTokenService,
     applicationContext: ApplicationContext,
 ) {
     install(CallId)
@@ -67,7 +69,7 @@ internal fun Application.vedtakApi(
     routing {
         healthRoutes()
         authenticate("saksbehandling") {
-            saksbehandlerRoutes(innloggetSaksbehandlerProvider)
+            saksbehandlerRoutes(tokenService)
             behandlingRoutes(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
                 behandlingService = applicationContext.førstegangsbehandlingContext.behandlingService,
@@ -174,6 +176,7 @@ private fun AuthenticationConfig.jwtSystemToken(
     sikkerlogg.info { "config : $config" }
     this.realm = realm
     val jwkProviderGammel = UrlJwkProvider(URI(config.jwksUri).toURL())
+
     verifier(jwkProviderGammel, config.issuer) {
         LOG.debug { "Er nå i verifier" }
         withAudience(config.clientId)

@@ -66,9 +66,10 @@ dependencies {
     implementation("io.ktor:ktor-http:$ktorVersion")
 
     // Auth
+    api("com.auth0:java-jwt:4.4.0")
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
     implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
-    implementation("com.auth0:jwks-rsa:0.22.1")
+    api("com.auth0:jwks-rsa:0.22.1")
 
     // TokenX
     implementation("no.nav.security:token-validation-ktor-v2:$tokenSupportVersion")
@@ -110,8 +111,9 @@ dependencies {
     testImplementation("org.testcontainers:postgresql:$testContainersVersion")
     // need quarkus-junit-4-mock because of https://github.com/testcontainers/testcontainers-java/issues/970
     testImplementation("io.quarkus:quarkus-junit4-mock:3.15.1")
-    testImplementation(project(":test-common"))
+    testApi(project(":test-common"))
     testApi("com.github.navikt.tiltakspenger-libs:test-common:$felleslibVersion")
-    testImplementation("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")
-    testImplementation("com.github.navikt.tiltakspenger-libs:persistering-domene:$felleslibVersion")
+    testApi("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")
+    testApi("com.github.navikt.tiltakspenger-libs:persistering-domene:$felleslibVersion")
+
 }
