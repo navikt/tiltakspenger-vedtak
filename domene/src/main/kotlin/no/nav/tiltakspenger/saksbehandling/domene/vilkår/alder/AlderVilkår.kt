@@ -55,7 +55,7 @@ data class AlderVilkår private constructor(
                         else -> {
                             Periodisering(
                                 UtfallForPeriode.OPPFYLT,
-                                vurderingsperiode
+                                vurderingsperiode,
                             )
                         }
                     }
@@ -69,6 +69,7 @@ data class AlderVilkår private constructor(
                 vurderingsperiode = vurderingsperiode,
             ).right()
         }
+
         /**
          * Skal kun kalles fra database-laget og for assert av tester (expected).
          */
