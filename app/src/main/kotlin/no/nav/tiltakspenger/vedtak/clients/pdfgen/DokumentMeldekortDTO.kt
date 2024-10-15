@@ -1,9 +1,11 @@
 package no.nav.tiltakspenger.vedtak.clients.pdfgen
 
 import com.fasterxml.jackson.databind.JsonNode
+import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldekortdag
 import no.nav.tiltakspenger.meldekort.domene.ReduksjonAvYtelsePåGrunnAvFravær
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Navn
 import no.nav.tiltakspenger.vedtak.routes.objectMapper
 
 private data class DokumentMeldekortDTO(
@@ -38,7 +40,10 @@ private data class DokumentMeldekortDTO(
     )
 }
 
-fun Meldekort.UtfyltMeldekort.toPdf(): JsonNode {
+suspend fun Meldekort.UtfyltMeldekort.toPdf(
+    hentNavn: suspend (Fnr) -> Navn,
+): JsonNode {
+    val navn = hentNavn(fnr)
     return DokumentMeldekortDTO(
         meldekortId = id.toString(),
         sakId = sakId.toString(),
@@ -61,8 +66,8 @@ fun Meldekort.UtfyltMeldekort.toPdf(): JsonNode {
         tiltakstype = tiltakstype.toString(),
         iverksattTidspunkt = this.iverksattTidspunkt.toString(),
         personopplysninger = DokumentMeldekortDTO.PersonopplysningerDTO(
-            fornavn = "TODO pre-mvp jah: Hent fra PDL",
-            etternavn = "TODO pre-mvp",
+            fornavn = navn.fornavn,
+            etternavn = navn.mellomnavnOgEtternavn,
             ident = fnr.verdi,
         ),
     ).let { objectMapper.valueToTree(it) }

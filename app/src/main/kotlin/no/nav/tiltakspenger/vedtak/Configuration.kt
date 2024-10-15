@@ -73,7 +73,7 @@ object Configuration {
                 "DOKDIST_SCOPE" to "localhost",
                 "DOKDIST_URL" to "http://localhost:8091",
                 "PDFGEN_SCOPE" to "localhost",
-                "PDFGEN_URL" to "http://localhost:8091",
+                "PDFGEN_URL" to "http://localhost:8085",
                 "NAIS_APP_IMAGE" to "http://localhost8080:githubhash",
                 "AZURE_APP_CLIENT_ID" to "tiltakspenger-vedtak",
                 "AZURE_APP_CLIENT_SECRET" to "secret",

@@ -22,8 +22,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknadstiltak
 import no.nav.tiltakspenger.saksbehandling.service.SøknadServiceImpl
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
-import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.SØKNAD_PATH
-import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.søknadRoutes
+import no.nav.tiltakspenger.vedtak.routes.søknad.SØKNAD_PATH
+import no.nav.tiltakspenger.vedtak.routes.søknad.søknadRoutes
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
 import java.time.LocalDateTime

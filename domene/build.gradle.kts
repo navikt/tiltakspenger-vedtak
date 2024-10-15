@@ -1,7 +1,7 @@
 val jacksonVersion = "2.18.0"
 val kotestVersion = "5.9.1"
-val mockkVersion = "1.13.12"
-val felleslibVersion = "0.0.239"
+val mockkVersion = "1.13.13"
+val felleslibVersion = "0.0.242"
 val kotlinxCoroutinesVersion = "1.9.0"
 
 dependencies {
@@ -32,7 +32,7 @@ dependencies {
     testImplementation("io.kotest:kotest-assertions-json:$kotestVersion")
     testImplementation("io.kotest:kotest-extensions:$kotestVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
-    testImplementation("ch.qos.logback:logback-classic:1.5.8")
+    testImplementation("ch.qos.logback:logback-classic:1.5.10")
 
     testImplementation(kotlin("test"))
     testImplementation(project(":test-common"))

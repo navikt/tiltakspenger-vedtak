@@ -74,6 +74,7 @@ open class FørstegangsbehandlingContext(
             journalførVedtaksbrevGateway = journalførVedtaksbrevGateway,
             rammevedtakRepo = rammevedtakRepo,
             genererVedtaksbrevGateway = genererVedtaksbrevGateway,
+            personService = personService,
         )
     }
 

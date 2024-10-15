@@ -1,7 +1,7 @@
 val javaVersion = JavaVersion.VERSION_21
 
 plugins {
-    kotlin("jvm") version "2.0.20"
+    kotlin("jvm") version "2.0.21"
     id("com.diffplug.spotless") version "6.25.0"
 }
 
@@ -63,4 +63,24 @@ tasks.register<Copy>("gitHooks") {
 }
 tasks.named("build") {
     dependsOn("gitHooks")
+}
+tasks.register("checkFlywayMigrationNames") {
+    doLast {
+        val migrationDir = project.file("app/src/main/resources/db/migration")
+        val invalidFiles = migrationDir.walk()
+            .filter { it.isFile && it.extension == "sql" }
+            .filterNot { it.name.matches(Regex("V[0-9]+__[\\w]+\\.sql")) }
+            .map { it.name }
+            .toList()
+
+        if (invalidFiles.isNotEmpty()) {
+            throw GradleException("Invalid migration filenames:\n${invalidFiles.joinToString("\n")}")
+        } else {
+            println("All migration filenames are valid.")
+        }
+    }
+}
+
+tasks.named("check") {
+    dependsOn("checkFlywayMigrationNames")
 }

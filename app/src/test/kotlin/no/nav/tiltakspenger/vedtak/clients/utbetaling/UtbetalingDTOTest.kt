@@ -44,7 +44,7 @@ internal class UtbetalingDTOTest {
                     "stønadsdata": {
                       "stønadstype": "GRUPPE_AMO",
                       "barnetillegg": false,
-                      "brukersNavKontor": "NAV",
+                      "brukersNavKontor": "0220",
                       "meldekortId": "2023-01-02/2023-01-15"
                     }
                   },
@@ -56,7 +56,7 @@ internal class UtbetalingDTOTest {
                     "stønadsdata": {
                       "stønadstype": "GRUPPE_AMO",
                       "barnetillegg": false,
-                      "brukersNavKontor": "NAV",
+                      "brukersNavKontor": "0220",
                       "meldekortId": "2023-01-02/2023-01-15"
                     }
                   }

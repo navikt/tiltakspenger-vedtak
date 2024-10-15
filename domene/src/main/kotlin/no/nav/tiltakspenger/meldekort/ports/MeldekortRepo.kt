@@ -16,7 +16,7 @@ interface MeldekortRepo {
     )
 
     fun oppdater(
-        meldekort: Meldekort,
+        meldekort: Meldekort.UtfyltMeldekort,
         transactionContext: TransactionContext? = null,
     )
 

@@ -16,7 +16,7 @@ import io.ktor.server.auth.jwt.jwt
 import io.ktor.server.http.content.staticResources
 import io.ktor.server.plugins.callid.CallId
 import io.ktor.server.plugins.callid.callIdMdc
-import io.ktor.server.plugins.callloging.CallLogging
+import io.ktor.server.plugins.calllogging.CallLogging
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.request.path
@@ -30,6 +30,7 @@ import no.nav.tiltakspenger.libs.common.Rolle
 import no.nav.tiltakspenger.libs.common.Roller
 import no.nav.tiltakspenger.vedtak.AdRolle
 import no.nav.tiltakspenger.vedtak.Configuration
+import no.nav.tiltakspenger.vedtak.auth2.MicrosoftEntraIdTokenService
 import no.nav.tiltakspenger.vedtak.context.ApplicationContext
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBeslutterRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingRoutes
@@ -37,9 +38,9 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.benk.behandlingBenkRoutes
 import no.nav.tiltakspenger.vedtak.routes.datadeling.datadelingRoutes
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.ExceptionHandler
 import no.nav.tiltakspenger.vedtak.routes.meldekort.meldekortRoutes
-import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.søknadRoutes
 import no.nav.tiltakspenger.vedtak.routes.sak.sakRoutes
 import no.nav.tiltakspenger.vedtak.routes.saksbehandler.saksbehandlerRoutes
+import no.nav.tiltakspenger.vedtak.routes.søknad.søknadRoutes
 import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
 import java.net.URI
 import java.util.UUID
@@ -50,6 +51,7 @@ const val CALL_ID_MDC_KEY = "call-id"
 internal fun Application.vedtakApi(
     config: Configuration.TokenVerificationConfig,
     innloggetSaksbehandlerProvider: JWTInnloggetSaksbehandlerProvider,
+    tokenService: MicrosoftEntraIdTokenService,
     applicationContext: ApplicationContext,
 ) {
     install(CallId)
@@ -67,7 +69,7 @@ internal fun Application.vedtakApi(
     routing {
         healthRoutes()
         authenticate("saksbehandling") {
-            saksbehandlerRoutes(innloggetSaksbehandlerProvider)
+            saksbehandlerRoutes(tokenService)
             behandlingRoutes(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
                 behandlingService = applicationContext.førstegangsbehandlingContext.behandlingService,
@@ -89,7 +91,7 @@ internal fun Application.vedtakApi(
                 auditService = applicationContext.personContext.auditService,
             )
             sakRoutes(
-                innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
+                tokenService = tokenService,
                 sakService = applicationContext.sakContext.sakService,
                 auditService = applicationContext.personContext.auditService,
             )
@@ -100,6 +102,7 @@ internal fun Application.vedtakApi(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
                 auditService = applicationContext.personContext.auditService,
                 sakService = applicationContext.sakContext.sakService,
+                tokenService = tokenService,
             )
         }
         authenticate("systemtoken") {
@@ -174,6 +177,7 @@ private fun AuthenticationConfig.jwtSystemToken(
     sikkerlogg.info { "config : $config" }
     this.realm = realm
     val jwkProviderGammel = UrlJwkProvider(URI(config.jwksUri).toURL())
+
     verifier(jwkProviderGammel, config.issuer) {
         LOG.debug { "Er nå i verifier" }
         withAudience(config.clientId)

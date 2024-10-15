@@ -1,11 +1,12 @@
-val ktorVersion = "2.3.12"
+val ktorVersion = "3.0.0"
 val kotestVersion = "5.9.1"
-val mockkVersion = "1.13.12"
+val mockkVersion = "1.13.13"
 val testContainersVersion = "1.20.2"
-val felleslibVersion = "0.0.239"
+val felleslibVersion = "0.0.242"
 val tokenSupportVersion = "3.2.0"
 val poaoTilgangVersjon = "2024.10.04_12.38-e183cd9d187f"
-val iverksettVersjon = "1.0_20240926140513_d75b2a0"
+val iverksettVersjon = "1.0_20241009152720_6229329"
+val kotlinxCoroutinesVersion = "1.9.0"
 
 plugins {
     application
@@ -34,7 +35,7 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:tiltak-dtos:$felleslibVersion")
 
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
-    implementation("ch.qos.logback:logback-classic:1.5.8")
+    implementation("ch.qos.logback:logback-classic:1.5.10")
     implementation("net.logstash.logback:logstash-logback-encoder:8.0")
     implementation("com.papertrailapp:logback-syslog4j:1.0.0")
 
@@ -65,9 +66,10 @@ dependencies {
     implementation("io.ktor:ktor-http:$ktorVersion")
 
     // Auth
+    api("com.auth0:java-jwt:4.4.0")
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
     implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
-    implementation("com.auth0:jwks-rsa:0.22.1")
+    api("com.auth0:jwks-rsa:0.22.1")
 
     // TokenX
     implementation("no.nav.security:token-validation-ktor-v2:$tokenSupportVersion")
@@ -104,12 +106,14 @@ dependencies {
     testImplementation("io.kotest:kotest-extensions:$kotestVersion")
     testImplementation("org.skyscreamer:jsonassert:1.5.3")
     testImplementation("org.testcontainers:testcontainers:$testContainersVersion")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinxCoroutinesVersion")
     testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
     testImplementation("org.testcontainers:postgresql:$testContainersVersion")
     // need quarkus-junit-4-mock because of https://github.com/testcontainers/testcontainers-java/issues/970
     testImplementation("io.quarkus:quarkus-junit4-mock:3.15.1")
-    testImplementation(project(":test-common"))
+    testApi(project(":test-common"))
     testApi("com.github.navikt.tiltakspenger-libs:test-common:$felleslibVersion")
-    testImplementation("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")
-    testImplementation("com.github.navikt.tiltakspenger-libs:persistering-domene:$felleslibVersion")
+    testApi("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")
+    testApi("com.github.navikt.tiltakspenger-libs:persistering-domene:$felleslibVersion")
+
 }

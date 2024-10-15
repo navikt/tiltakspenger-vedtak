@@ -12,7 +12,7 @@ import no.nav.tiltakspenger.libs.soknad.SpmSvarDTO
 import no.nav.tiltakspenger.libs.soknad.SøknadDTO
 import no.nav.tiltakspenger.libs.soknad.SøknadsTiltakDTO
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
-import no.nav.tiltakspenger.vedtak.routes.rivers.søknad.SøknadDTOMapper
+import no.nav.tiltakspenger.vedtak.routes.søknad.SøknadDTOMapper
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.time.LocalDate

@@ -32,7 +32,6 @@ internal class UtbetalingsvedtakPostgresRepo(
                         id,
                         sakId,
                         rammevedtakId,
-                        brukerNavkontor,
                         vedtakstidspunkt,
                         forrigeVedtakId,
                         meldekortId
@@ -40,7 +39,6 @@ internal class UtbetalingsvedtakPostgresRepo(
                         :id,
                         :sakId,
                         :rammevedtakId,
-                        :brukerNavkontor,
                         :vedtakstidspunkt,
                         :forrigeVedtakId,
                         :meldekortId
@@ -50,7 +48,6 @@ internal class UtbetalingsvedtakPostgresRepo(
                         "id" to vedtak.id.toString(),
                         "sakId" to vedtak.sakId.toString(),
                         "rammevedtakId" to vedtak.rammevedtakId.toString(),
-                        "brukerNavkontor" to vedtak.brukerNavkontor,
                         "vedtakstidspunkt" to vedtak.vedtakstidspunkt,
                         "forrigeVedtakId" to vedtak.forrigeUtbetalingsvedtakId?.toString(),
                         "meldekortId" to vedtak.meldekortId.toString(),
@@ -77,7 +74,7 @@ internal class UtbetalingsvedtakPostgresRepo(
                     mapOf(
                         "id" to vedtakId.toString(),
                         "tidspunkt" to tidspunkt,
-                        "metadata" to """{"request": "${utbetalingsrespons.request}", "response": "${utbetalingsrespons.response}"}""",
+                        "metadata" to utbetalingsrespons.toJson(),
                     ),
                 ).asUpdate,
             )
@@ -209,7 +206,6 @@ internal class UtbetalingsvedtakPostgresRepo(
                 saksnummer = Saksnummer(string("saksnummer")),
                 fnr = Fnr.fromString(string("fnr")),
                 rammevedtakId = VedtakId.fromString(string("rammevedtakId")),
-                brukerNavkontor = string("brukerNavkontor"),
                 vedtakstidspunkt = localDateTime("vedtakstidspunkt"),
                 forrigeUtbetalingsvedtakId = stringOrNull("forrigeVedtakId")?.let { VedtakId.fromString(it) },
                 meldekort =

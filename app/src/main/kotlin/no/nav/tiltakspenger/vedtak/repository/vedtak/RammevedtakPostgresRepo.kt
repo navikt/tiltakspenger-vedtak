@@ -12,7 +12,6 @@ import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.VedtakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
-import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionContext.Companion.withSession
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
@@ -218,8 +217,8 @@ class RammevedtakPostgresRepo(
                         "vedtaksdato" to vedtak.vedtaksdato,
                         "fom" to vedtak.periode.fraOgMed,
                         "tom" to vedtak.periode.tilOgMed,
-                        "saksbehandler" to vedtak.saksbehandler,
-                        "beslutter" to vedtak.beslutter,
+                        "saksbehandler" to vedtak.saksbehandlerNavIdent,
+                        "beslutter" to vedtak.beslutterNavIdent,
                         "opprettet" to LocalDateTime.now(),
                     ),
                 ).asUpdate,
@@ -240,8 +239,8 @@ class RammevedtakPostgresRepo(
                 vedtaksdato = localDateTime("vedtaksdato"),
                 vedtaksType = Vedtakstype.valueOf(string("vedtakstype")),
                 periode = Periode(fraOgMed = localDate("fom"), tilOgMed = localDate("tom")),
-                saksbehandler = string("saksbehandler"),
-                beslutter = string("beslutter"),
+                saksbehandlerNavIdent = string("saksbehandler"),
+                beslutterNavIdent = string("beslutter"),
                 journalpostId = stringOrNull("journalpost_id")?.let { JournalpostId(it) },
                 journalføringstidstpunkt = localDateTimeOrNull("journalføringstidspunkt"),
             )
