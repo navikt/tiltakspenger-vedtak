@@ -1,5 +1,7 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse
 
+import arrow.core.Either
+import arrow.core.getOrElse
 import mu.KotlinLogging
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
@@ -21,24 +23,20 @@ data class TiltakDeltagelseVilkår private constructor(
         check(vurderingsperiode == registerSaksopplysning.deltagelsePeriode) { "Vurderingsperioden må være lik deltagelsesperioden" }
     }
 
-    override fun utfall(): Periodisering<UtfallForPeriode> {
+    override val utfall: Periodisering<UtfallForPeriode> = Either.catch {
         val rettTilTiltakspenger = registerSaksopplysning.girRett
         val deltagelsePeriode = registerSaksopplysning.deltagelsePeriode
         val status = registerSaksopplysning.status
-
         val rettTilÅSøke = status.rettTilÅSøke
+
         if (!rettTilÅSøke || !rettTilTiltakspenger) {
             // TODO pre-mvp jah: Vi utleder girRett i tiltakspenger-tiltak. Her kan vi heller bruke en felles algoritme i libs, istedet for å sende den over nettverk.
             throw IllegalStateException(
-                "Per dags dato får søkere kun søke dersom vi har whitelistet tiltakets status og klassekode. rettTilÅSøke: $rettTilÅSøke, rettTilTIltakspenger: $rettTilTiltakspenger",
+                "Per dags dato får brukere kun søke dersom vi har whitelistet tiltakets status og klassekode. Dette tiltaket fører til avslag. RettTilÅSøke: $rettTilÅSøke og RettTilTiltakspenger: $rettTilTiltakspenger",
             )
         }
-
-        return when {
-            rettTilTiltakspenger && rettTilÅSøke -> Periodisering(UtfallForPeriode.OPPFYLT, deltagelsePeriode)
-            else -> Periodisering(UtfallForPeriode.UAVKLART, deltagelsePeriode)
-        }
-    }
+        Periodisering(UtfallForPeriode.OPPFYLT, deltagelsePeriode)
+    }.getOrElse { throw it }
 
     override val lovreferanse = Lovreferanse.TILTAKSDELTAGELSE
 
@@ -64,8 +62,8 @@ data class TiltakDeltagelseVilkår private constructor(
                 registerSaksopplysning = registerSaksopplysning,
                 vurderingsperiode = vurderingsperiode,
             ).also {
-                check(utfall == it.utfall()) {
-                    "Mismatch mellom utfallet som er lagret i TiltakDeltagelseVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall()})"
+                check(utfall == it.utfall) {
+                    "Mismatch mellom utfallet som er lagret i TiltakDeltagelseVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall})"
                 }
             }
     }

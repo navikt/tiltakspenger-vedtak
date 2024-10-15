@@ -26,7 +26,7 @@ internal fun LivsoppholdVilkår.toDTO(): LivsoppholdVilkårDTO {
     return LivsoppholdVilkårDTO(
         avklartSaksopplysning = avklartSaksopplysning?.toDTO(vurderingsperiode = vurderingsperiode.toDTO()),
         vilkårLovreferanse = lovreferanse.toDTO(),
-        utfallperiode = this.utfall().totalePeriode.toDTO(),
+        utfallperiode = this.utfall.totalePeriode.toDTO(),
         samletUtfall = samletUtfall,
     )
 }

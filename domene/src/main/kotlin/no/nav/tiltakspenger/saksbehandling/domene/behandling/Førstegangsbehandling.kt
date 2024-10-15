@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.saksbehandling.domene.behandling
 
 import arrow.core.Either
+import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
 import no.nav.tiltakspenger.felles.Saksbehandler
@@ -118,27 +119,30 @@ data class Førstegangsbehandling(
                 return KanIkkeOppretteBehandling.FantIkkeTiltak.left()
             }
 
-            return Førstegangsbehandling(
-                id = BehandlingId.random(),
-                saksnummer = saksnummer,
-                sakId = sakId,
-                fnr = fnr,
-                søknad = søknad,
-                vurderingsperiode = vurderingsperiode,
-                vilkårssett =
-                Vilkårssett.opprett(
+            val førstegangsbehandling = Either.catch {
+                Førstegangsbehandling(
+                    id = BehandlingId.random(),
+                    saksnummer = saksnummer,
+                    sakId = sakId,
+                    fnr = fnr,
                     søknad = søknad,
-                    fødselsdato = fødselsdato,
-                    tiltak = tiltak,
                     vurderingsperiode = vurderingsperiode,
-                ),
-                stønadsdager = Stønadsdager(vurderingsperiode = vurderingsperiode, tiltak.tilStønadsdagerRegisterSaksopplysning()),
-                saksbehandler = saksbehandler.navIdent,
-                beslutter = null,
-                status = UNDER_BEHANDLING,
-                attesteringer = emptyList(),
-                opprettet = LocalDateTime.now(),
-            ).right()
+                    vilkårssett =
+                    Vilkårssett.opprett(
+                        søknad = søknad,
+                        fødselsdato = fødselsdato,
+                        tiltak = tiltak,
+                        vurderingsperiode = vurderingsperiode,
+                    ),
+                    stønadsdager = Stønadsdager(vurderingsperiode = vurderingsperiode, tiltak.tilStønadsdagerRegisterSaksopplysning()),
+                    saksbehandler = saksbehandler.navIdent,
+                    beslutter = null,
+                    status = UNDER_BEHANDLING,
+                    attesteringer = emptyList(),
+                    opprettet = LocalDateTime.now(),
+                )
+            }.getOrElse { return KanIkkeOppretteBehandling.StøtterKunInnvilgelse.left() }
+            return førstegangsbehandling.right()
         }
     }
 

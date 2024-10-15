@@ -24,10 +24,10 @@ data class IntroVilkår private constructor(
 ) : Vilkår {
     override val lovreferanse = Lovreferanse.INTROPROGRAMMET
 
-    override fun utfall(): Periodisering<UtfallForPeriode> =
+    override val utfall: Periodisering<UtfallForPeriode> =
         avklartSaksopplysning.deltar.map {
             when (it) {
-                DELTAR -> UtfallForPeriode.IKKE_OPPFYLT
+                DELTAR -> throw IllegalStateException("Deltagelse på introduksjonsprogrammet fører til avslag eller delvis innvilgelse")
                 DELTAR_IKKE -> UtfallForPeriode.OPPFYLT
             }
         }
@@ -91,8 +91,8 @@ data class IntroVilkår private constructor(
                 saksbehandlerSaksopplysning = saksbehandlerSaksopplysning,
                 avklartSaksopplysning = avklartSaksopplysning,
             ).also {
-                check(utfall == it.utfall()) {
-                    "Mismatch mellom utfallet som er lagret i IntroVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall()})"
+                check(utfall == it.utfall) {
+                    "Mismatch mellom utfallet som er lagret i IntroVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall})"
                 }
             }
     }

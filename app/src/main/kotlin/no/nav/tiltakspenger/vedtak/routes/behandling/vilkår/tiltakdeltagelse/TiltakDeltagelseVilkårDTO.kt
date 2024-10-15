@@ -22,6 +22,6 @@ internal fun TiltakDeltagelseVilkår.toDTO(): TiltakDeltagelseVilkårDTO =
     TiltakDeltagelseVilkårDTO(
         registerSaksopplysning = registerSaksopplysning.toDTO(),
         vilkårLovreferanse = lovreferanse.toDTO(),
-        utfallperiode = this.utfall().totalePeriode.toDTO(),
+        utfallperiode = this.utfall.totalePeriode.toDTO(),
         samletUtfall = this.samletUtfall().toDTO(),
     )

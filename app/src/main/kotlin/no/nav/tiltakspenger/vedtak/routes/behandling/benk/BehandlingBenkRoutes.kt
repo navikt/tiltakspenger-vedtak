@@ -65,7 +65,7 @@ fun Route.behandlingBenkRoutes(
                                     status = HttpStatusCode.BadRequest,
                                 )
 
-                            is KanIkkeOppretteBehandling.StøtterKunInnvilgelse -> call.respond(message = "Vi støtter ikke å opprette en behandling som vil føre til delvis innvilgelse eller avslag. ${it.underliggende}", status = HttpStatusCode.BadRequest)
+                            is KanIkkeOppretteBehandling.StøtterKunInnvilgelse -> call.respond(message = "Vi støtter ikke å opprette en behandling som vil føre til delvis innvilgelse eller avslag.", status = HttpStatusCode.BadRequest)
                         }
                 }
             },

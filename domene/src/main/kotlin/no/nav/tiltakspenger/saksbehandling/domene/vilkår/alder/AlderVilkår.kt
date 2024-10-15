@@ -1,11 +1,9 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder
 
 import arrow.core.Either
-import arrow.core.left
-import arrow.core.right
+import arrow.core.getOrElse
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.StøtterIkkeUtfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.UtfallForPeriode
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
@@ -19,12 +17,21 @@ import java.time.LocalDateTime
  */
 data class AlderVilkår private constructor(
     override val vurderingsperiode: Periode,
-    override val utfall: Periodisering<UtfallForPeriode>,
     val registerSaksopplysning: AlderSaksopplysning.Register,
     val saksbehandlerSaksopplysning: AlderSaksopplysning.Saksbehandler?,
     val avklartSaksopplysning: AlderSaksopplysning,
 ) : Vilkår {
     override val lovreferanse = Lovreferanse.ALDER
+    override val utfall: Periodisering<UtfallForPeriode> = Either.catch {
+        // Om noen har bursdag 29. mars (skuddår) og de akkurat har fylt 18 vil fødselsdagen bli satt til 28. mars, og de vil få krav på tiltakspenger én dag før de er 18.
+        // Dette er så cornercase at vi per nå velger ikke å gjøre det pga. a) veldig lav forekomst/sannsynlighet og b) konsekvens; dette er i brukers favør.
+        val dagenBrukerFyller18År = registerSaksopplysning.fødselsdato.plusYears(18)
+        if (dagenBrukerFyller18År.isAfter(vurderingsperiode.fraOgMed)) throw IllegalStateException("Vi støtter ikke delvis innvilgelse eller avslag")
+        Periodisering(
+            UtfallForPeriode.OPPFYLT,
+            vurderingsperiode,
+        )
+    }.getOrElse { throw it }
 
     fun leggTilSaksbehandlerSaksopplysning(command: LeggTilAlderSaksopplysningCommand): AlderVilkår {
         val introSaksopplysning =
@@ -44,30 +51,16 @@ data class AlderVilkår private constructor(
         fun opprett(
             registerSaksopplysning: AlderSaksopplysning.Register,
             vurderingsperiode: Periode,
-        ): Either<StøtterIkkeUtfall, AlderVilkår> {
-            val utfall: Periodisering<UtfallForPeriode> =
-                run {
-                    // Om noen har bursdag 29. mars (skuddår) og de akkurat har fylt 18 vil fødselsdagen bli satt til 28. mars, og de vil få krav på tiltakspenger én dag før de er 18.
-                    // Dette er så cornercase at vi per nå velger ikke å gjøre det pga. a) veldig lav forekomst/sannsynlighet og b) konsekvens; dette er i brukers favør.
-                    val dagenBrukerFyller18År = registerSaksopplysning.fødselsdato.plusYears(18)
-                    when {
-                        dagenBrukerFyller18År.isAfter(vurderingsperiode.fraOgMed) -> return StøtterIkkeUtfall.DelvisInnvilgelse.left()
-                        else -> {
-                            Periodisering(
-                                UtfallForPeriode.OPPFYLT,
-                                vurderingsperiode,
-                            )
-                        }
-                    }
-                }
-
-            return AlderVilkår(
-                registerSaksopplysning = registerSaksopplysning,
-                saksbehandlerSaksopplysning = null,
-                utfall = utfall,
-                avklartSaksopplysning = registerSaksopplysning,
-                vurderingsperiode = vurderingsperiode,
-            ).right()
+        ): AlderVilkår {
+            val alderVilkår = Either.catch {
+                AlderVilkår(
+                    registerSaksopplysning = registerSaksopplysning,
+                    saksbehandlerSaksopplysning = null,
+                    avklartSaksopplysning = registerSaksopplysning,
+                    vurderingsperiode = vurderingsperiode,
+                )
+            }.getOrElse { throw it }
+            return alderVilkår
         }
 
         /**
@@ -85,7 +78,6 @@ data class AlderVilkår private constructor(
                 saksbehandlerSaksopplysning = saksbehandlerSaksopplysning,
                 avklartSaksopplysning = avklartSaksopplysning,
                 vurderingsperiode = vurderingsperiode,
-                utfall = utfall,
             ).also {
                 check(utfall == it.utfall) {
                     "Mismatch mellom utfallet som er lagret i AlderVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall})"

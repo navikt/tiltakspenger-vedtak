@@ -2,10 +2,8 @@ package no.nav.tiltakspenger.saksbehandling.domene.vilkår
 
 import arrow.core.Either
 import arrow.core.getOrElse
-import arrow.core.left
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.StøtterIkkeUtfall
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder.AlderSaksopplysning.Register
@@ -60,7 +58,7 @@ data class Vilkårssett(
         when {
             vilkårliste.any { it.samletUtfall() == SamletUtfall.UAVKLART } -> SamletUtfall.UAVKLART
             vilkårliste.all { it.samletUtfall() == SamletUtfall.OPPFYLT } -> SamletUtfall.OPPFYLT
-            vilkårliste.all { it.samletUtfall() == SamletUtfall.IKKE_OPPFYLT } -> SamletUtfall.IKKE_OPPFYLT
+            vilkårliste.all { it.samletUtfall() == SamletUtfall.IKKE_OPPFYLT } -> throw IllegalStateException("Støtter ikke avslag enda")
             else -> throw IllegalStateException("Støtter ikke delvis oppfylt enda")
         }
 
@@ -124,7 +122,7 @@ data class Vilkårssett(
             fødselsdato: LocalDate,
             tiltak: Tiltak,
             vurderingsperiode: Periode,
-        ): Either<StøtterIkkeUtfall, Vilkårssett> =
+        ): Vilkårssett = Either.catch {
             Vilkårssett(
                 vurderingsperiode = vurderingsperiode,
                 institusjonsoppholdVilkår =
@@ -145,7 +143,7 @@ data class Vilkårssett(
                 AlderVilkår.opprett(
                     Register.opprett(fødselsdato = fødselsdato),
                     vurderingsperiode,
-                ).getOrElse { return it.left() },
+                ),
                 kravfristVilkår = KravfristVilkår.opprett(søknad.kravfristSaksopplysning(), vurderingsperiode),
                 tiltakDeltagelseVilkår =
                 TiltakDeltagelseVilkår.opprett(
@@ -153,5 +151,6 @@ data class Vilkårssett(
                     registerSaksopplysning = tiltak.tilRegisterSaksopplysning(),
                 ),
             )
+        }.getOrElse { throw it }
     }
 }

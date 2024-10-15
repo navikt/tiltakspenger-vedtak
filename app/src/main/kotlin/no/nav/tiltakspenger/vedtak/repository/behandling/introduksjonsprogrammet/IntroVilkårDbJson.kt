@@ -31,5 +31,5 @@ internal fun IntroVilkår.toDbJson(): IntroVilkårDbJson =
         søknadSaksopplysning = søknadSaksopplysning.toDbJson(),
         saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDbJson(),
         avklartSaksopplysning = avklartSaksopplysning.toDbJson(),
-        utfallsperioder = utfall().toDbJson(),
+        utfallsperioder = utfall.toDbJson(),
     )

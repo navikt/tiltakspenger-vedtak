@@ -100,7 +100,7 @@ private fun mapResultat(utfall: UtfallForPeriode): Resultat {
 }
 
 private fun mapVilkår(vilkårssett: Vilkårssett): List<VilkårStatistikkDTO> {
-    val intro = vilkårssett.introVilkår.utfall().perioder().map {
+    val intro = vilkårssett.introVilkår.utfall.perioder().map {
         VilkårStatistikkDTO(
             vilkår = "intro",
             beskrivelse = "Om bruker deltar på introprogrammet",
@@ -108,7 +108,7 @@ private fun mapVilkår(vilkårssett: Vilkårssett): List<VilkårStatistikkDTO> {
         )
     }
 
-    val kvp = vilkårssett.kvpVilkår.utfall().perioder().map {
+    val kvp = vilkårssett.kvpVilkår.utfall.perioder().map {
         VilkårStatistikkDTO(
             vilkår = "kvp",
             beskrivelse = "Om bruker deltar på kvp",
@@ -116,7 +116,7 @@ private fun mapVilkår(vilkårssett: Vilkårssett): List<VilkårStatistikkDTO> {
         )
     }
 
-    val alder = vilkårssett.alderVilkår.utfall().perioder().map {
+    val alder = vilkårssett.alderVilkår.utfall.perioder().map {
         VilkårStatistikkDTO(
             vilkår = "alder",
             beskrivelse = "Om bruker er over 18 år",
@@ -124,7 +124,7 @@ private fun mapVilkår(vilkårssett: Vilkårssett): List<VilkårStatistikkDTO> {
         )
     }
 
-    val kravfrist = vilkårssett.kravfristVilkår.utfall().perioder().map {
+    val kravfrist = vilkårssett.kravfristVilkår.utfall.perioder().map {
         VilkårStatistikkDTO(
             vilkår = "kravfrist",
             beskrivelse = "Om bruker har søkt innen fristen",
@@ -132,7 +132,7 @@ private fun mapVilkår(vilkårssett: Vilkårssett): List<VilkårStatistikkDTO> {
         )
     }
 
-    val institusjon = vilkårssett.institusjonsoppholdVilkår.utfall().perioder().map {
+    val institusjon = vilkårssett.institusjonsoppholdVilkår.utfall.perioder().map {
         VilkårStatistikkDTO(
             vilkår = "institusjon",
             beskrivelse = "Om bruker bor på institusjon og får dekket livsopphold",
@@ -140,7 +140,7 @@ private fun mapVilkår(vilkårssett: Vilkårssett): List<VilkårStatistikkDTO> {
         )
     }
 
-    val tiltak = vilkårssett.tiltakDeltagelseVilkår.utfall().perioder().map {
+    val tiltak = vilkårssett.tiltakDeltagelseVilkår.utfall.perioder().map {
         VilkårStatistikkDTO(
             vilkår = "tiltakdeltagelse",
             beskrivelse = "Om bruker deltar på tiltak som gir rett til tiltakspenger",
@@ -148,7 +148,7 @@ private fun mapVilkår(vilkårssett: Vilkårssett): List<VilkårStatistikkDTO> {
         )
     }
 
-    val livsopphold = vilkårssett.livsoppholdVilkår.utfall().perioder().map {
+    val livsopphold = vilkårssett.livsoppholdVilkår.utfall.perioder().map {
         VilkårStatistikkDTO(
             vilkår = "livsopphold",
             beskrivelse = "Om bruker får dekket livsopphold fra andre ytelser",
