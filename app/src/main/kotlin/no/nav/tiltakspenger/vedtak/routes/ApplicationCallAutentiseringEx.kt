@@ -13,9 +13,9 @@ import no.nav.tiltakspenger.vedtak.auth2.Valideringsfeil
 import kotlin.text.startsWith
 import kotlin.text.substring
 
-internal suspend fun ApplicationCall.withSaksbehandler(
+internal suspend inline fun ApplicationCall.withSaksbehandler(
     tokenService: TokenService,
-    block: suspend (Saksbehandler) -> Unit,
+    crossinline block: suspend (Saksbehandler) -> Unit,
 ) {
     return withBruker(tokenService) {
         if (it is Saksbehandler) {
@@ -29,9 +29,9 @@ internal suspend fun ApplicationCall.withSaksbehandler(
     }
 }
 
-internal suspend fun ApplicationCall.withSystembruker(
+internal suspend inline fun ApplicationCall.withSystembruker(
     tokenService: MicrosoftEntraIdTokenService,
-    block: suspend (Systembruker) -> Unit,
+    crossinline block: suspend (Systembruker) -> Unit,
 ) {
     return withBruker(tokenService) {
         if (it is Systembruker) {
@@ -45,9 +45,9 @@ internal suspend fun ApplicationCall.withSystembruker(
     }
 }
 
-internal suspend fun ApplicationCall.withBruker(
+internal suspend inline fun ApplicationCall.withBruker(
     tokenService: TokenService,
-    block: suspend (Bruker) -> Unit,
+    crossinline block: suspend (Bruker) -> Unit,
 ) {
     val token = getBearerToken() ?: return
     tokenService.validerOgHentBruker(token)

@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.vedtak.routes.sak
 
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.call
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -19,7 +18,7 @@ import no.nav.tiltakspenger.vedtak.routes.respond400BadRequest
 import no.nav.tiltakspenger.vedtak.routes.withSaksbehandler
 import no.nav.tiltakspenger.vedtak.routes.withSaksnummer
 
-private val LOG = KotlinLogging.logger {}
+private val logger = KotlinLogging.logger {}
 
 internal const val SAK_PATH = "/sak"
 
@@ -29,10 +28,9 @@ fun Route.sakRoutes(
     tokenService: TokenService,
 ) {
     get("$SAK_PATH/{saksnummer}") {
+        logger.debug("Mottatt get-request på $SAK_PATH/{saksnummer}")
         call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
             call.withSaksnummer { saksnummer ->
-                LOG.debug("Mottatt request på $SAK_PATH/{saksnummer}")
-
                 auditService.logMedSaksnummer(
                     saksnummer = saksnummer,
                     navIdent = saksbehandler.navIdent,
@@ -51,8 +49,8 @@ fun Route.sakRoutes(
     }
 
     post(SAK_PATH) {
+        logger.debug("Mottatt post-request på $SAK_PATH")
         call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
-            LOG.debug("Mottatt request på $SAK_PATH")
             val fnr = Fnr.fromString(call.receive<FnrDTO>().fnr)
             val correlationId = call.correlationId()
 

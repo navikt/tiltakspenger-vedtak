@@ -102,6 +102,7 @@ internal fun Application.vedtakApi(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
                 auditService = applicationContext.personContext.auditService,
                 sakService = applicationContext.sakContext.sakService,
+                tokenService = tokenService,
             )
         }
         authenticate("systemtoken") {

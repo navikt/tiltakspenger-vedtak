@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.vedtak.routes.søknad
 
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.call
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -11,16 +10,16 @@ import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.soknad.SøknadDTO
 import no.nav.tiltakspenger.saksbehandling.service.SøknadService
 
-private val LOG = KotlinLogging.logger {}
+private val logger = KotlinLogging.logger {}
 
 const val SØKNAD_PATH = "/soknad"
 
 fun Route.søknadRoutes(søknadService: SøknadService) {
     post(SØKNAD_PATH) {
-        LOG.debug { "Mottatt ny søknad. Prøver deserialisere og lagre." }
+        logger.debug { "Mottatt ny søknad på $SØKNAD_PATH. Prøver deserialisere og lagre." }
         try {
             val søknadDTO = call.receive<SøknadDTO>()
-            LOG.debug { "Deserialisert søknad OK med id ${søknadDTO.søknadId}" }
+            logger.debug { "Deserialisert søknad OK med id ${søknadDTO.søknadId}" }
             // Oppretter sak med søknad og lagrer den
             søknadService.nySøknad(
                 søknad =
@@ -31,7 +30,7 @@ fun Route.søknadRoutes(søknadService: SøknadService) {
             )
             call.respond(message = "OK", status = HttpStatusCode.OK)
         } catch (exception: Exception) {
-            LOG.error(
+            logger.error(
                 "Feil ved mottak av søknad. Se sikkerlogg for detaljer",
                 RuntimeException("Trigger en exception for å få stracktrace."),
             )

@@ -4,6 +4,7 @@ import arrow.core.Either
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.plugins.callid.callId
 import no.nav.tiltakspenger.libs.common.CorrelationId
+import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.vedtak.exceptions.UgyldigRequestException
@@ -17,7 +18,7 @@ internal fun ApplicationCall.correlationId(): CorrelationId {
     return this.callId?.let { CorrelationId(it) } ?: CorrelationId.generate()
 }
 
-suspend fun ApplicationCall.withSaksnummer(onRight: suspend (Saksnummer) -> Unit) =
+suspend fun ApplicationCall.withSaksnummer(onRight: suspend (Saksnummer) -> Unit) {
     withValidParam(
         paramName = "saksnummer",
         parse = ::Saksnummer,
@@ -25,8 +26,9 @@ suspend fun ApplicationCall.withSaksnummer(onRight: suspend (Saksnummer) -> Unit
         errorCode = "ugyldig_saksnummer",
         onSuccess = onRight,
     )
+}
 
-suspend fun ApplicationCall.withSakId(onRight: suspend (SakId) -> Unit) =
+suspend fun ApplicationCall.withSakId(onRight: suspend (SakId) -> Unit) {
     withValidParam(
         paramName = "sakId",
         parse = SakId::fromString,
@@ -34,6 +36,17 @@ suspend fun ApplicationCall.withSakId(onRight: suspend (SakId) -> Unit) =
         errorCode = "ugyldig_sak_id",
         onSuccess = onRight,
     )
+}
+
+suspend fun ApplicationCall.withMeldekortId(onRight: suspend (MeldekortId) -> Unit) {
+    withValidParam(
+        paramName = "meldekortId",
+        parse = MeldekortId::fromString,
+        errorMessage = "Ugyldig meldekort id",
+        errorCode = "ugyldig_meldekort_id",
+        onSuccess = onRight,
+    )
+}
 
 private suspend fun <T> ApplicationCall.withValidParam(
     paramName: String,
