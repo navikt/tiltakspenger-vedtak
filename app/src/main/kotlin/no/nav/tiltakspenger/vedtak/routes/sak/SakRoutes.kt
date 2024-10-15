@@ -28,7 +28,7 @@ fun Route.sakRoutes(
     tokenService: TokenService,
 ) {
     get("$SAK_PATH/{saksnummer}") {
-        logger.debug("Mottatt get-request på $SAK_PATH/{saksnummer}")
+        logger.debug { "Mottatt get-request på $SAK_PATH/{saksnummer}" }
         call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
             call.withSaksnummer { saksnummer ->
                 auditService.logMedSaksnummer(
@@ -49,7 +49,7 @@ fun Route.sakRoutes(
     }
 
     post(SAK_PATH) {
-        logger.debug("Mottatt post-request på $SAK_PATH")
+        logger.debug { "Mottatt post-request på $SAK_PATH" }
         call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
             val fnr = Fnr.fromString(call.receive<FnrDTO>().fnr)
             val correlationId = call.correlationId()

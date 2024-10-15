@@ -17,7 +17,7 @@ internal fun Route.saksbehandlerRoutes(
     tokenService: TokenService,
 ) {
     get(SAKSBEHANDLER_PATH) {
-        logger.info("Mottatt get-request på $SAKSBEHANDLER_PATH")
+        logger.debug { "Mottatt get-request på $SAKSBEHANDLER_PATH" }
         call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
             call.respond(message = saksbehandler.toDTO(), status = HttpStatusCode.OK)
         }

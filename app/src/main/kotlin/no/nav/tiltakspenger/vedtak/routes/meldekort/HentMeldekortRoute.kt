@@ -16,16 +16,15 @@ import no.nav.tiltakspenger.vedtak.routes.withMeldekortId
 import no.nav.tiltakspenger.vedtak.routes.withSakId
 import no.nav.tiltakspenger.vedtak.routes.withSaksbehandler
 
-private val logger = KotlinLogging.logger { }
-
 fun Route.hentMeldekortRoute(
     hentMeldekortService: HentMeldekortService,
     sakService: SakService,
     auditService: AuditService,
     tokenService: TokenService,
 ) {
+    val logger = KotlinLogging.logger { }
     get("/sak/{sakId}/meldekort") {
-        logger.info("Mottatt get-request på /sak/{sakId}/meldekort - henter alle meldekort for sak")
+        logger.debug { "Mottatt get-request på /sak/{sakId}/meldekort - henter alle meldekort for sak" }
         call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
             call.withSakId { sakId ->
                 val correlationId = call.correlationId()
@@ -50,7 +49,7 @@ fun Route.hentMeldekortRoute(
     }
 
     get("/sak/{sakId}/meldekort/{meldekortId}") {
-        logger.info("Motatt get-request på /sak/{sakId}/meldekort/{meldekortId}")
+        logger.debug { "Motatt get-request på /sak/{sakId}/meldekort/{meldekortId}" }
         call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
             call.withMeldekortId { meldekortId ->
                 val correlationId = call.correlationId()
