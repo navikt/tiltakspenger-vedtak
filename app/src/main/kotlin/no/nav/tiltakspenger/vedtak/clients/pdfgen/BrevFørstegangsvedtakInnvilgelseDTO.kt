@@ -10,7 +10,7 @@ import java.time.LocalDate
 @Suppress("unused")
 private class BrevFørstegangsvedtakInnvilgelseDTO(
     val personalia: BrevPersonaliaDTO,
-    val tiltaksinfo: BrevTiltaksinfoDTO,
+    val tiltaksnavn: String,
     val rammevedtakFraDato: String,
     val rammevedtakTilDato: String,
     val saksnummer: String,
@@ -34,10 +34,7 @@ internal suspend fun Rammevedtak.tobrevDTO(
             etternavn = navn.mellomnavnOgEtternavn,
             antallBarn = 0,
         ),
-        tiltaksinfo = BrevTiltaksinfoDTO(
-            tiltaksnavn = "TODO pre-mvp",
-            arrangør = "TODO pre-mvp",
-        ),
+        tiltaksnavn = "TODO pre-mvp",
         rammevedtakFraDato = periode.fraOgMed.format(norskDatoFormatter),
         rammevedtakTilDato = periode.tilOgMed.format(norskDatoFormatter),
         saksnummer = saksnummer.verdi,
