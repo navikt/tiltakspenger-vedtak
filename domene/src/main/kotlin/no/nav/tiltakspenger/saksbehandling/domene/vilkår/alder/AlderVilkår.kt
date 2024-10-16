@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder
 
-import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
+import no.nav.tiltakspenger.felles.exceptions.StøtterIkkeUtfallException
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
@@ -21,18 +21,15 @@ data class AlderVilkår private constructor(
     val avklartSaksopplysning: AlderSaksopplysning,
 ) : Vilkår {
     override val lovreferanse = Lovreferanse.ALDER
-
-    override fun utfall(): Periodisering<UtfallForPeriode> {
+    override val utfall: Periodisering<UtfallForPeriode> = run {
         // Om noen har bursdag 29. mars (skuddår) og de akkurat har fylt 18 vil fødselsdagen bli satt til 28. mars, og de vil få krav på tiltakspenger én dag før de er 18.
         // Dette er så cornercase at vi per nå velger ikke å gjøre det pga. a) veldig lav forekomst/sannsynlighet og b) konsekvens; dette er i brukers favør.
-        val dagenBrukerFyller18År = avklartSaksopplysning.fødselsdato.plusYears(18)
-        return when {
-            dagenBrukerFyller18År.isBefore(vurderingsperiode.fraOgMed) -> Periodisering(UtfallForPeriode.OPPFYLT, vurderingsperiode)
-            dagenBrukerFyller18År.isAfter(vurderingsperiode.tilOgMed) -> Periodisering(UtfallForPeriode.IKKE_OPPFYLT, vurderingsperiode)
-            else -> {
-                throw IkkeImplementertException("Støtter ikke delvis innvilgelse av alder enda")
-            }
-        }
+        val dagenBrukerFyller18År = registerSaksopplysning.fødselsdato.plusYears(18)
+        if (dagenBrukerFyller18År.isAfter(vurderingsperiode.fraOgMed)) throw StøtterIkkeUtfallException("Vi støtter ikke delvis innvilgelse eller avslag")
+        Periodisering(
+            UtfallForPeriode.OPPFYLT,
+            vurderingsperiode,
+        )
     }
 
     fun leggTilSaksbehandlerSaksopplysning(command: LeggTilAlderSaksopplysningCommand): AlderVilkår {
@@ -77,8 +74,8 @@ data class AlderVilkår private constructor(
                 avklartSaksopplysning = avklartSaksopplysning,
                 vurderingsperiode = vurderingsperiode,
             ).also {
-                check(utfall == it.utfall()) {
-                    "Mismatch mellom utfallet som er lagret i AlderVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall()})"
+                check(utfall == it.utfall) {
+                    "Mismatch mellom utfallet som er lagret i AlderVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall})"
                 }
             }
     }

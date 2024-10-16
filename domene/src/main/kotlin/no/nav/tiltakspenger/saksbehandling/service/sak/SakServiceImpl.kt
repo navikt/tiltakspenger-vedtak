@@ -18,6 +18,7 @@ import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 import no.nav.tiltakspenger.libs.person.AdressebeskyttelseGradering
 import no.nav.tiltakspenger.libs.person.harStrengtFortroligAdresse
 import no.nav.tiltakspenger.libs.personklient.pdl.TilgangsstyringService
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling
 import no.nav.tiltakspenger.saksbehandling.domene.benk.Saksoversikt
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
@@ -61,7 +62,7 @@ class SakServiceImpl(
         }
 
         val registrerteTiltak = runBlocking { tiltakGateway.hentTiltak(fnr) }
-        require(registrerteTiltak.isNotEmpty()) { "Finner ingen tiltak tilknyttet brukeren" }
+        if (registrerteTiltak.isEmpty()) return KanIkkeStarteFørstegangsbehandling.OppretteBehandling(KanIkkeOppretteBehandling.FantIkkeTiltak).left()
 
         val personopplysninger = personService.hentPersonopplysninger(fnr)
         val adressebeskyttelseGradering: List<AdressebeskyttelseGradering>? = tilgangsstyringService.adressebeskyttelseEnkel(fnr)
@@ -122,15 +123,15 @@ class SakServiceImpl(
         return sak
     }
 
-    data object FantIkkeFnr
+    data object FantIkkeSakForFnr
 
     override suspend fun hentForFnr(
         fnr: Fnr,
         saksbehandler: Saksbehandler,
         correlationId: CorrelationId,
-    ): Either<FantIkkeFnr, Sak> {
+    ): Either<FantIkkeSakForFnr, Sak> {
         val saker = sakRepo.hentForFnr(fnr)
-        if (saker.saker.isEmpty()) FantIkkeFnr.left()
+        if (saker.saker.isEmpty()) return FantIkkeSakForFnr.left()
         if (saker.size > 1) throw IllegalStateException("Vi støtter ikke flere saker per søker i piloten.")
 
         val sak = saker.single()

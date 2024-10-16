@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
+import no.nav.tiltakspenger.felles.exceptions.StøtterIkkeUtfallException
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
@@ -29,7 +30,7 @@ data class LivsoppholdVilkår private constructor(
 ) : Vilkår {
     override val lovreferanse = Lovreferanse.LIVSOPPHOLDYTELSER
 
-    override fun utfall(): Periodisering<UtfallForPeriode> =
+    override val utfall: Periodisering<UtfallForPeriode> =
         when {
             avklartSaksopplysning == null -> {
                 Periodisering(
@@ -43,13 +44,8 @@ data class LivsoppholdVilkår private constructor(
                     vurderingsperiode,
                 )
             }
-            avklartSaksopplysning.harLivsoppholdYtelser -> {
-                Periodisering(
-                    UtfallForPeriode.IKKE_OPPFYLT,
-                    vurderingsperiode,
-                )
-            }
-            else -> throw IllegalStateException("Ugyldig utfall")
+            avklartSaksopplysning.harLivsoppholdYtelser -> throw StøtterIkkeUtfallException("Andre ytelser til livsopphold fører til avslag eller delvis innvilgelse.")
+            else -> throw IllegalStateException("Andre ytelser til livsopphold har ugyldig utfall")
         }
 
     init {
@@ -137,8 +133,8 @@ data class LivsoppholdVilkår private constructor(
                 avklartSaksopplysning = avklartSaksopplysning,
                 vurderingsperiode = vurderingsperiode,
             ).also {
-                check(utfall == it.utfall()) {
-                    "Mismatch mellom utfallet som er lagret i LivsoppholdVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall()})"
+                check(utfall == it.utfall) {
+                    "Mismatch mellom utfallet som er lagret i LivsoppholdVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall})"
                 }
             }
     }

@@ -34,6 +34,6 @@ internal fun KVPVilkår.toDTO(): KVPVilkårDTO =
             },
         ),
         vilkårLovreferanse = lovreferanse.toDTO(),
-        utfallperiode = this.utfall().totalePeriode.toDTO(),
+        utfallperiode = this.utfall.totalePeriode.toDTO(),
         samletUtfall = this.samletUtfall().toDTO(),
     )

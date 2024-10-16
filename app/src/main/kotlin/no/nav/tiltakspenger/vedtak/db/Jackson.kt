@@ -36,7 +36,7 @@ fun serialize(value: Any): String = objectMapper.writeValueAsString(value)
 
 fun serializeNullable(value: Any?): String? = value?.let { serialize(it) }
 
-inline fun <reified T> List<T>.serialize(): String {
+inline fun <reified T> List<T>.serializeList(): String {
     val listType = objectMapper.typeFactory.constructCollectionLikeType(List::class.java, T::class.java)
     return objectMapper.writerFor(listType).writeValueAsString(this)
 }

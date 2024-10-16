@@ -1,9 +1,11 @@
 package no.nav.tiltakspenger.saksbehandling.domene.behandling
 
 import arrow.core.Either
+import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.exceptions.StøtterIkkeUtfallException
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
@@ -118,6 +120,22 @@ data class Førstegangsbehandling(
                 return KanIkkeOppretteBehandling.FantIkkeTiltak.left()
             }
 
+            // TODO() B og H: Fjern denne når vi begynner å implementere delvis innvilgelse og/eller avslag
+            val vilkårssett = Either.catch {
+                Vilkårssett.opprett(
+                    søknad = søknad,
+                    fødselsdato = fødselsdato,
+                    tiltak = tiltak,
+                    vurderingsperiode = vurderingsperiode,
+                )
+            }.getOrElse {
+                if (it is StøtterIkkeUtfallException) {
+                    return KanIkkeOppretteBehandling.StøtterKunInnvilgelse.left()
+                } else {
+                    throw it
+                }
+            }
+
             return Førstegangsbehandling(
                 id = BehandlingId.random(),
                 saksnummer = saksnummer,
@@ -125,13 +143,7 @@ data class Førstegangsbehandling(
                 fnr = fnr,
                 søknad = søknad,
                 vurderingsperiode = vurderingsperiode,
-                vilkårssett =
-                Vilkårssett.opprett(
-                    søknad = søknad,
-                    fødselsdato = fødselsdato,
-                    tiltak = tiltak,
-                    vurderingsperiode = vurderingsperiode,
-                ),
+                vilkårssett = vilkårssett,
                 stønadsdager = Stønadsdager(vurderingsperiode = vurderingsperiode, tiltak.tilStønadsdagerRegisterSaksopplysning()),
                 saksbehandler = saksbehandler.navIdent,
                 beslutter = null,

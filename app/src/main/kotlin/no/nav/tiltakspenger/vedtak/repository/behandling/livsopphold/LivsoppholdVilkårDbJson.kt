@@ -31,5 +31,5 @@ internal fun LivsoppholdVilkår.toDbJson(): LivsoppholdVilkårDbJson =
         søknadSaksopplysning = søknadssaksopplysning.toDbJson(),
         saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDbJson(),
         avklartSaksopplysning = avklartSaksopplysning?.toDbJson(),
-        utfallsperioder = utfall().toDbJson(),
+        utfallsperioder = utfall.toDbJson(),
     )

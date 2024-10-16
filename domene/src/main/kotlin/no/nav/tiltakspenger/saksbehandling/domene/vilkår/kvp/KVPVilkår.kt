@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp
 
+import no.nav.tiltakspenger.felles.exceptions.StøtterIkkeUtfallException
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
@@ -37,10 +38,10 @@ data class KVPVilkår private constructor(
         }
     }
 
-    override fun utfall(): Periodisering<UtfallForPeriode> =
+    override val utfall: Periodisering<UtfallForPeriode> =
         avklartSaksopplysning.deltar.map {
             when (it) {
-                Deltagelse.DELTAR -> UtfallForPeriode.IKKE_OPPFYLT
+                Deltagelse.DELTAR -> throw StøtterIkkeUtfallException("Deltagelse på kvalifikasjonsprogram fører til avslag eller delvis innvilgelse.")
                 Deltagelse.DELTAR_IKKE -> UtfallForPeriode.OPPFYLT
             }
         }
@@ -104,8 +105,8 @@ data class KVPVilkår private constructor(
                 saksbehandlerSaksopplysning = saksbehandlerSaksopplysning,
                 avklartSaksopplysning = avklartSaksopplysning,
             ).also {
-                check(utfall == it.utfall()) {
-                    "Mismatch mellom utfallet som er lagret i KVPVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall()})"
+                check(utfall == it.utfall) {
+                    "Mismatch mellom utfallet som er lagret i KVPVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall})"
                 }
             }
     }

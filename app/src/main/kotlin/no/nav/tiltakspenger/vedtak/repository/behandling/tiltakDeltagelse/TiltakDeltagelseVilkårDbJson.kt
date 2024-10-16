@@ -25,5 +25,5 @@ internal data class TiltakDeltagelseVilkårDbJson(
 internal fun TiltakDeltagelseVilkår.toDbJson(): TiltakDeltagelseVilkårDbJson =
     TiltakDeltagelseVilkårDbJson(
         registerSaksopplysning = registerSaksopplysning.toDbJson(),
-        utfallsperioder = utfall().toDbJson(),
+        utfallsperioder = utfall.toDbJson(),
     )

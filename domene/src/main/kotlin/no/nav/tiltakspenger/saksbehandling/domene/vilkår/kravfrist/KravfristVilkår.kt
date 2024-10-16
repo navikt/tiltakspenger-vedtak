@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravfrist
 
-import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
+import no.nav.tiltakspenger.felles.exceptions.StøtterIkkeUtfallException
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
@@ -22,18 +22,18 @@ data class KravfristVilkår private constructor(
 ) : Vilkår {
     override val lovreferanse = Lovreferanse.FRIST_FOR_FRAMSETTING_AV_KRAV
 
-    override fun utfall(): Periodisering<UtfallForPeriode> {
+    override val utfall: Periodisering<UtfallForPeriode> = run {
         val datoDetKanInnvilgesFra =
             avklartSaksopplysning.kravdato
                 .withDayOfMonth(1)
                 .minusMonths(3)
                 .toLocalDate()
 
-        return when {
+        when {
             datoDetKanInnvilgesFra <= vurderingsperiode.fraOgMed -> Periodisering(UtfallForPeriode.OPPFYLT, vurderingsperiode)
-            datoDetKanInnvilgesFra > vurderingsperiode.tilOgMed -> Periodisering(UtfallForPeriode.IKKE_OPPFYLT, vurderingsperiode)
-            else -> throw IkkeImplementertException(
-                "Tidligste dato det kan innvilges fra er $datoDetKanInnvilgesFra, ettersom kravdato er (${avklartSaksopplysning.kravdato}). Tiltaksperioden det er søkt for er ($vurderingsperiode). Vi støtter ikke delvis innvilgelse på nåværende tidspunkt.",
+            datoDetKanInnvilgesFra > vurderingsperiode.tilOgMed -> throw StøtterIkkeUtfallException("Kravdatoen vil føre til avslag")
+            else -> throw StøtterIkkeUtfallException(
+                "Tidligste dato det kan innvilges fra er $datoDetKanInnvilgesFra, ettersom kravdato er (${avklartSaksopplysning.kravdato}). Tiltaksperioden det er søkt for er ($vurderingsperiode). Kravdatoen vil føre til delvis innvilgelse.",
             )
         }
     }
@@ -80,8 +80,8 @@ data class KravfristVilkår private constructor(
                 avklartSaksopplysning = avklartSaksopplysning,
                 vurderingsperiode = vurderingsperiode,
             ).also {
-                check(utfall == it.utfall()) {
-                    "Mismatch mellom utfallet som er lagret i KravfristVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall()})"
+                check(utfall == it.utfall) {
+                    "Mismatch mellom utfallet som er lagret i KravfristVilkår ($utfall), og utfallet som har blitt utledet (${it.utfall})"
                 }
             }
     }

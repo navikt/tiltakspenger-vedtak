@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling.benk
 
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.call
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -12,6 +11,7 @@ import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling.FantIkkeTiltak
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling.StøtterIkkeBarnetillegg
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling.StøtterKunInnvilgelse
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.sak.KanIkkeStarteFørstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
@@ -20,7 +20,6 @@ import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLINGER_PATH
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.correlationId
-import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.ExceptionResponse
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
 fun Route.behandlingBenkRoutes(
@@ -55,23 +54,17 @@ fun Route.behandlingBenkRoutes(
                         when (it.underliggende) {
                             FantIkkeTiltak ->
                                 call.respond(
-                                    HttpStatusCode.InternalServerError,
-                                    ExceptionResponse(
-                                        500,
-                                        "fant-ikke-tiltak",
-                                        "Fant ikke igjen tiltaket det er søkt på i tiltak knyttet til brukeren",
-                                    ),
+                                    message = "Fant ikke igjen tiltaket det er søkt på i tiltak knyttet til brukeren",
+                                    status = HttpStatusCode.InternalServerError,
                                 )
 
                             StøtterIkkeBarnetillegg ->
                                 call.respond(
-                                    HttpStatusCode.BadRequest,
-                                    ExceptionResponse(
-                                        400,
-                                        "støtter-ikke-barnetillegg",
-                                        "Vi støtter ikke at brukeren har barn i PDL eller manuelle barn.",
-                                    ),
+                                    message = "Vi støtter ikke at brukeren har barn i PDL eller manuelle barn.",
+                                    status = HttpStatusCode.BadRequest,
                                 )
+
+                            is StøtterKunInnvilgelse -> call.respond(message = "Vi støtter ikke å opprette en behandling som vil føre til delvis innvilgelse eller avslag.", status = HttpStatusCode.BadRequest)
                         }
                 }
             },

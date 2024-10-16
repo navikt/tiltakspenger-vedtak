@@ -23,7 +23,6 @@ import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.introduksjonsprogrammet.IntroVilkårDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.introduksjonsprogrammet.introRoutes
-import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.DeltagelseDTO.DELTAR
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.DeltagelseDTO.DELTAR_IKKE
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
@@ -85,7 +84,7 @@ class IntroRoutesTest {
         with(TestApplicationContext()) {
             val tac = this
             val sak = this.førstegangsbehandlingUavklart(
-                deltarPåIntroduksjonsprogram = true,
+                deltarPåIntroduksjonsprogram = false,
             )
             val behandlingId = sak.førstegangsbehandling.id
             testApplication {
@@ -110,7 +109,7 @@ class IntroRoutesTest {
                 ).apply {
                     status shouldBe HttpStatusCode.OK
                     val introVilkår = objectMapper.readValue<IntroVilkårDTO>(bodyAsText())
-                    introVilkår.avklartSaksopplysning.periodeMedDeltagelse.deltagelse shouldBe DELTAR
+                    introVilkår.avklartSaksopplysning.periodeMedDeltagelse.deltagelse shouldBe DELTAR_IKKE
                 }
             }
         }

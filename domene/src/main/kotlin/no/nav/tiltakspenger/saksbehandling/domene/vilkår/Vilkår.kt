@@ -7,10 +7,9 @@ interface Vilkår {
     val vurderingsperiode: Periode
     val lovreferanse: Lovreferanse
 
-    fun utfall(): Periodisering<UtfallForPeriode>
+    val utfall: Periodisering<UtfallForPeriode>
 
     fun samletUtfall(): SamletUtfall {
-        val utfall = utfall()
         return when {
             utfall.perioder().any { it.verdi == UtfallForPeriode.UAVKLART } -> SamletUtfall.UAVKLART
             utfall.perioder().all { it.verdi == UtfallForPeriode.OPPFYLT } -> SamletUtfall.OPPFYLT

@@ -33,6 +33,6 @@ internal fun AlderVilkår.toDTO(): AlderVilkårDTO =
             },
         ),
         vilkårLovreferanse = lovreferanse.toDTO(),
-        utfallperiode = this.utfall().totalePeriode.toDTO(),
+        utfallperiode = this.utfall.totalePeriode.toDTO(),
         samletUtfall = this.samletUtfall().toDTO(),
     )
