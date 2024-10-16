@@ -1,11 +1,10 @@
 package no.nav.tiltakspenger.vedtak.routes.meldekort
 
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.call
-import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
+import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Navkontor
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.common.CorrelationId
@@ -17,13 +16,18 @@ import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando.D
 import no.nav.tiltakspenger.meldekort.service.SendMeldekortTilBeslutterService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
+import no.nav.tiltakspenger.vedtak.auth2.TokenService
 import no.nav.tiltakspenger.vedtak.routes.correlationId
-import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
+import no.nav.tiltakspenger.vedtak.routes.respond400BadRequest
+import no.nav.tiltakspenger.vedtak.routes.withBody
+import no.nav.tiltakspenger.vedtak.routes.withMeldekortId
+import no.nav.tiltakspenger.vedtak.routes.withSakId
+import no.nav.tiltakspenger.vedtak.routes.withSaksbehandler
 import java.time.LocalDate
 
 private data class Body(
     val dager: List<Dag>,
-    val navkontor: String? = null,
+    val navkontor: String,
 ) {
     data class Dag(
         val dato: String,
@@ -35,77 +39,89 @@ private data class Body(
         meldekortId: MeldekortId,
         sakId: SakId,
         correlationId: CorrelationId,
-    ) = SendMeldekortTilBeslutterKommando(
-        sakId = sakId,
-        saksbehandler = saksbehandler,
-        correlationId = correlationId,
-        // TODO pre-mvp: fjern default-verdi for navkontor når vi sender dette fra frontend.
-        navkontor = Navkontor(navkontor ?: "0220"),
-        dager =
-        this.dager.map { dag ->
-            Dag(
-                dag = LocalDate.parse(dag.dato),
-                status =
-                when (dag.status) {
-                    "SPERRET" -> SendMeldekortTilBeslutterKommando.Status.SPERRET
-                    "DELTATT_UTEN_LØNN_I_TILTAKET" -> SendMeldekortTilBeslutterKommando.Status.DELTATT_UTEN_LØNN_I_TILTAKET
-                    "DELTATT_MED_LØNN_I_TILTAKET" -> SendMeldekortTilBeslutterKommando.Status.DELTATT_MED_LØNN_I_TILTAKET
-                    "IKKE_DELTATT" -> SendMeldekortTilBeslutterKommando.Status.IKKE_DELTATT
-                    "FRAVÆR_SYK" -> SendMeldekortTilBeslutterKommando.Status.FRAVÆR_SYK
-                    "FRAVÆR_SYKT_BARN" -> SendMeldekortTilBeslutterKommando.Status.FRAVÆR_SYKT_BARN
-                    "FRAVÆR_VELFERD_GODKJENT_AV_NAV" -> SendMeldekortTilBeslutterKommando.Status.FRAVÆR_VELFERD_GODKJENT_AV_NAV
-                    "FRAVÆR_VELFERD_IKKE_GODKJENT_AV_NAV" -> SendMeldekortTilBeslutterKommando.Status.FRAVÆR_VELFERD_IKKE_GODKJENT_AV_NAV
-                    else -> throw IllegalArgumentException("Ukjent status: ${dag.status}")
-                },
-            )
-        },
-        meldekortId = meldekortId,
-    )
+    ): SendMeldekortTilBeslutterKommando {
+        return SendMeldekortTilBeslutterKommando(
+            sakId = sakId,
+            saksbehandler = saksbehandler,
+            correlationId = correlationId,
+            navkontor = Navkontor(navkontor),
+            dager =
+            this.dager.map { dag ->
+                Dag(
+                    dag = LocalDate.parse(dag.dato),
+                    status =
+                    when (dag.status) {
+                        "SPERRET" -> SendMeldekortTilBeslutterKommando.Status.SPERRET
+                        "DELTATT_UTEN_LØNN_I_TILTAKET" -> SendMeldekortTilBeslutterKommando.Status.DELTATT_UTEN_LØNN_I_TILTAKET
+                        "DELTATT_MED_LØNN_I_TILTAKET" -> SendMeldekortTilBeslutterKommando.Status.DELTATT_MED_LØNN_I_TILTAKET
+                        "IKKE_DELTATT" -> SendMeldekortTilBeslutterKommando.Status.IKKE_DELTATT
+                        "FRAVÆR_SYK" -> SendMeldekortTilBeslutterKommando.Status.FRAVÆR_SYK
+                        "FRAVÆR_SYKT_BARN" -> SendMeldekortTilBeslutterKommando.Status.FRAVÆR_SYKT_BARN
+                        "FRAVÆR_VELFERD_GODKJENT_AV_NAV" -> SendMeldekortTilBeslutterKommando.Status.FRAVÆR_VELFERD_GODKJENT_AV_NAV
+                        "FRAVÆR_VELFERD_IKKE_GODKJENT_AV_NAV" -> SendMeldekortTilBeslutterKommando.Status.FRAVÆR_VELFERD_IKKE_GODKJENT_AV_NAV
+                        else -> throw IllegalArgumentException("Ukjent status: ${dag.status}")
+                    },
+                )
+            },
+            meldekortId = meldekortId,
+        )
+    }
 }
 
 fun Route.sendMeldekortTilBeslutterRoute(
     sendMeldekortTilBeslutterService: SendMeldekortTilBeslutterService,
-    innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     auditService: AuditService,
+    tokenService: TokenService,
 ) {
+    val logger = KotlinLogging.logger { }
     post("/sak/{sakId}/meldekort/{meldekortId}") {
-        val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
-        val meldekortId =
-            call.parameters["meldekortId"]
-                ?: return@post call.respond(message = "meldekortId mangler", status = HttpStatusCode.NotFound)
-        val sakId = call.parameters["sakId"]
-            ?: return@post call.respond(message = "sakId mangler", status = HttpStatusCode.NotFound)
-        val dto = call.receive<Body>()
-        val meldekort =
-            sendMeldekortTilBeslutterService.sendMeldekortTilBeslutter(
-                dto.toDomain(
-                    saksbehandler = saksbehandler,
-                    meldekortId = MeldekortId.fromString(meldekortId),
-                    sakId = SakId.fromString(sakId),
-                    correlationId = call.correlationId(),
-                ),
-            )
-        meldekort.fold(
-            ifLeft = {
-                call.respond(
-                    message = when (it) {
-                        is KanIkkeSendeMeldekortTilBeslutter.MeldekortperiodenKanIkkeVæreFremITid -> "Kan ikke sende inn et meldekort før meldekortperioden har begynt."
-                        is KanIkkeSendeMeldekortTilBeslutter.MåVæreSaksbehandler -> "Mangler saksbehandler rolle."
-                    },
-                    status = HttpStatusCode.BadRequest,
-                )
-            },
-            ifRight = {
-                auditService.logMedMeldekortId(
-                    meldekortId = MeldekortId.fromString(meldekortId),
-                    navIdent = saksbehandler.navIdent,
-                    action = AuditLogEvent.Action.UPDATE,
-                    contextMessage = "Oppdaterer meldekort og sender til beslutter",
-                    correlationId = call.correlationId(),
-                )
+        logger.debug { "Mottatt post-request på /sak/{sakId}/meldekort/{meldekortId} - saksbehandler har fylt ut meldekortet og sendt til beslutter" }
+        call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
+            call.withSakId { sakId ->
+                call.withMeldekortId { meldekortId ->
+                    call.withBody<Body> { body ->
+                        val correlationId = call.correlationId()
+                        val meldekort =
+                            sendMeldekortTilBeslutterService.sendMeldekortTilBeslutter(
+                                body.toDomain(
+                                    saksbehandler = saksbehandler,
+                                    meldekortId = meldekortId,
+                                    sakId = sakId,
+                                    correlationId = correlationId,
+                                ),
+                            )
+                        meldekort.fold(
+                            ifLeft = {
+                                when (it) {
+                                    is KanIkkeSendeMeldekortTilBeslutter.MeldekortperiodenKanIkkeVæreFremITid -> {
+                                        call.respond400BadRequest(
+                                            melding = "Kan ikke sende inn et meldekort før meldekortperioden har begynt.",
+                                            kode = "meldekortperioden_kan_ikke_være_frem_i_tid",
+                                        )
+                                    }
 
-                call.respond(message = {}, status = HttpStatusCode.OK)
-            },
-        )
+                                    is KanIkkeSendeMeldekortTilBeslutter.MåVæreSaksbehandler -> {
+                                        call.respond400BadRequest(
+                                            melding = "Kan ikke sende meldekort til beslutter. Krever saksbehandler-rolle.",
+                                            kode = "må_være_saksbehandler",
+                                        )
+                                    }
+                                }
+                            },
+                            ifRight = {
+                                auditService.logMedMeldekortId(
+                                    meldekortId = meldekortId,
+                                    navIdent = saksbehandler.navIdent,
+                                    action = AuditLogEvent.Action.UPDATE,
+                                    contextMessage = "Saksbehandler har fylt ut meldekortet og sendt til beslutter",
+                                    correlationId = correlationId,
+                                )
+                                call.respond(message = {}, status = HttpStatusCode.OK)
+                            },
+                        )
+                    }
+                }
+            }
+        }
     }
 }

@@ -99,7 +99,6 @@ internal fun Application.vedtakApi(
                 hentMeldekortService = applicationContext.meldekortContext.hentMeldekortService,
                 iverksettMeldekortService = applicationContext.meldekortContext.iverksettMeldekortService,
                 sendMeldekortTilBeslutterService = applicationContext.meldekortContext.sendMeldekortTilBeslutterService,
-                innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
                 auditService = applicationContext.personContext.auditService,
                 sakService = applicationContext.sakContext.sakService,
                 tokenService = tokenService,

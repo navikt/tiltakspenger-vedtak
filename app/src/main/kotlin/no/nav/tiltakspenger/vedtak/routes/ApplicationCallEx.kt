@@ -3,13 +3,17 @@ package no.nav.tiltakspenger.vedtak.routes
 import arrow.core.Either
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.plugins.callid.callId
+import io.ktor.server.request.receiveText
+import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
+import no.nav.tiltakspenger.vedtak.db.deserialize
 import no.nav.tiltakspenger.vedtak.exceptions.UgyldigRequestException
 
-private val logger = mu.KotlinLogging.logger {}
+private val logger = KotlinLogging.logger {}
 
 internal fun ApplicationCall.parameter(parameterNavn: String): String =
     this.parameters[parameterNavn] ?: throw UgyldigRequestException("$parameterNavn ikke funnet")
@@ -18,7 +22,9 @@ internal fun ApplicationCall.correlationId(): CorrelationId {
     return this.callId?.let { CorrelationId(it) } ?: CorrelationId.generate()
 }
 
-suspend fun ApplicationCall.withSaksnummer(onRight: suspend (Saksnummer) -> Unit) {
+internal suspend inline fun ApplicationCall.withSaksnummer(
+    crossinline onRight: suspend (Saksnummer) -> Unit,
+) {
     withValidParam(
         paramName = "saksnummer",
         parse = ::Saksnummer,
@@ -28,7 +34,9 @@ suspend fun ApplicationCall.withSaksnummer(onRight: suspend (Saksnummer) -> Unit
     )
 }
 
-suspend fun ApplicationCall.withSakId(onRight: suspend (SakId) -> Unit) {
+internal suspend inline fun ApplicationCall.withSakId(
+    crossinline onRight: suspend (SakId) -> Unit,
+) {
     withValidParam(
         paramName = "sakId",
         parse = SakId::fromString,
@@ -38,7 +46,9 @@ suspend fun ApplicationCall.withSakId(onRight: suspend (SakId) -> Unit) {
     )
 }
 
-suspend fun ApplicationCall.withMeldekortId(onRight: suspend (MeldekortId) -> Unit) {
+internal suspend inline fun ApplicationCall.withMeldekortId(
+    crossinline onRight: suspend (MeldekortId) -> Unit,
+) {
     withValidParam(
         paramName = "meldekortId",
         parse = MeldekortId::fromString,
@@ -48,12 +58,27 @@ suspend fun ApplicationCall.withMeldekortId(onRight: suspend (MeldekortId) -> Un
     )
 }
 
-private suspend fun <T> ApplicationCall.withValidParam(
+internal suspend inline fun <reified T> ApplicationCall.withBody(
+    crossinline ifRight: suspend (T) -> Unit,
+) {
+    Either.catch {
+        deserialize<T>(this.receiveText())
+    }.onLeft {
+        logger.debug(RuntimeException("Trigger stacktrace for enklere debug")) { "Feil ved deserialisering av request. Se sikkerlogg for mer kontekst." }
+        sikkerlogg.error(it) { "Feil ved deserialisering av request" }
+        this.respond400BadRequest(
+            melding = "Kunne ikke deserialisere request",
+            kode = "ugyldig_request",
+        )
+    }.onRight { ifRight(it) }
+}
+
+private suspend inline fun <T> ApplicationCall.withValidParam(
     paramName: String,
     parse: (String) -> T,
     errorMessage: String,
     errorCode: String,
-    onSuccess: suspend (T) -> Unit,
+    crossinline onSuccess: suspend (T) -> Unit,
 ) {
     Either.catch {
         parse(this.parameters[paramName]!!)
