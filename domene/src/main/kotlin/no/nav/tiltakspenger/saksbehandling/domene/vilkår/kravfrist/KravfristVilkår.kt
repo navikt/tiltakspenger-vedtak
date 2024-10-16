@@ -1,8 +1,6 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravfrist
 
-import arrow.core.Either
-import arrow.core.getOrElse
-import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
+import no.nav.tiltakspenger.felles.exceptions.StøtterIkkeUtfallException
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
@@ -24,7 +22,7 @@ data class KravfristVilkår private constructor(
 ) : Vilkår {
     override val lovreferanse = Lovreferanse.FRIST_FOR_FRAMSETTING_AV_KRAV
 
-    override val utfall: Periodisering<UtfallForPeriode> = Either.catch {
+    override val utfall: Periodisering<UtfallForPeriode> = run {
         val datoDetKanInnvilgesFra =
             avklartSaksopplysning.kravdato
                 .withDayOfMonth(1)
@@ -33,12 +31,12 @@ data class KravfristVilkår private constructor(
 
         when {
             datoDetKanInnvilgesFra <= vurderingsperiode.fraOgMed -> Periodisering(UtfallForPeriode.OPPFYLT, vurderingsperiode)
-            datoDetKanInnvilgesFra > vurderingsperiode.tilOgMed -> throw IllegalStateException("Kravdatoen vil føre til avslag")
-            else -> throw IkkeImplementertException(
+            datoDetKanInnvilgesFra > vurderingsperiode.tilOgMed -> throw StøtterIkkeUtfallException("Kravdatoen vil føre til avslag")
+            else -> throw StøtterIkkeUtfallException(
                 "Tidligste dato det kan innvilges fra er $datoDetKanInnvilgesFra, ettersom kravdato er (${avklartSaksopplysning.kravdato}). Tiltaksperioden det er søkt for er ($vurderingsperiode). Kravdatoen vil føre til delvis innvilgelse.",
             )
         }
-    }.getOrElse { throw it }
+    }
 
     fun leggTilSaksbehandlerSaksopplysning(command: LeggTilKravfristSaksopplysningCommand): KravfristVilkår {
         val kravfristSaksopplysning =

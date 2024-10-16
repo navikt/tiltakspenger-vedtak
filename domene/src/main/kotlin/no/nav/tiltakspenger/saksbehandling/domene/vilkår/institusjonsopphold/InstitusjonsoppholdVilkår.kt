@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår.institusjonsopphold
 
+import no.nav.tiltakspenger.felles.exceptions.StøtterIkkeUtfallException
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
@@ -25,7 +26,7 @@ data class InstitusjonsoppholdVilkår private constructor(
     override val utfall: Periodisering<UtfallForPeriode> =
         avklartSaksopplysning.opphold.map {
             when (it) {
-                OPPHOLD -> UtfallForPeriode.IKKE_OPPFYLT
+                OPPHOLD -> throw StøtterIkkeUtfallException("Støtter ikke delvis innvilgelse eller avslag")
                 IKKE_OPPHOLD -> UtfallForPeriode.OPPFYLT
             }
         }

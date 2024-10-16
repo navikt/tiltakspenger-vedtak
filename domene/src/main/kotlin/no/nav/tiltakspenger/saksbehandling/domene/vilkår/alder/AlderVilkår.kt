@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder
 
-import arrow.core.Either
-import arrow.core.getOrElse
+import no.nav.tiltakspenger.felles.exceptions.StøtterIkkeUtfallException
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
@@ -22,16 +21,16 @@ data class AlderVilkår private constructor(
     val avklartSaksopplysning: AlderSaksopplysning,
 ) : Vilkår {
     override val lovreferanse = Lovreferanse.ALDER
-    override val utfall: Periodisering<UtfallForPeriode> = Either.catch {
+    override val utfall: Periodisering<UtfallForPeriode> = run {
         // Om noen har bursdag 29. mars (skuddår) og de akkurat har fylt 18 vil fødselsdagen bli satt til 28. mars, og de vil få krav på tiltakspenger én dag før de er 18.
         // Dette er så cornercase at vi per nå velger ikke å gjøre det pga. a) veldig lav forekomst/sannsynlighet og b) konsekvens; dette er i brukers favør.
         val dagenBrukerFyller18År = registerSaksopplysning.fødselsdato.plusYears(18)
-        if (dagenBrukerFyller18År.isAfter(vurderingsperiode.fraOgMed)) throw IllegalStateException("Vi støtter ikke delvis innvilgelse eller avslag")
+        if (dagenBrukerFyller18År.isAfter(vurderingsperiode.fraOgMed)) throw StøtterIkkeUtfallException("Vi støtter ikke delvis innvilgelse eller avslag")
         Periodisering(
             UtfallForPeriode.OPPFYLT,
             vurderingsperiode,
         )
-    }.getOrElse { throw it }
+    }
 
     fun leggTilSaksbehandlerSaksopplysning(command: LeggTilAlderSaksopplysningCommand): AlderVilkår {
         val introSaksopplysning =
@@ -51,17 +50,13 @@ data class AlderVilkår private constructor(
         fun opprett(
             registerSaksopplysning: AlderSaksopplysning.Register,
             vurderingsperiode: Periode,
-        ): AlderVilkår {
-            val alderVilkår = Either.catch {
-                AlderVilkår(
-                    registerSaksopplysning = registerSaksopplysning,
-                    saksbehandlerSaksopplysning = null,
-                    avklartSaksopplysning = registerSaksopplysning,
-                    vurderingsperiode = vurderingsperiode,
-                )
-            }.getOrElse { throw it }
-            return alderVilkår
-        }
+        ): AlderVilkår =
+            AlderVilkår(
+                registerSaksopplysning = registerSaksopplysning,
+                saksbehandlerSaksopplysning = null,
+                avklartSaksopplysning = registerSaksopplysning,
+                vurderingsperiode = vurderingsperiode,
+            )
 
         /**
          * Skal kun kalles fra database-laget og for assert av tester (expected).

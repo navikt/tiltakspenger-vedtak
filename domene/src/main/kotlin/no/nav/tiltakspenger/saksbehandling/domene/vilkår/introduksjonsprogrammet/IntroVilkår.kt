@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår.introduksjonsprogrammet
 
+import no.nav.tiltakspenger.felles.exceptions.StøtterIkkeUtfallException
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
@@ -27,7 +28,7 @@ data class IntroVilkår private constructor(
     override val utfall: Periodisering<UtfallForPeriode> =
         avklartSaksopplysning.deltar.map {
             when (it) {
-                DELTAR -> throw IllegalStateException("Deltagelse på introduksjonsprogrammet fører til avslag eller delvis innvilgelse")
+                DELTAR -> throw StøtterIkkeUtfallException("Deltagelse på introduksjonsprogrammet fører til avslag eller delvis innvilgelse")
                 DELTAR_IKKE -> UtfallForPeriode.OPPFYLT
             }
         }

@@ -1,10 +1,13 @@
 package no.nav.tiltakspenger.objectmothers
 
+import arrow.core.getOrElse
 import kotlinx.coroutines.runBlocking
 import no.nav.tiltakspenger.common.TestApplicationContext
 import no.nav.tiltakspenger.felles.AttesteringId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.TiltakId
+import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
+import no.nav.tiltakspenger.felles.exceptions.StøtterIkkeUtfallException
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
@@ -24,6 +27,9 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.søknadstiltak
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attesteringsstatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling.FantIkkeTiltak
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling.StøtterIkkeBarnetillegg
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling.StøtterKunInnvilgelse
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
@@ -36,6 +42,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltakskilde.Komet
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndring
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.leggTilLivsoppholdSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.service.sak.KanIkkeStarteFørstegangsbehandling
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -295,7 +302,20 @@ suspend fun TestApplicationContext.førstegangsbehandlingUavklart(
     )
     return this.sakContext.sakService
         .startFørstegangsbehandling(søknad.id, saksbehandler, correlationId = CorrelationId.generate())
-        .getOrNull()!!
+        .getOrElse {
+            when (it) {
+                is KanIkkeStarteFørstegangsbehandling.HarAlleredeStartetBehandlingen -> throw IllegalStateException("Vi har allerede startet en behandling på denne søknaden")
+                is KanIkkeStarteFørstegangsbehandling.OppretteBehandling ->
+                    when (it.underliggende) {
+                        is FantIkkeTiltak ->
+                            throw IllegalStateException("Fant ikke igjen tiltaket det er søkt på i tiltak knyttet til brukeren")
+                        StøtterIkkeBarnetillegg ->
+                            throw IkkeImplementertException("Vi støtter ikke at brukeren har barn i PDL eller manuelle barn.")
+                        is StøtterKunInnvilgelse -> throw StøtterIkkeUtfallException("Vi støtter ikke å opprette en behandling som vil føre til delvis innvilgelse eller avslag.")
+                        else -> throw IkkeImplementertException("Kunne ikke starte førstegangsbehandling")
+                    }
+            }
+        }
 }
 
 suspend fun TestApplicationContext.førstegangsbehandlingVilkårsvurdert(

@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår
 
 import arrow.core.Either
-import arrow.core.getOrElse
+import no.nav.tiltakspenger.felles.exceptions.StøtterIkkeUtfallException
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
@@ -58,8 +58,8 @@ data class Vilkårssett(
         when {
             vilkårliste.any { it.samletUtfall() == SamletUtfall.UAVKLART } -> SamletUtfall.UAVKLART
             vilkårliste.all { it.samletUtfall() == SamletUtfall.OPPFYLT } -> SamletUtfall.OPPFYLT
-            vilkårliste.all { it.samletUtfall() == SamletUtfall.IKKE_OPPFYLT } -> throw IllegalStateException("Støtter ikke avslag enda")
-            else -> throw IllegalStateException("Støtter ikke delvis oppfylt enda")
+            vilkårliste.all { it.samletUtfall() == SamletUtfall.IKKE_OPPFYLT } -> throw StøtterIkkeUtfallException("Vi støtter ikke avslag")
+            else -> throw StøtterIkkeUtfallException("Vi støtter ikke delvis oppfylt")
         }
 
     fun utfallsperioder(): Periodisering<UtfallForPeriode> =
@@ -122,7 +122,7 @@ data class Vilkårssett(
             fødselsdato: LocalDate,
             tiltak: Tiltak,
             vurderingsperiode: Periode,
-        ): Vilkårssett = Either.catch {
+        ): Vilkårssett =
             Vilkårssett(
                 vurderingsperiode = vurderingsperiode,
                 institusjonsoppholdVilkår =
@@ -151,6 +151,5 @@ data class Vilkårssett(
                     registerSaksopplysning = tiltak.tilRegisterSaksopplysning(),
                 ),
             )
-        }.getOrElse { throw it }
     }
 }

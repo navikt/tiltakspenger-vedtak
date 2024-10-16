@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
+import no.nav.tiltakspenger.felles.exceptions.StøtterIkkeUtfallException
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
@@ -43,7 +44,7 @@ data class LivsoppholdVilkår private constructor(
                     vurderingsperiode,
                 )
             }
-            avklartSaksopplysning.harLivsoppholdYtelser -> throw IllegalStateException("Andre ytelser til livsopphold fører til avslag eller delvis innvilgelse.")
+            avklartSaksopplysning.harLivsoppholdYtelser -> throw StøtterIkkeUtfallException("Andre ytelser til livsopphold fører til avslag eller delvis innvilgelse.")
             else -> throw IllegalStateException("Andre ytelser til livsopphold har ugyldig utfall")
         }
 

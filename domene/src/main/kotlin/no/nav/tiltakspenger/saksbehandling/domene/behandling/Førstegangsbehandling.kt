@@ -5,6 +5,7 @@ import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.exceptions.StøtterIkkeUtfallException
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
@@ -119,30 +120,37 @@ data class Førstegangsbehandling(
                 return KanIkkeOppretteBehandling.FantIkkeTiltak.left()
             }
 
-            val førstegangsbehandling = Either.catch {
-                Førstegangsbehandling(
-                    id = BehandlingId.random(),
-                    saksnummer = saksnummer,
-                    sakId = sakId,
-                    fnr = fnr,
+            // TODO() B og H: Fjern denne når vi begynner å implementere delvis innvilgelse og/eller avslag
+            val vilkårssett = Either.catch {
+                Vilkårssett.opprett(
                     søknad = søknad,
+                    fødselsdato = fødselsdato,
+                    tiltak = tiltak,
                     vurderingsperiode = vurderingsperiode,
-                    vilkårssett =
-                    Vilkårssett.opprett(
-                        søknad = søknad,
-                        fødselsdato = fødselsdato,
-                        tiltak = tiltak,
-                        vurderingsperiode = vurderingsperiode,
-                    ),
-                    stønadsdager = Stønadsdager(vurderingsperiode = vurderingsperiode, tiltak.tilStønadsdagerRegisterSaksopplysning()),
-                    saksbehandler = saksbehandler.navIdent,
-                    beslutter = null,
-                    status = UNDER_BEHANDLING,
-                    attesteringer = emptyList(),
-                    opprettet = LocalDateTime.now(),
                 )
-            }.getOrElse { return KanIkkeOppretteBehandling.StøtterKunInnvilgelse.left() }
-            return førstegangsbehandling.right()
+            }.getOrElse {
+                if (it is StøtterIkkeUtfallException) {
+                    return KanIkkeOppretteBehandling.StøtterKunInnvilgelse.left()
+                } else {
+                    throw it
+                }
+            }
+
+            return Førstegangsbehandling(
+                id = BehandlingId.random(),
+                saksnummer = saksnummer,
+                sakId = sakId,
+                fnr = fnr,
+                søknad = søknad,
+                vurderingsperiode = vurderingsperiode,
+                vilkårssett = vilkårssett,
+                stønadsdager = Stønadsdager(vurderingsperiode = vurderingsperiode, tiltak.tilStønadsdagerRegisterSaksopplysning()),
+                saksbehandler = saksbehandler.navIdent,
+                beslutter = null,
+                status = UNDER_BEHANDLING,
+                attesteringer = emptyList(),
+                opprettet = LocalDateTime.now(),
+            ).right()
         }
     }
 

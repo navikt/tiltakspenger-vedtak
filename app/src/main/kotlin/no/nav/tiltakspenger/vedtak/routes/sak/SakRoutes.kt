@@ -53,7 +53,7 @@ fun Route.sakRoutes(
         call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
             val fnr = Either.catch { Fnr.fromString(call.receive<FnrDTO>().fnr) }.getOrElse {
                 call.respond(message = "Fødselsnummeret er ugyldig", status = HttpStatusCode.BadRequest)
-                throw it
+                return@withSaksbehandler
             }
             val correlationId = call.correlationId()
 

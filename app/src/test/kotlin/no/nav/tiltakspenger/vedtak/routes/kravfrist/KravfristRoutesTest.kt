@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.vedtak.routes.kravfrist
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpMethod
@@ -16,6 +17,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.common.TestApplicationContext
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.exceptions.StøtterIkkeUtfallException
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.libs.common.Rolle
 import no.nav.tiltakspenger.libs.common.Roller
@@ -81,40 +83,10 @@ internal class KravfristRoutesTest {
     }
 
     @Test
-    fun `test at kravdato gir IKKE_OPPFYLT om det er søkt for lenge etter fristen`() = runTest {
-        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
-
+    fun `test at behandlingen ikke kan opprettes om om det er søkt for lenge etter fristen`() = runTest {
         with(TestApplicationContext()) {
-            val tac = this
-            val sak = this.førstegangsbehandlingUavklart(
-                periode = Periode(1.januar(2021), 31.januar(2021)),
-            )
-            val behandlingId = sak.førstegangsbehandling.id
-
-            testApplication {
-                application {
-                    jacksonSerialization()
-                    routing {
-                        kravfristRoutes(
-                            innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
-                            behandlingService = tac.førstegangsbehandlingContext.behandlingService,
-                            auditService = tac.personContext.auditService,
-                        )
-                    }
-                }
-
-                // Sjekk at man kan kjøre Get
-                defaultRequest(
-                    HttpMethod.Get,
-                    url {
-                        protocol = URLProtocol.HTTPS
-                        path("$BEHANDLING_PATH/$behandlingId/vilkar/kravfrist")
-                    },
-                ).apply {
-                    status shouldBe HttpStatusCode.OK
-                    val kravfristVilkår = objectMapper.readValue<KravfristVilkårDTO>(bodyAsText())
-                    kravfristVilkår.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
-                }
+            shouldThrow<StøtterIkkeUtfallException> {
+                this.førstegangsbehandlingUavklart(Periode(1.januar(2021), 31.januar(2021)))
             }
         }
     }

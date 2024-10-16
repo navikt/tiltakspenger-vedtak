@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.throwable.shouldHaveMessage
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
@@ -18,7 +17,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.common.TestApplicationContext
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
+import no.nav.tiltakspenger.felles.exceptions.StøtterIkkeUtfallException
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.libs.common.Rolle
 import no.nav.tiltakspenger.libs.common.Roller
@@ -33,7 +32,6 @@ import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import org.junit.jupiter.api.Test
-import java.time.LocalDate
 
 class AlderRoutesTest {
     private val mockInnloggetSaksbehandlerProvider = mockk<InnloggetSaksbehandlerProvider>()
@@ -90,7 +88,7 @@ class AlderRoutesTest {
 
         with(TestApplicationContext()) {
             val tac = this
-            val sak = this.førstegangsbehandlingUavklart(fødselsdato = LocalDate.now().minusYears(10))
+            val sak = this.førstegangsbehandlingUavklart(fødselsdato = 5.januar(2000))
             val behandlingId = sak.førstegangsbehandling.id
 
             testApplication {
@@ -115,7 +113,7 @@ class AlderRoutesTest {
                 ).apply {
                     status shouldBe HttpStatusCode.OK
                     val alderVilkår = objectMapper.readValue<AlderVilkårDTO>(bodyAsText())
-                    alderVilkår.samletUtfall shouldBe SamletUtfallDTO.IKKE_OPPFYLT
+                    alderVilkår.samletUtfall shouldBe SamletUtfallDTO.OPPFYLT
                 }
             }
         }
@@ -126,9 +124,9 @@ class AlderRoutesTest {
         val vurderingsperiode = Periode(fraOgMed = 1.januar(2018), tilOgMed = 10.januar(2018))
         val fødselsdato = 5.januar(2000)
         with(TestApplicationContext()) {
-            shouldThrow<IkkeImplementertException> {
+            shouldThrow<StøtterIkkeUtfallException> {
                 this.førstegangsbehandlingUavklart(fødselsdato = fødselsdato, periode = vurderingsperiode)
-            }.shouldHaveMessage("Støtter ikke delvis innvilgelse av alder enda")
+            }
         }
     }
 }

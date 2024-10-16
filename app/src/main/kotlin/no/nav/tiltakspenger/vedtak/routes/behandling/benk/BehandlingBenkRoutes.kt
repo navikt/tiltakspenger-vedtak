@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling.benk
 
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.call
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -10,9 +9,9 @@ import io.ktor.server.routing.post
 import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.SøknadId
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling.FantIkkeTiltak
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling.StøtterIkkeBarnetillegg
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling.StøtterKunInnvilgelse
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.sak.KanIkkeStarteFørstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
@@ -65,7 +64,7 @@ fun Route.behandlingBenkRoutes(
                                     status = HttpStatusCode.BadRequest,
                                 )
 
-                            is KanIkkeOppretteBehandling.StøtterKunInnvilgelse -> call.respond(message = "Vi støtter ikke å opprette en behandling som vil føre til delvis innvilgelse eller avslag.", status = HttpStatusCode.BadRequest)
+                            is StøtterKunInnvilgelse -> call.respond(message = "Vi støtter ikke å opprette en behandling som vil føre til delvis innvilgelse eller avslag.", status = HttpStatusCode.BadRequest)
                         }
                 }
             },
