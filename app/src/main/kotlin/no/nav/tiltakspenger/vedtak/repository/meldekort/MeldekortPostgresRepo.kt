@@ -131,7 +131,7 @@ class MeldekortPostgresRepo(
             .withSession(sessionContext) { session ->
                 session.run(
                     queryOf(
-                        "select id,fraOgMed,tilOgMed,status,beslutter,saksbehandler from meldekort where sakId = :sakId",
+                        "select id,fraOgMed,tilOgMed,status,beslutter,saksbehandler from meldekort where sakId = :sakId order by fraOgMed",
                         mapOf("sakId" to sakId.toString()),
                     ).map { row ->
                         MeldekortSammendrag(
@@ -192,7 +192,7 @@ class MeldekortPostgresRepo(
         ): Meldeperioder? {
             return session.run(
                 queryOf(
-                    "select m.*,s.ident as fnr from meldekort m join sak s on s.id = m.sakId where s.id = :sakId",
+                    "select m.*,s.ident as fnr from meldekort m join sak s on s.id = m.sakId where s.id = :sakId order by m.fraOgMed",
                     mapOf("sakId" to sakId.toString()),
                 ).map { fromRow(it) }.asList,
             ).let { it.toNonEmptyListOrNull()?.tilMeldekortperioder() }
