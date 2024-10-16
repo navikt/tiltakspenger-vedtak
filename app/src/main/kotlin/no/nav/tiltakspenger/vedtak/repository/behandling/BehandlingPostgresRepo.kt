@@ -139,7 +139,7 @@ class BehandlingPostgresRepo(
                 oppdaterBehandling(sistEndret, behandling, tx)
             }.also {
                 if (behandling is Førstegangsbehandling) {
-                    SøknadDAO.knyttSøknadTilBehandling(behandling.id, behandling.søknad.id, tx)
+                    SøknadDAO.knyttSøknadTilBehandling(behandling.id, behandling.søknad.id, behandling.sakId, tx)
                 }
             }
         }

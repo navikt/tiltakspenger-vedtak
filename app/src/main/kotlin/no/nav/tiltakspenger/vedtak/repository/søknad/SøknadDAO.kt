@@ -6,6 +6,7 @@ import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import org.intellij.lang.annotations.Language
@@ -66,14 +67,16 @@ internal object SøknadDAO {
     fun knyttSøknadTilBehandling(
         behandlingId: BehandlingId,
         søknadId: SøknadId,
+        sakId: SakId,
         session: Session,
     ) {
         session.run(
             queryOf(
-                """update søknad set behandling_id = :behandlingId where id = :soknadId""",
+                """update søknad set behandling_id = :behandlingId, sak_id = :sakId where id = :soknadId""",
                 mapOf(
                     "behandlingId" to behandlingId.toString(),
                     "soknadId" to søknadId.toString(),
+                    "sakId" to sakId.toString(),
                 ),
             ).asUpdate,
         )
