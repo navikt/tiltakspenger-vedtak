@@ -1,101 +1,102 @@
 package no.nav.tiltakspenger.vedtak.routes.datadeling
 
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.call
-import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
-import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.sikkerlogg
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.vedtak.RammevedtakService
+import no.nav.tiltakspenger.vedtak.auth2.TokenService
+import no.nav.tiltakspenger.vedtak.routes.withBody
+import no.nav.tiltakspenger.vedtak.routes.withSystembruker
 import java.time.LocalDate
-
-private val LOG = KotlinLogging.logger {}
 
 internal const val DATADELING_PATH = "/datadeling"
 
 fun Route.datadelingRoutes(
     behandlingService: BehandlingService,
     rammevedtakService: RammevedtakService,
+    tokenService: TokenService,
 ) {
     post("$DATADELING_PATH/behandlinger") {
-        sikkerlogg.debug("Mottatt request på $DATADELING_PATH/behadlinger")
-
-        call
-            .receive<DatadelingDTO>()
-            .toRequest()
-            .fold(
-                { call.respond(HttpStatusCode.BadRequest, it) },
-                {
-                    val behandlinger =
-                        behandlingService.hentBehandlingerUnderBehandlingForIdent(
-                            ident = it.ident,
-                            fom = it.fom,
-                            tom = it.tom,
-                        )
-                    call.respond(status = HttpStatusCode.OK, mapBehandlinger(behandlinger))
-                },
-            )
+        sikkerlogg.debug("Mottatt request på $DATADELING_PATH/behandlinger")
+        call.withSystembruker(tokenService = tokenService) { systembruker ->
+            call.withBody<DatadelingDTO> { body ->
+                body.toRequest().fold(
+                    { call.respond(HttpStatusCode.BadRequest, it) },
+                    {
+                        // TODO pre-mvp jah: Avklar med Karl Evald om vi bør ha audit-logging for datadeling
+                        val behandlinger =
+                            behandlingService.hentBehandlingerUnderBehandlingForIdent(
+                                fnr = it.ident,
+                                periode = Periode(it.fom, it.tom),
+                                systembruker = systembruker,
+                            )
+                        call.respond(status = HttpStatusCode.OK, mapBehandlinger(behandlinger))
+                    },
+                )
+            }
+        }
     }
 
     post("$DATADELING_PATH/vedtak/perioder") {
         sikkerlogg.debug("Mottatt request på $DATADELING_PATH/vedtak/perioder")
-
-        call
-            .receive<DatadelingDTO>()
-            .toRequest()
-            .fold(
-                { call.respond(HttpStatusCode.BadRequest, it) },
-                {
-                    sikkerlogg.info { "Henter perioder for vedtak med ident ${it.ident}, med periode fra ${it.fom} til ${it.tom}" }
-                    val vedtak =
-                        rammevedtakService.hentVedtakForIdent(
-                            ident = it.ident,
-                            fom = it.fom,
-                            tom = it.tom,
-                        )
-                    call.respond(status = HttpStatusCode.OK, mapVedtakPerioder(vedtak))
-                },
-            )
+        call.withSystembruker(tokenService = tokenService) { systembruker ->
+            call.withBody<DatadelingDTO> { body ->
+                body.toRequest()
+                    .fold(
+                        { call.respond(HttpStatusCode.BadRequest, it) },
+                        {
+                            sikkerlogg.debug { "Henter perioder for vedtak med ident ${it.ident} for systembruker $systembruker, med periode fra ${it.fom} til ${it.tom}" }
+                            val vedtak =
+                                rammevedtakService.hentVedtakForFnr(
+                                    fnr = it.ident,
+                                    periode = Periode(it.fom, it.tom),
+                                )
+                            call.respond(status = HttpStatusCode.OK, mapVedtakPerioder(vedtak))
+                        },
+                    )
+            }
+        }
     }
 
     post("$DATADELING_PATH/vedtak/detaljer") {
         sikkerlogg.debug("Mottatt request på $DATADELING_PATH/vedtak/detaljer")
-
-        call
-            .receive<DatadelingDTO>()
-            .toRequest()
-            .fold(
-                { call.respond(HttpStatusCode.BadRequest, it) },
-                {
-                    val vedtak =
-                        rammevedtakService.hentVedtakForIdent(
-                            ident = it.ident,
-                            fom = it.fom,
-                            tom = it.tom,
-                        )
-                    call.respond(status = HttpStatusCode.OK, mapVedtak(vedtak))
-                },
-            )
+        call.withSystembruker(tokenService = tokenService) { systembruker ->
+            call.withBody<DatadelingDTO> { body ->
+                body.toRequest()
+                    .fold(
+                        { call.respond(HttpStatusCode.BadRequest, it) },
+                        {
+                            val vedtak =
+                                rammevedtakService.hentVedtakForFnr(
+                                    fnr = it.ident,
+                                    periode = Periode(it.fom, it.tom),
+                                )
+                            call.respond(status = HttpStatusCode.OK, mapVedtak(vedtak))
+                        },
+                    )
+            }
+        }
     }
 }
 
-private fun mapBehandlinger(behandlinger: List<Behandling>): List<DatadelingBehandlingDTO> =
+private fun mapBehandlinger(behandlinger: List<Behandling>): List<DatadelingBehandlingJsonResponse> =
     behandlinger.map {
-        DatadelingBehandlingDTO(
+        DatadelingBehandlingJsonResponse(
             behandlingId = it.id.toString(),
             fom = it.vurderingsperiode.fraOgMed,
             tom = it.vurderingsperiode.tilOgMed,
         )
     }
 
-private fun mapVedtak(vedtak: List<Rammevedtak>): List<DatadelingVedtakDTO> =
+private fun mapVedtak(vedtak: List<Rammevedtak>): List<DatadelingVedtakJsonResponse> =
     vedtak.map {
-        DatadelingVedtakDTO(
+        DatadelingVedtakJsonResponse(
             vedtakId = it.id.toString(),
             fom = it.periode.fraOgMed,
             tom = it.periode.tilOgMed,
@@ -120,7 +121,7 @@ private fun mapVedtakPerioder(vedtak: List<Rammevedtak>): List<DatadelingVedtakP
         )
     }
 
-data class DatadelingVedtakDTO(
+private data class DatadelingVedtakJsonResponse(
     val vedtakId: String,
     val fom: LocalDate,
     val tom: LocalDate,
@@ -134,20 +135,20 @@ data class DatadelingVedtakDTO(
     val saksnummer: String,
 )
 
-enum class Rettighet {
+private enum class Rettighet {
     TILTAKSPENGER,
     BARNETILLEGG,
     TILTAKSPENGER_OG_BARNETILLEGG,
     INGENTING,
 }
 
-data class DatadelingVedtakPeriodeDTO(
+private data class DatadelingVedtakPeriodeDTO(
     val vedtakId: String,
     val fom: LocalDate,
     val tom: LocalDate,
 )
 
-data class DatadelingBehandlingDTO(
+private data class DatadelingBehandlingJsonResponse(
     val behandlingId: String,
     val fom: LocalDate,
     val tom: LocalDate,

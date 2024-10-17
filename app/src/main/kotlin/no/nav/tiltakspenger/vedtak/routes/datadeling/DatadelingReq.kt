@@ -31,7 +31,7 @@ data class DatadelingDTO(
             Fnr.fromString(ident)
         } catch (e: Exception) {
             return MappingError(
-                feilmelding = "Ident $ident er ugyldig. Må bestå av 11 siffer",
+                feilmelding = "Ident er ugyldig. Må bestå av 11 siffer",
             ).left()
         }
 

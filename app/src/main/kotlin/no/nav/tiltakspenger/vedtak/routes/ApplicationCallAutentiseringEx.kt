@@ -7,7 +7,6 @@ import io.ktor.server.response.respond
 import no.nav.tiltakspenger.felles.Bruker
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.Systembruker
-import no.nav.tiltakspenger.vedtak.auth2.MicrosoftEntraIdTokenService
 import no.nav.tiltakspenger.vedtak.auth2.TokenService
 import no.nav.tiltakspenger.vedtak.auth2.Valideringsfeil
 import kotlin.text.startsWith
@@ -30,7 +29,7 @@ internal suspend inline fun ApplicationCall.withSaksbehandler(
 }
 
 internal suspend inline fun ApplicationCall.withSystembruker(
-    tokenService: MicrosoftEntraIdTokenService,
+    tokenService: TokenService,
     crossinline block: suspend (Systembruker) -> Unit,
 ) {
     return withBruker(tokenService) {

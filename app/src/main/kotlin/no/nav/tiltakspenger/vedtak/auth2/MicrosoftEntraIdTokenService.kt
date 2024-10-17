@@ -126,7 +126,7 @@ internal class MicrosoftEntraIdTokenService(
         // I denne klassen prøver vi kun å identifisere feil ved tokenet eller om tokenet er utgått. Hvis tokenet mangler roller, er det en 403 feil og håndteres i ressursene.
         val roller = this
             .getClaim("roles")
-            .asList<String>(String::class.java)
+            .asList(String::class.java)
             ?.mapNotNull {
                 autoriserteSystemtokenroller.find { autorisertRolle ->
                     it.lowercase() == autorisertRolle.toString().lowercase()
@@ -153,7 +153,7 @@ internal class MicrosoftEntraIdTokenService(
         // I denne klassen prøver vi kun å identifisere feil ved tokenet eller om tokenet er utgått. Hvis tokenet mangler roller, er det en 403 feil og håndteres i ressursene.
         val roller = this
             .getClaim("groups")
-            .asList<String>(String::class.java)
+            .asList(String::class.java)
             ?.mapNotNull {
                 autoriserteBrukerroller.find { autorisertRolle -> it == autorisertRolle.objectId.toString() }?.name
             }?.let { Roller(it) }

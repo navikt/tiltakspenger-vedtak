@@ -109,6 +109,7 @@ internal fun Application.vedtakApi(
             datadelingRoutes(
                 behandlingService = applicationContext.førstegangsbehandlingContext.behandlingService,
                 rammevedtakService = applicationContext.førstegangsbehandlingContext.rammevedtakService,
+                tokenService = tokenService,
             )
         }
         staticResources(

@@ -1,12 +1,13 @@
 package no.nav.tiltakspenger.saksbehandling.service.behandling
 
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.Systembruker
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
-import java.time.LocalDate
 
 interface BehandlingService {
     /**
@@ -56,8 +57,8 @@ interface BehandlingService {
     ): Behandling
 
     fun hentBehandlingerUnderBehandlingForIdent(
-        ident: Fnr,
-        fom: LocalDate,
-        tom: LocalDate,
+        fnr: Fnr,
+        periode: Periode,
+        systembruker: Systembruker,
     ): List<Behandling>
 }
