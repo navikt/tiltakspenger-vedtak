@@ -14,7 +14,7 @@ import no.nav.tiltakspenger.common.JwtAndJwkGenerator
 suspend fun ApplicationTestBuilder.defaultRequest(
     method: HttpMethod,
     uri: String,
-    jwt: String = JwtAndJwkGenerator.createJwkJwtPairForSaksbehandler().second,
+    jwt: String? = JwtAndJwkGenerator.createJwkJwtPairForSaksbehandler().second,
     setup: HttpRequestBuilder.() -> Unit = {},
 ): HttpResponse =
     this.client.request(uri) {
@@ -22,7 +22,7 @@ suspend fun ApplicationTestBuilder.defaultRequest(
         this.headers {
             append(HttpHeaders.XCorrelationId, "DEFAULT_CALL_ID")
             append(HttpHeaders.ContentType, ContentType.Application.Json)
-            append(HttpHeaders.Authorization, "Bearer $jwt")
+            if (jwt != null) append(HttpHeaders.Authorization, "Bearer $jwt")
         }
         setup()
     }

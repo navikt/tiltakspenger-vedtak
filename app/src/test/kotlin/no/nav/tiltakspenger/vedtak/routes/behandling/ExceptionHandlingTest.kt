@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
+import arrow.core.right
 import io.kotest.matchers.shouldBe
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
@@ -11,118 +12,107 @@ import io.ktor.http.path
 import io.ktor.server.routing.routing
 import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.objectmothers.ObjectMother
+import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
-import no.nav.tiltakspenger.vedtak.exceptions.ManglendeJWTTokenException
+import no.nav.tiltakspenger.vedtak.auth2.TokenService
 import no.nav.tiltakspenger.vedtak.routes.behandling.benk.behandlingBenkRoutes
 import no.nav.tiltakspenger.vedtak.routes.configureExceptions
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
-import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import org.skyscreamer.jsonassert.JSONCompareMode
 
 class ExceptionHandlingTest {
-    private val innloggetSaksbehandlerProviderMock = mockk<InnloggetSaksbehandlerProvider>()
-    private val behandlingService =
-        mockk<no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingServiceImpl>()
-    private val sakService = mockk<SakService>()
-    private val mockAuditService = mockk<AuditService>()
 
     @Test
     fun `Manglende token skal bli til 401`() {
-        every { innloggetSaksbehandlerProviderMock.krevInnloggetSaksbehandler(any()) } throws ManglendeJWTTokenException()
-        every { sakService.hentSaksoversikt(any()) } throws IllegalStateException("Wuzza")
-
-        val exceptedStatusCode = HttpStatusCode.Unauthorized
-        val expectedBody =
-            """
-            {
-              "status": 401,
-              "title": "ManglendeJWTTokenException",
-              "detail": "JWTToken ikke funnet"
-            }
-            """.trimIndent()
-
-        testApplication {
-            application {
-                // vedtakTestApi()
-                jacksonSerialization()
-                configureExceptions()
-                routing {
-                    behandlingBenkRoutes(
-                        innloggetSaksbehandlerProviderMock,
-                        behandlingService,
-                        sakService,
-                        mockAuditService,
-                    )
+        val tokenServiceMock = mockk<TokenService>()
+        runTest {
+            testApplication {
+                application {
+                    // vedtakTestApi()
+                    jacksonSerialization()
+                    configureExceptions()
+                    routing {
+                        behandlingBenkRoutes(
+                            tokenServiceMock,
+                            mockk<BehandlingServiceImpl>(),
+                            mockk<SakService>(),
+                            mockk<AuditService>(),
+                        )
+                    }
                 }
-            }
-            defaultRequest(
-                HttpMethod.Get,
-                url {
-                    protocol = URLProtocol.HTTPS
-                    path(BEHANDLINGER_PATH)
-                },
-            ).apply {
-                status shouldBe exceptedStatusCode
-                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
-                JSONAssert.assertEquals(
-                    expectedBody,
-                    bodyAsText(),
-                    JSONCompareMode.LENIENT,
-                )
+                defaultRequest(
+                    jwt = null,
+                    method = HttpMethod.Get,
+                    uri = url {
+                        protocol = URLProtocol.HTTPS
+                        path(BEHANDLINGER_PATH)
+                    },
+                ).apply {
+                    val exceptedStatusCode = HttpStatusCode.Unauthorized
+                    status shouldBe exceptedStatusCode
+                    headers["WWW-Authenticate"] shouldBe "Bearer realm=tiltakspenger-vedtak"
+                }
             }
         }
     }
 
     @Test
     fun `IllegalStateException skal bli til 500`() {
-        every { innloggetSaksbehandlerProviderMock.krevInnloggetSaksbehandler(any()) } returns ObjectMother.beslutter()
-        every { sakService.hentSaksoversikt(any()) } throws IllegalStateException("Wuzza")
+        val tokenServiceMock = mockk<TokenService>()
+        val sakService = mockk<SakService>()
+        val mockAuditService = mockk<AuditService>()
+        runTest {
+            coEvery { tokenServiceMock.validerOgHentBruker(any()) } returns ObjectMother.beslutter().right()
+            every { sakService.hentSaksoversikt(any()) } throws IllegalStateException("Wuzza")
 
-        val exceptedStatusCode = HttpStatusCode.InternalServerError
-        val expectedBody =
-            """
+            val exceptedStatusCode = HttpStatusCode.InternalServerError
+            val expectedBody =
+                """
             {
               "status": 500,
               "title": "IllegalStateException",
               "detail": "Wuzza"
             }
-            """.trimIndent()
+                """.trimIndent()
 
-        testApplication {
-            application {
-                // vedtakTestApi()
-                jacksonSerialization()
-                configureExceptions()
-                routing {
-                    behandlingBenkRoutes(
-                        innloggetSaksbehandlerProviderMock,
-                        behandlingService,
-                        sakService,
-                        mockAuditService,
+            testApplication {
+                application {
+                    // vedtakTestApi()
+                    jacksonSerialization()
+                    configureExceptions()
+                    routing {
+                        behandlingBenkRoutes(
+                            tokenServiceMock,
+                            mockk<BehandlingServiceImpl>(),
+                            sakService,
+                            mockAuditService,
+                        )
+                    }
+                }
+                defaultRequest(
+                    HttpMethod.Get,
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        path(BEHANDLINGER_PATH)
+                    },
+                ).apply {
+                    status shouldBe exceptedStatusCode
+                    contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
+                    JSONAssert.assertEquals(
+                        expectedBody,
+                        bodyAsText(),
+                        JSONCompareMode.LENIENT,
                     )
                 }
-            }
-            defaultRequest(
-                HttpMethod.Get,
-                url {
-                    protocol = URLProtocol.HTTPS
-                    path(BEHANDLINGER_PATH)
-                },
-            ).apply {
-                status shouldBe exceptedStatusCode
-                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
-                JSONAssert.assertEquals(
-                    expectedBody,
-                    bodyAsText(),
-                    JSONCompareMode.LENIENT,
-                )
             }
         }
     }
