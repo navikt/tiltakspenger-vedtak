@@ -1,45 +1,44 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling.stønadsdager
 
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.call
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import mu.KotlinLogging
-import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
+import no.nav.tiltakspenger.vedtak.auth2.TokenService
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.correlationId
-import no.nav.tiltakspenger.vedtak.routes.parameter
-import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
+import no.nav.tiltakspenger.vedtak.routes.withBehandlingId
+import no.nav.tiltakspenger.vedtak.routes.withSaksbehandler
 
 fun Route.hentStønadsdagerRoute(
-    innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
+    tokenService: TokenService,
     behandlingService: BehandlingService,
     auditService: AuditService,
 ) {
     val logger = KotlinLogging.logger {}
     get("$BEHANDLING_PATH/{behandlingId}/stonadsdager") {
         logger.debug("Mottatt get-request på '$BEHANDLING_PATH/{behandlingId}/stonadsdager' - henter vilkår om stønadsdager")
-
-        val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
-        val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
-
-        behandlingService.hentBehandling(behandlingId, saksbehandler, correlationId = call.correlationId()).let {
-            auditService.logMedBehandlingId(
-                behandlingId = behandlingId,
-                navIdent = saksbehandler.navIdent,
-                action = AuditLogEvent.Action.ACCESS,
-                contextMessage = "Henter vilkår om stønadsdager",
-                correlationId = call.correlationId(),
-            )
-
-            call.respond(
-                status = HttpStatusCode.OK,
-                message = it.stønadsdager.toDTO(),
-            )
+        call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
+            call.withBehandlingId { behandlingId ->
+                val correlationId = call.correlationId()
+                behandlingService.hentBehandling(behandlingId, saksbehandler, correlationId = correlationId).let {
+                    auditService.logMedBehandlingId(
+                        behandlingId = behandlingId,
+                        navIdent = saksbehandler.navIdent,
+                        action = AuditLogEvent.Action.ACCESS,
+                        contextMessage = "Henter vilkår om stønadsdager",
+                        correlationId = correlationId,
+                    )
+                    call.respond(
+                        status = HttpStatusCode.OK,
+                        message = it.stønadsdager.toDTO(),
+                    )
+                }
+            }
         }
     }
 }

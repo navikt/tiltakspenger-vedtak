@@ -40,7 +40,7 @@ class PersonHttpklient(
 
     /**
      * Benytter seg av [AzureTokenProvider] for å hente token for å hente personopplysninger vha. systembruker.
-     * TODO pre-mvp jah: Dersom vi ønsker og sende saksbehandler sitt OBO-token, kan vi lage en egen metode for dette.
+     * TODO post-mvp jah: Dersom vi ønsker og sende saksbehandler sitt OBO-token, kan vi lage en egen metode for dette.
      */
     override suspend fun hentPerson(fnr: Fnr): PersonopplysningerSøker {
         return withContext(Dispatchers.IO) {
@@ -60,6 +60,4 @@ class PersonHttpklient(
             personklient.hentPerson(fnr, token(), body).map { it.toEnkelPerson(fnr) }.getOrElse { it.mapError() }
         }
     }
-
-    // TODO: hent navn på person (etternavn + fornavn)
 }

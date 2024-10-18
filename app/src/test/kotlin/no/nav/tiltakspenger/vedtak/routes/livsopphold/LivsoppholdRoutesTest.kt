@@ -15,8 +15,6 @@ import io.ktor.http.path
 import io.ktor.server.routing.routing
 import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
-import io.mockk.every
-import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.common.TestApplicationContext
 import no.nav.tiltakspenger.felles.Saksbehandler
@@ -40,11 +38,9 @@ import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
-import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import org.junit.jupiter.api.Test
 
 class LivsoppholdRoutesTest {
-    private val mockInnloggetSaksbehandlerProvider = mockk<InnloggetSaksbehandlerProvider>()
 
     private val objectMapper: ObjectMapper = defaultObjectMapper()
 
@@ -59,8 +55,6 @@ class LivsoppholdRoutesTest {
 
     @Test
     fun `test at endepunkt for henting og lagring av livsopphold fungerer`() = runTest {
-        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
-
         with(TestApplicationContext()) {
             val tac = this
             val sak = this.førstegangsbehandlingUavklart(
@@ -72,7 +66,7 @@ class LivsoppholdRoutesTest {
                     jacksonSerialization()
                     routing {
                         livsoppholdRoutes(
-                            innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
+                            tokenService = tac.tokenService,
                             livsoppholdVilkårService = tac.førstegangsbehandlingContext.livsoppholdVilkårService,
                             behandlingService = tac.førstegangsbehandlingContext.behandlingService,
                             auditService = tac.personContext.auditService,
@@ -124,8 +118,6 @@ class LivsoppholdRoutesTest {
 
     @Test
     fun `test at sbh ikke kan si at bruker har livsoppholdytelser`() = runTest {
-        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
-
         with(TestApplicationContext()) {
             val tac = this
             val sak = this.førstegangsbehandlingUavklart(
@@ -139,7 +131,7 @@ class LivsoppholdRoutesTest {
                     jacksonSerialization()
                     routing {
                         livsoppholdRoutes(
-                            innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
+                            tokenService = tac.tokenService,
                             livsoppholdVilkårService = tac.førstegangsbehandlingContext.livsoppholdVilkårService,
                             behandlingService = tac.førstegangsbehandlingContext.behandlingService,
                             auditService = tac.personContext.auditService,
@@ -154,6 +146,7 @@ class LivsoppholdRoutesTest {
                         protocol = URLProtocol.HTTPS
                         path("$BEHANDLING_PATH/$behandlingId/vilkar/livsopphold")
                     },
+                    jwt = tac.jwt,
                 ) {
                     setBody(bodyLivsoppholdYtelse(sak.førstegangsbehandling.vurderingsperiode.toDTO(), true))
                 }.apply {
@@ -165,8 +158,6 @@ class LivsoppholdRoutesTest {
 
     @Test
     fun `test at livsoppholdytelser blir uavklart om man bare har data fra søknaden`() = runTest {
-        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
-
         with(TestApplicationContext()) {
             val tac = this
             val sak = this.førstegangsbehandlingUavklart(
@@ -178,7 +169,7 @@ class LivsoppholdRoutesTest {
                     jacksonSerialization()
                     routing {
                         livsoppholdRoutes(
-                            innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
+                            tokenService = tac.tokenService,
                             livsoppholdVilkårService = tac.førstegangsbehandlingContext.livsoppholdVilkårService,
                             behandlingService = tac.førstegangsbehandlingContext.behandlingService,
                             auditService = tac.personContext.auditService,
@@ -231,8 +222,6 @@ class LivsoppholdRoutesTest {
 
     @Test
     fun `test alle livsoppholdytelser stemmer overens med søknadsdata`() = runTest {
-        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
-
         val søknadMedSykepenger =
             nySøknad(
                 sykepenger = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
@@ -318,7 +307,7 @@ class LivsoppholdRoutesTest {
                     jacksonSerialization()
                     routing {
                         livsoppholdRoutes(
-                            innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
+                            tokenService = tac.tokenService,
                             livsoppholdVilkårService = tac.førstegangsbehandlingContext.livsoppholdVilkårService,
                             behandlingService = tac.førstegangsbehandlingContext.behandlingService,
                             auditService = tac.personContext.auditService,
