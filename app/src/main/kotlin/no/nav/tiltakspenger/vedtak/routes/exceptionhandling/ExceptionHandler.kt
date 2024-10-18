@@ -53,6 +53,7 @@ object ExceptionHandler {
         }
     }
 
+    // TODO pre-mvp jah: Føles ikke bra at vi returnerer cause fra exceptions. Her kan vi blø data vi ikke ønsker å dele.
     private suspend fun ApplicationCall.respondWith(
         statusCode: HttpStatusCode,
         ex: Throwable,

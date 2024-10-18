@@ -80,7 +80,7 @@ internal fun Application.vedtakApi(
                 auditService = applicationContext.personContext.auditService,
             )
             behandlingBenkRoutes(
-                innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
+                tokenService = tokenService,
                 behandlingService = applicationContext.førstegangsbehandlingContext.behandlingService,
                 sakService = applicationContext.sakContext.sakService,
                 auditService = applicationContext.personContext.auditService,
