@@ -7,7 +7,6 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import mu.KotlinLogging
-import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling.FantIkkeTiltak
@@ -42,7 +41,7 @@ fun Route.behandlingBenkRoutes(
     }
 
     post("$BEHANDLING_PATH/startbehandling") {
-        sikkerlogg.debug { "Mottatt request for å starte behandlingen. Knytter også saksbehandleren til behandlingen." }
+        logger.debug { "Mottatt post-request på '$BEHANDLING_PATH/startbehandling' - Starter behandlingen og knytter til sak. Knytter også saksbehandleren til behandlingen." }
         call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
             // TODO post-mvp jah: Kan ikke søknadId ligge i pathen?
             call.withBody<BehandlingIdDTO> { body ->
@@ -93,7 +92,7 @@ fun Route.behandlingBenkRoutes(
     }
 
     post("$BEHANDLING_PATH/tabehandling") {
-        sikkerlogg.debug { "Mottatt request om å sette saksbehandler på behandlingen" }
+        logger.debug { "Mottatt post-request på '$BEHANDLING_PATH/tabehandling' - Knytter saksbehandler/beslutter til behandlingen." }
         call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
             // TODO post-mvp jah: Kan ikke behandlingId ligge i pathen?
             val behandlingId = BehandlingId.fromString(call.receive<BehandlingIdDTO>().id)

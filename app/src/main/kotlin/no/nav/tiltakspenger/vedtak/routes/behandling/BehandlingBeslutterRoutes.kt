@@ -6,7 +6,7 @@ import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
-import no.nav.tiltakspenger.felles.sikkerlogg
+import mu.KotlinLogging
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
@@ -24,8 +24,9 @@ fun Route.behandlingBeslutterRoutes(
     behandlingService: BehandlingService,
     auditService: AuditService,
 ) {
+    val logger = KotlinLogging.logger {}
     post("$BEHANDLING_PATH/sendtilbake/{behandlingId}") {
-        sikkerlogg.debug("Mottatt request. $BEHANDLING_PATH/ send tilbake til saksbehandler")
+        logger.debug("Mottatt post-request på '$BEHANDLING_PATH/sendtilbake/{behandlingId}' - sender behandling tilbake til saksbehandler")
 
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
@@ -45,7 +46,7 @@ fun Route.behandlingBeslutterRoutes(
     }
 
     post("$BEHANDLING_PATH/godkjenn/{behandlingId}") {
-        sikkerlogg.debug { "Mottat request om å godkjenne behandlingen og opprette vedtak" }
+        logger.debug { "Mottatt post-request på '$BEHANDLING_PATH/godkjenn/{behandlingId}' - godkjenner behandlingen, oppretter vedtak, evt. genererer meldekort og asynkront sender brev." }
 
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))

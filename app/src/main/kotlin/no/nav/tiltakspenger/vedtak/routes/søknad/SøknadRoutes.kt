@@ -6,7 +6,6 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
-import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.soknad.SøknadDTO
 import no.nav.tiltakspenger.saksbehandling.service.SøknadService
 
@@ -16,26 +15,17 @@ const val SØKNAD_PATH = "/soknad"
 
 fun Route.søknadRoutes(søknadService: SøknadService) {
     post(SØKNAD_PATH) {
-        logger.debug { "Mottatt ny søknad på $SØKNAD_PATH. Prøver deserialisere og lagre." }
-        try {
-            val søknadDTO = call.receive<SøknadDTO>()
-            logger.debug { "Deserialisert søknad OK med id ${søknadDTO.søknadId}" }
-            // Oppretter sak med søknad og lagrer den
-            søknadService.nySøknad(
-                søknad =
-                SøknadDTOMapper.mapSøknad(
-                    dto = søknadDTO,
-                    innhentet = søknadDTO.opprettet,
-                ),
-            )
-            call.respond(message = "OK", status = HttpStatusCode.OK)
-        } catch (exception: Exception) {
-            logger.error(
-                "Feil ved mottak av søknad. Se sikkerlogg for detaljer",
-                RuntimeException("Trigger en exception for å få stracktrace."),
-            )
-            sikkerlogg.error("Feil ved mottak av søknad.", exception)
-            call.respond(message = "Feil ved mottak av søknad", status = HttpStatusCode.InternalServerError)
-        }
+        logger.debug { "Mottatt ny søknad på '$SØKNAD_PATH' -  Prøver deserialisere og lagre." }
+        val søknadDTO = call.receive<SøknadDTO>()
+        logger.debug { "Deserialisert søknad OK med id ${søknadDTO.søknadId}" }
+        // Oppretter sak med søknad og lagrer den
+        søknadService.nySøknad(
+            søknad =
+            SøknadDTOMapper.mapSøknad(
+                dto = søknadDTO,
+                innhentet = søknadDTO.opprettet,
+            ),
+        )
+        call.respond(message = "OK", status = HttpStatusCode.OK)
     }
 }

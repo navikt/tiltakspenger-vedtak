@@ -20,6 +20,7 @@ import no.nav.tiltakspenger.libs.person.harStrengtFortroligAdresse
 import no.nav.tiltakspenger.libs.personklient.pdl.TilgangsstyringService
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling
 import no.nav.tiltakspenger.saksbehandling.domene.benk.Saksoversikt
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.EnkelPerson
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
@@ -27,6 +28,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.SaksoversiktRepo
 import no.nav.tiltakspenger.saksbehandling.ports.StatistikkSakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.TiltakGateway
 import no.nav.tiltakspenger.saksbehandling.service.SøknadService
+import no.nav.tiltakspenger.saksbehandling.service.person.KunneIkkeHenteEnkelPerson
 import no.nav.tiltakspenger.saksbehandling.service.person.PersonService
 import no.nav.tiltakspenger.saksbehandling.service.statistikk.sak.opprettBehandlingMapper
 
@@ -62,15 +64,20 @@ class SakServiceImpl(
         }
 
         val registrerteTiltak = runBlocking { tiltakGateway.hentTiltak(fnr) }
-        if (registrerteTiltak.isEmpty()) return KanIkkeStarteFørstegangsbehandling.OppretteBehandling(KanIkkeOppretteBehandling.FantIkkeTiltak).left()
+        if (registrerteTiltak.isEmpty()) {
+            return KanIkkeStarteFørstegangsbehandling.OppretteBehandling(
+                KanIkkeOppretteBehandling.FantIkkeTiltak,
+            ).left()
+        }
 
         val personopplysninger = personService.hentPersonopplysninger(fnr)
-        val adressebeskyttelseGradering: List<AdressebeskyttelseGradering>? = tilgangsstyringService.adressebeskyttelseEnkel(fnr)
-            .getOrElse {
-                throw IllegalArgumentException(
-                    "Kunne ikke hente adressebeskyttelsegradering for person. SøknadId: $søknadId",
-                )
-            }
+        val adressebeskyttelseGradering: List<AdressebeskyttelseGradering>? =
+            tilgangsstyringService.adressebeskyttelseEnkel(fnr)
+                .getOrElse {
+                    throw IllegalArgumentException(
+                        "Kunne ikke hente adressebeskyttelsegradering for person. SøknadId: $søknadId",
+                    )
+                }
         require(adressebeskyttelseGradering != null) { "Fant ikke adressebeskyttelse for person. SøknadId: $søknadId" }
 
         val sak =
@@ -161,6 +168,11 @@ class SakServiceImpl(
         return saksoversikt
     }
 
+    override suspend fun hentEnkelPersonForSakId(sakId: SakId): Either<KunneIkkeHenteEnkelPerson, EnkelPerson> {
+        val fnr = sakRepo.hentFnrForSakId(sakId) ?: return KunneIkkeHenteEnkelPerson.FantIkkeSakId.left()
+        return personService.hentEnkelPersonFnr(fnr)
+    }
+
     private suspend fun sjekkTilgangTilSak(sakId: SakId, saksbehandler: Saksbehandler, correlationId: CorrelationId) {
         val fnr = personService.hentFnrForSakId(sakId)
         tilgangsstyringService
@@ -173,13 +185,19 @@ class SakServiceImpl(
             .onRight { if (!it) throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til person") }
     }
 
-    private suspend fun sjekkTilgangTilSøknad(fnr: Fnr, søknadId: SøknadId, saksbehandler: Saksbehandler, correlationId: CorrelationId) {
+    private suspend fun sjekkTilgangTilSøknad(
+        fnr: Fnr,
+        søknadId: SøknadId,
+        saksbehandler: Saksbehandler,
+        correlationId: CorrelationId,
+    ) {
         tilgangsstyringService
             .harTilgangTilPerson(
                 fnr = fnr,
                 roller = saksbehandler.roller,
                 correlationId = correlationId,
-            ).onLeft { throw IkkeFunnetException("Feil ved sjekk av tilgang til person. SøknadId: $søknadId. CorrelationId: $correlationId") }
+            )
+            .onLeft { throw IkkeFunnetException("Feil ved sjekk av tilgang til person. SøknadId: $søknadId. CorrelationId: $correlationId") }
             .onRight { if (!it) throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til person") }
     }
 }

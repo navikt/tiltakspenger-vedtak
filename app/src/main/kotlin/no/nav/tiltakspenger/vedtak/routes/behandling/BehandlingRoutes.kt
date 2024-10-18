@@ -1,22 +1,20 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.call
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårService
-import no.nav.tiltakspenger.saksbehandling.service.person.PersonService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
+import no.nav.tiltakspenger.vedtak.auth2.TokenService
 import no.nav.tiltakspenger.vedtak.routes.behandling.personopplysninger.hentPersonRoute
 import no.nav.tiltakspenger.vedtak.routes.behandling.stønadsdager.stønadsdagerRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.alder.alderRoutes
@@ -30,40 +28,40 @@ import no.nav.tiltakspenger.vedtak.routes.correlationId
 import no.nav.tiltakspenger.vedtak.routes.parameter
 import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 
-private val LOG = KotlinLogging.logger {}
-
 internal const val BEHANDLING_PATH = "/behandling"
 internal const val BEHANDLINGER_PATH = "/behandlinger"
 
 fun Route.behandlingRoutes(
     innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     behandlingService: BehandlingService,
+    tokenService: TokenService,
     sakService: SakService,
-    personService: PersonService,
     kvpVilkårService: KvpVilkårService,
     livsoppholdVilkårService: LivsoppholdVilkårService,
     auditService: AuditService,
 ) {
+    val logger = KotlinLogging.logger {}
     get("$BEHANDLING_PATH/{behandlingId}") {
-        sikkerlogg.debug("Mottatt request på $BEHANDLING_PATH/behandlingId")
+        logger.debug("Mottatt get-request på '$BEHANDLING_PATH/{behandlingId}' - henter hele behandlingen")
         val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
 
-        val behandling = behandlingService.hentBehandling(behandlingId, saksbehandler, call.correlationId()).toDTO()
+        val correlationId = call.correlationId()
+        val behandling = behandlingService.hentBehandling(behandlingId, saksbehandler, correlationId).toDTO()
 
         auditService.logMedBehandlingId(
             behandlingId = behandlingId,
             navIdent = saksbehandler.navIdent,
             action = AuditLogEvent.Action.ACCESS,
             contextMessage = "Henter hele behandlingen",
-            correlationId = call.correlationId(),
+            correlationId = correlationId,
         )
 
         call.respond(status = HttpStatusCode.OK, behandling)
     }
 
     post("$BEHANDLING_PATH/beslutter/{behandlingId}") {
-        sikkerlogg.debug("Mottatt request. $BEHANDLING_PATH/ skal sendes til beslutter")
+        logger.debug("Mottatt post-request på '$BEHANDLING_PATH/beslutter/{behandlingId}' - sender behandling til beslutter")
 
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
@@ -81,7 +79,7 @@ fun Route.behandlingRoutes(
         call.respond(status = HttpStatusCode.OK, message = "{}")
     }
 
-    hentPersonRoute(innloggetSaksbehandlerProvider, sakService, personService, auditService)
+    hentPersonRoute(tokenService, sakService, auditService)
     tiltakDeltagelseRoutes(innloggetSaksbehandlerProvider, behandlingService, auditService)
     institusjonsoppholdRoutes(innloggetSaksbehandlerProvider, behandlingService, auditService)
     kvpRoutes(innloggetSaksbehandlerProvider, kvpVilkårService, behandlingService, auditService)

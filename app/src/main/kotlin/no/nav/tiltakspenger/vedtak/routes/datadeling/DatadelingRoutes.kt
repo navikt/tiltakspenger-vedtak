@@ -4,6 +4,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
+import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
@@ -22,8 +23,10 @@ fun Route.datadelingRoutes(
     rammevedtakService: RammevedtakService,
     tokenService: TokenService,
 ) {
+    val logger = KotlinLogging.logger {}
+
     post("$DATADELING_PATH/behandlinger") {
-        sikkerlogg.debug("Mottatt request på $DATADELING_PATH/behandlinger")
+        logger.debug("Mottatt post-request på '$DATADELING_PATH/behandlinger' - systembruker henter behandlinger under behandling for gitt ident og periode")
         call.withSystembruker(tokenService = tokenService) { systembruker ->
             call.withBody<DatadelingDTO> { body ->
                 body.toRequest().fold(
@@ -44,7 +47,7 @@ fun Route.datadelingRoutes(
     }
 
     post("$DATADELING_PATH/vedtak/perioder") {
-        sikkerlogg.debug("Mottatt request på $DATADELING_PATH/vedtak/perioder")
+        logger.debug("Mottatt post-request på '$DATADELING_PATH/vedtak/perioder' - systembruker henter perioder for vedtak for gitt ident og periode")
         call.withSystembruker(tokenService = tokenService) { systembruker ->
             call.withBody<DatadelingDTO> { body ->
                 body.toRequest()
@@ -65,7 +68,7 @@ fun Route.datadelingRoutes(
     }
 
     post("$DATADELING_PATH/vedtak/detaljer") {
-        sikkerlogg.debug("Mottatt request på $DATADELING_PATH/vedtak/detaljer")
+        logger.debug("Mottatt post-request på '$DATADELING_PATH/vedtak/detaljer' - systembruker henter detaljer for vedtak for gitt ident og periode")
         call.withSystembruker(tokenService = tokenService) { systembruker ->
             call.withBody<DatadelingDTO> { body ->
                 body.toRequest()

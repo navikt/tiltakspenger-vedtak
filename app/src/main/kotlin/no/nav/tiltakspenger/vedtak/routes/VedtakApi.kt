@@ -25,7 +25,6 @@ import io.ktor.server.response.respondText
 import io.ktor.server.routing.routing
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
-import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.Rolle
 import no.nav.tiltakspenger.libs.common.Roller
 import no.nav.tiltakspenger.vedtak.AdRolle
@@ -74,10 +73,10 @@ internal fun Application.vedtakApi(
                 innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
                 behandlingService = applicationContext.førstegangsbehandlingContext.behandlingService,
                 sakService = applicationContext.sakContext.sakService,
-                personService = applicationContext.personContext.personService,
                 kvpVilkårService = applicationContext.førstegangsbehandlingContext.kvpVilkårService,
                 livsoppholdVilkårService = applicationContext.førstegangsbehandlingContext.livsoppholdVilkårService,
                 auditService = applicationContext.personContext.auditService,
+                tokenService = tokenService,
             )
             behandlingBenkRoutes(
                 tokenService = tokenService,
@@ -129,7 +128,6 @@ private fun AuthenticationConfig.jwt(
     realm: String,
     roles: Roller? = null,
 ) = jwt(name) {
-    sikkerlogg.debug { "config : $config" }
     this.realm = realm
     val jwkProviderGammel = UrlJwkProvider(URI(config.jwksUri).toURL())
     verifier(jwkProviderGammel, config.issuer) {
@@ -174,7 +172,6 @@ private fun AuthenticationConfig.jwtSystemToken(
     realm: String,
     roles: Roller? = null,
 ) = jwt(name) {
-    sikkerlogg.info { "config : $config" }
     this.realm = realm
     val jwkProviderGammel = UrlJwkProvider(URI(config.jwksUri).toURL())
 

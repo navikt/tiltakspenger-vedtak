@@ -5,7 +5,7 @@ import io.ktor.server.application.call
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
-import no.nav.tiltakspenger.felles.sikkerlogg
+import mu.KotlinLogging
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
@@ -20,8 +20,9 @@ fun Route.hentLivsoppholdRoute(
     behandlingService: BehandlingService,
     auditService: AuditService,
 ) {
+    val logger = KotlinLogging.logger {}
     get("$BEHANDLING_PATH/{behandlingId}/vilkar/livsopphold") {
-        sikkerlogg.debug("Mottatt request på $BEHANDLING_PATH/{behandlingId}/vilkar/livsopphold")
+        logger.debug("Mottatt get-request på '$BEHANDLING_PATH/{behandlingId}/vilkar/livsopphold' - henter vilkår om livsoppholdytelser")
 
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))

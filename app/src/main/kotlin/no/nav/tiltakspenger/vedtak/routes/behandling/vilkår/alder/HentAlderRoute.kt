@@ -5,7 +5,7 @@ import io.ktor.server.application.call
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
-import no.nav.tiltakspenger.felles.sikkerlogg
+import mu.KotlinLogging
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
@@ -20,8 +20,9 @@ fun Route.hentAlderRoute(
     behandlingService: BehandlingService,
     auditService: AuditService,
 ) {
+    val logger = KotlinLogging.logger {}
     get("$BEHANDLING_PATH/{behandlingId}/vilkar/alder") {
-        sikkerlogg.debug("Mottatt request på $BEHANDLING_PATH/{behandlingId}/vilkar/alder")
+        logger.debug("Mottatt request på '$BEHANDLING_PATH/{behandlingId}/vilkar/alder' - henter vilkår om alder")
 
         val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))

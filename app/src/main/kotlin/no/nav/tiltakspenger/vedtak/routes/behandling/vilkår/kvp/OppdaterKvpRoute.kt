@@ -6,8 +6,8 @@ import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
+import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.LeggTilKvpSaksopplysningCommand
@@ -26,6 +26,8 @@ fun Route.oppdaterKvpRoute(
     kvpVilkårService: KvpVilkårService,
     auditService: AuditService,
 ) {
+    val logger = KotlinLogging.logger {}
+
     data class DeltarForPeriode(
         val periode: PeriodeDTO,
         val deltar: Boolean,
@@ -56,7 +58,7 @@ fun Route.oppdaterKvpRoute(
             )
     }
     post("$BEHANDLING_PATH/{behandlingId}/vilkar/kvp") {
-        sikkerlogg.debug("Mottatt request på $BEHANDLING_PATH/{behandlingId}/vilkar/kvp")
+        logger.debug("Mottatt post-request på '$BEHANDLING_PATH/{behandlingId}/vilkar/kvp' - oppdaterer vilkår om kvalifikasjonsprogrammet")
 
         val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))

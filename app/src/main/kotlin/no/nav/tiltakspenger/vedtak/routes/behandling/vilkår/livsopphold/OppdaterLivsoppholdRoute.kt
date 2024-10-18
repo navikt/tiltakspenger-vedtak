@@ -6,8 +6,8 @@ import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
+import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
@@ -25,6 +25,7 @@ fun Route.oppdaterLivsoppholdRoute(
     livsoppholdVilkårService: LivsoppholdVilkårService,
     auditService: AuditService,
 ) {
+    val logger = KotlinLogging.logger {}
     data class YtelseForPeriode(
         val periode: PeriodeDTO,
         val harYtelse: Boolean,
@@ -52,7 +53,7 @@ fun Route.oppdaterLivsoppholdRoute(
     }
 
     post("$BEHANDLING_PATH/{behandlingId}/vilkar/livsopphold") {
-        sikkerlogg.debug("Mottatt request på $BEHANDLING_PATH/{behandlingId}/vilkar/livsopphold")
+        logger.debug("Mottatt post-request på '$BEHANDLING_PATH/{behandlingId}/vilkar/livsopphold' - oppdaterer vilkår om livsoppholdytelser")
 
         val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
         val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))

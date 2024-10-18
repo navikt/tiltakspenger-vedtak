@@ -1,6 +1,9 @@
 package no.nav.tiltakspenger.saksbehandling.service.person
 
+import arrow.core.Either
+import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
+import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
@@ -18,6 +21,7 @@ class PersonService(
     private val personRepo: PersonRepo,
     private val personClient: PersonGateway,
 ) {
+    val logger = KotlinLogging.logger {}
 
     fun hentFnrForBehandlingId(behandlingId: BehandlingId): Fnr =
         personRepo.hentFnrForBehandlingId(behandlingId)
@@ -43,7 +47,16 @@ class PersonService(
         personRepo.hentFnrForSøknadId(søknadId)
             ?: throw IkkeFunnetException("Fant ikke fnr på søknadId: søknadId")
 
-    suspend fun hentEnkelPersonForFnr(fnr: Fnr): EnkelPerson = personClient.hentEnkelPerson(fnr)
+    suspend fun hentEnkelPersonFnr(fnr: Fnr): Either<KunneIkkeHenteEnkelPerson, EnkelPerson> {
+        // TODO post-mvp jah: Her burde klienten logget feilen og gitt en Left.
+        return Either.catch {
+            personClient.hentEnkelPerson(fnr)
+        }.mapLeft {
+            logger.error(RuntimeException("Trigger stacktrace for enklere debug.")) { "Feil ved kall mot PDL. Se sikkerlogg for mer kontekst." }
+            sikkerlogg.error(it) { "Feil ved kall mot PDL for fnr: $fnr." }
+            KunneIkkeHenteEnkelPerson.FeilVedKallMotPdl
+        }
+    }
 
     suspend fun hentNavn(fnr: Fnr): Navn {
         personClient.hentEnkelPerson(fnr).let {

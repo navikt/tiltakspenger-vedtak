@@ -12,15 +12,15 @@ import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.vedtak.exceptions.ManglendeJWTTokenException
 import no.nav.tiltakspenger.vedtak.exceptions.UgyldigRequestException
 
-private val LOG = KotlinLogging.logger {}
-
 object ExceptionHandler {
+    private val logger = KotlinLogging.logger {}
     suspend fun handle(
         call: ApplicationCall,
         cause: Throwable,
     ) {
-        sikkerlogg.error("Feil i route ${call.request.uri}", cause)
-        LOG.error("Feil i route: ${cause.message}. Se securelog for mer detaljer.")
+        val uri = call.request.uri
+        logger.error(RuntimeException("Trigger stacktrace for enklere debug.")) { "Ktor mottok exception i ytterste lag. Uri: $uri. Se sikkerlogg mer kontekst." }
+        sikkerlogg.error(cause) { "Ktor mottok exception i ytterste lag. Uri: $uri." }
         when (cause) {
             is IllegalStateException -> {
                 call.respondWith(HttpStatusCode.InternalServerError, cause)

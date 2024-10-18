@@ -9,8 +9,10 @@ import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling
 import no.nav.tiltakspenger.saksbehandling.domene.benk.Saksoversikt
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.EnkelPerson
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
+import no.nav.tiltakspenger.saksbehandling.service.person.KunneIkkeHenteEnkelPerson
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl.FantIkkeSakForFnr
 
 interface SakService {
@@ -47,6 +49,8 @@ interface SakService {
     ): Sak?
 
     fun hentSaksoversikt(saksbehandler: Saksbehandler): Saksoversikt
+
+    suspend fun hentEnkelPersonForSakId(sakId: SakId): Either<KunneIkkeHenteEnkelPerson, EnkelPerson>
 }
 
 sealed interface KanIkkeStarteFørstegangsbehandling {
