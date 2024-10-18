@@ -32,13 +32,11 @@ fun Route.datadelingRoutes(
                 body.toRequest().fold(
                     { call.respond(HttpStatusCode.BadRequest, it) },
                     {
-                        // TODO pre-mvp jah: Avklar med Karl Evald om vi bør ha audit-logging for datadeling
-                        val behandlinger =
-                            behandlingService.hentBehandlingerUnderBehandlingForIdent(
-                                fnr = it.ident,
-                                periode = Periode(it.fom, it.tom),
-                                systembruker = systembruker,
-                            )
+                        val behandlinger = behandlingService.hentBehandlingerUnderBehandlingForIdent(
+                            fnr = it.ident,
+                            periode = Periode(it.fom, it.tom),
+                            systembruker = systembruker,
+                        )
                         call.respond(status = HttpStatusCode.OK, mapBehandlinger(behandlinger))
                     },
                 )
@@ -55,11 +53,11 @@ fun Route.datadelingRoutes(
                         { call.respond(HttpStatusCode.BadRequest, it) },
                         {
                             sikkerlogg.debug { "Henter perioder for vedtak med ident ${it.ident} for systembruker $systembruker, med periode fra ${it.fom} til ${it.tom}" }
-                            val vedtak =
-                                rammevedtakService.hentVedtakForFnr(
-                                    fnr = it.ident,
-                                    periode = Periode(it.fom, it.tom),
-                                )
+                            val vedtak = rammevedtakService.hentVedtakForFnr(
+                                fnr = it.ident,
+                                periode = Periode(it.fom, it.tom),
+                                systembruker = systembruker,
+                            )
                             call.respond(status = HttpStatusCode.OK, mapVedtakPerioder(vedtak))
                         },
                     )
@@ -75,11 +73,11 @@ fun Route.datadelingRoutes(
                     .fold(
                         { call.respond(HttpStatusCode.BadRequest, it) },
                         {
-                            val vedtak =
-                                rammevedtakService.hentVedtakForFnr(
-                                    fnr = it.ident,
-                                    periode = Periode(it.fom, it.tom),
-                                )
+                            val vedtak = rammevedtakService.hentVedtakForFnr(
+                                fnr = it.ident,
+                                periode = Periode(it.fom, it.tom),
+                                systembruker = systembruker,
+                            )
                             call.respond(status = HttpStatusCode.OK, mapVedtak(vedtak))
                         },
                     )

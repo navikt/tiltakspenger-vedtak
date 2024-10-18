@@ -12,15 +12,10 @@ import io.ktor.http.path
 import io.ktor.server.routing.routing
 import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
-import io.mockk.every
-import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.common.TestApplicationContext
-import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.exceptions.StøtterIkkeUtfallException
 import no.nav.tiltakspenger.felles.januar
-import no.nav.tiltakspenger.libs.common.Rolle
-import no.nav.tiltakspenger.libs.common.Roller
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.førstegangsbehandlingUavklart
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
@@ -30,25 +25,14 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kravfrist.Kravfrist
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kravfrist.kravfristRoutes
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
-import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import org.junit.jupiter.api.Test
 
 internal class KravfristRoutesTest {
-    private val mockInnloggetSaksbehandlerProvider = mockk<InnloggetSaksbehandlerProvider>()
 
     private val objectMapper: ObjectMapper = defaultObjectMapper()
-    private val saksbehandler =
-        Saksbehandler(
-            "Q123456",
-            "Superman",
-            "a@b.c",
-            Roller(listOf(Rolle.SAKSBEHANDLER, Rolle.SKJERMING, Rolle.STRENGT_FORTROLIG_ADRESSE)),
-        )
 
     @Test
     fun `test at endepunkt for henting av kravfrist fungerer og blir OPPFYLT`() = runTest {
-        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
-
         with(TestApplicationContext()) {
             val tac = this
             val sak = this.førstegangsbehandlingUavklart()
@@ -59,7 +43,7 @@ internal class KravfristRoutesTest {
                     jacksonSerialization()
                     routing {
                         kravfristRoutes(
-                            innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
+                            tokenService = tac.tokenService,
                             behandlingService = tac.førstegangsbehandlingContext.behandlingService,
                             auditService = tac.personContext.auditService,
                         )
@@ -73,6 +57,7 @@ internal class KravfristRoutesTest {
                         protocol = URLProtocol.HTTPS
                         path("$BEHANDLING_PATH/$behandlingId/vilkar/kravfrist")
                     },
+                    jwt = tac.jwtGenerator.createJwtForSaksbehandler(),
                 ).apply {
                     status shouldBe HttpStatusCode.OK
                     val kravfristVilkår = objectMapper.readValue<KravfristVilkårDTO>(bodyAsText())

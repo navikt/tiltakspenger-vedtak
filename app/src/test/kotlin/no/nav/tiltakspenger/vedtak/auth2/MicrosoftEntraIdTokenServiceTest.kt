@@ -10,7 +10,7 @@ import com.marcinziolo.kotlin.wiremock.returns
 import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.test.runTest
-import no.nav.tiltakspenger.common.JwtAndJwkGenerator
+import no.nav.tiltakspenger.common.JwtGenerator
 import no.nav.tiltakspenger.common.withWireMockServer
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.common.Rolle
@@ -31,7 +31,9 @@ internal class MicrosoftEntraIdTokenServiceTest {
         val issuer = "test-issuer"
         val clientId = "test-client-id"
         val saksbehandlerUUID = UUID.randomUUID()
-        val (jwk, jwt) = JwtAndJwkGenerator.createJwkJwtPairForSaksbehandler(
+        val jwtGenerator = JwtGenerator()
+        val jwk = jwtGenerator.jwkAsString
+        val jwt = jwtGenerator.createJwtForSaksbehandler(
             issuer = issuer,
             audience = clientId,
             groups = listOf(saksbehandlerUUID.toString()),
@@ -41,15 +43,15 @@ internal class MicrosoftEntraIdTokenServiceTest {
                 url = wiremock.baseUrl(),
                 issuer = issuer,
                 clientId = clientId,
-                autoriserteBrukerroller = listOf(AdRolle(Rolle.SAKSBEHANDLER, saksbehandlerUUID)),
+                autoriserteBrukerroller = listOf(AdRolle(Rolle.SAKSBEHANDLER, saksbehandlerUUID.toString())),
             )
             wiremock.prepareJwkResponse(jwk)
 
             runTest {
                 tokenService.validerOgHentBruker(jwt).getOrNull()!! shouldBe Saksbehandler(
-                    navIdent = "Z990297",
-                    brukernavn = "F_Z990297 E_Z990297",
-                    epost = "F_Z990297.E_Z990297@trygdeetaten.no",
+                    navIdent = "Z12345",
+                    brukernavn = "Sak Behandler",
+                    epost = "Sak.Behandler@nav.no",
                     roller = Roller(listOf(Rolle.SAKSBEHANDLER)),
                 )
             }
@@ -61,7 +63,8 @@ internal class MicrosoftEntraIdTokenServiceTest {
         val issuer = "test-issuer"
         val clientId = "test-client-id"
         val ukjentRolle = UUID.randomUUID()
-        val (jwk, jwt) = JwtAndJwkGenerator.createJwkJwtPairForSaksbehandler(
+        val jwtGenerator = JwtGenerator()
+        val jwt = jwtGenerator.createJwtForSaksbehandler(
             issuer = issuer,
             audience = clientId,
             groups = listOf(ukjentRolle.toString()),
@@ -71,15 +74,15 @@ internal class MicrosoftEntraIdTokenServiceTest {
                 url = wiremock.baseUrl(),
                 issuer = issuer,
                 clientId = clientId,
-                autoriserteBrukerroller = listOf(AdRolle(Rolle.SAKSBEHANDLER, UUID.randomUUID())),
+                autoriserteBrukerroller = listOf(AdRolle(Rolle.SAKSBEHANDLER, UUID.randomUUID().toString())),
             )
-            wiremock.prepareJwkResponse(jwk)
+            wiremock.prepareJwkResponse(jwtGenerator.jwkAsString)
 
             runTest {
                 tokenService.validerOgHentBruker(jwt).getOrNull()!! shouldBe Saksbehandler(
-                    navIdent = "Z990297",
-                    brukernavn = "F_Z990297 E_Z990297",
-                    epost = "F_Z990297.E_Z990297@trygdeetaten.no",
+                    navIdent = "Z12345",
+                    brukernavn = "Sak Behandler",
+                    epost = "Sak.Behandler@nav.no",
                     roller = Roller(emptyList()),
                 )
             }
@@ -90,7 +93,9 @@ internal class MicrosoftEntraIdTokenServiceTest {
     fun `andre kall cacher`() {
         val issuer = "test-issuer"
         val clientId = "test-client-id"
-        val (jwk, jwt) = JwtAndJwkGenerator.createJwkJwtPairForSaksbehandler(
+        val jwtGenerator = JwtGenerator()
+        val jwk = jwtGenerator.jwkAsString
+        val jwt = jwtGenerator.createJwtForSaksbehandler(
             issuer = issuer,
             audience = clientId,
         )
@@ -116,11 +121,14 @@ internal class MicrosoftEntraIdTokenServiceTest {
     fun `andre kall cacher ikke ved ukjent kid`() {
         val issuer = "test-issuer"
         val clientId = "test-client-id"
-        val (jwk1, jwt1) = JwtAndJwkGenerator.createJwkJwtPairForSaksbehandler(
+        val jwtGenerator1 = JwtGenerator()
+        val jwk1 = jwtGenerator1.jwkAsString
+        val jwt1 = jwtGenerator1.createJwtForSaksbehandler(
             issuer = issuer,
             audience = clientId,
         )
-        val (_, jwt2) = JwtAndJwkGenerator.createJwkJwtPairForSaksbehandler(
+        val jwtGenerator2 = JwtGenerator()
+        val jwt2 = jwtGenerator2.createJwtForSaksbehandler(
             issuer = issuer,
             audience = clientId,
         )
@@ -147,16 +155,12 @@ internal class MicrosoftEntraIdTokenServiceTest {
         val issuer = "test-issuer"
         val clientId = "test-client-id"
         val keyId = UUID.randomUUID().toString()
-        val (jwk1, _) = JwtAndJwkGenerator.createJwkJwtPairForSaksbehandler(
+        val jwtGenerator1 = JwtGenerator(jwkKeyId = keyId)
+        val jwk1 = jwtGenerator1.jwkAsString
+        val jwtGenerator2 = JwtGenerator()
+        val jwt2 = jwtGenerator2.createJwtForSaksbehandler(
             issuer = issuer,
             audience = clientId,
-            jwkKeyId = keyId,
-            jwtKeyId = keyId,
-        )
-        val (_, jwt2) = JwtAndJwkGenerator.createJwkJwtPairForSaksbehandler(
-            issuer = issuer,
-            audience = clientId,
-            jwkKeyId = keyId,
             jwtKeyId = keyId,
         )
         withWireMockServer { wiremock ->
@@ -197,7 +201,9 @@ internal class MicrosoftEntraIdTokenServiceTest {
     fun `token exp margin på 1 sekund feiler`() {
         val issuer = "test-issuer"
         val clientId = "test-client-id"
-        val (jwk, jwt) = JwtAndJwkGenerator.createJwkJwtPairForSaksbehandler(
+        val jwtGenerator = JwtGenerator()
+        val jwk = jwtGenerator.jwkAsString
+        val jwt = jwtGenerator.createJwtForSaksbehandler(
             issuer = issuer,
             audience = clientId,
             expiresAt = Instant.now().plusMillis(1000),
@@ -221,7 +227,9 @@ internal class MicrosoftEntraIdTokenServiceTest {
     fun `token exp margin på 5 sekunder er OK`() {
         val issuer = "test-issuer"
         val clientId = "test-client-id"
-        val (jwk, jwt) = JwtAndJwkGenerator.createJwkJwtPairForSaksbehandler(
+        val jwtGenerator = JwtGenerator()
+        val jwk = jwtGenerator.jwkAsString
+        val jwt = jwtGenerator.createJwtForSaksbehandler(
             issuer = issuer,
             audience = clientId,
             expiresAt = Instant.now().plusSeconds(5),
@@ -245,7 +253,9 @@ internal class MicrosoftEntraIdTokenServiceTest {
     fun `issued at tåler 5 sekunder leeway`() {
         val issuer = "test-issuer"
         val clientId = "test-client-id"
-        val (jwk, jwt) = JwtAndJwkGenerator.createJwkJwtPairForSaksbehandler(
+        val jwtGenerator = JwtGenerator()
+        val jwk = jwtGenerator.jwkAsString
+        val jwt = jwtGenerator.createJwtForSaksbehandler(
             issuer = issuer,
             audience = clientId,
             issuedAt = Instant.now().plusSeconds(5),
@@ -269,7 +279,9 @@ internal class MicrosoftEntraIdTokenServiceTest {
     fun `issued at er for langt fram i tid`() {
         val issuer = "test-issuer"
         val clientId = "test-client-id"
-        val (jwk, jwt) = JwtAndJwkGenerator.createJwkJwtPairForSaksbehandler(
+        val jwtGenerator = JwtGenerator()
+        val jwk = jwtGenerator.jwkAsString
+        val jwt = jwtGenerator.createJwtForSaksbehandler(
             issuer = issuer,
             audience = clientId,
             issuedAt = Instant.now().plusSeconds(10),
@@ -293,7 +305,9 @@ internal class MicrosoftEntraIdTokenServiceTest {
     fun `not before tåler 5 sekunder leeway`() {
         val issuer = "test-issuer"
         val clientId = "test-client-id"
-        val (jwk, jwt) = JwtAndJwkGenerator.createJwkJwtPairForSaksbehandler(
+        val jwtGenerator = JwtGenerator()
+        val jwk = jwtGenerator.jwkAsString
+        val jwt = jwtGenerator.createJwtForSaksbehandler(
             issuer = issuer,
             audience = clientId,
             notBefore = Instant.now().plusSeconds(5),
@@ -317,7 +331,9 @@ internal class MicrosoftEntraIdTokenServiceTest {
     fun `not before er for langt fram i tid`() {
         val issuer = "test-issuer"
         val clientId = "test-client-id"
-        val (jwk, jwt) = JwtAndJwkGenerator.createJwkJwtPairForSaksbehandler(
+        val jwtGenerator = JwtGenerator()
+        val jwk = jwtGenerator.jwkAsString
+        val jwt = jwtGenerator.createJwtForSaksbehandler(
             issuer = issuer,
             audience = clientId,
             notBefore = Instant.now().plusSeconds(10),
@@ -342,7 +358,9 @@ internal class MicrosoftEntraIdTokenServiceTest {
         val issuer = "test-issuer"
         val wrongIssuer = "wrong-issuer"
         val clientId = "test-client-id"
-        val (jwk, jwt) = JwtAndJwkGenerator.createJwkJwtPairForSaksbehandler(
+        val jwtGenerator = JwtGenerator()
+        val jwk = jwtGenerator.jwkAsString
+        val jwt = jwtGenerator.createJwtForSaksbehandler(
             issuer = issuer,
             audience = clientId,
         )
@@ -367,11 +385,12 @@ internal class MicrosoftEntraIdTokenServiceTest {
         val issuer = "test-issuer"
         val clientId = "test-client-id"
         val ukjentAudience = "ukjent-audience"
-        val (jwk, jwt) = JwtAndJwkGenerator.createJwkJwtPairForSaksbehandler(
+        val jwtGenerator = JwtGenerator()
+        val jwk = jwtGenerator.jwkAsString
+        val jwt = jwtGenerator.createJwtForSaksbehandler(
             issuer = issuer,
             audience = ukjentAudience,
         )
-
         withWireMockServer { wiremock ->
             val tokenService = MicrosoftEntraIdTokenService(
                 url = wiremock.baseUrl(),
@@ -391,11 +410,11 @@ internal class MicrosoftEntraIdTokenServiceTest {
     fun `mangler jwk`() {
         val issuer = "test-issuer"
         val clientId = "test-client-id"
-        val (_, jwt) = JwtAndJwkGenerator.createJwkJwtPairForSaksbehandler(
+        val jwtGenerator = JwtGenerator()
+        val jwt = jwtGenerator.createJwtForSaksbehandler(
             issuer = issuer,
             audience = clientId,
         )
-
         withWireMockServer { wiremock ->
             val tokenService = MicrosoftEntraIdTokenService(
                 url = wiremock.baseUrl(),
@@ -415,13 +434,12 @@ internal class MicrosoftEntraIdTokenServiceTest {
     fun `jwk service unavailable`() {
         val issuer = "test-issuer"
         val clientId = "test-client-id"
-        val (_, jwt) = JwtAndJwkGenerator.createJwkJwtPairForSaksbehandler(
+        val jwtGenerator = JwtGenerator(jwkKeyId = "jwk-key-id")
+        val jwt = jwtGenerator.createJwtForSaksbehandler(
             issuer = issuer,
             audience = clientId,
-            jwkKeyId = "jwk-key-id",
             jwtKeyId = "jwt-key-id",
         )
-
         withWireMockServer { wiremock ->
             val tokenService = MicrosoftEntraIdTokenService(
                 url = wiremock.baseUrl(),
@@ -446,10 +464,11 @@ internal class MicrosoftEntraIdTokenServiceTest {
     fun `ulik kid`() {
         val issuer = "test-issuer"
         val clientId = "test-client-id"
-        val (jwk, jwt) = JwtAndJwkGenerator.createJwkJwtPairForSaksbehandler(
+        val jwtGenerator = JwtGenerator(jwkKeyId = "jwk-key-id")
+        val jwk = jwtGenerator.jwkAsString
+        val jwt = jwtGenerator.createJwtForSaksbehandler(
             issuer = issuer,
             audience = clientId,
-            jwkKeyId = "jwk-key-id",
             jwtKeyId = "jwt-key-id",
         )
 
@@ -472,12 +491,13 @@ internal class MicrosoftEntraIdTokenServiceTest {
     fun `mangler NAVident claim`() {
         val issuer = "test-issuer"
         val clientId = "test-client-id"
-        val (jwk, jwt) = JwtAndJwkGenerator.createJwkJwtPairForSaksbehandler(
+        val jwtGenerator = JwtGenerator(jwkKeyId = "jwk-key-id")
+        val jwk = jwtGenerator.jwkAsString
+        val jwt = jwtGenerator.createJwtForSaksbehandler(
             issuer = issuer,
             audience = clientId,
             navIdent = null,
         )
-
         withWireMockServer { wiremock ->
             val tokenService = MicrosoftEntraIdTokenService(
                 url = wiremock.baseUrl(),
@@ -498,12 +518,13 @@ internal class MicrosoftEntraIdTokenServiceTest {
     fun `mangler preferred_username claim`() {
         val issuer = "test-issuer"
         val clientId = "test-client-id"
-        val (jwk, jwt) = JwtAndJwkGenerator.createJwkJwtPairForSaksbehandler(
+        val jwtGenerator = JwtGenerator(jwkKeyId = "jwk-key-id")
+        val jwk = jwtGenerator.jwkAsString
+        val jwt = jwtGenerator.createJwtForSaksbehandler(
             issuer = issuer,
             audience = clientId,
             preferredUsername = null,
         )
-
         withWireMockServer { wiremock ->
             val tokenService = MicrosoftEntraIdTokenService(
                 url = wiremock.baseUrl(),
@@ -524,12 +545,13 @@ internal class MicrosoftEntraIdTokenServiceTest {
     fun `mangler groups claim`() {
         val issuer = "test-issuer"
         val clientId = "test-client-id"
-        val (jwk, jwt) = JwtAndJwkGenerator.createJwkJwtPairForSaksbehandler(
+        val jwtGenerator = JwtGenerator(jwkKeyId = "jwk-key-id")
+        val jwk = jwtGenerator.jwkAsString
+        val jwt = jwtGenerator.createJwtForSaksbehandler(
             issuer = issuer,
             audience = clientId,
             groups = null,
         )
-
         withWireMockServer { wiremock ->
             val tokenService = MicrosoftEntraIdTokenService(
                 url = wiremock.baseUrl(),
@@ -550,12 +572,13 @@ internal class MicrosoftEntraIdTokenServiceTest {
     fun `systembruker mangler roles claim`() {
         val issuer = "test-issuer"
         val clientId = "test-client-id"
-        val (jwk, jwt) = JwtAndJwkGenerator.createJwkJwtPairForSystembruker(
+        val jwtGenerator = JwtGenerator(jwkKeyId = "jwk-key-id")
+        val jwk = jwtGenerator.jwkAsString
+        val jwt = jwtGenerator.createJwtForSystembruker(
             issuer = issuer,
             audience = clientId,
             roles = null,
         )
-
         withWireMockServer { wiremock ->
             val tokenService = MicrosoftEntraIdTokenService(
                 url = wiremock.baseUrl(),
@@ -575,12 +598,13 @@ internal class MicrosoftEntraIdTokenServiceTest {
     fun `systembruker mangler azp_name claim`() {
         val issuer = "test-issuer"
         val clientId = "test-client-id"
-        val (jwk, jwt) = JwtAndJwkGenerator.createJwkJwtPairForSystembruker(
+        val jwtGenerator = JwtGenerator(jwkKeyId = "jwk-key-id")
+        val jwk = jwtGenerator.jwkAsString
+        val jwt = jwtGenerator.createJwtForSystembruker(
             issuer = issuer,
             audience = clientId,
             azpName = null,
         )
-
         withWireMockServer { wiremock ->
             val tokenService = MicrosoftEntraIdTokenService(
                 url = wiremock.baseUrl(),
@@ -601,12 +625,13 @@ internal class MicrosoftEntraIdTokenServiceTest {
     fun `systembruker mangler oid claim`() {
         val issuer = "test-issuer"
         val clientId = "test-client-id"
-        val (jwk, jwt) = JwtAndJwkGenerator.createJwkJwtPairForSystembruker(
+        val jwtGenerator = JwtGenerator(jwkKeyId = "jwk-key-id")
+        val jwk = jwtGenerator.jwkAsString
+        val jwt = jwtGenerator.createJwtForSystembruker(
             issuer = issuer,
             audience = clientId,
             oid = null,
         )
-
         withWireMockServer { wiremock ->
             val tokenService = MicrosoftEntraIdTokenService(
                 url = wiremock.baseUrl(),

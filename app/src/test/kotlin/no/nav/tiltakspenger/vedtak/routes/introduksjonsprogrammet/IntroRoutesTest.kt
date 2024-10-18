@@ -11,13 +11,8 @@ import io.ktor.http.path
 import io.ktor.server.routing.routing
 import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
-import io.mockk.every
-import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.common.TestApplicationContext
-import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.libs.common.Rolle
-import no.nav.tiltakspenger.libs.common.Roller
 import no.nav.tiltakspenger.objectmothers.førstegangsbehandlingUavklart
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
@@ -26,25 +21,13 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.introduksjonsprogra
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.DeltagelseDTO.DELTAR_IKKE
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
-import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import org.junit.jupiter.api.Test
 
 class IntroRoutesTest {
-    private val mockInnloggetSaksbehandlerProvider = mockk<InnloggetSaksbehandlerProvider>()
-
     private val objectMapper: ObjectMapper = defaultObjectMapper()
-    private val mockSaksbehandler =
-        Saksbehandler(
-            "Q123456",
-            "Superman",
-            "a@b.c",
-            Roller(listOf(Rolle.SAKSBEHANDLER, Rolle.SKJERMING, Rolle.STRENGT_FORTROLIG_ADRESSE)),
-        )
 
     @Test
     fun `test at endepunkt for henting og lagring av intro fungerer`() = runTest {
-        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
-
         with(TestApplicationContext()) {
             val tac = this
             val sak = this.førstegangsbehandlingUavklart()
@@ -54,7 +37,7 @@ class IntroRoutesTest {
                     jacksonSerialization()
                     routing {
                         introRoutes(
-                            innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
+                            tokenService = tac.tokenService,
                             behandlingService = tac.førstegangsbehandlingContext.behandlingService,
                             auditService = tac.personContext.auditService,
                         )
@@ -68,6 +51,7 @@ class IntroRoutesTest {
                         protocol = URLProtocol.HTTPS
                         path("$BEHANDLING_PATH/$behandlingId/vilkar/introduksjonsprogrammet")
                     },
+                    jwt = tac.jwtGenerator.createJwtForSaksbehandler(),
                 ).apply {
                     status shouldBe HttpStatusCode.OK
                     val introVilkår = objectMapper.readValue<IntroVilkårDTO>(bodyAsText())
@@ -79,8 +63,6 @@ class IntroRoutesTest {
 
     @Test
     fun `test at søknaden blir gjenspeilet i introduksjonsprogrammet vilkåret`() = runTest {
-        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns mockSaksbehandler
-
         with(TestApplicationContext()) {
             val tac = this
             val sak = this.førstegangsbehandlingUavklart(
@@ -92,7 +74,7 @@ class IntroRoutesTest {
                     jacksonSerialization()
                     routing {
                         introRoutes(
-                            innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
+                            tokenService = tac.tokenService,
                             behandlingService = tac.førstegangsbehandlingContext.behandlingService,
                             auditService = tac.personContext.auditService,
                         )
@@ -106,6 +88,7 @@ class IntroRoutesTest {
                         protocol = URLProtocol.HTTPS
                         path("$BEHANDLING_PATH/$behandlingId/vilkar/introduksjonsprogrammet")
                     },
+                    jwt = tac.jwtGenerator.createJwtForSaksbehandler(),
                 ).apply {
                     status shouldBe HttpStatusCode.OK
                     val introVilkår = objectMapper.readValue<IntroVilkårDTO>(bodyAsText())

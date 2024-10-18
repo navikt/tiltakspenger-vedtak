@@ -9,7 +9,6 @@ import com.natpryce.konfig.overriding
 import com.natpryce.konfig.stringType
 import no.nav.tiltakspenger.libs.common.Rolle
 import no.nav.tiltakspenger.vedtak.auth.AzureTokenProvider
-import java.util.UUID
 
 private const val APPLICATION_NAME = "tiltakspenger-vedtak"
 
@@ -21,7 +20,7 @@ enum class Profile {
 
 data class AdRolle(
     val name: Rolle,
-    val objectId: UUID,
+    val objectId: String,
 )
 
 object Configuration {
@@ -159,15 +158,15 @@ object Configuration {
 
     fun alleAdRoller(): List<AdRolle> =
         listOf(
-            AdRolle(Rolle.SAKSBEHANDLER, UUID.fromString(config()[Key("ROLE_SAKSBEHANDLER", stringType)])),
-            AdRolle(Rolle.BESLUTTER, UUID.fromString(config()[Key("ROLE_BESLUTTER", stringType)])),
-            AdRolle(Rolle.FORTROLIG_ADRESSE, UUID.fromString(config()[Key("ROLE_FORTROLIG", stringType)])),
+            AdRolle(Rolle.SAKSBEHANDLER, config()[Key("ROLE_SAKSBEHANDLER", stringType)]),
+            AdRolle(Rolle.BESLUTTER, config()[Key("ROLE_BESLUTTER", stringType)]),
+            AdRolle(Rolle.FORTROLIG_ADRESSE, config()[Key("ROLE_FORTROLIG", stringType)]),
             AdRolle(
                 Rolle.STRENGT_FORTROLIG_ADRESSE,
-                UUID.fromString(config()[Key("ROLE_STRENGT_FORTROLIG", stringType)]),
+                config()[Key("ROLE_STRENGT_FORTROLIG", stringType)],
             ),
-            AdRolle(Rolle.SKJERMING, UUID.fromString(config()[Key("ROLE_SKJERMING", stringType)])),
-            AdRolle(Rolle.DRIFT, UUID.fromString(config()[Key("ROLE_DRIFT", stringType)])),
+            AdRolle(Rolle.SKJERMING, config()[Key("ROLE_SKJERMING", stringType)]),
+            AdRolle(Rolle.DRIFT, config()[Key("ROLE_DRIFT", stringType)]),
         )
 
     data class ClientConfig(
@@ -184,8 +183,11 @@ object Configuration {
         val roles: List<AdRolle> = alleAdRoller(),
     )
 
-    fun pdlClientConfig(baseUrl: String = config()[Key("PDL_ENDPOINT_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
-    fun pdlPipClientConfig(baseUrl: String = config()[Key("PDL_PIP_ENDPOINT_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
+    fun pdlClientConfig(baseUrl: String = config()[Key("PDL_ENDPOINT_URL", stringType)]) =
+        ClientConfig(baseUrl = baseUrl)
+
+    fun pdlPipClientConfig(baseUrl: String = config()[Key("PDL_PIP_ENDPOINT_URL", stringType)]) =
+        ClientConfig(baseUrl = baseUrl)
 
     fun ouathConfigPdl(
         scope: String = config()[Key("PDL_SCOPE", stringType)],
@@ -285,17 +287,22 @@ object Configuration {
 
     fun httpPort() = config()[Key("application.httpPort", intType)]
 
-    fun skjermingClientConfig(baseUrl: String = config()[Key("SKJERMING_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
+    fun skjermingClientConfig(baseUrl: String = config()[Key("SKJERMING_URL", stringType)]) =
+        ClientConfig(baseUrl = baseUrl)
 
     fun tiltakClientConfig(baseUrl: String = config()[Key("TILTAK_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
 
     fun joarkClientConfig(baseUrl: String = config()[Key("JOARK_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
-    fun dokdistClientConfig(baseUrl: String = config()[Key("DOKDIST_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
+    fun dokdistClientConfig(baseUrl: String = config()[Key("DOKDIST_URL", stringType)]) =
+        ClientConfig(baseUrl = baseUrl)
+
     fun pdfgenClientConfig(baseUrl: String = config()[Key("PDFGEN_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
 
-    fun poaoTilgangClientConfig(baseUrl: String = config()[Key("POAO_TILGANG_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
+    fun poaoTilgangClientConfig(baseUrl: String = config()[Key("POAO_TILGANG_URL", stringType)]) =
+        ClientConfig(baseUrl = baseUrl)
 
-    fun utbetalingClientConfig(baseUrl: String = config()[Key("UTBETALING_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
+    fun utbetalingClientConfig(baseUrl: String = config()[Key("UTBETALING_URL", stringType)]) =
+        ClientConfig(baseUrl = baseUrl)
 
     fun isNais() = applicationProfile() != Profile.LOCAL
 
@@ -310,6 +317,7 @@ object Configuration {
         val port: Int,
         val brukernavn: String,
     )
+
     fun database() = DataBaseConf(
         database = config()[Key("DB_DATABASE", stringType)],
         host = config()[Key("DB_HOST", stringType)],

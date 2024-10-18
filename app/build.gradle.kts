@@ -72,7 +72,6 @@ dependencies {
     api("com.auth0:jwks-rsa:0.22.1")
 
     // TokenX
-    implementation("no.nav.security:token-validation-ktor-v2:$tokenSupportVersion")
     implementation("no.nav.security:token-client-core:$tokenSupportVersion")
 
     // DB

@@ -12,8 +12,6 @@ import io.ktor.http.path
 import io.ktor.server.routing.routing
 import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
-import io.mockk.every
-import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.common.TestApplicationContext
 import no.nav.tiltakspenger.felles.Saksbehandler
@@ -28,11 +26,9 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.kvpRoutes
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
-import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import org.junit.jupiter.api.Test
 
 class KvpRoutesTest {
-    private val mockInnloggetSaksbehandlerProvider = mockk<InnloggetSaksbehandlerProvider>()
 
     private val objectMapper: ObjectMapper = defaultObjectMapper()
     private val periodeBrukerHarKvpEtterEndring = PeriodeDTO(fraOgMed = "2023-01-01", tilOgMed = "2023-01-03")
@@ -46,8 +42,6 @@ class KvpRoutesTest {
 
     @Test
     fun `test at endepunkt for henting og lagring av kvp fungerer`() = runTest {
-        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
-
         with(TestApplicationContext()) {
             val tac = this
             val sak = this.førstegangsbehandlingUavklart(
@@ -60,7 +54,7 @@ class KvpRoutesTest {
                     jacksonSerialization()
                     routing {
                         kvpRoutes(
-                            innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
+                            tokenService = tac.tokenService,
                             kvpVilkårService = tac.førstegangsbehandlingContext.kvpVilkårService,
                             behandlingService = tac.førstegangsbehandlingContext.behandlingService,
                             auditService = tac.personContext.auditService,
@@ -75,6 +69,7 @@ class KvpRoutesTest {
                         protocol = URLProtocol.HTTPS
                         path("$BEHANDLING_PATH/$behandlingId/vilkar/kvp")
                     },
+                    jwt = tac.jwtGenerator.createJwtForSaksbehandler(),
                 ).apply {
                     status shouldBe HttpStatusCode.OK
                     val kvpVilkår = objectMapper.readValue<KVPVilkårDTO>(bodyAsText())
@@ -86,8 +81,6 @@ class KvpRoutesTest {
 
     @Test
     fun `test at samlet utfall for kvp blir OPPFYLT om bruker ikke går på kvp i vurderingsperioden`() = runTest {
-        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
-
         with(TestApplicationContext()) {
             val tac = this
             val sak = this.førstegangsbehandlingUavklart(
@@ -100,7 +93,7 @@ class KvpRoutesTest {
                     jacksonSerialization()
                     routing {
                         kvpRoutes(
-                            innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
+                            tokenService = tac.tokenService,
                             kvpVilkårService = tac.førstegangsbehandlingContext.kvpVilkårService,
                             behandlingService = tac.førstegangsbehandlingContext.behandlingService,
                             auditService = tac.personContext.auditService,
@@ -114,6 +107,7 @@ class KvpRoutesTest {
                         protocol = URLProtocol.HTTPS
                         path("$BEHANDLING_PATH/$behandlingId/vilkar/kvp")
                     },
+                    jwt = tac.jwtGenerator.createJwtForSaksbehandler(),
                 ).apply {
                     status shouldBe HttpStatusCode.OK
                     val kvpVilkår = objectMapper.readValue<KVPVilkårDTO>(bodyAsText())

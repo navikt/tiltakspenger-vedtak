@@ -1,66 +1,71 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.call
-import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
-import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
+import no.nav.tiltakspenger.vedtak.auth2.TokenService
 import no.nav.tiltakspenger.vedtak.routes.correlationId
-import no.nav.tiltakspenger.vedtak.routes.parameter
-import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
+import no.nav.tiltakspenger.vedtak.routes.withBehandlingId
+import no.nav.tiltakspenger.vedtak.routes.withBody
+import no.nav.tiltakspenger.vedtak.routes.withSaksbehandler
 
 data class BegrunnelseDTO(
     val begrunnelse: String,
 )
 
 fun Route.behandlingBeslutterRoutes(
-    innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     behandlingService: BehandlingService,
     auditService: AuditService,
+    tokenService: TokenService,
 ) {
     val logger = KotlinLogging.logger {}
     post("$BEHANDLING_PATH/sendtilbake/{behandlingId}") {
         logger.debug("Mottatt post-request på '$BEHANDLING_PATH/sendtilbake/{behandlingId}' - sender behandling tilbake til saksbehandler")
-
-        val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
-        val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
-        val begrunnelse = call.receive<BegrunnelseDTO>().begrunnelse
-
-        behandlingService.sendTilbakeTilSaksbehandler(behandlingId, saksbehandler, begrunnelse, correlationId = call.correlationId())
-
-        auditService.logMedBehandlingId(
-            behandlingId = behandlingId,
-            navIdent = saksbehandler.navIdent,
-            action = AuditLogEvent.Action.UPDATE,
-            contextMessage = "Beslutter underkjenner behandling",
-            correlationId = call.correlationId(),
-        )
-
-        call.respond(status = HttpStatusCode.OK, message = "{}")
+        call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
+            call.withBehandlingId { behandlingId ->
+                call.withBody<BegrunnelseDTO> { body ->
+                    val begrunnelse = body.begrunnelse
+                    val correlationId = call.correlationId()
+                    behandlingService.sendTilbakeTilSaksbehandler(
+                        behandlingId = behandlingId,
+                        beslutter = saksbehandler,
+                        begrunnelse = begrunnelse,
+                        correlationId = correlationId,
+                    )
+                    auditService.logMedBehandlingId(
+                        behandlingId = behandlingId,
+                        navIdent = saksbehandler.navIdent,
+                        action = AuditLogEvent.Action.UPDATE,
+                        contextMessage = "Beslutter underkjenner behandling",
+                        correlationId = correlationId,
+                    )
+                    call.respond(status = HttpStatusCode.OK, message = "{}")
+                }
+            }
+        }
     }
 
     post("$BEHANDLING_PATH/godkjenn/{behandlingId}") {
         logger.debug { "Mottatt post-request på '$BEHANDLING_PATH/godkjenn/{behandlingId}' - godkjenner behandlingen, oppretter vedtak, evt. genererer meldekort og asynkront sender brev." }
+        call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
+            call.withBehandlingId { behandlingId ->
+                val correlationId = call.correlationId()
+                behandlingService.iverksett(behandlingId, saksbehandler, correlationId)
 
-        val saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
-        val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
-
-        behandlingService.iverksett(behandlingId, saksbehandler, correlationId = call.correlationId())
-
-        auditService.logMedBehandlingId(
-            behandlingId = behandlingId,
-            navIdent = saksbehandler.navIdent,
-            action = AuditLogEvent.Action.UPDATE,
-            contextMessage = "Beslutter godkjenner behandlingen",
-            correlationId = call.correlationId(),
-        )
-
-        call.respond(message = "{}", status = HttpStatusCode.OK)
+                auditService.logMedBehandlingId(
+                    behandlingId = behandlingId,
+                    navIdent = saksbehandler.navIdent,
+                    action = AuditLogEvent.Action.UPDATE,
+                    contextMessage = "Beslutter godkjenner behandlingen",
+                    correlationId = correlationId,
+                )
+                call.respond(message = "{}", status = HttpStatusCode.OK)
+            }
+        }
     }
 }
