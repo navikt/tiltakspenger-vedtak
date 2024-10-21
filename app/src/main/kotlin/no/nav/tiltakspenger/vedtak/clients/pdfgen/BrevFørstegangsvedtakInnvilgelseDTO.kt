@@ -24,14 +24,18 @@ private class BrevFørstegangsvedtakInnvilgelseDTO(
 )
 
 internal suspend fun Rammevedtak.tobrevDTO(
-    hentNavn: suspend (Fnr) -> Navn,
+    hentBrukersNavn: suspend (Fnr) -> Navn,
+    hentSaksbehandlersNavn: suspend (String) -> String,
 ): String {
-    val navn = hentNavn(fnr)
+    val brukersNavn = hentBrukersNavn(fnr)
+    val saksbehandlersNavn = hentSaksbehandlersNavn(saksbehandlerNavIdent)
+    val besluttersNavn = hentSaksbehandlersNavn(beslutterNavIdent)
+
     return BrevFørstegangsvedtakInnvilgelseDTO(
         personalia = BrevPersonaliaDTO(
             ident = this.fnr.verdi,
-            fornavn = navn.fornavn,
-            etternavn = navn.mellomnavnOgEtternavn,
+            fornavn = brukersNavn.fornavn,
+            etternavn = brukersNavn.mellomnavnOgEtternavn,
             antallBarn = 0,
         ),
         tiltaksnavn = "TODO pre-mvp",
@@ -39,8 +43,8 @@ internal suspend fun Rammevedtak.tobrevDTO(
         rammevedtakTilDato = periode.tilOgMed.format(norskDatoFormatter),
         saksnummer = saksnummer.verdi,
         barnetillegg = false,
-        saksbehandlerNavn = "TODO pre-mvp beslutterNavn",
-        beslutterNavn = "TODO pre-mvp beslutterNavn",
+        saksbehandlerNavn = saksbehandlersNavn,
+        beslutterNavn = besluttersNavn,
         kontor = "TODO pre-mvp: Dette bør ligge på behandlingen. Se NORG-oppgave i trello.",
         // Dette er vår dato, det brukes typisk når bruker klager på vedtaksbrev på dato ...
         datoForUtsending = LocalDate.now().format(norskDatoFormatter),

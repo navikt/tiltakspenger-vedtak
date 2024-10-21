@@ -8,6 +8,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Navn
 interface GenererMeldekortPdfGateway {
     suspend fun genererMeldekortPdf(
         meldekort: Meldekort.UtfyltMeldekort,
-        hentNavn: suspend (Fnr) -> Navn,
+        hentBrukersNavn: suspend (Fnr) -> Navn,
     ): PdfOgJson
 }

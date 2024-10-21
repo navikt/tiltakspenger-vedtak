@@ -14,7 +14,8 @@ class GenererFakeVedtaksbrevGateway : GenererVedtaksbrevGateway {
     private val response by lazy { PdfOgJson(PdfA("pdf".toByteArray()), "json").right() }
     override suspend fun genererVedtaksbrev(
         vedtak: Rammevedtak,
-        hentNavn: suspend (Fnr) -> Navn,
+        hentBrukersNavn: suspend (Fnr) -> Navn,
+        hentSaksbehandlersNavn: suspend (String) -> String,
     ): Either<KunneIkkeGenererePdf, PdfOgJson> {
         return response
     }

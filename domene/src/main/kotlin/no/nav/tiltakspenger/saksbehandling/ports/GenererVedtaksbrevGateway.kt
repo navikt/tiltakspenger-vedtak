@@ -9,7 +9,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 interface GenererVedtaksbrevGateway {
     suspend fun genererVedtaksbrev(
         vedtak: Rammevedtak,
-        hentNavn: suspend (Fnr) -> Navn,
+        hentBrukersNavn: suspend (Fnr) -> Navn,
+        hentSaksbehandlersNavn: suspend (String) -> String,
     ): Either<KunneIkkeGenererePdf, PdfOgJson>
 }
 

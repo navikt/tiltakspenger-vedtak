@@ -84,6 +84,7 @@ object Configuration {
                 "DB_DATABASE" to "vedtak",
                 "DB_HOST" to "localhost",
                 "DB_PORT" to "5433",
+                "MICROSOFT_SCOPE" to "localhost",
             ),
         )
 
@@ -109,6 +110,7 @@ object Configuration {
                 "PDFGEN_URL" to "http://tiltakspenger-pdfgen",
                 "POAO_TILGANG_URL" to "https://poao-tilgang.dev.intern.nav.no",
                 "POAO_TILGANG_SCOPE" to "api://dev-gcp.poao.poao-tilgang/.default",
+                "MICROSOFT_SCOPE" to "https://graph.microsoft.com/.default",
             ),
         )
     private val prodProperties =
@@ -133,6 +135,7 @@ object Configuration {
                 "PDFGEN_URL" to "http://tiltakspenger-pdfgen",
                 "POAO_TILGANG_URL" to "https://poao-tilgang.nais.io",
                 "POAO_TILGANG_SCOPE" to "api://prod-gcp.poao.poao-tilgang/.default",
+                "MICROSOFT_SCOPE" to "https://graph.microsoft.com/.default",
             ),
         )
 
@@ -203,6 +206,18 @@ object Configuration {
 
     fun ouathConfigPdlPip(
         scope: String = config()[Key("PDL_PIP_SCOPE", stringType)],
+        clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
+        clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
+        wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
+    ) = AzureTokenProvider.OauthConfig(
+        scope = scope,
+        clientId = clientId,
+        clientSecret = clientSecret,
+        wellknownUrl = wellknownUrl,
+    )
+
+    fun ouathConfigMicrosoftGraphApi(
+        scope: String = config()[Key("MICROSOFT_SCOPE", stringType)],
         clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
         clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
         wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],

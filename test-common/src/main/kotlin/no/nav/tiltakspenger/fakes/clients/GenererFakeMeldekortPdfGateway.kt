@@ -11,7 +11,7 @@ class GenererFakeMeldekortPdfGateway : GenererMeldekortPdfGateway {
     private val response by lazy { PdfOgJson(PdfA("pdf".toByteArray()), "json") }
     override suspend fun genererMeldekortPdf(
         meldekort: Meldekort.UtfyltMeldekort,
-        hentNavn: suspend (Fnr) -> Navn,
+        hentBrukersNavn: suspend (Fnr) -> Navn,
     ): PdfOgJson {
         return response
     }

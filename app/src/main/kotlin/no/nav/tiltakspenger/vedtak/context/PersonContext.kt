@@ -13,6 +13,7 @@ import no.nav.tiltakspenger.saksbehandling.service.person.PersonService
 import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.auth.AzureTokenProvider
+import no.nav.tiltakspenger.vedtak.clients.person.MicrosoftGraphApiClient
 import no.nav.tiltakspenger.vedtak.clients.person.PersonHttpklient
 import no.nav.tiltakspenger.vedtak.clients.poaotilgang.PoaoTilgangClient
 import no.nav.tiltakspenger.vedtak.repository.person.PersonPostgresRepo
@@ -23,6 +24,7 @@ open class PersonContext(
 ) {
     val tokenProviderPdl by lazy { AzureTokenProvider(config = Configuration.ouathConfigPdl()) }
     val tokenProviderPdlPip by lazy { AzureTokenProvider(config = Configuration.ouathConfigPdlPip()) }
+    val tokenProviderMicrosoftGraphApi by lazy { AzureTokenProvider(config = Configuration.ouathConfigMicrosoftGraphApi()) }
 
     open val personGateway: PersonGateway by lazy {
         PersonHttpklient(
@@ -37,6 +39,11 @@ open class PersonContext(
             skjermingBaseUrl = Configuration.skjermingClientConfig().baseUrl,
             getSkjermingToken = tokenProviderSkjerming::getToken,
             sikkerlogg = sikkerlogg,
+        )
+    }
+    open val navIdentClient: MicrosoftGraphApiClient by lazy {
+        MicrosoftGraphApiClient(
+            getToken = tokenProviderMicrosoftGraphApi::getToken,
         )
     }
     private val tokenProviderSkjerming: AzureTokenProvider by lazy { AzureTokenProvider(config = Configuration.oauthConfigSkjerming()) }

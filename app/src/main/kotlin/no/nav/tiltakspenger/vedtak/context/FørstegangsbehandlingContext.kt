@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak.context
 
 import no.nav.tiltakspenger.distribusjon.ports.DokdistGateway
+import no.nav.tiltakspenger.felles.NavIdentClient
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.personklient.pdl.TilgangsstyringService
@@ -38,6 +39,7 @@ open class FørstegangsbehandlingContext(
     tilgangsstyringService: TilgangsstyringService,
     personService: PersonService,
     dokdistGateway: DokdistGateway,
+    navIdentClient: NavIdentClient,
 ) {
     open val rammevedtakRepo: RammevedtakRepo by lazy { RammevedtakPostgresRepo(sessionFactory as PostgresSessionFactory) }
     open val behandlingRepo: BehandlingRepo by lazy { BehandlingPostgresRepo(sessionFactory as PostgresSessionFactory) }
@@ -75,6 +77,7 @@ open class FørstegangsbehandlingContext(
             rammevedtakRepo = rammevedtakRepo,
             genererVedtaksbrevGateway = genererVedtaksbrevGateway,
             personService = personService,
+            navIdentClient = navIdentClient,
         )
     }
 

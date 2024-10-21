@@ -41,9 +41,9 @@ private data class DokumentMeldekortDTO(
 }
 
 suspend fun Meldekort.UtfyltMeldekort.toPdf(
-    hentNavn: suspend (Fnr) -> Navn,
+    hentBrukersNavn: suspend (Fnr) -> Navn,
 ): JsonNode {
-    val navn = hentNavn(fnr)
+    val navn = hentBrukersNavn(fnr)
     return DokumentMeldekortDTO(
         meldekortId = id.toString(),
         sakId = sakId.toString(),
