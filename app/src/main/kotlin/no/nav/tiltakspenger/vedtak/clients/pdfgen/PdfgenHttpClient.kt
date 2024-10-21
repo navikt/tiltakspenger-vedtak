@@ -55,36 +55,36 @@ internal class PdfgenHttpClient(
 
     override suspend fun genererVedtaksbrev(
         vedtak: Rammevedtak,
-        hentNavn: suspend (Fnr) -> Navn,
+        hentBrukersNavn: suspend (Fnr) -> Navn,
+        hentSaksbehandlersNavn: suspend (String) -> String,
     ): Either<KunneIkkeGenererePdf, PdfOgJson> {
         return withContext(Dispatchers.IO) {
-            val jsonPayload = vedtak.tobrevDTO(hentNavn)
-            Either
-                .catch {
-                    val request = createPdfgenRequest(jsonPayload, vedtakInnvilgelseUri)
-                    val httpResponse = client.sendAsync(request, HttpResponse.BodyHandlers.ofByteArray()).await()
-                    val jsonResponse = httpResponse.body()
-                    val status = httpResponse.statusCode()
-                    if (status != 200) {
-                        log.error { "Feil ved kall til pdfgen. Vedtak ${vedtak.id}, saksnummer ${vedtak.saksnummer}, sakId: ${vedtak.sakId}. Status: $status. uri: $vedtakInnvilgelseUri. Se sikkerlogg for detaljer." }
-                        sikkerlogg.error { "Feil ved kall til pdfgen. Vedtak ${vedtak.id}, saksnummer ${vedtak.saksnummer}, sakId: ${vedtak.sakId}. uri: $vedtakInnvilgelseUri. jsonResponse: $jsonResponse. jsonPayload: $jsonPayload." }
-                        return@withContext KunneIkkeGenererePdf.left()
-                    }
-                    PdfOgJson(PdfA(jsonResponse), jsonPayload)
-                }.mapLeft {
-                    // Either.catch slipper igjennom CancellationException som er ønskelig.
-                    log.error(it) { "Feil ved kall til pdfgen. Vedtak ${vedtak.id}, saksnummer ${vedtak.saksnummer}, sakId: ${vedtak.sakId}. Se sikkerlogg for detaljer." }
-                    sikkerlogg.error(it) { "Feil ved kall til pdfgen. Vedtak ${vedtak.id}, saksnummer ${vedtak.saksnummer}, sakId: ${vedtak.sakId}. jsonPayload: $jsonPayload, uri: $vedtakInnvilgelseUri" }
-                    KunneIkkeGenererePdf
+            val jsonPayload = vedtak.tobrevDTO(hentBrukersNavn, hentSaksbehandlersNavn)
+            Either.catch {
+                val request = createPdfgenRequest(jsonPayload, vedtakInnvilgelseUri)
+                val httpResponse = client.sendAsync(request, HttpResponse.BodyHandlers.ofByteArray()).await()
+                val jsonResponse = httpResponse.body()
+                val status = httpResponse.statusCode()
+                if (status != 200) {
+                    log.error { "Feil ved kall til pdfgen. Vedtak ${vedtak.id}, saksnummer ${vedtak.saksnummer}, sakId: ${vedtak.sakId}. Status: $status. uri: $vedtakInnvilgelseUri. Se sikkerlogg for detaljer." }
+                    sikkerlogg.error { "Feil ved kall til pdfgen. Vedtak ${vedtak.id}, saksnummer ${vedtak.saksnummer}, sakId: ${vedtak.sakId}. uri: $vedtakInnvilgelseUri. jsonResponse: $jsonResponse. jsonPayload: $jsonPayload." }
+                    return@withContext KunneIkkeGenererePdf.left()
                 }
+                PdfOgJson(PdfA(jsonResponse), jsonPayload)
+            }.mapLeft {
+                // Either.catch slipper igjennom CancellationException som er ønskelig.
+                log.error(it) { "Feil ved kall til pdfgen. Vedtak ${vedtak.id}, saksnummer ${vedtak.saksnummer}, sakId: ${vedtak.sakId}. Se sikkerlogg for detaljer." }
+                sikkerlogg.error(it) { "Feil ved kall til pdfgen. Vedtak ${vedtak.id}, saksnummer ${vedtak.saksnummer}, sakId: ${vedtak.sakId}. jsonPayload: $jsonPayload, uri: $vedtakInnvilgelseUri" }
+                KunneIkkeGenererePdf
+            }
         }
     }
 
     override suspend fun genererMeldekortPdf(
         meldekort: Meldekort.UtfyltMeldekort,
-        hentNavn: suspend (Fnr) -> Navn,
+        hentBrukersNavn: suspend (Fnr) -> Navn,
     ): PdfOgJson {
-        val data = meldekort.toPdf(hentNavn)
+        val data = meldekort.toPdf(hentBrukersNavn)
         return genererPdfFraJson(data)
     }
 

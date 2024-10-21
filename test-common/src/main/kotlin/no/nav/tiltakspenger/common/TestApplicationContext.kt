@@ -181,6 +181,7 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-gi
             personService = personContext.personService,
             tilgangsstyringService = tilgangsstyringFakeGateway,
             dokdistGateway = dokdistFakeGateway,
+            navIdentClient = personContext.navIdentClient,
         ) {
             override val rammevedtakRepo = rammevedtakFakeRepo
             override val behandlingRepo = behandlingFakeRepo

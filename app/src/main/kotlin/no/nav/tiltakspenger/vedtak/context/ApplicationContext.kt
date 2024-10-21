@@ -70,6 +70,7 @@ open class ApplicationContext(
             tilgangsstyringService = personContext.tilgangsstyringService,
             dokdistGateway = dokumentContext.dokdistGateway,
             personService = personContext.personService,
+            navIdentClient = personContext.navIdentClient,
         )
     }
 }
