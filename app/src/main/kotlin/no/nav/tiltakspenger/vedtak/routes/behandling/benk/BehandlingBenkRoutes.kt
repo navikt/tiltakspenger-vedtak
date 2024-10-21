@@ -20,6 +20,7 @@ import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.auth2.TokenService
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLINGER_PATH
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
+import no.nav.tiltakspenger.vedtak.routes.behandling.toDTO
 import no.nav.tiltakspenger.vedtak.routes.correlationId
 import no.nav.tiltakspenger.vedtak.routes.withBody
 import no.nav.tiltakspenger.vedtak.routes.withSaksbehandler
@@ -98,9 +99,7 @@ fun Route.behandlingBenkRoutes(
             val behandlingId = BehandlingId.fromString(call.receive<BehandlingIdDTO>().id)
 
             val correlationId = call.correlationId()
-            behandlingService.taBehandling(behandlingId, saksbehandler, correlationId = correlationId)
-
-            val response = BehandlingIdDTO(behandlingId.toString())
+            val behandling = behandlingService.taBehandling(behandlingId, saksbehandler, correlationId = correlationId).toDTO()
 
             auditService.logMedBehandlingId(
                 behandlingId = behandlingId,
@@ -110,7 +109,7 @@ fun Route.behandlingBenkRoutes(
                 correlationId = correlationId,
             )
 
-            call.respond(status = HttpStatusCode.OK, response)
+            call.respond(status = HttpStatusCode.OK, behandling)
         }
     }
 }

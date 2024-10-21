@@ -14,7 +14,9 @@ import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.auth2.TokenService
+import no.nav.tiltakspenger.vedtak.routes.Standardfeil
 import no.nav.tiltakspenger.vedtak.routes.correlationId
+import no.nav.tiltakspenger.vedtak.routes.respond400BadRequest
 import no.nav.tiltakspenger.vedtak.routes.withSaksbehandler
 import no.nav.tiltakspenger.vedtak.routes.withSaksnummer
 
@@ -52,17 +54,14 @@ fun Route.sakRoutes(
         logger.debug { "Mottatt post-request på $SAK_PATH" }
         call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
             val fnr = Either.catch { Fnr.fromString(call.receive<FnrDTO>().fnr) }.getOrElse {
-                call.respond(message = "Fødselsnummeret er ugyldig", status = HttpStatusCode.BadRequest)
+                call.respond400BadRequest(Standardfeil.fantIkkeFnr())
                 return@withSaksbehandler
             }
             val correlationId = call.correlationId()
 
             sakService.hentForFnr(fnr, saksbehandler, correlationId).fold(
                 ifLeft = {
-                    call.respond(
-                        message = "Fant ikke sak på fødselsnummer",
-                        status = HttpStatusCode.BadRequest,
-                    )
+                    call.respond400BadRequest(Standardfeil.fantIkkeFnr())
                 },
                 ifRight = {
                     auditService.logMedBrukerId(

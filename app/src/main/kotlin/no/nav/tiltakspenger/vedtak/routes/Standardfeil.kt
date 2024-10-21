@@ -12,6 +12,11 @@ object Standardfeil {
         "fant_ikke_sak",
     )
 
+    fun fantIkkeMeldekort(): ErrorJson = ErrorJson(
+        "Fant ikke meldekort",
+        "fant_ikke_meldekort",
+    )
+
     fun måVæreBeslutter(): ErrorJson = ErrorJson(
         "Må ha beslutter-rolle.",
         "må_ha_beslutter_rolle",

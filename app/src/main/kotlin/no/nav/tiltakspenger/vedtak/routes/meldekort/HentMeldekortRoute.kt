@@ -10,8 +10,11 @@ import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.auth2.TokenService
+import no.nav.tiltakspenger.vedtak.routes.Standardfeil.fantIkkeMeldekort
+import no.nav.tiltakspenger.vedtak.routes.Standardfeil.fantIkkeSak
 import no.nav.tiltakspenger.vedtak.routes.correlationId
 import no.nav.tiltakspenger.vedtak.routes.meldekort.dto.toDTO
+import no.nav.tiltakspenger.vedtak.routes.respond404NotFound
 import no.nav.tiltakspenger.vedtak.routes.withMeldekortId
 import no.nav.tiltakspenger.vedtak.routes.withSakId
 import no.nav.tiltakspenger.vedtak.routes.withSaksbehandler
@@ -51,27 +54,31 @@ fun Route.hentMeldekortRoute(
     get("/sak/{sakId}/meldekort/{meldekortId}") {
         logger.debug { "Motatt get-request på /sak/{sakId}/meldekort/{meldekortId}" }
         call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
-            call.withMeldekortId { meldekortId ->
-                val correlationId = call.correlationId()
-                // TODO post-mvp jah: Det skal holde å hente saken. Meldekortet kan hentes fra saken.
-                val meldekort = hentMeldekortService.hentForMeldekortId(
-                    meldekortId = meldekortId,
-                    saksbehandler = saksbehandler,
-                    correlationId = correlationId,
-                )
-                checkNotNull(meldekort) { "Meldekort med id $meldekortId eksisterer ikke i databasen" }
-                val sak = sakService.hentForSakId(meldekort.sakId, saksbehandler, correlationId = correlationId)
-                checkNotNull(sak) { "Sak med saksId ${meldekort.sakId} fra meldekort med iden $meldekortId finnes ikke." }
+            call.withSakId { sakId ->
+                call.withMeldekortId { meldekortId ->
+                    val correlationId = call.correlationId()
 
-                auditService.logMedMeldekortId(
-                    meldekortId = meldekortId,
-                    navIdent = saksbehandler.navIdent,
-                    action = AuditLogEvent.Action.ACCESS,
-                    contextMessage = "Henter meldekort",
-                    correlationId = correlationId,
-                )
-                // TODO pre-mvp: Her blir det mer riktig og bruke den totale perioden det skal meldes for.
-                call.respond(status = HttpStatusCode.OK, message = meldekort.toDTO(sak.vedtaksperiode!!))
+                    val sak = sakService.hentForSakId(sakId, saksbehandler, correlationId = correlationId)
+                    if (sak == null) {
+                        call.respond404NotFound(fantIkkeSak())
+                        return@withMeldekortId
+                    }
+
+                    val meldekort = sak.hentMeldekort(meldekortId)
+                    if (meldekort == null) {
+                        call.respond404NotFound(fantIkkeMeldekort())
+                        return@withMeldekortId
+                    }
+                    auditService.logMedMeldekortId(
+                        meldekortId = meldekortId,
+                        navIdent = saksbehandler.navIdent,
+                        action = AuditLogEvent.Action.ACCESS,
+                        contextMessage = "Henter meldekort",
+                        correlationId = correlationId,
+                    )
+                    // TODO pre-mvp: Her blir det mer riktig og bruke den totale perioden det skal meldes for.
+                    call.respond(status = HttpStatusCode.OK, message = meldekort.toDTO(sak.vedtaksperiode!!))
+                }
             }
         }
     }
