@@ -2,12 +2,12 @@ package no.nav.tiltakspenger.vedtak.clients.person
 
 import arrow.core.Either
 import arrow.core.flatten
-import arrow.core.left
+import arrow.core.getOrElse
 import arrow.core.right
 import kotlinx.coroutines.future.await
 import mu.KotlinLogging
-import no.nav.tiltakspenger.felles.KunneIkkeHenteNavnForNavIdent
 import no.nav.tiltakspenger.felles.NavIdentClient
+import no.nav.tiltakspenger.felles.exceptions.IkkeLoggDenneException
 import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.vedtak.db.deserialize
@@ -44,30 +44,21 @@ class MicrosoftGraphApiClient(
             .followRedirects(java.net.http.HttpClient.Redirect.NEVER)
             .build()
 
-    private fun KunneIkkeHenteNavnForNavIdent.mapError(navIdent: String): Nothing {
-        when (this) {
-            KunneIkkeHenteNavnForNavIdent.DeserialiseringAvResponsFeilet -> throw RuntimeException("Feil ved deserialisering av response fra microsoftGraphApi for saksbehandler $navIdent")
-            KunneIkkeHenteNavnForNavIdent.FantIkkeBrukerForNavIdent -> throw RuntimeException("Fant ikke bruker for navident: $navIdent")
-            KunneIkkeHenteNavnForNavIdent.FeilVedHentingAvOnBehalfOfToken -> throw RuntimeException("Feil ved henting av token")
-            KunneIkkeHenteNavnForNavIdent.KallTilMicrosoftGraphApiFeilet -> throw RuntimeException("Kall til microsoftGraphApi feilet")
+    /**
+     * Denne returnerer navnet til saksbehandler eller kaster runtimeException om noe feiler
+     */
+    override suspend fun hentNavnForNavIdent(navIdent: String): String {
+        return hentBrukerinformasjonForNavIdent(navIdent).let { brukerInfo ->
+            val saksbehandlersNavn = brukerInfo.displayName.trim()
+            if (saksbehandlersNavn.isBlank()) {
+                throw RuntimeException("Fant ikke saksbehandlerens navn i microsoftGraphApi $navIdent. Responsen var blank.")
+            }
+            // Todo Kew: Er dette formatet "[Etternavn], [Fornavn]"? Isåfall bør man snu det til "[Fornavn] [Etternavn]"
+            saksbehandlersNavn
         }
     }
 
-    override suspend fun hentNavnForNavIdent(navIdent: String): String {
-        return hentBrukerinformasjonForNavIdent(navIdent).fold(
-            ifLeft = { it.mapError(navIdent) },
-            ifRight = { brukerInfo ->
-                val saksbehandlersNavn = brukerInfo.displayName.trim()
-                if (saksbehandlersNavn.isBlank()) {
-                    throw RuntimeException("Fant ikke saksbehandlerens navn i microsoftGraphApi $navIdent")
-                }
-                // Todo Kew: Er dette formatet "[Etternavn], [Fornavn]"? Isåfall bør man snu det til "[Fornavn] [Etternavn]"
-                saksbehandlersNavn
-            },
-        )
-    }
-
-    private suspend fun hentBrukerinformasjonForNavIdent(navIdent: String): Either<KunneIkkeHenteNavnForNavIdent, MicrosoftGraphResponse> {
+    private suspend fun hentBrukerinformasjonForNavIdent(navIdent: String): MicrosoftGraphResponse {
         return Either.catch {
             val uri = uri(navIdent)
             val request = createRequest(uri)
@@ -79,16 +70,16 @@ class MicrosoftGraphApiClient(
                     if (response.value.isNotEmpty()) {
                         sikkerlogg.error("Fant ingen eller flere brukere for navIdent $navIdent: ${response.value}")
                     }
-                    KunneIkkeHenteNavnForNavIdent.FantIkkeBrukerForNavIdent.left()
+                    throw RuntimeException("Fant ikke bruker for navident: $navIdent")
                 } else {
                     response.value.first().right()
                 }
             }
-        }.mapLeft {
+        }.flatten().getOrElse {
             log.error(RuntimeException("Genererer stacktrace for enklere debug")) { "Ukjent feil mot Microsoft Graph Api for bruker $navIdent. Se sikker logg for mer context" }
             sikkerlogg.error(it) { "Ukjent feil mot Microsoft Graph Api for bruker $navIdent: ${it.message}" }
-            throw it
-        }.flatten()
+            throw IkkeLoggDenneException("Denne er logget alt, trenger ikke spamme loggen mer enn nødvendig")
+        }
     }
 
     private suspend fun createRequest(
