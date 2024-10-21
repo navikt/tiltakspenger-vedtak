@@ -50,42 +50,45 @@ class UtbetalingHttpClient(
         correlationId: CorrelationId,
     ): Either<KunneIkkeUtbetale, SendtUtbetaling> =
         withContext(Dispatchers.IO) {
-            Either
-                .catch {
-                    val jsonPayload = vedtak.toDTO(forrigeUtbetalingJson)
-                    val request = createRequest(correlationId, jsonPayload)
+            Either.catch {
+                val token = getToken()
+                val jsonPayload = vedtak.toDTO(forrigeUtbetalingJson)
+                val request = createRequest(correlationId, jsonPayload, token.token)
 
-                    val httpResponse = client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).await()
-                    val jsonResponse = httpResponse.body()
-                    mapStatus(
-                        status = httpResponse.statusCode(),
-                        vedtak = vedtak,
-                        request = jsonPayload,
-                        response = jsonResponse,
-                    )
-                }.mapLeft {
-                    // Either.catch slipper igjennom CancellationException som er ønskelig.
-                    log.error(RuntimeException("Trigger stacktrace for enklere debug.")) { "Ukjent feil ved utsjekk for utbetalingsvedtak ${vedtak.id}. Saksnummer ${vedtak.saksnummer}, sakId: ${vedtak.sakId}" }
-                    sikkerlogg.error(it) { "Ukjent feil ved utsjekk for utbetalingsvedtak ${vedtak.id}. Saksnummer ${vedtak.saksnummer}, sakId: ${vedtak.sakId}" }
-                    KunneIkkeUtbetale
-                }.flatten()
+                val httpResponse = client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).await()
+                val jsonResponse = httpResponse.body()
+                mapStatus(
+                    status = httpResponse.statusCode(),
+                    vedtak = vedtak,
+                    request = jsonPayload,
+                    response = jsonResponse,
+                    token = token,
+                )
+            }.mapLeft {
+                // Either.catch slipper igjennom CancellationException som er ønskelig.
+                log.error(RuntimeException("Trigger stacktrace for enklere debug.")) { "Ukjent feil ved utsjekk for utbetalingsvedtak ${vedtak.id}. Saksnummer ${vedtak.saksnummer}, sakId: ${vedtak.sakId}" }
+                sikkerlogg.error(it) { "Ukjent feil ved utsjekk for utbetalingsvedtak ${vedtak.id}. Saksnummer ${vedtak.saksnummer}, sakId: ${vedtak.sakId}" }
+                KunneIkkeUtbetale
+            }.flatten()
         }
 
     private suspend fun createRequest(
         correlationId: CorrelationId,
         jsonPayload: String,
-    ): HttpRequest? =
-        HttpRequest
+        token: String,
+    ): HttpRequest? {
+        return HttpRequest
             .newBuilder()
             .uri(uri)
             .timeout(timeout.toJavaDuration())
-            .header("Authorization", "Bearer ${getToken().value}")
+            .header("Authorization", "Bearer $token")
             .header("Accept", "application/json")
             .header("Content-Type", "application/json")
             // Dette er kun for vår del, open telemetry vil kunne være et alternativ. Slack tråd: https://nav-it.slack.com/archives/C06SJTR2X3L/p1724072054018589
             .header("Nav-Call-Id", correlationId.value)
             .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
             .build()
+    }
 }
 
 private fun mapStatus(
@@ -93,6 +96,7 @@ private fun mapStatus(
     vedtak: Utbetalingsvedtak,
     request: String,
     response: String,
+    token: AccessToken,
 ): Either<KunneIkkeUtbetale, SendtUtbetaling> {
     when (status) {
         202 -> {
@@ -118,12 +122,13 @@ private fun mapStatus(
             return KunneIkkeUtbetale.left()
         }
 
-        403 -> {
+        401, 403 -> {
+            token.invaliderCache()
             log.error(RuntimeException("Trigger stacktrace for enklere debug.")) {
-                "403 Forbidden fra helved utsjekk, for utbetalingsvedtak ${vedtak.id}. Denne vil bli prøvd på nytt. Response: $response. Se sikkerlogg for mer kontekst."
+                "$status fra helved utsjekk, for utbetalingsvedtak ${vedtak.id}. Denne vil bli prøvd på nytt. Response: $response. Se sikkerlogg for mer kontekst."
             }
             sikkerlogg.error(RuntimeException("Trigger stacktrace for enklere debug.")) {
-                "403 Forbidden fra helved utsjekk, for utbetalingsvedtak ${vedtak.id}. Denne vil bli prøvd på nytt. Response: $response. Request = $request"
+                "$status fra helved utsjekk, for utbetalingsvedtak ${vedtak.id}. Denne vil bli prøvd på nytt. Response: $response. Request = $request"
             }
             return KunneIkkeUtbetale.left()
         }

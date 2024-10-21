@@ -44,7 +44,7 @@ class MicrosoftGraphApiClient(
     private fun uri(navIdent: String): URI {
         val urlBuilder = URLBuilder().apply {
             protocol = URLProtocol.HTTPS
-            host = "$baseUrl"
+            host = baseUrl
             encodedPath = "/users"
             parameters.append("\$select", "displayName")
             parameters.append("\$filter", "onPremisesSamAccountName eq '$navIdent'")
@@ -76,11 +76,18 @@ class MicrosoftGraphApiClient(
 
     private suspend fun hentBrukerinformasjonForNavIdent(navIdent: String): MicrosoftGraphResponse {
         return Either.catch {
+            val token = getToken()
             val uri = uri(navIdent)
-            val request = createRequest(uri)
+            val request = createRequest(uri, token.token)
             val httpResponse = client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).await()
-            sikkerlogg.debug { "Logger response fra microsoftGraphApi for å debugge -> ${httpResponse.statusCode()} - ${httpResponse.body()}" }
-            val jsonResponse = httpResponse.body().let { deserialize<ListOfMicrosoftGraphResponse>(it) }
+            val status = httpResponse.statusCode()
+            val body = httpResponse.body()
+            sikkerlogg.debug { "Logger response fra microsoftGraphApi for å debugge -> $status - $body" }
+            if (status == 401 || status == 403) {
+                log.error(RuntimeException("Trigger stacktrace for debug.")) { "Invaliderer cache for systemtoken mot PDL. status: $status." }
+                token.invaliderCache()
+            }
+            val jsonResponse = deserialize<ListOfMicrosoftGraphResponse>(body)
             jsonResponse.let { response ->
                 if (response.value.size != 1) {
                     log.error("Fant ingen eller flere brukere for navIdent $navIdent: ${response.value.size}. Se sikker logg dersom vi fant flere.")
@@ -99,15 +106,16 @@ class MicrosoftGraphApiClient(
         }
     }
 
-    private suspend fun createRequest(
+    private fun createRequest(
         uri: URI,
+        token: String,
     ): HttpRequest {
         return HttpRequest
             .newBuilder()
             .uri(uri)
             .timeout(timeout.toJavaDuration())
             .header("Accept", "application/json")
-            .header("Authorization", "Bearer ${getToken().value}")
+            .header("Authorization", "Bearer $token")
             .header("ConsistencyLevel", "eventual")
             .GET()
             .build()

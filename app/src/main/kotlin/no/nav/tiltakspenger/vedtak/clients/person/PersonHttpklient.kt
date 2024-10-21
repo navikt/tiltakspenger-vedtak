@@ -10,16 +10,16 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import no.nav.tiltakspenger.felles.sikkerlogg
+import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.personklient.pdl.FellesPersonklient
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.EnkelPerson
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.ports.PersonGateway
-import no.nav.tiltakspenger.vedtak.auth.AzureTokenProvider
 
 class PersonHttpklient(
     endepunkt: String,
-    private val azureTokenProvider: AzureTokenProvider,
+    private val getToken: suspend () -> AccessToken,
 ) : PersonGateway {
     private val personklient =
         FellesPersonklient.create(
@@ -39,15 +39,13 @@ class PersonHttpklient(
             .build()
 
     /**
-     * Benytter seg av [AzureTokenProvider] for å hente token for å hente personopplysninger vha. systembruker.
      * TODO post-mvp jah: Dersom vi ønsker og sende saksbehandler sitt OBO-token, kan vi lage en egen metode for dette.
      */
     override suspend fun hentPerson(fnr: Fnr): PersonopplysningerSøker {
         return withContext(Dispatchers.IO) {
-            val token = azureTokenProvider::getToken
             val body = objectMapper.writeValueAsString(hentPersonQuery(fnr))
             personklient
-                .hentPerson(fnr, token(), body)
+                .hentPerson(fnr, getToken(), body)
                 .map { mapPersonopplysninger(it, fnr) }
                 .getOrElse { it.mapError() }
         }
@@ -55,9 +53,8 @@ class PersonHttpklient(
 
     override suspend fun hentEnkelPerson(fnr: Fnr): EnkelPerson {
         return withContext(Dispatchers.IO) {
-            val token = azureTokenProvider::getToken
             val body = objectMapper.writeValueAsString(hentEnkelPersonQuery(fnr))
-            personklient.hentPerson(fnr, token(), body).map { it.toEnkelPerson(fnr) }.getOrElse { it.mapError() }
+            personklient.hentPerson(fnr, getToken(), body).map { it.toEnkelPerson(fnr) }.getOrElse { it.mapError() }
         }
     }
 }

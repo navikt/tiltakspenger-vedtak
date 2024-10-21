@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.common
 
 import no.nav.tiltakspenger.fakes.clients.DokdistFakeGateway
+import no.nav.tiltakspenger.fakes.clients.EntraIdSystemtokenFakeClient
 import no.nav.tiltakspenger.fakes.clients.GenererFakeMeldekortPdfGateway
 import no.nav.tiltakspenger.fakes.clients.GenererFakeVedtaksbrevGateway
 import no.nav.tiltakspenger.fakes.clients.JournalførFakeMeldekortGateway
@@ -106,13 +107,15 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-gi
 
     private val personFakeRepo = PersonFakeRepo(sakFakeRepo, søknadFakeRepo, meldekortFakeRepo)
 
+    override val entraIdSystemtokenClient = EntraIdSystemtokenFakeClient()
+
     override val personContext =
-        object : PersonContext(sessionFactory) {
+        object : PersonContext(sessionFactory, entraIdSystemtokenClient) {
             override val personGateway = personGatewayFake
             override val personRepo = personFakeRepo
         }
     override val dokumentContext by lazy {
-        object : DokumentContext() {
+        object : DokumentContext(entraIdSystemtokenClient) {
             override val journalførMeldekortGateway = journalførFakeMeldekortGateway
             override val journalførVedtaksbrevGateway = journalførFakeVedtaksbrevGateway
             override val genererMeldekortPdfGateway = genererFakeMeldekortPdfGateway
@@ -134,7 +137,7 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-gi
     }
 
     override val tiltakContext by lazy {
-        object : TiltakContext() {
+        object : TiltakContext(entraIdSystemtokenClient) {
             override val tiltakGateway = tiltakGatewayFake
         }
     }
@@ -194,6 +197,7 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-gi
             genererMeldekortPdfGateway = genererFakeMeldekortPdfGateway,
             journalførMeldekortGateway = journalførFakeMeldekortGateway,
             personService = personContext.personService,
+            entraIdSystemtokenClient = entraIdSystemtokenClient,
         ) {
             override val utbetalingGateway = utbetalingGatewayFake
             override val utbetalingsvedtakRepo = utbetalingsvedtakFakeRepo
