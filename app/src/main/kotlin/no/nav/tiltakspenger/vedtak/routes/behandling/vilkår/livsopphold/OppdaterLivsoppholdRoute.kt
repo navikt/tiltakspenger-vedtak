@@ -1,8 +1,6 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.livsopphold
 
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.call
-import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
@@ -14,18 +12,21 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLiv
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
+import no.nav.tiltakspenger.vedtak.auth2.TokenService
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.correlationId
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
-import no.nav.tiltakspenger.vedtak.routes.parameter
-import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
+import no.nav.tiltakspenger.vedtak.routes.withBehandlingId
+import no.nav.tiltakspenger.vedtak.routes.withBody
+import no.nav.tiltakspenger.vedtak.routes.withSaksbehandler
 
 fun Route.oppdaterLivsoppholdRoute(
-    innloggetSaksbehandlerProvider: InnloggetSaksbehandlerProvider,
     livsoppholdVilkårService: LivsoppholdVilkårService,
     auditService: AuditService,
+    tokenService: TokenService,
 ) {
     val logger = KotlinLogging.logger {}
+
     data class YtelseForPeriode(
         val periode: PeriodeDTO,
         val harYtelse: Boolean,
@@ -54,37 +55,37 @@ fun Route.oppdaterLivsoppholdRoute(
 
     post("$BEHANDLING_PATH/{behandlingId}/vilkar/livsopphold") {
         logger.debug("Mottatt post-request på '$BEHANDLING_PATH/{behandlingId}/vilkar/livsopphold' - oppdaterer vilkår om livsoppholdytelser")
+        call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
+            call.withBehandlingId { behandlingId ->
+                call.withBody<Body> { body ->
+                    val correlationId = call.correlationId()
+                    livsoppholdVilkårService
+                        .leggTilSaksopplysning(
+                            body.toCommand(behandlingId, saksbehandler, correlationId),
+                        ).fold(
+                            {
+                                call.respond(
+                                    status = HttpStatusCode.BadRequest,
+                                    message = """feilmelding": "Perioden til saksopplysningen er forskjellig fra vurderingsperioden""",
+                                )
+                            },
+                            {
+                                auditService.logMedBehandlingId(
+                                    behandlingId = behandlingId,
+                                    navIdent = saksbehandler.navIdent,
+                                    action = AuditLogEvent.Action.UPDATE,
+                                    contextMessage = "Oppdaterer data om vilkåret livsoppholdytekser",
+                                    correlationId = correlationId,
+                                )
 
-        val saksbehandler: Saksbehandler = innloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(call)
-        val behandlingId = BehandlingId.fromString(call.parameter("behandlingId"))
-        val body = call.receive<Body>()
-
-        livsoppholdVilkårService
-            .leggTilSaksopplysning(
-                body.toCommand(behandlingId, saksbehandler, call.correlationId()),
-            ).fold({
-                call.respond(
-                    status = HttpStatusCode.BadRequest,
-                    message =
-                    """
-                        {
-                            "feilmelding": "Perioden til saksopplysningen er forskjellig fra vurderingsperioden"
-                        }
-                    """.trimIndent(),
-                )
-            }, {
-                auditService.logMedBehandlingId(
-                    behandlingId = behandlingId,
-                    navIdent = saksbehandler.navIdent,
-                    action = AuditLogEvent.Action.UPDATE,
-                    contextMessage = "Oppdaterer data om vilkåret livsoppholdytekser",
-                    correlationId = call.correlationId(),
-                )
-
-                call.respond(
-                    status = HttpStatusCode.Created,
-                    message = it.vilkårssett.livsoppholdVilkår.toDTO(),
-                )
-            })
+                                call.respond(
+                                    status = HttpStatusCode.Created,
+                                    message = it.vilkårssett.livsoppholdVilkår.toDTO(),
+                                )
+                            },
+                        )
+                }
+            }
+        }
     }
 }

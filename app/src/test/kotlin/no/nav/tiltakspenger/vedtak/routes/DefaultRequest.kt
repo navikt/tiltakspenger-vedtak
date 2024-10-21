@@ -9,12 +9,12 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.append
 import io.ktor.server.testing.ApplicationTestBuilder
-import no.nav.tiltakspenger.common.JwtAndJwkGenerator
+import no.nav.tiltakspenger.common.JwtGenerator
 
 suspend fun ApplicationTestBuilder.defaultRequest(
     method: HttpMethod,
     uri: String,
-    jwt: String? = JwtAndJwkGenerator.createJwkJwtPairForSaksbehandler().second,
+    jwt: String? = JwtGenerator().createJwtForSaksbehandler(),
     setup: HttpRequestBuilder.() -> Unit = {},
 ): HttpResponse =
     this.client.request(uri) {

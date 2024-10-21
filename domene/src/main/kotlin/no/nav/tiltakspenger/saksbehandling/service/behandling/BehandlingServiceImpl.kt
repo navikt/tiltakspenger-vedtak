@@ -159,7 +159,7 @@ class BehandlingServiceImpl(
         periode: Periode,
         systembruker: Systembruker,
     ): List<Behandling> {
-        require(systembruker.roller.contains(Rolle.HENTE_DATA)) { "Systembruker mangler rollen HENTE_DATA. Systembrukers roller: ${systembruker.roller}" }
+        require(systembruker.roller.harRolle(Rolle.HENTE_DATA)) { "Systembruker mangler rollen HENTE_DATA. Systembrukers roller: ${systembruker.roller}" }
         return førstegangsbehandlingRepo
             .hentAlleForIdent(fnr)
             .filter { behandling -> !behandling.erIverksatt() }

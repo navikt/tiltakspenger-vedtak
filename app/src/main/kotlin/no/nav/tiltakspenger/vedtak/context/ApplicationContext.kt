@@ -1,6 +1,9 @@
 package no.nav.tiltakspenger.vedtak.context
 
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
+import no.nav.tiltakspenger.vedtak.Configuration
+import no.nav.tiltakspenger.vedtak.auth2.MicrosoftEntraIdTokenService
+import no.nav.tiltakspenger.vedtak.auth2.TokenService
 
 /**
  * Inneholder alle klienter, repoer og servicer.
@@ -11,6 +14,15 @@ open class ApplicationContext(
     val sessionFactory: SessionFactory,
     private val gitHash: String,
 ) {
+    open val tokenService: TokenService by lazy {
+        val tokenVerificationToken = Configuration.TokenVerificationConfig()
+        MicrosoftEntraIdTokenService(
+            url = tokenVerificationToken.jwksUri,
+            issuer = tokenVerificationToken.issuer,
+            clientId = tokenVerificationToken.clientId,
+            autoriserteBrukerroller = tokenVerificationToken.roles,
+        )
+    }
     open val personContext by lazy { PersonContext(sessionFactory) }
     open val dokumentContext by lazy { DokumentContext() }
     open val statistikkContext by lazy { StatistikkContext(sessionFactory) }

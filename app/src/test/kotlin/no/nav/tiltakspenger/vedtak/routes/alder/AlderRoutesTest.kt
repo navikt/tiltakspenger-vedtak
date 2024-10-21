@@ -12,8 +12,6 @@ import io.ktor.http.path
 import io.ktor.server.routing.routing
 import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
-import io.mockk.every
-import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.common.TestApplicationContext
 import no.nav.tiltakspenger.felles.Saksbehandler
@@ -30,11 +28,9 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.alder.AlderVilkårD
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.alder.alderRoutes
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
-import no.nav.tiltakspenger.vedtak.tilgang.InnloggetSaksbehandlerProvider
 import org.junit.jupiter.api.Test
 
 class AlderRoutesTest {
-    private val mockInnloggetSaksbehandlerProvider = mockk<InnloggetSaksbehandlerProvider>()
 
     private val objectMapper: ObjectMapper = defaultObjectMapper()
     private val saksbehandler =
@@ -47,8 +43,6 @@ class AlderRoutesTest {
 
     @Test
     fun `test at endepunkt for henting og lagring av alder fungerer`() = runTest {
-        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
-
         with(TestApplicationContext()) {
             val tac = this
             val sak = this.førstegangsbehandlingUavklart()
@@ -59,9 +53,9 @@ class AlderRoutesTest {
                     jacksonSerialization()
                     routing {
                         alderRoutes(
-                            innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
                             behandlingService = tac.førstegangsbehandlingContext.behandlingService,
                             auditService = tac.personContext.auditService,
+                            tokenService = tac.tokenService,
                         )
                     }
                 }
@@ -73,6 +67,7 @@ class AlderRoutesTest {
                         protocol = URLProtocol.HTTPS
                         path("$BEHANDLING_PATH/$behandlingId/vilkar/alder")
                     },
+                    jwt = tac.jwtGenerator.createJwtForSaksbehandler(),
                 ).apply {
                     status shouldBe HttpStatusCode.OK
                     val alderVilkår = objectMapper.readValue<AlderVilkårDTO>(bodyAsText())
@@ -84,8 +79,6 @@ class AlderRoutesTest {
 
     @Test
     fun `test at søknaden blir gjenspeilet i alder vilkåret`() = runTest {
-        every { mockInnloggetSaksbehandlerProvider.krevInnloggetSaksbehandler(any()) } returns saksbehandler
-
         with(TestApplicationContext()) {
             val tac = this
             val sak = this.førstegangsbehandlingUavklart(fødselsdato = 5.januar(2000))
@@ -96,7 +89,7 @@ class AlderRoutesTest {
                     jacksonSerialization()
                     routing {
                         alderRoutes(
-                            innloggetSaksbehandlerProvider = mockInnloggetSaksbehandlerProvider,
+                            tokenService = tac.tokenService,
                             behandlingService = tac.førstegangsbehandlingContext.behandlingService,
                             auditService = tac.personContext.auditService,
                         )
@@ -110,6 +103,7 @@ class AlderRoutesTest {
                         protocol = URLProtocol.HTTPS
                         path("$BEHANDLING_PATH/$behandlingId/vilkar/alder")
                     },
+                    jwt = tac.jwtGenerator.createJwtForSaksbehandler(),
                 ).apply {
                     status shouldBe HttpStatusCode.OK
                     val alderVilkår = objectMapper.readValue<AlderVilkårDTO>(bodyAsText())

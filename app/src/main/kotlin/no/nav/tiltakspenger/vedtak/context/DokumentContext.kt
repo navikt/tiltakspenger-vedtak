@@ -11,7 +11,6 @@ import no.nav.tiltakspenger.vedtak.clients.dokdist.DokdistHttpClient
 import no.nav.tiltakspenger.vedtak.clients.joark.JoarkHttpClient
 import no.nav.tiltakspenger.vedtak.clients.pdfgen.PdfgenHttpClient
 
-@Suppress("unused")
 open class DokumentContext {
     private val tokenProviderDokdist by lazy { AzureTokenProvider(config = Configuration.oauthConfigDokdist()) }
     private val joarkClient by lazy {

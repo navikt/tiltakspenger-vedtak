@@ -5,6 +5,7 @@ import no.nav.tiltakspenger.fakes.clients.GenererFakeMeldekortPdfGateway
 import no.nav.tiltakspenger.fakes.clients.GenererFakeVedtaksbrevGateway
 import no.nav.tiltakspenger.fakes.clients.JournalførFakeMeldekortGateway
 import no.nav.tiltakspenger.fakes.clients.JournalførFakeVedtaksbrevGateway
+import no.nav.tiltakspenger.fakes.clients.JwkFakeProvider
 import no.nav.tiltakspenger.fakes.clients.PersonFakeGateway
 import no.nav.tiltakspenger.fakes.clients.TilgangsstyringFakeGateway
 import no.nav.tiltakspenger.fakes.clients.TiltakFakeGateway
@@ -20,10 +21,14 @@ import no.nav.tiltakspenger.fakes.repos.StatistikkStønadFakeRepo
 import no.nav.tiltakspenger.fakes.repos.SøknadFakeRepo
 import no.nav.tiltakspenger.fakes.repos.UtbetalingsvedtakFakeRepo
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.Rolle
 import no.nav.tiltakspenger.libs.common.TestSessionFactory
 import no.nav.tiltakspenger.libs.person.AdressebeskyttelseGradering
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
+import no.nav.tiltakspenger.vedtak.AdRolle
+import no.nav.tiltakspenger.vedtak.auth2.MicrosoftEntraIdTokenService
+import no.nav.tiltakspenger.vedtak.auth2.TokenService
 import no.nav.tiltakspenger.vedtak.context.ApplicationContext
 import no.nav.tiltakspenger.vedtak.context.DokumentContext
 import no.nav.tiltakspenger.vedtak.context.FørstegangsbehandlingContext
@@ -61,13 +66,28 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-gi
     private val journalførFakeVedtaksbrevGateway = JournalførFakeVedtaksbrevGateway(journalpostIdGenerator)
     private val dokdistFakeGateway = DokdistFakeGateway(distribusjonIdGenerator)
 
+    val jwtGenerator = JwtGenerator()
+
+    override val tokenService: TokenService = MicrosoftEntraIdTokenService(
+        url = "unused",
+        issuer = "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0",
+        clientId = "c7adbfbb-1b1e-41f6-9b7a-af9627c04998",
+        autoriserteBrukerroller = Rolle.entries.map { AdRolle(it, "ROLE_${it.name}") },
+        acceptIssuedAtLeeway = 0,
+        acceptNotBeforeLeeway = 0,
+        provider = JwkFakeProvider(jwtGenerator.jwk),
+    )
+
     fun leggTilPerson(
         fnr: Fnr,
         personopplysningerForBruker: PersonopplysningerSøker,
         tiltak: Tiltak,
     ) {
         personGatewayFake.leggTilPersonopplysning(fnr = fnr, personopplysninger = personopplysningerForBruker)
-        tilgangsstyringFakeGateway.lagre(fnr = fnr, adressebeskyttelseGradering = listOf(AdressebeskyttelseGradering.UGRADERT))
+        tilgangsstyringFakeGateway.lagre(
+            fnr = fnr,
+            adressebeskyttelseGradering = listOf(AdressebeskyttelseGradering.UGRADERT),
+        )
         tiltakGatewayFake.lagre(fnr = fnr, tiltak = tiltak)
     }
 

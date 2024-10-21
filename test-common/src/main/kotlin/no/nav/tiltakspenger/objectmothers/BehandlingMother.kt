@@ -5,6 +5,7 @@ import kotlinx.coroutines.runBlocking
 import no.nav.tiltakspenger.common.TestApplicationContext
 import no.nav.tiltakspenger.felles.AttesteringId
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.Systembruker
 import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
 import no.nav.tiltakspenger.felles.exceptions.StøtterIkkeUtfallException
@@ -248,8 +249,9 @@ fun TestApplicationContext.nySøknad(
             intro = if (deltarPåIntroduksjonsprogram) Søknad.PeriodeSpm.Ja(periode) else Søknad.PeriodeSpm.Nei,
             kvp = if (deltarPåKvp) Søknad.PeriodeSpm.Ja(periode) else Søknad.PeriodeSpm.Nei,
         ),
+    systembruker: Systembruker = ObjectMother.systembrukerLageHendelser(),
 ): Søknad {
-    this.søknadContext.søknadService.nySøknad(søknad)
+    this.søknadContext.søknadService.nySøknad(søknad, systembruker)
     this.leggTilPerson(fnr, personopplysningerForBrukerFraPdl, tiltak)
     return søknad
 }
@@ -309,8 +311,10 @@ suspend fun TestApplicationContext.førstegangsbehandlingUavklart(
                     when (it.underliggende) {
                         is FantIkkeTiltak ->
                             throw IllegalStateException("Fant ikke igjen tiltaket det er søkt på i tiltak knyttet til brukeren")
+
                         StøtterIkkeBarnetillegg ->
                             throw IkkeImplementertException("Vi støtter ikke at brukeren har barn i PDL eller manuelle barn.")
+
                         is StøtterKunInnvilgelse -> throw StøtterIkkeUtfallException("Vi støtter ikke å opprette en behandling som vil føre til delvis innvilgelse eller avslag.")
                         else -> throw IkkeImplementertException("Kunne ikke starte førstegangsbehandling")
                     }
@@ -343,7 +347,11 @@ suspend fun TestApplicationContext.førstegangsbehandlingVilkårsvurdert(
             correlationId = correlationId,
         ),
     )
-    return this.sakContext.sakService.hentForSakId(uavklart.id, saksbehandler, correlationId = CorrelationId.generate())!!
+    return this.sakContext.sakService.hentForSakId(
+        uavklart.id,
+        saksbehandler,
+        correlationId = CorrelationId.generate(),
+    )!!
 }
 
 suspend fun TestApplicationContext.førstegangsbehandlingTilBeslutter(
@@ -363,7 +371,11 @@ suspend fun TestApplicationContext.førstegangsbehandlingTilBeslutter(
         saksbehandler,
         correlationId = CorrelationId.generate(),
     )
-    return this.sakContext.sakService.hentForSakId(vilkårsvurdert.id, saksbehandler, correlationId = CorrelationId.generate())!!
+    return this.sakContext.sakService.hentForSakId(
+        vilkårsvurdert.id,
+        saksbehandler,
+        correlationId = CorrelationId.generate(),
+    )!!
 }
 
 suspend fun TestApplicationContext.førstegangsbehandlingUnderBeslutning(
@@ -383,7 +395,11 @@ suspend fun TestApplicationContext.førstegangsbehandlingUnderBeslutning(
         beslutter,
         correlationId = CorrelationId.generate(),
     )
-    return this.sakContext.sakService.hentForSakId(vilkårsvurdert.id, saksbehandler, correlationId = CorrelationId.generate())!!
+    return this.sakContext.sakService.hentForSakId(
+        vilkårsvurdert.id,
+        saksbehandler,
+        correlationId = CorrelationId.generate(),
+    )!!
 }
 
 suspend fun TestApplicationContext.førstegangsbehandlingIverksatt(
@@ -407,7 +423,11 @@ suspend fun TestApplicationContext.førstegangsbehandlingIverksatt(
             correlationId = CorrelationId.generate(),
         )
     }
-    return this.sakContext.sakService.hentForSakId(underBeslutning.id, saksbehandler, correlationId = CorrelationId.generate())!!
+    return this.sakContext.sakService.hentForSakId(
+        underBeslutning.id,
+        saksbehandler,
+        correlationId = CorrelationId.generate(),
+    )!!
 }
 
 suspend fun TestApplicationContext.meldekortTilBeslutter(

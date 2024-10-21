@@ -13,12 +13,10 @@ import no.nav.tiltakspenger.libs.jobber.RunCheckFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
 import no.nav.tiltakspenger.vedtak.Configuration.httpPort
-import no.nav.tiltakspenger.vedtak.auth2.MicrosoftEntraIdTokenService
 import no.nav.tiltakspenger.vedtak.context.ApplicationContext
 import no.nav.tiltakspenger.vedtak.db.DataSourceSetup
 import no.nav.tiltakspenger.vedtak.jobber.TaskExecutor
 import no.nav.tiltakspenger.vedtak.routes.vedtakApi
-import no.nav.tiltakspenger.vedtak.tilgang.JWTInnloggetSaksbehandlerProvider
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
@@ -36,14 +34,6 @@ fun main() {
     val sessionCounter = SessionCounter(log)
     val sessionFactory = PostgresSessionFactory(dataSource, sessionCounter)
     val applicationContext = ApplicationContext(sessionFactory, Configuration.gitHash())
-    val tokenVerificationToken = Configuration.TokenVerificationConfig()
-    val innloggetSaksbehandlerProvider = JWTInnloggetSaksbehandlerProvider()
-    val tokenService = MicrosoftEntraIdTokenService(
-        url = tokenVerificationToken.jwksUri,
-        issuer = tokenVerificationToken.issuer,
-        clientId = tokenVerificationToken.clientId,
-        autoriserteBrukerroller = tokenVerificationToken.roles,
-    )
 
     val runCheckFactory =
         if (Configuration.isNais()) {
@@ -82,10 +72,7 @@ fun main() {
         port = httpPort(),
         module = {
             vedtakApi(
-                config = tokenVerificationToken,
-                innloggetSaksbehandlerProvider = innloggetSaksbehandlerProvider,
                 applicationContext = applicationContext,
-                tokenService = tokenService,
             )
         },
     ).start(wait = true)

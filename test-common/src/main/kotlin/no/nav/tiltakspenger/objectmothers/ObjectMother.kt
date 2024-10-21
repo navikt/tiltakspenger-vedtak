@@ -5,6 +5,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Navn
 
 object ObjectMother :
     SaksbehandlerMother,
+    SystembrukerMother,
     SøknadMother,
     BehandlingMother,
     SakMother,

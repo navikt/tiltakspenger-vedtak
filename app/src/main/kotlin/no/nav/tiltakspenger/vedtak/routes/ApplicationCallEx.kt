@@ -6,6 +6,7 @@ import io.ktor.server.plugins.callid.callId
 import io.ktor.server.request.receiveText
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.sikkerlogg
+import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
@@ -54,6 +55,18 @@ internal suspend inline fun ApplicationCall.withMeldekortId(
         parse = MeldekortId::fromString,
         errorMessage = "Ugyldig meldekort id",
         errorCode = "ugyldig_meldekort_id",
+        onSuccess = onRight,
+    )
+}
+
+internal suspend inline fun ApplicationCall.withBehandlingId(
+    crossinline onRight: suspend (BehandlingId) -> Unit,
+) {
+    withValidParam(
+        paramName = "behandlingId",
+        parse = BehandlingId::fromString,
+        errorMessage = "Ugyldig behandling id",
+        errorCode = "ugyldig_behandling_id",
         onSuccess = onRight,
     )
 }
