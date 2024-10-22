@@ -79,6 +79,7 @@ class MicrosoftGraphApiClient(
             val uri = uri(navIdent)
             val request = createRequest(uri)
             val httpResponse = client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).await()
+            sikkerlogg.debug { "Logger responsebody for å debugge -> ${httpResponse.body()}" }
             val jsonResponse = httpResponse.body().let { deserialize<ListOfMicrosoftGraphResponse>(it) }
             jsonResponse.let { response ->
                 if (response.value.size != 1) {
@@ -93,7 +94,7 @@ class MicrosoftGraphApiClient(
             }
         }.flatten().getOrElse {
             log.error(RuntimeException("Genererer stacktrace for enklere debug")) { "Ukjent feil mot Microsoft Graph Api for bruker $navIdent. Se sikker logg for mer context" }
-            sikkerlogg.error(it) { "Ukjent feil mot Microsoft Graph Api for bruker $navIdent: ${it.message}" }
+            sikkerlogg.error(it) { "Ukjent feil mot Microsoft Graph Api for bruker: $navIdent message: ${it.message}" }
             throw IkkeLoggDenneException("Denne er logget alt, trenger ikke spamme loggen mer enn nødvendig")
         }
     }
