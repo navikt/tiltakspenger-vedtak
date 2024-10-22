@@ -33,7 +33,7 @@ private data class ListOfMicrosoftGraphResponse(
 class MicrosoftGraphApiClient(
     private val getToken: suspend () -> AccessToken,
     private val timeout: Duration = 1.seconds,
-    private val baseUrl: String = "https://graph.microsoft.com/v1.0",
+    private val baseUrl: String = "graph.microsoft.com/v1.0",
     connectTimeout: Duration = 1.seconds,
 ) : NavIdentClient {
     private val log = KotlinLogging.logger { }
@@ -45,7 +45,7 @@ class MicrosoftGraphApiClient(
         val urlBuilder = URLBuilder().apply {
             protocol = URLProtocol.HTTPS
             host = "$baseUrl"
-            encodedPath = "/v1.0/users"
+            encodedPath = "/users"
             parameters.append("\$select", "displayName")
             parameters.append("\$filter", "onPremisesSamAccountName eq '$navIdent'")
             parameters.append("\$count", "true")
