@@ -8,8 +8,9 @@ fun Tiltak.tilStønadsdagerRegisterSaksopplysning(): StønadsdagerSaksopplysning
     if (antallDagerPerUke != null) {
         StønadsdagerSaksopplysning.Register(
             tiltakNavn = gjennomføring.typeNavn,
-            // Hvis bruker er på tiltak 2 dager en uke og 3 dager neste, kan arena/komet finne på å sette denne til 2.5. Vi støtter ikke halve dager i MVP.
-            antallDager = antallDagerPerUke.toIntPrecise(),
+            // Vi får per nå antall dager per uke, men ønsker å ha antall dager per meldeperiode.
+            // Ettersom vi kan få desimaler fra komet gjør vi denne om til en int etter sammenleggingen.
+            antallDager = (antallDagerPerUke * 2).toIntPrecise(),
             periode = deltakelsesperiode,
             kilde = kilde,
             tidsstempel = LocalDateTime.now(),
