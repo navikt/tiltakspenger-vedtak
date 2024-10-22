@@ -36,6 +36,7 @@ import java.time.LocalDate
  */
 private data class MeldekortdagDbJson(
     val tiltakstype: String,
+    val tiltaksnavn: String,
     val dato: String,
     val status: StatusDb,
     val reduksjon: ReduksjonAvYtelsePåGrunnAvFraværDb?,
@@ -72,12 +73,13 @@ private data class MeldekortdagDbJson(
         val parsedTiltakstype = tiltakstype.toTiltakstypeSomGirRett()
         val parsedBeregningsdag = beregningsdag?.toBeregningsdag()
         return when (status) {
-            SPERRET -> Sperret(meldekortId, parsedDato, parsedTiltakstype)
-            IKKE_UTFYLT -> IkkeUtfylt(meldekortId, parsedDato, parsedTiltakstype)
+            SPERRET -> Sperret(meldekortId, parsedDato, parsedTiltakstype, tiltaksnavn)
+            IKKE_UTFYLT -> IkkeUtfylt(meldekortId, parsedDato, parsedTiltakstype, tiltaksnavn)
             DELTATT_UTEN_LØNN_I_TILTAKET -> DeltattUtenLønnITiltaket.fromDb(
                 meldekortId,
                 parsedDato,
                 parsedTiltakstype,
+                tiltaksnavn,
                 parsedBeregningsdag!!,
             )
 
@@ -85,14 +87,16 @@ private data class MeldekortdagDbJson(
                 meldekortId,
                 parsedDato,
                 parsedTiltakstype,
+                tiltaksnavn,
                 parsedBeregningsdag!!,
             )
 
-            IKKE_DELTATT -> IkkeDeltatt.fromDb(meldekortId, parsedDato, parsedTiltakstype, parsedBeregningsdag!!)
+            IKKE_DELTATT -> IkkeDeltatt.fromDb(meldekortId, parsedDato, parsedTiltakstype, tiltaksnavn, parsedBeregningsdag!!)
             FRAVÆR_SYK -> SykBruker.fromDb(
                 meldekortId,
                 parsedDato,
                 parsedTiltakstype,
+                tiltaksnavn,
                 reduksjon!!.toDomain(),
                 parsedBeregningsdag!!,
             )
@@ -101,6 +105,7 @@ private data class MeldekortdagDbJson(
                 meldekortId,
                 parsedDato,
                 parsedTiltakstype,
+                tiltaksnavn,
                 reduksjon!!.toDomain(),
                 parsedBeregningsdag!!,
             )
@@ -109,6 +114,7 @@ private data class MeldekortdagDbJson(
                 meldekortId,
                 parsedDato,
                 parsedTiltakstype,
+                tiltaksnavn,
                 parsedBeregningsdag!!,
             )
 
@@ -116,6 +122,7 @@ private data class MeldekortdagDbJson(
                 meldekortId,
                 parsedDato,
                 parsedTiltakstype,
+                tiltaksnavn,
                 parsedBeregningsdag!!,
             )
         }
@@ -133,6 +140,7 @@ private fun Meldeperiode.IkkeUtfyltMeldeperiode.toDbJson(): String =
         .map { meldekortdag ->
             MeldekortdagDbJson(
                 tiltakstype = tiltakstype.toDb(),
+                tiltaksnavn = tiltaksnavn,
                 dato = meldekortdag.dato.toString(),
                 status = when (meldekortdag) {
                     is Sperret -> SPERRET
@@ -155,6 +163,7 @@ private fun Meldeperiode.UtfyltMeldeperiode.toDbJson(): String =
         .map { meldekortdag ->
             MeldekortdagDbJson(
                 tiltakstype = tiltakstype.toDb(),
+                tiltaksnavn = tiltaksnavn,
                 dato = meldekortdag.dato.toString(),
                 reduksjon = meldekortdag.reduksjon.toDb(),
                 beregningsdag = meldekortdag.beregningsdag?.toDbJson(),

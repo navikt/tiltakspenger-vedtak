@@ -16,6 +16,7 @@ sealed interface Meldekortdag {
     val meldekortId: MeldekortId
     val reduksjon: ReduksjonAvYtelsePåGrunnAvFravær?
     val tiltakstype: TiltakstypeSomGirRett
+    val tiltaksnavn: String
     val beregningsdag: Beregningsdag?
 
     val beløp: Int get() = beregningsdag?.beløp ?: 0
@@ -25,6 +26,7 @@ sealed interface Meldekortdag {
         override val meldekortId: MeldekortId,
         override val dato: LocalDate,
         override val tiltakstype: TiltakstypeSomGirRett,
+        override val tiltaksnavn: String,
     ) : Meldekortdag {
         override val reduksjon = null
         override val beregningsdag = null
@@ -32,6 +34,7 @@ sealed interface Meldekortdag {
 
     sealed interface Utfylt : Meldekortdag {
         override val tiltakstype: TiltakstypeSomGirRett
+        override val tiltaksnavn: String
         override val reduksjon: ReduksjonAvYtelsePåGrunnAvFravær
 
         /** Begrenses av antallDager (1-5) per uke og vurderingsperioden sine utfall. */
@@ -45,6 +48,7 @@ sealed interface Meldekortdag {
                 override val meldekortId: MeldekortId,
                 override val dato: LocalDate,
                 override val tiltakstype: TiltakstypeSomGirRett,
+                override val tiltaksnavn: String,
                 override val beregningsdag: Beregningsdag,
             ) : Deltatt {
                 override val reduksjon = IngenReduksjon
@@ -54,14 +58,16 @@ sealed interface Meldekortdag {
                         meldekortId: MeldekortId,
                         dato: LocalDate,
                         tiltakstype: TiltakstypeSomGirRett,
-                    ) = DeltattUtenLønnITiltaket(meldekortId, dato, tiltakstype, beregnDag(dato, IngenReduksjon))
+                        tiltaksnavn: String,
+                    ) = DeltattUtenLønnITiltaket(meldekortId, dato, tiltakstype, tiltaksnavn, beregnDag(dato, IngenReduksjon))
 
                     fun fromDb(
                         meldekortId: MeldekortId,
                         dato: LocalDate,
                         tiltakstype: TiltakstypeSomGirRett,
+                        tiltaksnavn: String,
                         beregningsdag: Beregningsdag,
-                    ) = DeltattUtenLønnITiltaket(meldekortId, dato, tiltakstype, beregningsdag)
+                    ) = DeltattUtenLønnITiltaket(meldekortId, dato, tiltakstype, tiltaksnavn, beregningsdag)
                 }
             }
 
@@ -69,6 +75,7 @@ sealed interface Meldekortdag {
                 override val meldekortId: MeldekortId,
                 override val dato: LocalDate,
                 override val tiltakstype: TiltakstypeSomGirRett,
+                override val tiltaksnavn: String,
                 override val beregningsdag: Beregningsdag,
             ) : Deltatt {
                 override val reduksjon = YtelsenFallerBort
@@ -78,14 +85,16 @@ sealed interface Meldekortdag {
                         meldekortId: MeldekortId,
                         dato: LocalDate,
                         tiltakstype: TiltakstypeSomGirRett,
-                    ) = DeltattMedLønnITiltaket(meldekortId, dato, tiltakstype, beregnDag(dato, YtelsenFallerBort))
+                        tiltaksnavn: String,
+                    ) = DeltattMedLønnITiltaket(meldekortId, dato, tiltakstype, tiltaksnavn, beregnDag(dato, YtelsenFallerBort))
 
                     fun fromDb(
                         meldekortId: MeldekortId,
                         dato: LocalDate,
                         tiltakstype: TiltakstypeSomGirRett,
+                        tiltaksnavn: String,
                         beregningsdag: Beregningsdag,
-                    ) = DeltattMedLønnITiltaket(meldekortId, dato, tiltakstype, beregningsdag)
+                    ) = DeltattMedLønnITiltaket(meldekortId, dato, tiltakstype, tiltaksnavn, beregningsdag)
                 }
             }
         }
@@ -95,6 +104,7 @@ sealed interface Meldekortdag {
             override val dato: LocalDate,
             // TODO post-mvp: Siden vi bare støtter et tiltak i MVP kan vi implisitt fylle ut denne. Dersom vi har flere tiltak, må bruker i så fall velge tiltaket han ikke har deltatt på og det er ikke sikkert det gir mening og vi tar bort feltet.
             override val tiltakstype: TiltakstypeSomGirRett,
+            override val tiltaksnavn: String,
             override val beregningsdag: Beregningsdag,
         ) : Utfylt {
             override val reduksjon = YtelsenFallerBort
@@ -105,14 +115,16 @@ sealed interface Meldekortdag {
                     meldekortId: MeldekortId,
                     dato: LocalDate,
                     tiltakstype: TiltakstypeSomGirRett,
-                ) = IkkeDeltatt(meldekortId, dato, tiltakstype, beregnDag(dato, YtelsenFallerBort))
+                    tiltaksnavn: String,
+                ) = IkkeDeltatt(meldekortId, dato, tiltakstype, tiltaksnavn, beregnDag(dato, YtelsenFallerBort))
 
                 fun fromDb(
                     meldekortId: MeldekortId,
                     dato: LocalDate,
                     tiltakstype: TiltakstypeSomGirRett,
+                    tiltaksnavn: String,
                     beregningsdag: Beregningsdag,
-                ) = IkkeDeltatt(meldekortId, dato, tiltakstype, beregningsdag)
+                ) = IkkeDeltatt(meldekortId, dato, tiltakstype, tiltaksnavn, beregningsdag)
             }
         }
 
@@ -130,6 +142,7 @@ sealed interface Meldekortdag {
                     override val meldekortId: MeldekortId,
                     override val dato: LocalDate,
                     override val tiltakstype: TiltakstypeSomGirRett,
+                    override val tiltaksnavn: String,
                     override val reduksjon: ReduksjonAvYtelsePåGrunnAvFravær,
                     override val beregningsdag: Beregningsdag,
                 ) : Syk {
@@ -139,15 +152,17 @@ sealed interface Meldekortdag {
                             dato: LocalDate,
                             reduksjon: ReduksjonAvYtelsePåGrunnAvFravær,
                             tiltakstype: TiltakstypeSomGirRett,
-                        ) = SykBruker(meldekortId, dato, tiltakstype, reduksjon, beregnDag(dato, reduksjon))
+                            tiltaksnavn: String,
+                        ) = SykBruker(meldekortId, dato, tiltakstype, tiltaksnavn, reduksjon, beregnDag(dato, reduksjon))
 
                         fun fromDb(
                             meldekortId: MeldekortId,
                             dato: LocalDate,
                             tiltakstype: TiltakstypeSomGirRett,
+                            tiltaksnavn: String,
                             reduksjon: ReduksjonAvYtelsePåGrunnAvFravær,
                             beregningsdag: Beregningsdag,
-                        ) = SykBruker(meldekortId, dato, tiltakstype, reduksjon, beregningsdag)
+                        ) = SykBruker(meldekortId, dato, tiltakstype, tiltaksnavn, reduksjon, beregningsdag)
                     }
                 }
 
@@ -155,6 +170,7 @@ sealed interface Meldekortdag {
                     override val meldekortId: MeldekortId,
                     override val dato: LocalDate,
                     override val tiltakstype: TiltakstypeSomGirRett,
+                    override val tiltaksnavn: String,
                     override val reduksjon: ReduksjonAvYtelsePåGrunnAvFravær,
                     override val beregningsdag: Beregningsdag,
                 ) : Syk {
@@ -164,15 +180,17 @@ sealed interface Meldekortdag {
                             dato: LocalDate,
                             reduksjon: ReduksjonAvYtelsePåGrunnAvFravær,
                             tiltakstype: TiltakstypeSomGirRett,
-                        ) = SyktBarn(meldekortId, dato, tiltakstype, reduksjon, beregnDag(dato, reduksjon))
+                            tiltaksnavn: String,
+                        ) = SyktBarn(meldekortId, dato, tiltakstype, tiltaksnavn, reduksjon, beregnDag(dato, reduksjon))
 
                         fun fromDb(
                             meldekortId: MeldekortId,
                             dato: LocalDate,
                             tiltakstype: TiltakstypeSomGirRett,
+                            tiltaksnavn: String,
                             reduksjon: ReduksjonAvYtelsePåGrunnAvFravær,
                             beregningsdag: Beregningsdag,
-                        ) = SyktBarn(meldekortId, dato, tiltakstype, reduksjon, beregningsdag)
+                        ) = SyktBarn(meldekortId, dato, tiltakstype, tiltaksnavn, reduksjon, beregningsdag)
                     }
                 }
             }
@@ -182,6 +200,7 @@ sealed interface Meldekortdag {
                     override val meldekortId: MeldekortId,
                     override val dato: LocalDate,
                     override val tiltakstype: TiltakstypeSomGirRett,
+                    override val tiltaksnavn: String,
                     override val beregningsdag: Beregningsdag,
                 ) : Velferd {
                     override val reduksjon = IngenReduksjon
@@ -191,14 +210,16 @@ sealed interface Meldekortdag {
                             meldekortId: MeldekortId,
                             dato: LocalDate,
                             tiltakstype: TiltakstypeSomGirRett,
-                        ) = VelferdGodkjentAvNav(meldekortId, dato, tiltakstype, beregnDag(dato, IngenReduksjon))
+                            tiltaksnavn: String,
+                        ) = VelferdGodkjentAvNav(meldekortId, dato, tiltakstype, tiltaksnavn, beregnDag(dato, IngenReduksjon))
 
                         fun fromDb(
                             meldekortId: MeldekortId,
                             dato: LocalDate,
                             tiltakstype: TiltakstypeSomGirRett,
+                            tiltaksnavn: String,
                             beregningsdag: Beregningsdag,
-                        ) = VelferdGodkjentAvNav(meldekortId, dato, tiltakstype, beregningsdag)
+                        ) = VelferdGodkjentAvNav(meldekortId, dato, tiltakstype, tiltaksnavn, beregningsdag)
                     }
                 }
 
@@ -206,6 +227,7 @@ sealed interface Meldekortdag {
                     override val meldekortId: MeldekortId,
                     override val dato: LocalDate,
                     override val tiltakstype: TiltakstypeSomGirRett,
+                    override val tiltaksnavn: String,
                     override val beregningsdag: Beregningsdag,
                 ) : Velferd {
                     override val reduksjon = YtelsenFallerBort
@@ -215,14 +237,16 @@ sealed interface Meldekortdag {
                             meldekortId: MeldekortId,
                             dato: LocalDate,
                             tiltakstype: TiltakstypeSomGirRett,
-                        ) = VelferdIkkeGodkjentAvNav(meldekortId, dato, tiltakstype, beregnDag(dato, YtelsenFallerBort))
+                            tiltaksnavn: String,
+                        ) = VelferdIkkeGodkjentAvNav(meldekortId, dato, tiltakstype, tiltaksnavn, beregnDag(dato, YtelsenFallerBort))
 
                         fun fromDb(
                             meldekortId: MeldekortId,
                             dato: LocalDate,
                             tiltakstype: TiltakstypeSomGirRett,
+                            tiltaksnavn: String,
                             beregningsdag: Beregningsdag,
-                        ) = VelferdIkkeGodkjentAvNav(meldekortId, dato, tiltakstype, beregningsdag)
+                        ) = VelferdIkkeGodkjentAvNav(meldekortId, dato, tiltakstype, tiltaksnavn, beregningsdag)
                     }
                 }
             }
@@ -239,6 +263,7 @@ sealed interface Meldekortdag {
             override val meldekortId: MeldekortId,
             override val dato: LocalDate,
             override val tiltakstype: TiltakstypeSomGirRett,
+            override val tiltaksnavn: String,
         ) : Utfylt {
             override val reduksjon = YtelsenFallerBort
             override val harDeltattEllerFravær = false

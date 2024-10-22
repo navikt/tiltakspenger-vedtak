@@ -27,6 +27,7 @@ sealed interface Meldekort {
     val forrigeMeldekortId: MeldekortId?
     val meldeperiode: Meldeperiode
     val tiltakstype: TiltakstypeSomGirRett
+    val tiltaksnavn: String
     val fraOgMed: LocalDate get() = meldeperiode.fraOgMed
     val tilOgMed: LocalDate get() = meldeperiode.tilOgMed
     val periode: Periode get() = meldeperiode.periode
@@ -57,6 +58,7 @@ sealed interface Meldekort {
         override val forrigeMeldekortId: MeldekortId?,
         override val meldeperiode: Meldeperiode.UtfyltMeldeperiode,
         override val tiltakstype: TiltakstypeSomGirRett,
+        override val tiltaksnavn: String,
         override val saksbehandler: String,
         override val beslutter: String?,
         override val status: MeldekortStatus,
@@ -88,11 +90,13 @@ sealed interface Meldekort {
                 rammevedtakId = this.rammevedtakId,
                 forrigeMeldekortId = this.id,
                 tiltakstype = this.tiltakstype,
+                tiltaksnavn = this.tiltaksnavn,
                 navkontor = this.navkontor,
                 meldeperiode =
                 Meldeperiode.IkkeUtfyltMeldeperiode.fraPeriode(
                     meldeperiode = periode,
                     tiltakstype = this.tiltakstype,
+                    tiltaksnavn = this.tiltaksnavn,
                     meldekortId = meldekortId,
                     sakId = this.sakId,
                     utfallsperioder = utfallsperioder,
@@ -125,6 +129,7 @@ sealed interface Meldekort {
         override val rammevedtakId: VedtakId,
         override val forrigeMeldekortId: MeldekortId?,
         override val tiltakstype: TiltakstypeSomGirRett,
+        override val tiltaksnavn: String,
         override val meldeperiode: Meldeperiode.IkkeUtfyltMeldeperiode,
         override val navkontor: Navkontor?,
     ) : Meldekort {
@@ -152,6 +157,7 @@ sealed interface Meldekort {
                 forrigeMeldekortId = this.forrigeMeldekortId,
                 meldeperiode = meldekortperiode,
                 tiltakstype = this.tiltakstype,
+                tiltaksnavn = this.tiltaksnavn,
                 saksbehandler = saksbehandler.navIdent,
                 beslutter = this.beslutter,
                 status = MeldekortStatus.KLAR_TIL_BESLUTNING,
@@ -169,6 +175,7 @@ fun Rammevedtak.opprettFørsteMeldekortForEnSak(): Meldekort.IkkeUtfyltMeldekort
     val periode = finnFørsteMeldekortsperiode(this.periode)
     val meldekortId = MeldekortId.random()
     val tiltakstype = this.behandling.vilkårssett.tiltakDeltagelseVilkår.registerSaksopplysning.tiltakstype
+    val tiltaksnavn = this.behandling.vilkårssett.tiltakDeltagelseVilkår.registerSaksopplysning.tiltakNavn
     val utfallsperioder: Periodisering<AvklartUtfallForPeriode> = this.utfallsperioder
 
     return Meldekort.IkkeUtfyltMeldekort(
@@ -179,6 +186,7 @@ fun Rammevedtak.opprettFørsteMeldekortForEnSak(): Meldekort.IkkeUtfyltMeldekort
         rammevedtakId = this.id,
         forrigeMeldekortId = null,
         tiltakstype = tiltakstype,
+        tiltaksnavn = tiltaksnavn,
         // TODO post-mvp: Her har vi mulighet til å hente verdien fra brukers geografiske tilhørighet + norg2.
         navkontor = null,
         meldeperiode =
@@ -186,6 +194,7 @@ fun Rammevedtak.opprettFørsteMeldekortForEnSak(): Meldekort.IkkeUtfyltMeldekort
             meldeperiode = periode,
             utfallsperioder = utfallsperioder,
             tiltakstype = tiltakstype,
+            tiltaksnavn = tiltaksnavn,
             meldekortId = meldekortId,
             sakId = this.sakId,
         ),

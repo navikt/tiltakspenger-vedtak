@@ -220,6 +220,7 @@ class MeldekortPostgresRepo(
                         beslutter = row.stringOrNull("beslutter"),
                         forrigeMeldekortId = forrigeMeldekortId,
                         tiltakstype = meldekortperiode.tiltakstype,
+                        tiltaksnavn = meldekortperiode.tiltaksnavn,
                         status = row.string("status").toMeldekortStatus(),
                         iverksattTidspunkt = row.localDateTimeOrNull("iverksatt_tidspunkt"),
                         navkontor = navkontor!!,
@@ -238,6 +239,7 @@ class MeldekortPostgresRepo(
                         meldeperiode = meldekortperiode,
                         forrigeMeldekortId = forrigeMeldekortId,
                         tiltakstype = meldekortperiode.tiltakstype,
+                        tiltaksnavn = meldekortperiode.tiltaksnavn,
                         navkontor = navkontor,
                     )
                 }

@@ -20,6 +20,7 @@ sealed interface Meldeperiode : List<Meldekortdag> {
     val periode: Periode get() = Periode(fraOgMed, tilOgMed)
     val sakId: SakId
     val tiltakstype: TiltakstypeSomGirRett
+    val tiltaksnavn: String
     val meldekortId: MeldekortId
 
     /**
@@ -31,6 +32,7 @@ sealed interface Meldeperiode : List<Meldekortdag> {
     ) : Meldeperiode,
         List<Meldekortdag> by verdi {
         override val tiltakstype: TiltakstypeSomGirRett = verdi.first().tiltakstype
+        override val tiltaksnavn: String = verdi.first().tiltaksnavn
         override val meldekortId = verdi.first().meldekortId
 
         init {
@@ -69,6 +71,7 @@ sealed interface Meldeperiode : List<Meldekortdag> {
     ) : Meldeperiode,
         List<Meldekortdag> by verdi {
         override val tiltakstype = verdi.first().tiltakstype
+        override val tiltaksnavn: String = verdi.first().tiltaksnavn
 
         override val meldekortId = verdi.first().meldekortId
 
@@ -84,6 +87,7 @@ sealed interface Meldeperiode : List<Meldekortdag> {
                 meldeperiode: Periode,
                 utfallsperioder: Periodisering<AvklartUtfallForPeriode>,
                 tiltakstype: TiltakstypeSomGirRett,
+                tiltaksnavn: String,
                 meldekortId: MeldekortId,
                 sakId: SakId,
             ): IkkeUtfyltMeldeperiode {
@@ -94,12 +98,14 @@ sealed interface Meldeperiode : List<Meldekortdag> {
                                 dato = dag,
                                 meldekortId = meldekortId,
                                 tiltakstype = tiltakstype,
+                                tiltaksnavn = tiltaksnavn,
                             )
                         } else {
                             Meldekortdag.Utfylt.Sperret(
                                 dato = dag,
                                 meldekortId = meldekortId,
                                 tiltakstype = tiltakstype,
+                                tiltaksnavn = tiltaksnavn,
                             )
                         }
                     }

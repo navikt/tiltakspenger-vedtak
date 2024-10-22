@@ -44,6 +44,7 @@ interface MeldekortMother {
         beslutter: String = "beslutter",
         forrigeMeldekortId: MeldekortId? = null,
         tiltakstype: TiltakstypeSomGirRett = TiltakstypeSomGirRett.GRUPPE_AMO,
+        tiltaksnavn: String = "Arbeidsmarkedsoppfølging - gruppe",
         status: MeldekortStatus = MeldekortStatus.GODKJENT,
         iverksattTidspunkt: LocalDateTime? = null,
         navkontor: Navkontor = ObjectMother.navkontor(),
@@ -58,6 +59,7 @@ interface MeldekortMother {
         beslutter = beslutter,
         forrigeMeldekortId = forrigeMeldekortId,
         tiltakstype = tiltakstype,
+        tiltaksnavn = tiltaksnavn,
         status = status,
         iverksattTidspunkt = iverksattTidspunkt,
         navkontor = navkontor,
@@ -93,6 +95,7 @@ interface MeldekortMother {
         startDato: LocalDate = LocalDate.of(2023, 1, 2),
         meldekortId: MeldekortId = MeldekortId.random(),
         tiltakstype: TiltakstypeSomGirRett = TiltakstypeSomGirRett.GRUPPE_AMO,
+        tiltaksnavn: String = "Arbeidsmarkedsoppfølging - gruppe",
         antallDager: Int = 5,
     ): NonEmptyList<Meldekortdag.Utfylt.Deltatt.DeltattUtenLønnITiltaket> {
         require(antallDager in 1..5) {
@@ -103,6 +106,7 @@ interface MeldekortMother {
                 dato = startDato.plusDays(index.toLong()),
                 meldekortId = meldekortId,
                 tiltakstype = tiltakstype,
+                tiltaksnavn = tiltaksnavn,
             )
         }.toNonEmptyListOrNull()!!
     }
@@ -112,6 +116,7 @@ interface MeldekortMother {
         meldekortId: MeldekortId = MeldekortId.random(),
         antallDager: Int = 2,
         tiltakstype: TiltakstypeSomGirRett = TiltakstypeSomGirRett.GRUPPE_AMO,
+        tiltaksnavn: String = "Arbeidsmarkedsoppfølging - gruppe",
     ): NonEmptyList<Meldekortdag.Utfylt.IkkeDeltatt> {
         require(antallDager in 1..5) {
             "Antall sammenhengende dager vil aldri være mer mindre enn 1 eller mer enn 5, men var $antallDager"
@@ -121,12 +126,14 @@ interface MeldekortMother {
                 dato = startDato.plusDays(index.toLong()),
                 meldekortId = meldekortId,
                 tiltakstype = tiltakstype,
+                tiltaksnavn = tiltaksnavn,
             )
         }.toNonEmptyListOrNull()!!
     }
 
     fun beregnMeldekortperioder(
         tiltakstype: TiltakstypeSomGirRett = TiltakstypeSomGirRett.GRUPPE_AMO,
+        tiltaksnavn: String = "Arbeidsrettet oppfølging - gruppe",
         saksbehandler: Saksbehandler = ObjectMother.saksbehandler(),
         sakId: SakId = SakId.random(),
         fnr: Fnr = Fnr.random(),
@@ -151,6 +158,7 @@ interface MeldekortMother {
         return kommandoer.drop(1).fold(
             førsteBeregnetMeldekort(
                 tiltakstype = tiltakstype,
+                tiltaksnavn = tiltaksnavn,
                 meldekortId = kommandoer.first().meldekortId,
                 sakId = sakId,
                 fnr = fnr,
@@ -166,6 +174,7 @@ interface MeldekortMother {
 
     fun førsteBeregnetMeldekort(
         tiltakstype: TiltakstypeSomGirRett,
+        tiltaksnavn: String,
         meldekortId: MeldekortId,
         sakId: SakId,
         fnr: Fnr = Fnr.random(),
@@ -185,12 +194,14 @@ interface MeldekortMother {
                 rammevedtakId = rammevedtakId,
                 forrigeMeldekortId = null,
                 tiltakstype = tiltakstype,
+                tiltaksnavn = tiltaksnavn,
                 navkontor = navkontor,
                 meldeperiode = Meldeperiode.IkkeUtfyltMeldeperiode.fraPeriode(
                     sakId = sakId,
                     meldeperiode = kommando.periode,
                     utfallsperioder = utfallsperioder,
                     tiltakstype = tiltakstype,
+                    tiltaksnavn = tiltaksnavn,
                     meldekortId = meldekortId,
                 ),
             ),
@@ -207,6 +218,7 @@ interface MeldekortMother {
         val sakId = kommando.sakId
         val rammevedtakId = VedtakId.random()
         val tiltakstype = TiltakstypeSomGirRett.GRUPPE_AMO
+        val tiltaksnavn = "Arbeidsrettet oppfølging - gruppe"
         val utfallsperioder = Periodisering(
             initiellVerdi = AvklartUtfallForPeriode.OPPFYLT,
             totalePeriode = Periode(kommando.dager.first().dag, kommando.dager.last().dag),
@@ -221,12 +233,14 @@ interface MeldekortMother {
                 rammevedtakId = rammevedtakId,
                 forrigeMeldekortId = null,
                 tiltakstype = tiltakstype,
+                tiltaksnavn = tiltaksnavn,
                 navkontor = navkontor,
                 meldeperiode = Meldeperiode.IkkeUtfyltMeldeperiode.fraPeriode(
                     sakId = sakId,
                     meldeperiode = kommando.periode,
                     utfallsperioder = utfallsperioder,
                     tiltakstype = tiltakstype,
+                    tiltaksnavn = tiltaksnavn,
                     meldekortId = meldekortId,
                 ),
             ),
