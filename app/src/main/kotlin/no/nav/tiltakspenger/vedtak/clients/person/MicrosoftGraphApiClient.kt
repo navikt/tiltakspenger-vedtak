@@ -4,6 +4,10 @@ import arrow.core.Either
 import arrow.core.flatten
 import arrow.core.getOrElse
 import arrow.core.right
+import io.ktor.http.URLBuilder
+import io.ktor.http.URLProtocol
+import io.ktor.http.encodedPath
+import io.ktor.http.toURI
 import kotlinx.coroutines.future.await
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.NavIdentClient
@@ -34,8 +38,20 @@ class MicrosoftGraphApiClient(
 ) : NavIdentClient {
     private val log = KotlinLogging.logger { }
 
-    private fun uri(navIdent: String) =
-        URI.create("$baseUrl/v1.0/users?\$select=displayName&\$filter=onPremisesSamAccountName eq '$navIdent'\$count=true")
+    /**
+     * Denne oppretter en URI med en URLBuilder for at encodingen skal bli riktig for spesialtegn (apostrof ')
+     */
+    private fun uri(navIdent: String): URI {
+        val urlBuilder = URLBuilder().apply {
+            protocol = URLProtocol.HTTPS
+            host = "$baseUrl"
+            encodedPath = "/v1.0/users"
+            parameters.append("\$select", "displayName")
+            parameters.append("\$filter", "onPremisesSamAccountName eq '$navIdent'")
+            parameters.append("\$count", "true")
+        }
+        return urlBuilder.build().toURI()
+    }
 
     private val client =
         java.net.http.HttpClient
