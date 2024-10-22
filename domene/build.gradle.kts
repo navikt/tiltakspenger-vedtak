@@ -25,7 +25,7 @@ dependencies {
 
     implementation("io.arrow-kt:arrow-core:1.2.4")
 
-    testImplementation(platform("org.junit:junit-bom:5.11.2"))
+    testImplementation(platform("org.junit:junit-bom:5.11.3"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.junit.jupiter:junit-jupiter-params")
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
