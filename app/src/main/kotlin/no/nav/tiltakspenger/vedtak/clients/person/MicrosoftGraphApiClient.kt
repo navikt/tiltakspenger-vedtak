@@ -79,7 +79,7 @@ class MicrosoftGraphApiClient(
             val uri = uri(navIdent)
             val request = createRequest(uri)
             val httpResponse = client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).await()
-            sikkerlogg.debug { "Logger responsebody for å debugge -> ${httpResponse.body()}" }
+            sikkerlogg.debug { "Logger response fra microsoftGraphApi for å debugge -> ${httpResponse.statusCode()} - ${httpResponse.body()}" }
             val jsonResponse = httpResponse.body().let { deserialize<ListOfMicrosoftGraphResponse>(it) }
             jsonResponse.let { response ->
                 if (response.value.size != 1) {
