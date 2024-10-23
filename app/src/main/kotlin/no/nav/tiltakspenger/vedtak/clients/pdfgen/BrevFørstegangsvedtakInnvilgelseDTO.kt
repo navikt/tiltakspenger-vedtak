@@ -28,8 +28,8 @@ internal suspend fun Rammevedtak.tobrevDTO(
     hentSaksbehandlersNavn: suspend (String) -> String,
 ): String {
     val brukersNavn = hentBrukersNavn(fnr)
-    val saksbehandlersNavn = hentSaksbehandlersNavn(saksbehandlerNavIdent)
-    val besluttersNavn = hentSaksbehandlersNavn(beslutterNavIdent)
+    val saksbehandlersNavn = "TODO: Saksbehandlers navn" // hentSaksbehandlersNavn(saksbehandlerNavIdent)
+    val besluttersNavn = "TODO: Beslutters navn" // hentSaksbehandlersNavn(beslutterNavIdent)
 
     return BrevFørstegangsvedtakInnvilgelseDTO(
         personalia = BrevPersonaliaDTO(
