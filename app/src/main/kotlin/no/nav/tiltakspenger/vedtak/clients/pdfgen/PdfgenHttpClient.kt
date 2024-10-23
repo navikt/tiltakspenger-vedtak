@@ -102,7 +102,6 @@ internal class PdfgenHttpClient(
             .build()
 }
 
-// TODO post-mvp jah: Skal bruke pdfgen-core for å generere PDF-er
 private suspend fun genererPdfFraJson(jsonNode: JsonNode): PdfOgJson {
     return withContext(Dispatchers.IO) {
         PDDocument().use { document ->

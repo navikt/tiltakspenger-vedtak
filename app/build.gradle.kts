@@ -2,8 +2,7 @@ val ktorVersion = "3.0.0"
 val kotestVersion = "5.9.1"
 val mockkVersion = "1.13.13"
 val testContainersVersion = "1.20.3"
-val felleslibVersion = "0.0.243"
-val tokenSupportVersion = "3.2.0"
+val felleslibVersion = "0.0.245"
 val poaoTilgangVersjon = "2024.10.04_12.38-e183cd9d187f"
 val iverksettVersjon = "1.0_20241022151447_30ecf61"
 val kotlinxCoroutinesVersion = "1.9.0"
@@ -39,8 +38,6 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:8.0")
     implementation("com.papertrailapp:logback-syslog4j:1.0.0")
 
-    implementation("io.ktor:ktor-server-auth:$ktorVersion")
-    implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
     implementation("io.ktor:ktor-server-call-id:$ktorVersion")
     implementation("io.ktor:ktor-server-call-logging:$ktorVersion")
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
@@ -67,12 +64,7 @@ dependencies {
 
     // Auth
     api("com.auth0:java-jwt:4.4.0")
-    implementation("io.ktor:ktor-server-auth:$ktorVersion")
-    implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
     api("com.auth0:jwks-rsa:0.22.1")
-
-    // TokenX
-    implementation("no.nav.security:token-client-core:$tokenSupportVersion")
 
     // DB
     implementation("org.flywaydb:flyway-database-postgresql:10.20.0")
@@ -92,6 +84,9 @@ dependencies {
 
     // Arrow
     implementation("io.arrow-kt:arrow-core:1.2.4")
+
+    // Caffeine
+    implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
 
     testImplementation(platform("org.junit:junit-bom:5.11.3"))
     testImplementation("org.junit.jupiter:junit-jupiter")

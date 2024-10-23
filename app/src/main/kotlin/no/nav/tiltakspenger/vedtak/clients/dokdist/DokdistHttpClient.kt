@@ -45,31 +45,36 @@ class DokdistHttpClient(
     ): Either<KunneIkkeDistribuereDokument, DistribusjonId> {
         return withContext(Dispatchers.IO) {
             val jsonPayload = journalpostId.toDokdistRequest()
-            Either
-                .catch {
-                    val request = createRequest(jsonPayload, correlationId)
-                    val httpResponse = client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).await()
-                    val status = httpResponse.statusCode()
-                    val jsonResponse = httpResponse.body()
-                    if (status != 409 && status != 200) {
-                        log.error { "Feil ved kall til dokdist. journalpostId: $journalpostId. Status: $status. uri: $uri. Se sikkerlogg for detaljer." }
-                        sikkerlogg.error { "Feil ved kall til dokdist. journalpostId: $journalpostId. Status: $status. uri: $uri. jsonPayload: $jsonPayload. jsonResponse: $jsonResponse" }
-                        return@withContext KunneIkkeDistribuereDokument.left()
-                    }
-                    // 409 er en forventet statuskode ved forsøk på å distribuere samme dokument flere ganger.
-                    jsonResponse.dokdistResponseToDomain(log)
-                }.mapLeft {
-                    // Either.catch slipper igjennom CancellationException som er ønskelig.
-                    log.error(it) { "Feil ved kall til dokdist. journalpostId: $journalpostId. Se sikkerlogg for detaljer." }
-                    sikkerlogg.error(it) { "Feil ved kall til dokdist. journalpostId: $journalpostId. . jsonPayload: $jsonPayload, uri: $uri" }
-                    KunneIkkeDistribuereDokument
-                }.flatten()
+            Either.catch {
+                val token = getToken()
+                val request = createRequest(jsonPayload, correlationId, token.token)
+                val httpResponse = client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).await()
+                val status = httpResponse.statusCode()
+                val jsonResponse = httpResponse.body()
+                if (status == 401 || status == 403) {
+                    log.error(RuntimeException("Trigger stacktrace for debug.")) { "Invaliderer cache for systemtoken mot PDL. status: $status." }
+                    token.invaliderCache()
+                }
+                if (status != 409 && status != 200) {
+                    log.error { "Feil ved kall til dokdist. journalpostId: $journalpostId. Status: $status. uri: $uri. Se sikkerlogg for detaljer." }
+                    sikkerlogg.error { "Feil ved kall til dokdist. journalpostId: $journalpostId. Status: $status. uri: $uri. jsonPayload: $jsonPayload. jsonResponse: $jsonResponse" }
+                    return@withContext KunneIkkeDistribuereDokument.left()
+                }
+                // 409 er en forventet statuskode ved forsøk på å distribuere samme dokument flere ganger.
+                jsonResponse.dokdistResponseToDomain(log)
+            }.mapLeft {
+                // Either.catch slipper igjennom CancellationException som er ønskelig.
+                log.error(it) { "Feil ved kall til dokdist. journalpostId: $journalpostId. Se sikkerlogg for detaljer." }
+                sikkerlogg.error(it) { "Feil ved kall til dokdist. journalpostId: $journalpostId. . jsonPayload: $jsonPayload, uri: $uri" }
+                KunneIkkeDistribuereDokument
+            }.flatten()
         }
     }
 
     private suspend fun createRequest(
         jsonPayload: String,
         correlationId: CorrelationId,
+        token: String,
     ): HttpRequest? =
         HttpRequest
             .newBuilder()
@@ -77,7 +82,7 @@ class DokdistHttpClient(
             .timeout(timeout.toJavaDuration())
             .header("Accept", "application/json")
             .header("Content-Type", "application/json")
-            .header("Authorization", "Bearer ${getToken().value}")
+            .header("Authorization", "Bearer $token")
             .header("Nav-CallId", correlationId.value)
             .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
             .build()

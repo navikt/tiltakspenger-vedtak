@@ -11,22 +11,21 @@ import no.nav.tiltakspenger.utbetaling.service.HentUtbetalingsvedtakService
 import no.nav.tiltakspenger.utbetaling.service.JournalførUtbetalingsvedtakService
 import no.nav.tiltakspenger.utbetaling.service.SendUtbetalingerService
 import no.nav.tiltakspenger.vedtak.Configuration
-import no.nav.tiltakspenger.vedtak.auth.AzureTokenProvider
+import no.nav.tiltakspenger.vedtak.auth.EntraIdSystemtokenClient
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtbetalingHttpClient
 import no.nav.tiltakspenger.vedtak.repository.utbetaling.UtbetalingsvedtakPostgresRepo
 
-@Suppress("unused")
 open class UtbetalingContext(
     sessionFactory: SessionFactory,
     genererMeldekortPdfGateway: GenererMeldekortPdfGateway,
     journalførMeldekortGateway: JournalførMeldekortGateway,
     personService: PersonService,
+    entraIdSystemtokenClient: EntraIdSystemtokenClient,
 ) {
-    private val tokenProviderUtbetaling = AzureTokenProvider(config = Configuration.oauthConfigUtbetaling())
     open val utbetalingGateway: UtbetalingGateway by lazy {
         UtbetalingHttpClient(
-            baseUrl = Configuration.utbetalingClientConfig().baseUrl,
-            getToken = tokenProviderUtbetaling::getToken,
+            baseUrl = Configuration.utbetalingUrl,
+            getToken = { entraIdSystemtokenClient.getSystemtoken(Configuration.utbetalingScope) },
         )
     }
     open val utbetalingsvedtakRepo: UtbetalingsvedtakRepo by lazy {
