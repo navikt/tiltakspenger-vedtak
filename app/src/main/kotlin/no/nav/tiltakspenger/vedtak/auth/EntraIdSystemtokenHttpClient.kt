@@ -93,7 +93,7 @@ class EntraIdSystemtokenHttpClient(
             Either.catch {
                 val json = objectMapper.readTree(jsonResponse)
                 AccessToken(
-                    token = json.get("access_token").toString(),
+                    token = json.get("access_token").asText(),
                     expiresAt = Instant.now().plusSeconds(json.get("expires_in").asLong()),
                     invaliderCache = { invalidateToken(otherAppId) },
                 )
