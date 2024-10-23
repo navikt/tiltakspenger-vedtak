@@ -65,7 +65,7 @@ class EntraIdSystemtokenHttpClient(
                 log.debug { "Henter systemtoken for $otherAppId" }
                 future {
                     generateSystemtoken(otherAppId).also {
-                        sikkerlogg.debug { "Systemtoken hentet for $otherAppId. $it" }
+                        sikkerlogg.debug { "Systemtoken hentet for $otherAppId. expiresAt: ${it.expiresAt}, token: ${it.token}" }
                         log.debug { "Systemtoken hentet for $otherAppId. Se sikkerlogg for mer kontekst." }
                     }
                 }
