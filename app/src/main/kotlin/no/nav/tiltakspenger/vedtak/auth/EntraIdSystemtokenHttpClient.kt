@@ -62,10 +62,11 @@ class EntraIdSystemtokenHttpClient(
                 invalidateToken(otherAppId)
             }
             cache.get(otherAppId) { _, _ ->
-                log.debug("Henter systemtoken for $otherAppId")
+                log.debug { "Henter systemtoken for $otherAppId" }
                 future {
                     generateSystemtoken(otherAppId).also {
-                        log.debug("Systemtoken hentet for $otherAppId")
+                        sikkerlogg.debug { "Systemtoken hentet for $otherAppId. $it" }
+                        log.debug { "Systemtoken hentet for $otherAppId. Se sikkerlogg for mer kontekst." }
                     }
                 }
             }.await()
