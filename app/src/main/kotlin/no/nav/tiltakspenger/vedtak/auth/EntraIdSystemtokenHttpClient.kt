@@ -74,7 +74,7 @@ class EntraIdSystemtokenHttpClient(
         return Either.catch {
             val uri = uri(otherAppId)
             val request = createRequest(uri)
-            val httpResponse = client.sendAsync(request, HttpResponse.BodyHandlers.ofByteArray()).await()
+            val httpResponse = client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).await()
             val jsonResponse = httpResponse.body()
             val status = httpResponse.statusCode()
             if (status != 200) {
