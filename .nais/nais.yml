@@ -65,6 +65,7 @@ spec:
         - host: {{ urlSkjerming }}
         - host: {{ urlJoark }}
         - host: {{ urlDokdist }}
+        - host: {{ urlMicrosoftGraphApi }}
     inbound:
       rules:
         - application: tiltakspenger-saksbehandler
