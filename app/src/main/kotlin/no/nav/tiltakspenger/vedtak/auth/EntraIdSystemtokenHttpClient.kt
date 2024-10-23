@@ -81,12 +81,17 @@ class EntraIdSystemtokenHttpClient(
                 sikkerlogg.error("Feil ved henting av systemtoken mot $otherAppId.nummer. Status: $status. uri: $uri. jsonResponse: $jsonResponse")
                 throw RuntimeException("Feil ved henting av systemtoken mot $otherAppId.nummer. Status: $status. uri: $uri. Se sikkerlogg for detaljer.")
             }
-            val json = objectMapper.readTree(jsonResponse)
-            AccessToken(
-                token = json.get("access_token").toString(),
-                expiresAt = Instant.now().plusSeconds(json.get("expires_in").asLong()),
-                invaliderCache = { invalidateToken(otherAppId) },
-            )
+            Either.catch {
+                val json = objectMapper.readTree(jsonResponse)
+                AccessToken(
+                    token = json.get("access_token").toString(),
+                    expiresAt = Instant.now().plusSeconds(json.get("expires_in").asLong()),
+                    invaliderCache = { invalidateToken(otherAppId) },
+                )
+            }.getOrElse {
+                sikkerlogg.error(it) { "Feil ved parsing av respons fra Entra id client_credentials. status: $status, otherAppId:$otherAppId. jsonResponse: $jsonResponse. uri: $uri" }
+                throw RuntimeException("Feil ved parsing av respons fra Entra id client_credentials. status: $status, otherAppId:$otherAppId. Se sikkerlogg for detaljer.")
+            }
         }.getOrElse {
             // Either.catch slipper igjennom CancellationException som er ønskelig.
             sikkerlogg.error(it) { "Ukjent feil ved kall mot Azure client_credentials. otherAppId: $otherAppId" }
