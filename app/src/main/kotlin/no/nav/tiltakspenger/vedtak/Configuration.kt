@@ -184,8 +184,10 @@ object Configuration {
     val clientId: String by lazy { config()[Key("AZURE_APP_CLIENT_ID", stringType)] }
     val clientSecret: String by lazy { config()[Key("AZURE_APP_CLIENT_SECRET", stringType)] }
 
-    // TODO jah: Dobbeltsjekk at dette er URLen tokenklienten vil bruke
     val wellknownUrl: String by lazy { config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)] }
+
+    /** Samme som hvis man gjør en get til AZURE_APP_WELL_KNOWN_URL og plukker ut 'token_endpoint' */
+    val azureOpenidConfigTokenEndpoint: String by lazy { config()[Key("AZURE_OPENID_CONFIG_TOKEN_ENDPOINT", stringType)] }
 
     val pdlScope: String by lazy { config()[Key("PDL_SCOPE", stringType)] }
     val pdlPipScope: String by lazy { config()[Key("PDL_PIP_SCOPE", stringType)] }

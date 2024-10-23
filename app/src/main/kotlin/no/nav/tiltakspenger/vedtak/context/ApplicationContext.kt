@@ -27,7 +27,7 @@ open class ApplicationContext(
     }
     open val entraIdSystemtokenClient: EntraIdSystemtokenClient by lazy {
         EntraIdSystemtokenHttpClient(
-            baseUrl = Configuration.wellknownUrl,
+            baseUrl = Configuration.azureOpenidConfigTokenEndpoint,
             clientId = Configuration.clientId,
             clientSecret = Configuration.clientSecret,
         )
