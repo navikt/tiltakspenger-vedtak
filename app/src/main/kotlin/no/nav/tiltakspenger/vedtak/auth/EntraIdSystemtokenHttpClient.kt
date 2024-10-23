@@ -14,16 +14,18 @@ import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.vedtak.db.objectMapper
 import java.net.URI
+import java.net.URLEncoder
 import java.net.http.HttpClient.Redirect
 import java.net.http.HttpClient.newBuilder
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
+import java.nio.charset.StandardCharsets
 import java.time.Instant
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
 
 class EntraIdSystemtokenHttpClient(
-    private val baseUrl: String,
+    baseUrl: String,
     private val clientId: String,
     private val clientSecret: String,
     connectTimeout: kotlin.time.Duration = 1.seconds,
@@ -42,8 +44,14 @@ class EntraIdSystemtokenHttpClient(
         .followRedirects(Redirect.NEVER)
         .build()
 
-    private fun uri(otherAppId: String): URI =
-        URI.create("$baseUrl?grant_type=client_credentials&client_id=$clientId&client_secret=$clientSecret&scope=$otherAppId")
+    private val uri: URI = URI.create(baseUrl)
+
+    private fun formData(otherAppId: String): String {
+        val urlEncodedClientId = URLEncoder.encode(clientId, StandardCharsets.UTF_8)
+        val urlEncodedClientSecret = URLEncoder.encode(clientId, StandardCharsets.UTF_8)
+        val urlEncodedOtherAppId = URLEncoder.encode(otherAppId, StandardCharsets.UTF_8)
+        return "grant_type=client_credentials&client_id=$urlEncodedClientId&client_secret=$urlEncodedClientSecret&scope=$urlEncodedOtherAppId"
+    }
 
     override suspend fun getSystemtoken(
         otherAppId: String,
@@ -72,14 +80,14 @@ class EntraIdSystemtokenHttpClient(
         otherAppId: String,
     ): AccessToken {
         return Either.catch {
-            val uri = uri(otherAppId)
-            val request = createRequest(uri)
+            val formData = formData(otherAppId)
+            val request = createRequest(formData)
             val httpResponse = client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).await()
             val jsonResponse = httpResponse.body()
             val status = httpResponse.statusCode()
             if (status != 200) {
-                sikkerlogg.error("Feil ved henting av systemtoken mot $otherAppId.nummer. Status: $status. uri: $uri. jsonResponse: $jsonResponse")
-                throw RuntimeException("Feil ved henting av systemtoken mot $otherAppId.nummer. Status: $status. uri: $uri. Se sikkerlogg for detaljer.")
+                sikkerlogg.error("Feil ved henting av systemtoken mot $otherAppId. Status: $status. jsonResponse: $jsonResponse. uri: $uri.  formData: $formData")
+                throw RuntimeException("Feil ved henting av systemtoken mot $otherAppId. Status: $status. uri: $uri. Se sikkerlogg for detaljer.")
             }
             Either.catch {
                 val json = objectMapper.readTree(jsonResponse)
@@ -100,14 +108,14 @@ class EntraIdSystemtokenHttpClient(
     }
 
     private fun createRequest(
-        uri: URI,
+        formData: String,
     ): HttpRequest? {
         return HttpRequest
             .newBuilder()
             .uri(uri)
             .timeout(timeout.toJavaDuration())
             .header("Content-Type", "application/x-www-form-urlencoded")
-            .POST(HttpRequest.BodyPublishers.noBody())
+            .POST(HttpRequest.BodyPublishers.ofString(formData))
             .build()
     }
 }
