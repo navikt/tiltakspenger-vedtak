@@ -48,7 +48,7 @@ class EntraIdSystemtokenHttpClient(
 
     private fun formData(otherAppId: String): String {
         val urlEncodedClientId = URLEncoder.encode(clientId, StandardCharsets.UTF_8)
-        val urlEncodedClientSecret = URLEncoder.encode(clientId, StandardCharsets.UTF_8)
+        val urlEncodedClientSecret = URLEncoder.encode(clientSecret, StandardCharsets.UTF_8)
         val urlEncodedOtherAppId = URLEncoder.encode(otherAppId, StandardCharsets.UTF_8)
         return "grant_type=client_credentials&client_id=$urlEncodedClientId&client_secret=$urlEncodedClientSecret&scope=$urlEncodedOtherAppId"
     }
