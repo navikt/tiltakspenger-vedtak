@@ -231,7 +231,7 @@ interface MeldekortMother {
                 sakId = sakId,
                 fnr = fnr,
                 rammevedtakId = rammevedtakId,
-                forrigeMeldekortId = null,
+                forrigeMeldekortId = this.verdi.last().id,
                 tiltakstype = tiltakstype,
                 tiltaksnavn = tiltaksnavn,
                 navkontor = navkontor,

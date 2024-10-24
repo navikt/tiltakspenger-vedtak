@@ -1,5 +1,7 @@
 package no.nav.tiltakspenger.vedtak.clients.joark
 
+import arrow.core.Either
+import arrow.core.getOrElse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ClientRequestException
@@ -11,10 +13,14 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.HttpStatusCode.Companion.Conflict
+import io.ktor.http.HttpStatusCode.Companion.Forbidden
+import io.ktor.http.HttpStatusCode.Companion.Unauthorized
 import io.ktor.http.contentType
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.journalføring.JournalpostId
 import no.nav.tiltakspenger.felles.journalføring.PdfOgJson
+import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
@@ -32,7 +38,7 @@ internal const val JOARK_PATH = "rest/journalpostapi/v1/journalpost"
 internal class JoarkHttpClient(
     private val baseUrl: String,
     private val client: HttpClient = httpClientWithRetry(timeout = 30L),
-    private val getAccessToken: suspend () -> AccessToken,
+    private val getToken: suspend () -> AccessToken,
 ) : JournalførVedtaksbrevGateway, JournalførMeldekortGateway {
 
     private val log = KotlinLogging.logger {}
@@ -59,15 +65,19 @@ internal class JoarkHttpClient(
         jsonBody: String,
         correlationId: CorrelationId,
     ): JournalpostId {
+        val token = Either.catch { getToken() }.getOrElse {
+            sikkerlogg.error(it) { "Kunne ikke hente token for journalføring. jsonBody: $jsonBody, correlationId: $correlationId" }
+            throw RuntimeException("Kunne ikke hente token for journalføring. Se sikkerlogg for mer kontekst.")
+        }
         try {
             log.info("Starter journalføring av dokument")
-            val token = getAccessToken()
+
             val res = client.post("$baseUrl/$JOARK_PATH") {
                 accept(ContentType.Application.Json)
                 header("X-Correlation-ID", correlationId.value)
                 header("Nav-Callid", correlationId.value)
                 parameter("forsoekFerdigstill", true)
-                bearerAuth(token.value)
+                bearerAuth(token.token)
                 contentType(ContentType.Application.Json)
                 setBody(jsonBody)
             }
@@ -99,16 +109,23 @@ internal class JoarkHttpClient(
                 }
             }
         } catch (throwable: Throwable) {
-            if (throwable is ClientRequestException && throwable.response.status == HttpStatusCode.Conflict) {
-                log.warn("Har allerede blitt journalført (409 Conflict)")
-                val response = throwable.response.call.body<JoarkResponse>()
-                return JournalpostId(response.journalpostId.orEmpty())
+            if (throwable is ClientRequestException) {
+                val status = throwable.response.status
+                if (status == Unauthorized || status == Forbidden) {
+                    log.error(RuntimeException("Trigger stacktrace for debug.")) { "Invaliderer cache for systemtoken mot PDL. status: $status." }
+                    token.invaliderCache()
+                }
+                if (status == Conflict) {
+                    log.warn("Har allerede blitt journalført (409 Conflict)")
+                    val response = throwable.response.call.body<JoarkResponse>()
+                    return JournalpostId(response.journalpostId.orEmpty())
+                }
             }
             if (throwable is IllegalStateException) {
                 throw throwable
             } else {
-                log.error(throwable) { "Kallet til joark feilet $throwable" }
-                throw RuntimeException("Feil i kallet til joark $throwable")
+                sikkerlogg.error(throwable) { "Ukjent feil fra joark." }
+                throw RuntimeException("Ukjent feil fra joark, se sikkerlogg for mer kontekst.")
             }
         }
     }

@@ -2,6 +2,8 @@ package no.nav.tiltakspenger.vedtak.context
 
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 import no.nav.tiltakspenger.vedtak.Configuration
+import no.nav.tiltakspenger.vedtak.auth.EntraIdSystemtokenClient
+import no.nav.tiltakspenger.vedtak.auth.EntraIdSystemtokenHttpClient
 import no.nav.tiltakspenger.vedtak.auth2.MicrosoftEntraIdTokenService
 import no.nav.tiltakspenger.vedtak.auth2.TokenService
 
@@ -23,11 +25,18 @@ open class ApplicationContext(
             autoriserteBrukerroller = tokenVerificationToken.roles,
         )
     }
-    open val personContext by lazy { PersonContext(sessionFactory) }
-    open val dokumentContext by lazy { DokumentContext() }
+    open val entraIdSystemtokenClient: EntraIdSystemtokenClient by lazy {
+        EntraIdSystemtokenHttpClient(
+            baseUrl = Configuration.azureOpenidConfigTokenEndpoint,
+            clientId = Configuration.clientId,
+            clientSecret = Configuration.clientSecret,
+        )
+    }
+    open val personContext by lazy { PersonContext(sessionFactory, entraIdSystemtokenClient) }
+    open val dokumentContext by lazy { DokumentContext(entraIdSystemtokenClient) }
     open val statistikkContext by lazy { StatistikkContext(sessionFactory) }
     open val søknadContext by lazy { SøknadContext(sessionFactory) }
-    open val tiltakContext by lazy { TiltakContext() }
+    open val tiltakContext by lazy { TiltakContext(entraIdSystemtokenClient) }
     open val sakContext by lazy {
         SakContext(
             sessionFactory = sessionFactory,
@@ -45,6 +54,7 @@ open class ApplicationContext(
             genererMeldekortPdfGateway = dokumentContext.genererMeldekortPdfGateway,
             journalførMeldekortGateway = dokumentContext.journalførMeldekortGateway,
             personService = personContext.personService,
+            entraIdSystemtokenClient = entraIdSystemtokenClient,
         )
     }
     open val meldekortContext by lazy {

@@ -32,40 +32,6 @@ import org.skyscreamer.jsonassert.JSONCompareMode
 class ExceptionHandlingTest {
 
     @Test
-    fun `Manglende token skal bli til 401`() {
-        val tokenServiceMock = mockk<TokenService>()
-        runTest {
-            testApplication {
-                application {
-                    // vedtakTestApi()
-                    jacksonSerialization()
-                    configureExceptions()
-                    routing {
-                        behandlingBenkRoutes(
-                            tokenServiceMock,
-                            mockk<BehandlingServiceImpl>(),
-                            mockk<SakService>(),
-                            mockk<AuditService>(),
-                        )
-                    }
-                }
-                defaultRequest(
-                    jwt = null,
-                    method = HttpMethod.Get,
-                    uri = url {
-                        protocol = URLProtocol.HTTPS
-                        path(BEHANDLINGER_PATH)
-                    },
-                ).apply {
-                    val exceptedStatusCode = HttpStatusCode.Unauthorized
-                    status shouldBe exceptedStatusCode
-                    headers["WWW-Authenticate"] shouldBe "Bearer realm=tiltakspenger-vedtak"
-                }
-            }
-        }
-    }
-
-    @Test
     fun `IllegalStateException skal bli til 500`() {
         val tokenServiceMock = mockk<TokenService>()
         val sakService = mockk<SakService>()

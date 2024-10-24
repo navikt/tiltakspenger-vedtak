@@ -8,7 +8,6 @@ import com.natpryce.konfig.intType
 import com.natpryce.konfig.overriding
 import com.natpryce.konfig.stringType
 import no.nav.tiltakspenger.libs.common.Rolle
-import no.nav.tiltakspenger.vedtak.auth.AzureTokenProvider
 
 private const val APPLICATION_NAME = "tiltakspenger-vedtak"
 
@@ -32,6 +31,7 @@ object Configuration {
             "AZURE_APP_CLIENT_ID" to System.getenv("AZURE_APP_CLIENT_ID"),
             "AZURE_APP_CLIENT_SECRET" to System.getenv("AZURE_APP_CLIENT_SECRET"),
             "AZURE_APP_WELL_KNOWN_URL" to System.getenv("AZURE_APP_WELL_KNOWN_URL"),
+            "AZURE_OPENID_CONFIG_TOKEN_ENDPOINT" to System.getenv("AZURE_OPENID_CONFIG_TOKEN_ENDPOINT"),
             "ROLE_SAKSBEHANDLER" to System.getenv("ROLE_SAKSBEHANDLER"),
             "ROLE_BESLUTTER" to System.getenv("ROLE_BESLUTTER"),
             "ROLE_FORTROLIG" to System.getenv("ROLE_FORTROLIG"),
@@ -77,6 +77,7 @@ object Configuration {
                 "AZURE_APP_CLIENT_ID" to "tiltakspenger-vedtak",
                 "AZURE_APP_CLIENT_SECRET" to "secret",
                 "AZURE_APP_WELL_KNOWN_URL" to "http://host.docker.internal:6969/azure/.well-known/openid-configuration",
+                "AZURE_OPENID_CONFIG_TOKEN_ENDPOINT" to "http://host.docker.internal:6969/default/token",
                 "AZURE_OPENID_CONFIG_ISSUER" to "http://host.docker.internal:6969/azure",
                 "AZURE_OPENID_CONFIG_JWKS_URI" to "http://host.docker.internal:6969/azure/jwks",
                 "DB_USERNAME" to "postgres",
@@ -85,6 +86,7 @@ object Configuration {
                 "DB_HOST" to "localhost",
                 "DB_PORT" to "5433",
                 "MICROSOFT_SCOPE" to "localhost",
+                "MICROSOFT_URL" to "host.docker.internal:8091",
             ),
         )
 
@@ -111,6 +113,7 @@ object Configuration {
                 "POAO_TILGANG_URL" to "https://poao-tilgang.dev.intern.nav.no",
                 "POAO_TILGANG_SCOPE" to "api://dev-gcp.poao.poao-tilgang/.default",
                 "MICROSOFT_SCOPE" to "https://graph.microsoft.com/.default",
+                "MICROSOFT_URL" to "graph.microsoft.com/v1.0",
             ),
         )
     private val prodProperties =
@@ -136,6 +139,7 @@ object Configuration {
                 "POAO_TILGANG_URL" to "https://poao-tilgang.nais.io",
                 "POAO_TILGANG_SCOPE" to "api://prod-gcp.poao.poao-tilgang/.default",
                 "MICROSOFT_SCOPE" to "https://graph.microsoft.com/.default",
+                "MICROSOFT_URL" to "graph.microsoft.com/v1.0",
             ),
         )
 
@@ -172,10 +176,6 @@ object Configuration {
             AdRolle(Rolle.DRIFT, config()[Key("ROLE_DRIFT", stringType)]),
         )
 
-    data class ClientConfig(
-        val baseUrl: String,
-    )
-
     fun logbackConfigurationFile() = config()[Key("logback.configurationFile", stringType)]
 
     data class TokenVerificationConfig(
@@ -186,138 +186,36 @@ object Configuration {
         val roles: List<AdRolle> = alleAdRoller(),
     )
 
-    fun pdlClientConfig(baseUrl: String = config()[Key("PDL_ENDPOINT_URL", stringType)]) =
-        ClientConfig(baseUrl = baseUrl)
+    val clientId: String by lazy { config()[Key("AZURE_APP_CLIENT_ID", stringType)] }
+    val clientSecret: String by lazy { config()[Key("AZURE_APP_CLIENT_SECRET", stringType)] }
 
-    fun pdlPipClientConfig(baseUrl: String = config()[Key("PDL_PIP_ENDPOINT_URL", stringType)]) =
-        ClientConfig(baseUrl = baseUrl)
+    val wellknownUrl: String by lazy { config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)] }
 
-    fun ouathConfigPdl(
-        scope: String = config()[Key("PDL_SCOPE", stringType)],
-        clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
-        clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
-        wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
-    ) = AzureTokenProvider.OauthConfig(
-        scope = scope,
-        clientId = clientId,
-        clientSecret = clientSecret,
-        wellknownUrl = wellknownUrl,
-    )
+    /** Samme som hvis man gjør en get til AZURE_APP_WELL_KNOWN_URL og plukker ut 'token_endpoint' */
+    val azureOpenidConfigTokenEndpoint: String by lazy { config()[Key("AZURE_OPENID_CONFIG_TOKEN_ENDPOINT", stringType)] }
 
-    fun ouathConfigPdlPip(
-        scope: String = config()[Key("PDL_PIP_SCOPE", stringType)],
-        clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
-        clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
-        wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
-    ) = AzureTokenProvider.OauthConfig(
-        scope = scope,
-        clientId = clientId,
-        clientSecret = clientSecret,
-        wellknownUrl = wellknownUrl,
-    )
+    val pdlScope: String by lazy { config()[Key("PDL_SCOPE", stringType)] }
+    val pdlPipScope: String by lazy { config()[Key("PDL_PIP_SCOPE", stringType)] }
+    val skjermingScope: String by lazy { config()[Key("SKJERMING_SCOPE", stringType)] }
+    val tiltakScope: String by lazy { config()[Key("TILTAK_SCOPE", stringType)] }
+    val joarkScope: String by lazy { config()[Key("JOARK_SCOPE", stringType)] }
+    val dokdistScope: String by lazy { config()[Key("DOKDIST_SCOPE", stringType)] }
+    val poaoTilgangScope: String by lazy { config()[Key("POAO_TILGANG_SCOPE", stringType)] }
+    val utbetalingScope: String by lazy { config()[Key("UTBETALING_SCOPE", stringType)] }
+    val microsoftScope: String by lazy { config()[Key("MICROSOFT_SCOPE", stringType)] }
 
-    fun ouathConfigMicrosoftGraphApi(
-        scope: String = config()[Key("MICROSOFT_SCOPE", stringType)],
-        clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
-        clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
-        wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
-    ) = AzureTokenProvider.OauthConfig(
-        scope = scope,
-        clientId = clientId,
-        clientSecret = clientSecret,
-        wellknownUrl = wellknownUrl,
-    )
-
-    fun oauthConfigSkjerming(
-        scope: String = config()[Key("SKJERMING_SCOPE", stringType)],
-        clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
-        clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
-        wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
-    ) = AzureTokenProvider.OauthConfig(
-        scope = scope,
-        clientId = clientId,
-        clientSecret = clientSecret,
-        wellknownUrl = wellknownUrl,
-    )
-
-    fun oauthConfigTiltak(
-        scope: String = config()[Key("TILTAK_SCOPE", stringType)],
-        clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
-        clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
-        wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
-    ) = AzureTokenProvider.OauthConfig(
-        scope = scope,
-        clientId = clientId,
-        clientSecret = clientSecret,
-        wellknownUrl = wellknownUrl,
-    )
-
-    fun oauthConfigJoark(
-        scope: String = config()[Key("JOARK_SCOPE", stringType)],
-        clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
-        clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
-        wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
-    ) = AzureTokenProvider.OauthConfig(
-        scope = scope,
-        clientId = clientId,
-        clientSecret = clientSecret,
-        wellknownUrl = wellknownUrl,
-    )
-
-    fun oauthConfigDokdist(
-        scope: String = config()[Key("DOKDIST_SCOPE", stringType)],
-        clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
-        clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
-        wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
-    ) = AzureTokenProvider.OauthConfig(
-        scope = scope,
-        clientId = clientId,
-        clientSecret = clientSecret,
-        wellknownUrl = wellknownUrl,
-    )
-
-    fun oauthConfigPoaoTilgang(
-        scope: String = config()[Key("POAO_TILGANG_SCOPE", stringType)],
-        clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
-        clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
-        wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
-    ) = AzureTokenProvider.OauthConfig(
-        scope = scope,
-        clientId = clientId,
-        clientSecret = clientSecret,
-        wellknownUrl = wellknownUrl,
-    )
-
-    fun oauthConfigUtbetaling(
-        scope: String = config()[Key("UTBETALING_SCOPE", stringType)],
-        clientId: String = config()[Key("AZURE_APP_CLIENT_ID", stringType)],
-        clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
-        wellknownUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
-    ) = AzureTokenProvider.OauthConfig(
-        scope = scope,
-        clientId = clientId,
-        clientSecret = clientSecret,
-        wellknownUrl = wellknownUrl,
-    )
+    val pdlUrl by lazy { config()[Key("PDL_ENDPOINT_URL", stringType)] }
+    val pdlPipUrl by lazy { config()[Key("PDL_PIP_ENDPOINT_URL", stringType)] }
+    val skjermingUrl: String by lazy { config()[Key("SKJERMING_URL", stringType)] }
+    val tiltakUrl: String by lazy { config()[Key("TILTAK_URL", stringType)] }
+    val joarkUrl: String by lazy { config()[Key("JOARK_URL", stringType)] }
+    val dokdistUrl: String by lazy { config()[Key("DOKDIST_URL", stringType)] }
+    val pdfgenUrl: String by lazy { config()[Key("PDFGEN_URL", stringType)] }
+    val poaoTilgangUrl: String by lazy { config()[Key("POAO_TILGANG_URL", stringType)] }
+    val utbetalingUrl: String by lazy { config()[Key("UTBETALING_URL", stringType)] }
+    val microsoftUrl: String by lazy { config()[Key("MICROSOFT_URL", stringType)] }
 
     fun httpPort() = config()[Key("application.httpPort", intType)]
-
-    fun skjermingClientConfig(baseUrl: String = config()[Key("SKJERMING_URL", stringType)]) =
-        ClientConfig(baseUrl = baseUrl)
-
-    fun tiltakClientConfig(baseUrl: String = config()[Key("TILTAK_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
-
-    fun joarkClientConfig(baseUrl: String = config()[Key("JOARK_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
-    fun dokdistClientConfig(baseUrl: String = config()[Key("DOKDIST_URL", stringType)]) =
-        ClientConfig(baseUrl = baseUrl)
-
-    fun pdfgenClientConfig(baseUrl: String = config()[Key("PDFGEN_URL", stringType)]) = ClientConfig(baseUrl = baseUrl)
-
-    fun poaoTilgangClientConfig(baseUrl: String = config()[Key("POAO_TILGANG_URL", stringType)]) =
-        ClientConfig(baseUrl = baseUrl)
-
-    fun utbetalingClientConfig(baseUrl: String = config()[Key("UTBETALING_URL", stringType)]) =
-        ClientConfig(baseUrl = baseUrl)
 
     fun isNais() = applicationProfile() != Profile.LOCAL
 

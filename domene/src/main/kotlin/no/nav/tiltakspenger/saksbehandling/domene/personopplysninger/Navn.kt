@@ -5,5 +5,5 @@ data class Navn(
     val mellomnavn: String? = null,
     val etternavn: String,
 ) {
-    val mellomnavnOgEtternavn: String by lazy { "$mellomnavn $etternavn".trim() }
+    val mellomnavnOgEtternavn: String by lazy { "${mellomnavn ?: ""} $etternavn".trim() }
 }

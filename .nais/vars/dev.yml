@@ -11,6 +11,7 @@ urlPdlPip: pdl-pip-api.dev-fss-pub.nais.io
 urlSkjerming: skjermede-personer-pip.intern.dev.nav.no
 urlJoark: dokarkiv.dev-fss-pub.nais.io
 urlDokdist: dokdistfordeling-q1.dev-fss-pub.nais.io
+urlMicrosoftGraphApi: graph.microsoft.com
 azure:
   groups:
     - name: ROLE_SAKSBEHANDLER

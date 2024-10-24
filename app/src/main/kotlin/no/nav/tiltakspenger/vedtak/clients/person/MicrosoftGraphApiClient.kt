@@ -4,10 +4,13 @@ import arrow.core.Either
 import arrow.core.flatten
 import arrow.core.getOrElse
 import arrow.core.right
+import io.ktor.http.URLBuilder
+import io.ktor.http.URLProtocol
+import io.ktor.http.encodedPath
+import io.ktor.http.toURI
 import kotlinx.coroutines.future.await
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.NavIdentClient
-import no.nav.tiltakspenger.felles.exceptions.IkkeLoggDenneException
 import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.vedtak.db.deserialize
@@ -29,13 +32,25 @@ private data class ListOfMicrosoftGraphResponse(
 class MicrosoftGraphApiClient(
     private val getToken: suspend () -> AccessToken,
     private val timeout: Duration = 1.seconds,
-    private val baseUrl: String = "https://graph.microsoft.com/v1.0",
+    private val baseUrl: String,
     connectTimeout: Duration = 1.seconds,
 ) : NavIdentClient {
     private val log = KotlinLogging.logger { }
 
-    private fun uri(navIdent: String) =
-        URI.create("$baseUrl/v1.0/users?\$select=displayName&\$filter=onPremisesSamAccountName eq '$navIdent'\$count=true")
+    /**
+     * Denne oppretter en URI med en URLBuilder for at encodingen skal bli riktig for spesialtegn (apostrof ')
+     */
+    private fun uri(navIdent: String): URI {
+        val urlBuilder = URLBuilder().apply {
+            protocol = URLProtocol.HTTPS
+            host = baseUrl
+            encodedPath = "/users"
+            parameters.append("\$select", "displayName")
+            parameters.append("\$filter", "onPremisesSamAccountName eq '$navIdent'")
+            parameters.append("\$count", "true")
+        }
+        return urlBuilder.build().toURI()
+    }
 
     private val client =
         java.net.http.HttpClient
@@ -53,17 +68,24 @@ class MicrosoftGraphApiClient(
             if (saksbehandlersNavn.isBlank()) {
                 throw RuntimeException("Fant ikke saksbehandlerens navn i microsoftGraphApi $navIdent. Responsen var blank.")
             }
-            // Todo Kew: Er dette formatet "[Etternavn], [Fornavn]"? Isåfall bør man snu det til "[Fornavn] [Etternavn]"
             saksbehandlersNavn
         }
     }
 
     private suspend fun hentBrukerinformasjonForNavIdent(navIdent: String): MicrosoftGraphResponse {
         return Either.catch {
+            val token = getToken()
             val uri = uri(navIdent)
-            val request = createRequest(uri)
+            val request = createRequest(uri, token.token)
             val httpResponse = client.sendAsync(request, HttpResponse.BodyHandlers.ofString()).await()
-            val jsonResponse = httpResponse.body().let { deserialize<ListOfMicrosoftGraphResponse>(it) }
+            val status = httpResponse.statusCode()
+            val body = httpResponse.body()
+            sikkerlogg.debug { "Logger response fra microsoftGraphApi for å debugge -> $status - $body" }
+            if (status == 401 || status == 403) {
+                log.error(RuntimeException("Trigger stacktrace for debug.")) { "Invaliderer cache for systemtoken mot PDL. status: $status." }
+                token.invaliderCache()
+            }
+            val jsonResponse = deserialize<ListOfMicrosoftGraphResponse>(body)
             jsonResponse.let { response ->
                 if (response.value.size != 1) {
                     log.error("Fant ingen eller flere brukere for navIdent $navIdent: ${response.value.size}. Se sikker logg dersom vi fant flere.")
@@ -76,21 +98,21 @@ class MicrosoftGraphApiClient(
                 }
             }
         }.flatten().getOrElse {
-            log.error(RuntimeException("Genererer stacktrace for enklere debug")) { "Ukjent feil mot Microsoft Graph Api for bruker $navIdent. Se sikker logg for mer context" }
-            sikkerlogg.error(it) { "Ukjent feil mot Microsoft Graph Api for bruker $navIdent: ${it.message}" }
-            throw IkkeLoggDenneException("Denne er logget alt, trenger ikke spamme loggen mer enn nødvendig")
+            sikkerlogg.error(it) { "Ukjent feil mot Microsoft Graph Api for bruker: $navIdent message: ${it.message}" }
+            throw RuntimeException("Ukjent feil mot Microsoft Graph Api for bruker $navIdent. Se sikker logg for mer context")
         }
     }
 
-    private suspend fun createRequest(
+    private fun createRequest(
         uri: URI,
+        token: String,
     ): HttpRequest {
         return HttpRequest
             .newBuilder()
             .uri(uri)
             .timeout(timeout.toJavaDuration())
             .header("Accept", "application/json")
-            .header("Authorization", "Bearer ${getToken().value}")
+            .header("Authorization", "Bearer $token")
             .header("ConsistencyLevel", "eventual")
             .GET()
             .build()

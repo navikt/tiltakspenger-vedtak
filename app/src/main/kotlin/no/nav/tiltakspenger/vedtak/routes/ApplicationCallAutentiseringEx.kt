@@ -1,8 +1,7 @@
 package no.nav.tiltakspenger.vedtak.routes
 
-import io.ktor.http.auth.HttpAuthHeader
+import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
-import io.ktor.server.auth.UnauthorizedResponse
 import io.ktor.server.response.respond
 import no.nav.tiltakspenger.felles.Bruker
 import no.nav.tiltakspenger.felles.Saksbehandler
@@ -89,6 +88,8 @@ internal suspend fun ApplicationCall.getBearerToken(): String? {
 }
 
 private suspend fun ApplicationCall.respondWithChallenge(): String? {
-    this.respond(UnauthorizedResponse(HttpAuthHeader.bearerAuthChallenge("Bearer", "tiltakspenger-vedtak")))
+    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/WWW-Authenticate
+    this.response.headers.append("WWW-Authenticate", "Bearer realm=\"tiltakspenger-vedtak\"")
+    this.respond(HttpStatusCode.Unauthorized)
     return null
 }

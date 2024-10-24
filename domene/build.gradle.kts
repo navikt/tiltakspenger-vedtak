@@ -1,7 +1,7 @@
 val jacksonVersion = "2.18.0"
 val kotestVersion = "5.9.1"
 val mockkVersion = "1.13.13"
-val felleslibVersion = "0.0.243"
+val felleslibVersion = "0.0.245"
 val kotlinxCoroutinesVersion = "1.9.0"
 
 dependencies {
@@ -25,7 +25,7 @@ dependencies {
 
     implementation("io.arrow-kt:arrow-core:1.2.4")
 
-    testImplementation(platform("org.junit:junit-bom:5.11.2"))
+    testImplementation(platform("org.junit:junit-bom:5.11.3"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.junit.jupiter:junit-jupiter-params")
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
