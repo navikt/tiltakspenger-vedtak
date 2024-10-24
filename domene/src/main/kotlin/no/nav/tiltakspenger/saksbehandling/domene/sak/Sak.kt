@@ -54,8 +54,9 @@ data class Sak(
     fun hentMeldekort(meldekortId: MeldekortId): Meldekort? {
         return meldeperioder.hentMeldekort(meldekortId)
     }
-
+    fun hentAntallDager(): Int? = rammevedtak?.behandling?.antallDagerPerMeldeperiode()
     fun hentTynnSak(): TynnSak = TynnSak(this.id, this.fnr, this.saksnummer)
+    fun hentRelatertTiltak(): String? = rammevedtak?.behandling?.relatertTiltak()
 
     companion object {
         fun lagSak(

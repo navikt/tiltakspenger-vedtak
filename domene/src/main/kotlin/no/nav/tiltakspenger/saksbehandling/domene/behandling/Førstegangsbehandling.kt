@@ -92,6 +92,8 @@ data class Førstegangsbehandling(
     }
 
     fun erIverksatt(): Boolean = status == INNVILGET
+    fun relatertTiltak(): String = vilkårssett.tiltakDeltagelseVilkår.registerSaksopplysning.tiltakNavn
+    fun antallDagerPerMeldeperiode(): Int = stønadsdager.registerSaksopplysning.antallDager
 
     val tiltakstype: TiltakstypeSomGirRett = vilkårssett.tiltakDeltagelseVilkår.registerSaksopplysning.tiltakstype
     val samletUtfall = vilkårssett.samletUtfall

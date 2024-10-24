@@ -5,6 +5,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import mu.KotlinLogging
+import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.meldekort.service.HentMeldekortService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
@@ -65,10 +66,14 @@ fun Route.hentMeldekortRoute(
                     }
 
                     val meldekort = sak.hentMeldekort(meldekortId)
+
                     if (meldekort == null) {
                         call.respond404NotFound(fantIkkeMeldekort())
                         return@withMeldekortId
                     }
+                    val forrigeMeldekort: Meldekort.UtfyltMeldekort? = meldekort.forrigeMeldekortId?.let { sak.hentMeldekort(it) as Meldekort.UtfyltMeldekort }
+                    val forrigeNavkontor = forrigeMeldekort?.navkontor
+
                     auditService.logMedMeldekortId(
                         meldekortId = meldekortId,
                         navIdent = saksbehandler.navIdent,
@@ -77,7 +82,7 @@ fun Route.hentMeldekortRoute(
                         correlationId = correlationId,
                     )
                     // TODO pre-mvp: Her blir det mer riktig og bruke den totale perioden det skal meldes for.
-                    call.respond(status = HttpStatusCode.OK, message = meldekort.toDTO(sak.vedtaksperiode!!))
+                    call.respond(status = HttpStatusCode.OK, message = meldekort.toDTO(sak.vedtaksperiode!!, sak.hentRelatertTiltak()!!, sak.hentAntallDager()!!, forrigeNavkontor))
                 }
             }
         }
