@@ -13,6 +13,7 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.NavIdentClient
 import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.AccessToken
+import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.db.deserialize
 import java.net.URI
 import java.net.http.HttpRequest
@@ -42,7 +43,7 @@ class MicrosoftGraphApiClient(
      */
     private fun uri(navIdent: String): URI {
         val urlBuilder = URLBuilder().apply {
-            protocol = URLProtocol.HTTPS
+            protocol = if (Configuration.isNais()) URLProtocol.HTTPS else URLProtocol.HTTP
             host = baseUrl
             encodedPath = "/users"
             parameters.append("\$select", "displayName")
