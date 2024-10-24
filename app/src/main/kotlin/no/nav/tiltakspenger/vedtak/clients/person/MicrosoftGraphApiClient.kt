@@ -69,7 +69,6 @@ class MicrosoftGraphApiClient(
             if (saksbehandlersNavn.isBlank()) {
                 throw RuntimeException("Fant ikke saksbehandlerens navn i microsoftGraphApi $navIdent. Responsen var blank.")
             }
-            // Todo Kew: Er dette formatet "[Etternavn], [Fornavn]"? Isåfall bør man snu det til "[Fornavn] [Etternavn]"
             saksbehandlersNavn
         }
     }
