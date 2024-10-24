@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.saksbehandling.service.behandling
 
+import arrow.core.Either
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.Systembruker
 import no.nav.tiltakspenger.libs.common.BehandlingId
@@ -8,6 +9,7 @@ import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
+import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 
 interface BehandlingService {
     /**
@@ -35,7 +37,7 @@ interface BehandlingService {
         behandlingId: BehandlingId,
         saksbehandler: Saksbehandler,
         correlationId: CorrelationId,
-    )
+    ): Either<KanIkkeSendeBehandlingTilBeslutter, Behandling>
 
     suspend fun sendTilbakeTilSaksbehandler(
         behandlingId: BehandlingId,
@@ -48,17 +50,29 @@ interface BehandlingService {
         behandlingId: BehandlingId,
         beslutter: Saksbehandler,
         correlationId: CorrelationId,
-    )
+    ): Either<KanIkkeIverksetteBehandling, Rammevedtak>
 
     suspend fun taBehandling(
         behandlingId: BehandlingId,
         saksbehandler: Saksbehandler,
         correlationId: CorrelationId,
-    ): Behandling
+    ): Either<KanIkkeTaBehandling, Behandling>
 
     fun hentBehandlingerUnderBehandlingForIdent(
         fnr: Fnr,
         periode: Periode,
         systembruker: Systembruker,
     ): List<Behandling>
+}
+
+sealed interface KanIkkeSendeBehandlingTilBeslutter {
+    data object BehandlingKanIkkeVæreUavklart : KanIkkeSendeBehandlingTilBeslutter
+    data object StøtterIkkeDelvisEllerAvslag : KanIkkeSendeBehandlingTilBeslutter
+}
+sealed interface KanIkkeIverksetteBehandling {
+    data object StøtterIkkeDelvisEllerAvslag : KanIkkeIverksetteBehandling
+}
+sealed interface KanIkkeTaBehandling {
+    data object MåVæreSaksbehandler : KanIkkeTaBehandling
+    data object MåVæreBeslutter : KanIkkeTaBehandling
 }

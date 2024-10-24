@@ -7,12 +7,15 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import mu.KotlinLogging
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
+import no.nav.tiltakspenger.saksbehandling.service.behandling.KanIkkeSendeBehandlingTilBeslutter
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.auth2.TokenService
+import no.nav.tiltakspenger.vedtak.routes.Standardfeil.behandlingErUavklart
+import no.nav.tiltakspenger.vedtak.routes.Standardfeil.støtterIkkeDelvisEllerAvslag
 import no.nav.tiltakspenger.vedtak.routes.behandling.personopplysninger.hentPersonRoute
 import no.nav.tiltakspenger.vedtak.routes.behandling.stønadsdager.stønadsdagerRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.alder.alderRoutes
@@ -23,6 +26,7 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.kvpRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.livsopphold.livsoppholdRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.tiltakdeltagelse.tiltakDeltagelseRoutes
 import no.nav.tiltakspenger.vedtak.routes.correlationId
+import no.nav.tiltakspenger.vedtak.routes.respond400BadRequest
 import no.nav.tiltakspenger.vedtak.routes.withBehandlingId
 import no.nav.tiltakspenger.vedtak.routes.withSaksbehandler
 
@@ -63,17 +67,27 @@ fun Route.behandlingRoutes(
         call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
             call.withBehandlingId { behandlingId ->
                 val correlationId = call.correlationId()
-                behandlingService.sendTilBeslutter(behandlingId, saksbehandler, correlationId)
+                behandlingService.sendTilBeslutter(behandlingId, saksbehandler, correlationId).fold(
+                    ifLeft = {
+                        when (it) {
+                            is KanIkkeSendeBehandlingTilBeslutter.BehandlingKanIkkeVæreUavklart -> call.respond400BadRequest(behandlingErUavklart())
+                            is KanIkkeSendeBehandlingTilBeslutter.StøtterIkkeDelvisEllerAvslag -> call.respond400BadRequest(
+                                støtterIkkeDelvisEllerAvslag(),
+                            )
+                        }
+                    },
+                    ifRight = {
+                        auditService.logMedBehandlingId(
+                            behandlingId = behandlingId,
+                            navIdent = saksbehandler.navIdent,
+                            action = AuditLogEvent.Action.UPDATE,
+                            contextMessage = "Sender behandlingen til beslutter",
+                            correlationId = correlationId,
+                        )
 
-                auditService.logMedBehandlingId(
-                    behandlingId = behandlingId,
-                    navIdent = saksbehandler.navIdent,
-                    action = AuditLogEvent.Action.UPDATE,
-                    contextMessage = "Sender behandlingen til beslutter",
-                    correlationId = correlationId,
+                        call.respond(status = HttpStatusCode.OK, message = "{}")
+                    },
                 )
-
-                call.respond(status = HttpStatusCode.OK, message = "{}")
             }
         }
     }

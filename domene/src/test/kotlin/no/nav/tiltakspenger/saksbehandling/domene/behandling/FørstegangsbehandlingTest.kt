@@ -12,14 +12,14 @@ import org.junit.jupiter.api.Test
 internal class FørstegangsbehandlingTest {
     @Test
     fun `ikke lov å iverksette en behandling uten beslutter`() {
-        val innvilget = behandlingTilBeslutterInnvilget(saksbehandler123())
+        val innvilget = behandlingTilBeslutterInnvilget(saksbehandler123()).getOrNull()!!
 
         shouldThrow<IllegalStateException> {
             innvilget.iverksett(saksbehandler123(), godkjentAttestering())
         }.message shouldBe "Må ha status UNDER_BESLUTNING for å iverksette. Behandlingsstatus: KLAR_TIL_BESLUTNING"
 
         shouldThrow<IkkeImplementertException> {
-            val avslag = behandlingTilBeslutterAvslag()
+            val avslag = behandlingTilBeslutterAvslag().getOrNull()!!
             avslag.iverksett(saksbehandler123(), godkjentAttestering())
         }.message shouldBe "Støtter ikke avslag enda."
     }

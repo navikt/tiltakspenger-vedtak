@@ -13,15 +13,24 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBeha
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling.StøtterIkkeBarnetillegg
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling.StøtterKunInnvilgelse
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
+import no.nav.tiltakspenger.saksbehandling.service.behandling.KanIkkeTaBehandling.MåVæreBeslutter
+import no.nav.tiltakspenger.saksbehandling.service.behandling.KanIkkeTaBehandling.MåVæreSaksbehandler
 import no.nav.tiltakspenger.saksbehandling.service.sak.KanIkkeStarteFørstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.auth2.TokenService
+import no.nav.tiltakspenger.vedtak.routes.Standardfeil.fantIkkeTiltak
+import no.nav.tiltakspenger.vedtak.routes.Standardfeil.måVæreBeslutter
+import no.nav.tiltakspenger.vedtak.routes.Standardfeil.måVæreSaksbehandler
+import no.nav.tiltakspenger.vedtak.routes.Standardfeil.støtterIkkeBarnetillegg
+import no.nav.tiltakspenger.vedtak.routes.Standardfeil.støtterIkkeDelvisEllerAvslag
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLINGER_PATH
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.behandling.toDTO
 import no.nav.tiltakspenger.vedtak.routes.correlationId
+import no.nav.tiltakspenger.vedtak.routes.respond400BadRequest
+import no.nav.tiltakspenger.vedtak.routes.respond404NotFound
 import no.nav.tiltakspenger.vedtak.routes.withBody
 import no.nav.tiltakspenger.vedtak.routes.withSaksbehandler
 
@@ -58,21 +67,12 @@ fun Route.behandlingBenkRoutes(
                             is KanIkkeStarteFørstegangsbehandling.OppretteBehandling ->
                                 when (it.underliggende) {
                                     FantIkkeTiltak ->
-                                        call.respond(
-                                            message = "Fant ikke igjen tiltaket det er søkt på i tiltak knyttet til brukeren",
-                                            status = HttpStatusCode.InternalServerError,
-                                        )
+                                        call.respond404NotFound(fantIkkeTiltak())
 
                                     StøtterIkkeBarnetillegg ->
-                                        call.respond(
-                                            message = "Vi støtter ikke at brukeren har barn i PDL eller manuelle barn.",
-                                            status = HttpStatusCode.BadRequest,
-                                        )
+                                        call.respond400BadRequest(støtterIkkeBarnetillegg())
 
-                                    is StøtterKunInnvilgelse -> call.respond(
-                                        message = "Vi støtter ikke å opprette en behandling som vil føre til delvis innvilgelse eller avslag.",
-                                        status = HttpStatusCode.BadRequest,
-                                    )
+                                    is StøtterKunInnvilgelse -> call.respond400BadRequest(støtterIkkeDelvisEllerAvslag())
                                 }
                         }
                     },
@@ -99,17 +99,26 @@ fun Route.behandlingBenkRoutes(
             val behandlingId = BehandlingId.fromString(call.receive<BehandlingIdDTO>().id)
 
             val correlationId = call.correlationId()
-            val behandling = behandlingService.taBehandling(behandlingId, saksbehandler, correlationId = correlationId).toDTO()
+            val behandling = behandlingService.taBehandling(behandlingId, saksbehandler, correlationId = correlationId)
+                .fold(
+                    {
+                        when (it) {
+                            MåVæreBeslutter -> call.respond400BadRequest(måVæreBeslutter())
+                            MåVæreSaksbehandler -> call.respond400BadRequest(måVæreSaksbehandler())
+                        }
+                    },
+                    {
+                        auditService.logMedBehandlingId(
+                            behandlingId = behandlingId,
+                            navIdent = saksbehandler.navIdent,
+                            action = AuditLogEvent.Action.UPDATE,
+                            contextMessage = "Saksbehandler tar behandlingen",
+                            correlationId = correlationId,
+                        )
 
-            auditService.logMedBehandlingId(
-                behandlingId = behandlingId,
-                navIdent = saksbehandler.navIdent,
-                action = AuditLogEvent.Action.UPDATE,
-                contextMessage = "Saksbehandler tar behandlingen",
-                correlationId = correlationId,
-            )
-
-            call.respond(status = HttpStatusCode.OK, behandling)
+                        call.respond(status = HttpStatusCode.OK, it.toDTO())
+                    },
+                )
         }
     }
 }

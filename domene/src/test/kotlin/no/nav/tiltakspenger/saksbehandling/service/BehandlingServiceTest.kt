@@ -1,5 +1,7 @@
 package no.nav.tiltakspenger.saksbehandling.service
 
+import arrow.core.left
+import io.kotest.assertions.arrow.core.shouldBeRight
 import io.kotest.assertions.throwables.shouldNotThrow
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
@@ -9,6 +11,7 @@ import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandlerUtenTilgang
 import no.nav.tiltakspenger.objectmothers.førstegangsbehandlingTilBeslutter
+import no.nav.tiltakspenger.saksbehandling.service.behandling.KanIkkeTaBehandling
 import org.junit.jupiter.api.Test
 
 internal class BehandlingServiceTest {
@@ -17,22 +20,17 @@ internal class BehandlingServiceTest {
         with(TestApplicationContext()) {
             val sak = this.førstegangsbehandlingTilBeslutter()
             val behandlingId = sak.førstegangsbehandling.id
+            this.førstegangsbehandlingContext.behandlingService.taBehandling(
+                behandlingId,
+                saksbehandlerUtenTilgang(),
+                correlationId = CorrelationId.generate(),
+            ) shouldBe KanIkkeTaBehandling.MåVæreBeslutter.left()
 
-            shouldThrow<IllegalStateException> {
-                this.førstegangsbehandlingContext.behandlingService.taBehandling(
-                    behandlingId,
-                    saksbehandlerUtenTilgang(),
-                    correlationId = CorrelationId.generate(),
-                )
-            }.message shouldBe
-                "Saksbehandler må ha beslutterrolle. Utøvende saksbehandler: Saksbehandler(navIdent='U12345', brukernavn='*****', epost='*****', roller=Roller(value=[]))"
-            shouldNotThrow<IllegalStateException> {
-                this.førstegangsbehandlingContext.behandlingService.taBehandling(
-                    behandlingId,
-                    beslutter(),
-                    correlationId = CorrelationId.generate(),
-                )
-            }
+            this.førstegangsbehandlingContext.behandlingService.taBehandling(
+                behandlingId,
+                beslutter(),
+                correlationId = CorrelationId.generate(),
+            ).shouldBeRight()
         }
     }
 

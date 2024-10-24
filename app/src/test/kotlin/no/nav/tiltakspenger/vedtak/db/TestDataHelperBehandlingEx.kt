@@ -125,9 +125,9 @@ internal fun TestDataHelper.persisterIverksattFørstegangsbehandling(
                     correlationId = CorrelationId.generate(),
                 ),
             ).getOrNull()!!
-            .tilBeslutning(saksbehandler)
-            .taBehandling(beslutter)
-            .iverksett(beslutter, ObjectMother.godkjentAttestering(beslutter))
+            .tilBeslutning(saksbehandler).getOrNull()!!
+            .taBehandling(beslutter).getOrNull()!!
+            .iverksett(beslutter, ObjectMother.godkjentAttestering(beslutter)).getOrNull()!!
     oppdatertFørstegangsbehandling.opprettVedtak().also {
         vedtakRepo.lagre(it)
     }

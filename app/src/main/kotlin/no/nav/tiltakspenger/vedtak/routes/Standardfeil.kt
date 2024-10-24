@@ -17,6 +17,16 @@ object Standardfeil {
         "fant_ikke_meldekort",
     )
 
+    fun fantIkkeTiltak(): ErrorJson = ErrorJson(
+        "Fant ikke tiltak",
+        "fant_ikke_tiltak",
+    )
+
+    fun måVæreSaksbehandler(): ErrorJson = ErrorJson(
+        "Må ha saksbehandler-rolle.",
+        "må_ha_saksbehandler_rolle",
+    )
+
     fun måVæreBeslutter(): ErrorJson = ErrorJson(
         "Må ha beslutter-rolle.",
         "må_ha_beslutter_rolle",
@@ -25,5 +35,21 @@ object Standardfeil {
     fun saksbehandlerOgBeslutterKanIkkeVæreLik(): ErrorJson = ErrorJson(
         "Beslutter kan ikke være den samme som saksbehandler.",
         "beslutter_og_saksbehandler_kan_ikke_være_lik",
+    )
+    fun behandlingErUavklart(): ErrorJson = ErrorJson(
+        "Behandlingen kan ikke være uavklart",
+        "behandling_uavklart",
+    )
+    fun støtterIkkeDelvisEllerAvslag(): ErrorJson = ErrorJson(
+        "Vi støtter ikke delvis innvilgelse eller avslag",
+        "støtter_ikke_delvis_eller_avslag",
+    )
+    fun støtterIkkeBarnetillegg(): ErrorJson = ErrorJson(
+        "Vi støtter ikke barnetillegg",
+        "støtter_ikke_barnetillegg",
+    )
+    fun sisteMeldekortErUtfylt(): ErrorJson = ErrorJson(
+        "Det siste meldekortet er utfylt",
+        "siste_meldekort_utfylt",
     )
 }

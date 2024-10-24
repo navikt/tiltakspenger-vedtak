@@ -9,7 +9,9 @@ import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.auth2.TokenService
+import no.nav.tiltakspenger.vedtak.routes.Standardfeil.støtterIkkeDelvisEllerAvslag
 import no.nav.tiltakspenger.vedtak.routes.correlationId
+import no.nav.tiltakspenger.vedtak.routes.respond400BadRequest
 import no.nav.tiltakspenger.vedtak.routes.withBehandlingId
 import no.nav.tiltakspenger.vedtak.routes.withBody
 import no.nav.tiltakspenger.vedtak.routes.withSaksbehandler
@@ -55,16 +57,19 @@ fun Route.behandlingBeslutterRoutes(
         call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
             call.withBehandlingId { behandlingId ->
                 val correlationId = call.correlationId()
-                behandlingService.iverksett(behandlingId, saksbehandler, correlationId)
-
-                auditService.logMedBehandlingId(
-                    behandlingId = behandlingId,
-                    navIdent = saksbehandler.navIdent,
-                    action = AuditLogEvent.Action.UPDATE,
-                    contextMessage = "Beslutter godkjenner behandlingen",
-                    correlationId = correlationId,
+                behandlingService.iverksett(behandlingId, saksbehandler, correlationId).fold(
+                    ifLeft = { call.respond400BadRequest(støtterIkkeDelvisEllerAvslag()) },
+                    ifRight = {
+                        auditService.logMedBehandlingId(
+                            behandlingId = behandlingId,
+                            navIdent = saksbehandler.navIdent,
+                            action = AuditLogEvent.Action.UPDATE,
+                            contextMessage = "Beslutter godkjenner behandlingen",
+                            correlationId = correlationId,
+                        )
+                        call.respond(message = "{}", status = HttpStatusCode.OK)
+                    },
                 )
-                call.respond(message = "{}", status = HttpStatusCode.OK)
             }
         }
     }

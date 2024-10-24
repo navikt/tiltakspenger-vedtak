@@ -1,6 +1,8 @@
 package no.nav.tiltakspenger.meldekort.service
 
 import arrow.core.Either
+import arrow.core.getOrElse
+import arrow.core.left
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
@@ -31,8 +33,6 @@ class IverksettMeldekortService(
     suspend fun iverksettMeldekort(
         kommando: IverksettMeldekortKommando,
     ): Either<KanIkkeIverksetteMeldekort, Meldekort.UtfyltMeldekort> {
-        require(kommando.beslutter.isBeslutter()) { "Saksbehandler ${kommando.beslutter.navIdent} må ha rollen beslutter" }
-
         val meldekortId = kommando.meldekortId
         val sakId = kommando.sakId
         kastHvisIkkeTilgang(kommando.beslutter, meldekortId, kommando.correlationId)
@@ -51,13 +51,15 @@ class IverksettMeldekortService(
 
         return meldekort.iverksettMeldekort(kommando.beslutter).onRight { iverksattMeldekort ->
             val nesteMeldekort = iverksattMeldekort.opprettNesteMeldekort(rammevedtak.utfallsperioder)
+                .getOrElse { return it.left() }
             val eksisterendeUtbetalingsvedtak = sak.utbetalinger
             val utbetalingsvedtak =
                 iverksattMeldekort.opprettUtbetalingsvedtak(rammevedtak, eksisterendeUtbetalingsvedtak.lastOrNull()?.id)
             val utbetalingsstatistikk = utbetalingsvedtak.tilStatistikk()
+
             sessionFactory.withTransactionContext { tx ->
                 meldekortRepo.oppdater(iverksattMeldekort, tx)
-                nesteMeldekort.onRight { meldekortRepo.lagre(it, tx) }
+                meldekortRepo.lagre(nesteMeldekort, tx)
                 utbetalingsvedtakRepo.lagre(utbetalingsvedtak, tx)
                 statistikkStønadRepo.lagre(utbetalingsstatistikk, tx)
             }

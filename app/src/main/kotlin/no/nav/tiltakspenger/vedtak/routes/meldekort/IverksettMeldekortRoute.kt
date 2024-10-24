@@ -8,12 +8,14 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.meldekort.domene.IverksettMeldekortKommando
 import no.nav.tiltakspenger.meldekort.domene.KanIkkeIverksetteMeldekort.MåVæreBeslutter
 import no.nav.tiltakspenger.meldekort.domene.KanIkkeIverksetteMeldekort.SaksbehandlerOgBeslutterKanIkkeVæreLik
+import no.nav.tiltakspenger.meldekort.domene.KanIkkeIverksetteMeldekort.SisteMeldekortErUtfylt
 import no.nav.tiltakspenger.meldekort.service.IverksettMeldekortService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.auth2.TokenService
 import no.nav.tiltakspenger.vedtak.routes.Standardfeil.måVæreBeslutter
 import no.nav.tiltakspenger.vedtak.routes.Standardfeil.saksbehandlerOgBeslutterKanIkkeVæreLik
+import no.nav.tiltakspenger.vedtak.routes.Standardfeil.sisteMeldekortErUtfylt
 import no.nav.tiltakspenger.vedtak.routes.correlationId
 import no.nav.tiltakspenger.vedtak.routes.respond400BadRequest
 import no.nav.tiltakspenger.vedtak.routes.withMeldekortId
@@ -41,13 +43,7 @@ fun Route.iverksettMeldekortRoute(
                             correlationId = correlationId,
                         ),
                     )
-                    auditService.logMedMeldekortId(
-                        meldekortId = meldekortId,
-                        navIdent = saksbehandler.navIdent,
-                        action = AuditLogEvent.Action.UPDATE,
-                        contextMessage = "Iverksetter meldekort",
-                        correlationId = correlationId,
-                    )
+
                     meldekort.fold(
                         {
                             when (it) {
@@ -55,9 +51,19 @@ fun Route.iverksettMeldekortRoute(
                                 is SaksbehandlerOgBeslutterKanIkkeVæreLik -> call.respond400BadRequest(
                                     saksbehandlerOgBeslutterKanIkkeVæreLik(),
                                 )
+                                is SisteMeldekortErUtfylt -> call.respond400BadRequest(sisteMeldekortErUtfylt())
                             }
                         },
-                        { call.respond(message = {}, status = HttpStatusCode.OK) },
+                        {
+                            auditService.logMedMeldekortId(
+                                meldekortId = meldekortId,
+                                navIdent = saksbehandler.navIdent,
+                                action = AuditLogEvent.Action.UPDATE,
+                                contextMessage = "Iverksetter meldekort",
+                                correlationId = correlationId,
+                            )
+                            call.respond(message = {}, status = HttpStatusCode.OK)
+                        },
                     )
                 }
             }

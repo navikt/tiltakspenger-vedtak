@@ -15,8 +15,7 @@ data class MeldekortDTO(
     val status: MeldekortstatusDTO,
     val totalbeløpTilUtbetaling: Int?,
     val sakPeriode: PeriodeDTO,
-    // TODO post-mvp Kew: Må få på antall dager per uke når vi trenger det.
-//    val antallDagerPerUke: Int,
+    // TODO post-mvp Kew: Må få på antall dager per meldeperiode når vi trenger det.
 )
 
 fun Meldekort.toDTO(sakPeriode: Periode): MeldekortDTO =

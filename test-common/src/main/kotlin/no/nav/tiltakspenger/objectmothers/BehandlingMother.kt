@@ -1,14 +1,15 @@
 package no.nav.tiltakspenger.objectmothers
 
+import arrow.core.Either
 import arrow.core.getOrElse
+import arrow.core.left
+import arrow.core.right
 import kotlinx.coroutines.runBlocking
 import no.nav.tiltakspenger.common.TestApplicationContext
 import no.nav.tiltakspenger.felles.AttesteringId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.Systembruker
 import no.nav.tiltakspenger.felles.TiltakId
-import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
-import no.nav.tiltakspenger.felles.exceptions.StøtterIkkeUtfallException
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
@@ -28,9 +29,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.søknadstiltak
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attesteringsstatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling.FantIkkeTiltak
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling.StøtterIkkeBarnetillegg
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling.StøtterKunInnvilgelse
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
@@ -42,7 +41,10 @@ import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltakskilde
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltakskilde.Komet
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndring
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LivsoppholdVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.leggTilLivsoppholdSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.service.behandling.KanIkkeIverksetteBehandling
+import no.nav.tiltakspenger.saksbehandling.service.behandling.KanIkkeSendeBehandlingTilBeslutter
 import no.nav.tiltakspenger.saksbehandling.service.sak.KanIkkeStarteFørstegangsbehandling
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -70,8 +72,8 @@ interface BehandlingMother {
                 ),
             ),
         saksbehandler: Saksbehandler = saksbehandler(),
-    ): Førstegangsbehandling =
-        Førstegangsbehandling
+    ): Either<KanIkkeOppretteBehandling, Førstegangsbehandling> {
+        val uavklartBehandling = Førstegangsbehandling
             .opprettBehandling(
                 sakId = sakId,
                 saksnummer = saksnummer,
@@ -80,7 +82,9 @@ interface BehandlingMother {
                 fødselsdato = personopplysningFødselsdato,
                 saksbehandler = saksbehandler,
                 registrerteTiltak = registrerteTiltak,
-            ).getOrNull()!!
+            ).getOrElse { return it.left() }
+        return uavklartBehandling.right()
+    }
 
     fun behandlingUnderBehandlingInnvilget(
         vurderingsperiode: Periode = vurderingsperiode(),
@@ -95,7 +99,7 @@ interface BehandlingMother {
                 sakId = sakId,
                 søknad = søknad,
                 saksbehandler = saksbehandler,
-            ),
+            ).getOrElse { throw IllegalStateException("Kunne ikke opprette uavklart behandling") },
         livsoppholdCommand: LeggTilLivsoppholdSaksopplysningCommand =
             LeggTilLivsoppholdSaksopplysningCommand(
                 behandlingId = behandling.id,
@@ -108,15 +112,10 @@ interface BehandlingMother {
                 årsakTilEndring = årsakTilEndring,
                 correlationId = correlationId,
             ),
-    ): Førstegangsbehandling =
-        behandlingUnderBehandlingUavklart(
-            periode = vurderingsperiode,
-            sakId = sakId,
-            søknad = søknad,
-            saksbehandler = saksbehandler,
-        ).leggTilLivsoppholdSaksopplysning(
+    ): Either<LivsoppholdVilkår.PeriodenMåVæreLikVurderingsperioden, Førstegangsbehandling> =
+        behandling.leggTilLivsoppholdSaksopplysning(
             command = livsoppholdCommand,
-        ).getOrNull()!!
+        )
 
     fun behandlingUnderBehandlingAvslag(
         periode: Periode = vurderingsperiode(),
@@ -131,7 +130,7 @@ interface BehandlingMother {
                 sakId = sakId,
                 søknad = søknad,
                 saksbehandler = saksbehandler,
-            )
+            ).getOrElse { throw IllegalStateException("Kunne ikke opprette uavklart behandling") }
 
         behandling.vilkårssett.oppdaterLivsopphold(
             LeggTilLivsoppholdSaksopplysningCommand(
@@ -159,21 +158,24 @@ interface BehandlingMother {
             tidspunkt = LocalDateTime.now(),
         )
 
-    fun behandlingTilBeslutterInnvilget(saksbehandler: Saksbehandler = saksbehandler123()): Førstegangsbehandling {
-        val behandling = behandlingUnderBehandlingInnvilget(saksbehandler = saksbehandler)
-        return behandling.tilBeslutning(saksbehandler)
+    fun behandlingTilBeslutterInnvilget(saksbehandler: Saksbehandler = saksbehandler123()): Either<KanIkkeSendeBehandlingTilBeslutter, Førstegangsbehandling> {
+        val behandling = behandlingUnderBehandlingInnvilget(saksbehandler = saksbehandler).getOrElse { throw IllegalStateException("Kunne ikke opprette innvilget behandling") }
+        val behandlingTilBeslutter = behandling.tilBeslutning(saksbehandler)
+            .getOrElse { return it.left() }
+        return behandlingTilBeslutter.right()
     }
 
-    fun behandlingTilBeslutterAvslag(): Førstegangsbehandling =
+    fun behandlingTilBeslutterAvslag(): Either<KanIkkeSendeBehandlingTilBeslutter, Førstegangsbehandling> =
         behandlingUnderBehandlingAvslag()
             .copy(saksbehandler = saksbehandler123().navIdent)
             .tilBeslutning(saksbehandler123())
 
-    fun behandlingInnvilgetIverksatt(): Førstegangsbehandling =
-        behandlingTilBeslutterInnvilget(saksbehandler123())
-            .copy(beslutter = beslutter().navIdent)
-            .iverksett(beslutter(), godkjentAttestering())
-
+    fun behandlingInnvilgetIverksatt(): Either<KanIkkeIverksetteBehandling, Førstegangsbehandling> {
+        val beslutterBehandling = behandlingTilBeslutterInnvilget(saksbehandler123()).getOrElse { throw IllegalStateException("Kunne ikke opprette beslutterbehandling") }
+            .taBehandling(beslutter()).getOrElse { throw IllegalStateException("Kunne ikke sette beslutter på behandling") }
+        val iverksattBehandling = beslutterBehandling.iverksett(beslutter(), godkjentAttestering()).getOrElse { return it.left() }
+        return iverksattBehandling.right()
+    }
     fun tiltak(
         id: TiltakId = TiltakId.random(),
         eksternId: String = "arenaId",
@@ -295,31 +297,19 @@ suspend fun TestApplicationContext.førstegangsbehandlingUavklart(
             intro = if (deltarPåIntroduksjonsprogram) Søknad.PeriodeSpm.Ja(periode) else Søknad.PeriodeSpm.Nei,
             kvp = if (deltarPåKvp) Søknad.PeriodeSpm.Ja(periode) else Søknad.PeriodeSpm.Nei,
         ),
-): Sak {
+): Either<KanIkkeStarteFørstegangsbehandling, Sak> {
     this.nySøknad(
         fnr = fnr,
         søknad = søknad,
         personopplysningerForBrukerFraPdl = personopplysningerForBrukerFraPdl,
         tiltak = tiltak,
     )
-    return this.sakContext.sakService
+    val nySak = this.sakContext.sakService
         .startFørstegangsbehandling(søknad.id, saksbehandler, correlationId = CorrelationId.generate())
         .getOrElse {
-            when (it) {
-                is KanIkkeStarteFørstegangsbehandling.HarAlleredeStartetBehandlingen -> throw IllegalStateException("Vi har allerede startet en behandling på denne søknaden")
-                is KanIkkeStarteFørstegangsbehandling.OppretteBehandling ->
-                    when (it.underliggende) {
-                        is FantIkkeTiltak ->
-                            throw IllegalStateException("Fant ikke igjen tiltaket det er søkt på i tiltak knyttet til brukeren")
-
-                        StøtterIkkeBarnetillegg ->
-                            throw IkkeImplementertException("Vi støtter ikke at brukeren har barn i PDL eller manuelle barn.")
-
-                        is StøtterKunInnvilgelse -> throw StøtterIkkeUtfallException("Vi støtter ikke å opprette en behandling som vil føre til delvis innvilgelse eller avslag.")
-                        else -> throw IkkeImplementertException("Kunne ikke starte førstegangsbehandling")
-                    }
-            }
+            return it.left()
         }
+    return nySak.right()
 }
 
 suspend fun TestApplicationContext.førstegangsbehandlingVilkårsvurdert(
@@ -327,16 +317,16 @@ suspend fun TestApplicationContext.førstegangsbehandlingVilkårsvurdert(
     fnr: Fnr = Fnr.random(),
     saksbehandler: Saksbehandler = saksbehandler(),
     correlationId: CorrelationId = CorrelationId.generate(),
-): Sak {
-    val uavklart =
+): Either<LivsoppholdVilkår.PeriodenMåVæreLikVurderingsperioden, Sak> {
+    val nySak =
         førstegangsbehandlingUavklart(
             periode = periode,
             fnr = fnr,
             saksbehandler = saksbehandler,
-        )
+        ).getOrElse { throw IllegalStateException("Kunne ikke opprette ny sak") }
     this.førstegangsbehandlingContext.livsoppholdVilkårService.leggTilSaksopplysning(
         LeggTilLivsoppholdSaksopplysningCommand(
-            behandlingId = uavklart.førstegangsbehandling.id,
+            behandlingId = nySak.førstegangsbehandling.id,
             saksbehandler = saksbehandler,
             harYtelseForPeriode =
             LeggTilLivsoppholdSaksopplysningCommand.HarYtelseForPeriode(
@@ -346,12 +336,12 @@ suspend fun TestApplicationContext.førstegangsbehandlingVilkårsvurdert(
             årsakTilEndring = ÅrsakTilEndring.ENDRING_ETTER_SØKNADSTIDSPUNKT,
             correlationId = correlationId,
         ),
-    )
+    ).getOrElse { return it.left() }
     return this.sakContext.sakService.hentForSakId(
-        uavklart.id,
+        nySak.id,
         saksbehandler,
         correlationId = CorrelationId.generate(),
-    )!!
+    )!!.right()
 }
 
 suspend fun TestApplicationContext.førstegangsbehandlingTilBeslutter(
@@ -364,13 +354,18 @@ suspend fun TestApplicationContext.førstegangsbehandlingTilBeslutter(
             periode = periode,
             fnr = fnr,
             saksbehandler = saksbehandler,
-        )
+        ).getOrElse { throw IllegalStateException("Kunne ikke opprette vilkårsvurdert behandling") }
 
     this.førstegangsbehandlingContext.behandlingService.sendTilBeslutter(
         vilkårsvurdert.førstegangsbehandling.id,
         saksbehandler,
         correlationId = CorrelationId.generate(),
-    )
+    ).onLeft {
+        when (it) {
+            KanIkkeSendeBehandlingTilBeslutter.StøtterIkkeDelvisEllerAvslag -> throw IllegalStateException("Støtter ikke delvis eller avslag")
+            KanIkkeSendeBehandlingTilBeslutter.BehandlingKanIkkeVæreUavklart -> throw IllegalStateException("Behandling kan ikke være uavklart")
+        }
+    }
     return this.sakContext.sakService.hentForSakId(
         vilkårsvurdert.id,
         saksbehandler,

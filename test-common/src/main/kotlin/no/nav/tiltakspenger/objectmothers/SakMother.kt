@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.objectmothers
 
+import arrow.core.getOrElse
 import arrow.core.nonEmptyListOf
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.januar
@@ -13,6 +14,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.godkjentAttestering
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler
 import no.nav.tiltakspenger.objectmothers.ObjectMother.søknadstiltak
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
@@ -108,7 +110,12 @@ interface SakMother {
             saksbehandler = saksbehandler,
         ).let {
             require(it.behandlinger.size == 1)
-            it.copy(behandlinger = nonEmptyListOf(it.førstegangsbehandling.tilBeslutning(saksbehandler).taBehandling(beslutter)))
+            val behandling = it.førstegangsbehandling.tilBeslutning(saksbehandler)
+                .getOrElse { throw IllegalStateException("Kunne ikke sende behandling til beslutning") }.taBehandling(beslutter)
+                .getOrElse { throw IllegalStateException("Kunne ikke ta behandlingTilBeslutning") }
+            it.copy(
+                behandlinger = nonEmptyListOf<Behandling>(behandling),
+            )
         }
     }
 
@@ -126,7 +133,7 @@ interface SakMother {
             saksbehandler = saksbehandler,
         ).let {
             require(it.behandlinger.size == 1)
-            val iverksattBehandling = it.førstegangsbehandling.iverksett(beslutter, godkjentAttestering())
+            val iverksattBehandling = it.førstegangsbehandling.iverksett(beslutter, godkjentAttestering()).getOrElse { throw IllegalStateException("Noe gikk galt ved oppretting av iverksattbehandling") }
             it.copy(
                 behandlinger = nonEmptyListOf(iverksattBehandling),
                 rammevedtak = iverksattBehandling.opprettVedtak(),

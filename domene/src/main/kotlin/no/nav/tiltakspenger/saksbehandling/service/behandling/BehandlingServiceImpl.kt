@@ -1,6 +1,9 @@
 package no.nav.tiltakspenger.saksbehandling.service.behandling
 
+import arrow.core.Either
 import arrow.core.getOrElse
+import arrow.core.left
+import arrow.core.right
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.Systembruker
@@ -23,6 +26,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attesteringsstatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.opprettVedtak
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.RammevedtakRepo
@@ -68,9 +72,10 @@ class BehandlingServiceImpl(
         behandlingId: BehandlingId,
         saksbehandler: Saksbehandler,
         correlationId: CorrelationId,
-    ) {
-        val behandling = hentBehandling(behandlingId, saksbehandler, correlationId).tilBeslutning(saksbehandler)
+    ): Either<KanIkkeSendeBehandlingTilBeslutter, Behandling> {
+        val behandling = hentBehandling(behandlingId, saksbehandler, correlationId).tilBeslutning(saksbehandler).getOrElse { return it.left() }
         førstegangsbehandlingRepo.lagre(behandling)
+        return behandling.right()
     }
 
     override suspend fun sendTilbakeTilSaksbehandler(
@@ -97,7 +102,7 @@ class BehandlingServiceImpl(
         behandlingId: BehandlingId,
         beslutter: Saksbehandler,
         correlationId: CorrelationId,
-    ) {
+    ): Either<KanIkkeIverksetteBehandling, Rammevedtak> {
         val behandling = hentBehandling(behandlingId, beslutter, correlationId) as Førstegangsbehandling
         val sak =
             sakRepo.hentDetaljerForSakId(behandling.sakId)
@@ -108,7 +113,7 @@ class BehandlingServiceImpl(
                 begrunnelse = "",
                 beslutter = beslutter.navIdent,
             )
-        val iverksattBehandling = behandling.iverksett(beslutter, attestering)
+        val iverksattBehandling = behandling.iverksett(beslutter, attestering).getOrElse { return it.left() }
 
         val vedtak = iverksattBehandling.opprettVedtak()
 
@@ -139,6 +144,7 @@ class BehandlingServiceImpl(
             statistikkStønadRepo.lagre(stønadStatistikk, tx)
             meldekortRepo.lagre(førsteMeldekort, tx)
         }
+        return vedtak.right()
         // journalføring og dokumentdistribusjon skjer i egen jobb
     }
 
@@ -146,11 +152,11 @@ class BehandlingServiceImpl(
         behandlingId: BehandlingId,
         saksbehandler: Saksbehandler,
         correlationId: CorrelationId,
-    ): Behandling {
-        val behandling = hentBehandling(behandlingId, saksbehandler, correlationId)
-        return behandling.taBehandling(saksbehandler).also {
-            førstegangsbehandlingRepo.lagre(it)
-        }
+    ): Either<KanIkkeTaBehandling, Behandling> {
+        val behandling = hentBehandling(behandlingId, saksbehandler, correlationId).taBehandling(saksbehandler)
+            .getOrElse { return it.left() }
+        førstegangsbehandlingRepo.lagre(behandling)
+        return behandling.right()
     }
 
     // er tenkt brukt fra datadeling og henter alle behandlinger som ikke er iverksatt for en ident

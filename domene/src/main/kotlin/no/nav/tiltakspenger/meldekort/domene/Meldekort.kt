@@ -74,10 +74,10 @@ sealed interface Meldekort {
          */
         fun opprettNesteMeldekort(
             utfallsperioder: Periodisering<AvklartUtfallForPeriode>,
-        ): Either<SisteMeldekortErUtfylt, IkkeUtfyltMeldekort> {
+        ): Either<KanIkkeIverksetteMeldekort, IkkeUtfyltMeldekort> {
             val periode = Periode(fraOgMed.plusDays(14), tilOgMed.plusDays(14))
             if (periode.tilOgMed.isAfter(utfallsperioder.totalePeriode.tilOgMed)) {
-                return SisteMeldekortErUtfylt.left()
+                return KanIkkeIverksetteMeldekort.SisteMeldekortErUtfylt.left()
             }
             val meldekortId = MeldekortId.random()
             return IkkeUtfyltMeldekort(

@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.saksbehandling.domene.behandling
 
+import arrow.core.Either
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
@@ -12,6 +13,9 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.AvklartUtfallForPeriod
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.UtfallForPeriode
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.toAvklartUtfallForPeriode
+import no.nav.tiltakspenger.saksbehandling.service.behandling.KanIkkeIverksetteBehandling
+import no.nav.tiltakspenger.saksbehandling.service.behandling.KanIkkeSendeBehandlingTilBeslutter
+import no.nav.tiltakspenger.saksbehandling.service.behandling.KanIkkeTaBehandling
 import java.time.LocalDateTime
 
 interface Behandling {
@@ -32,14 +36,14 @@ interface Behandling {
     val utfallsperioder: Periodisering<UtfallForPeriode> get() = vilkårssett.utfallsperioder()
     val avklarteUtfallsperioder: Periodisering<AvklartUtfallForPeriode> get() = utfallsperioder.toAvklartUtfallForPeriode()
 
-    fun taBehandling(saksbehandler: Saksbehandler): Behandling
+    fun taBehandling(saksbehandler: Saksbehandler): Either<KanIkkeTaBehandling, Behandling>
 
-    fun tilBeslutning(saksbehandler: Saksbehandler): Behandling
+    fun tilBeslutning(saksbehandler: Saksbehandler): Either<KanIkkeSendeBehandlingTilBeslutter, Behandling>
 
     fun iverksett(
         utøvendeBeslutter: Saksbehandler,
         attestering: Attestering,
-    ): Behandling
+    ): Either<KanIkkeIverksetteBehandling, Behandling>
 
     fun sendTilbake(
         utøvendeBeslutter: Saksbehandler,
