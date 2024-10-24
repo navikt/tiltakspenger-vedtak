@@ -31,6 +31,7 @@ object Configuration {
             "AZURE_APP_CLIENT_ID" to System.getenv("AZURE_APP_CLIENT_ID"),
             "AZURE_APP_CLIENT_SECRET" to System.getenv("AZURE_APP_CLIENT_SECRET"),
             "AZURE_APP_WELL_KNOWN_URL" to System.getenv("AZURE_APP_WELL_KNOWN_URL"),
+            "AZURE_OPENID_CONFIG_TOKEN_ENDPOINT" to System.getenv("AZURE_OPENID_CONFIG_TOKEN_ENDPOINT"),
             "ROLE_SAKSBEHANDLER" to System.getenv("ROLE_SAKSBEHANDLER"),
             "ROLE_BESLUTTER" to System.getenv("ROLE_BESLUTTER"),
             "ROLE_FORTROLIG" to System.getenv("ROLE_FORTROLIG"),
@@ -76,6 +77,7 @@ object Configuration {
                 "AZURE_APP_CLIENT_ID" to "tiltakspenger-vedtak",
                 "AZURE_APP_CLIENT_SECRET" to "secret",
                 "AZURE_APP_WELL_KNOWN_URL" to "http://host.docker.internal:6969/azure/.well-known/openid-configuration",
+                "AZURE_OPENID_CONFIG_TOKEN_ENDPOINT" to "http://host.docker.internal:6969/default/token",
                 "AZURE_OPENID_CONFIG_ISSUER" to "http://host.docker.internal:6969/azure",
                 "AZURE_OPENID_CONFIG_JWKS_URI" to "http://host.docker.internal:6969/azure/jwks",
                 "DB_USERNAME" to "postgres",
@@ -84,6 +86,7 @@ object Configuration {
                 "DB_HOST" to "localhost",
                 "DB_PORT" to "5433",
                 "MICROSOFT_SCOPE" to "localhost",
+                "MICROSOFT_URL" to "host.docker.internal:8091",
             ),
         )
 
@@ -110,6 +113,7 @@ object Configuration {
                 "POAO_TILGANG_URL" to "https://poao-tilgang.dev.intern.nav.no",
                 "POAO_TILGANG_SCOPE" to "api://dev-gcp.poao.poao-tilgang/.default",
                 "MICROSOFT_SCOPE" to "https://graph.microsoft.com/.default",
+                "MICROSOFT_URL" to "graph.microsoft.com/v1.0",
             ),
         )
     private val prodProperties =
@@ -135,6 +139,7 @@ object Configuration {
                 "POAO_TILGANG_URL" to "https://poao-tilgang.nais.io",
                 "POAO_TILGANG_SCOPE" to "api://prod-gcp.poao.poao-tilgang/.default",
                 "MICROSOFT_SCOPE" to "https://graph.microsoft.com/.default",
+                "MICROSOFT_URL" to "graph.microsoft.com/v1.0",
             ),
         )
 
@@ -208,6 +213,7 @@ object Configuration {
     val pdfgenUrl: String by lazy { config()[Key("PDFGEN_URL", stringType)] }
     val poaoTilgangUrl: String by lazy { config()[Key("POAO_TILGANG_URL", stringType)] }
     val utbetalingUrl: String by lazy { config()[Key("UTBETALING_URL", stringType)] }
+    val microsoftUrl: String by lazy { config()[Key("MICROSOFT_URL", stringType)] }
 
     fun httpPort() = config()[Key("application.httpPort", intType)]
 

@@ -11,7 +11,6 @@ import io.ktor.http.toURI
 import kotlinx.coroutines.future.await
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.NavIdentClient
-import no.nav.tiltakspenger.felles.exceptions.IkkeLoggDenneException
 import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.vedtak.db.deserialize
@@ -33,7 +32,7 @@ private data class ListOfMicrosoftGraphResponse(
 class MicrosoftGraphApiClient(
     private val getToken: suspend () -> AccessToken,
     private val timeout: Duration = 1.seconds,
-    private val baseUrl: String = "graph.microsoft.com/v1.0",
+    private val baseUrl: String,
     connectTimeout: Duration = 1.seconds,
 ) : NavIdentClient {
     private val log = KotlinLogging.logger { }
@@ -99,9 +98,8 @@ class MicrosoftGraphApiClient(
                 }
             }
         }.flatten().getOrElse {
-            log.error(RuntimeException("Genererer stacktrace for enklere debug")) { "Ukjent feil mot Microsoft Graph Api for bruker $navIdent. Se sikker logg for mer context" }
             sikkerlogg.error(it) { "Ukjent feil mot Microsoft Graph Api for bruker: $navIdent message: ${it.message}" }
-            throw IkkeLoggDenneException("Denne er logget alt, trenger ikke spamme loggen mer enn nødvendig")
+            throw RuntimeException("Ukjent feil mot Microsoft Graph Api for bruker $navIdent. Se sikker logg for mer context")
         }
     }
 

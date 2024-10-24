@@ -40,6 +40,7 @@ open class PersonContext(
     open val navIdentClient: MicrosoftGraphApiClient by lazy {
         MicrosoftGraphApiClient(
             getToken = { entraIdSystemtokenClient.getSystemtoken(Configuration.microsoftScope) },
+            baseUrl = Configuration.microsoftUrl,
         )
     }
     val poaoTilgangGateway: PoaoTilgangGateway by lazy {
