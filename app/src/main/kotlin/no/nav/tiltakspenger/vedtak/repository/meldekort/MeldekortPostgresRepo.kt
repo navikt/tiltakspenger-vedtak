@@ -35,6 +35,7 @@ class MeldekortPostgresRepo(
                     """
                     insert into meldekort (
                         id,
+                        forrigeMeldekortId,
                         meldeperiode_id,
                         sakId,
                         rammevedtakId,
@@ -47,6 +48,7 @@ class MeldekortPostgresRepo(
                         navkontor
                     ) values (
                         :id,
+                        :forrigeMeldekortId,
                         :meldeperiode_id,
                         :sakId,
                         :rammevedtakId,
@@ -61,6 +63,7 @@ class MeldekortPostgresRepo(
                     """.trimIndent(),
                     mapOf(
                         "id" to meldekort.id.toString(),
+                        "forrigeMeldekortId" to meldekort.forrigeMeldekortId?.toString(),
                         "meldeperiode_id" to meldekort.meldeperiodeId.toString(),
                         "sakId" to meldekort.sakId.toString(),
                         "rammevedtakId" to meldekort.rammevedtakId.toString(),
