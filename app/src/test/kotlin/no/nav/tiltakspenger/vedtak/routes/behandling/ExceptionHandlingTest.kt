@@ -13,7 +13,6 @@ import io.ktor.server.routing.routing
 import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.objectmothers.ObjectMother
@@ -38,7 +37,7 @@ class ExceptionHandlingTest {
         val mockAuditService = mockk<AuditService>()
         runTest {
             coEvery { tokenServiceMock.validerOgHentBruker(any()) } returns ObjectMother.beslutter().right()
-            every { sakService.hentSaksoversikt(any()) } throws IllegalStateException("Wuzza")
+            coEvery { sakService.hentSaksoversikt(any(), any()) } throws IllegalStateException("Wuzza")
 
             val exceptedStatusCode = HttpStatusCode.InternalServerError
             val expectedBody =

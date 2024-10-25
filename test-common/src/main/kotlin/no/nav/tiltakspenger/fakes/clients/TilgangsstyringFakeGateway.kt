@@ -2,6 +2,9 @@ package no.nav.tiltakspenger.fakes.clients
 
 import arrow.atomic.Atomic
 import arrow.core.Either
+import arrow.core.NonEmptyList
+import arrow.core.getOrElse
+import arrow.core.left
 import arrow.core.right
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
@@ -19,6 +22,7 @@ class TilgangsstyringFakeGateway : TilgangsstyringService {
     ) {
         data.get()[fnr] = adressebeskyttelseGradering
     }
+
     override suspend fun adressebeskyttelseEnkel(fnr: Fnr): Either<KunneIkkeGjøreTilgangskontroll, List<AdressebeskyttelseGradering>?> {
         return data.get()[fnr]!!.right()
     }
@@ -35,5 +39,17 @@ class TilgangsstyringFakeGateway : TilgangsstyringService {
                 AdressebeskyttelseGradering.UGRADERT -> true
             }
         }.right()
+    }
+
+    override suspend fun harTilgangTilPersoner(
+        fnrListe: NonEmptyList<Fnr>,
+        roller: Roller,
+        correlationId: CorrelationId,
+    ): Either<KunneIkkeGjøreTilgangskontroll, Map<Fnr, Boolean>> {
+        return fnrListe.map { fnr ->
+            fnr to harTilgangTilPerson(fnr, roller, correlationId).getOrElse {
+                return it.left()
+            }
+        }.toMap().right()
     }
 }

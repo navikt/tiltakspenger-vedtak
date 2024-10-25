@@ -13,7 +13,11 @@ import java.time.LocalDateTime
  */
 data class Saksoversikt(
     val behandlinger: List<BehandlingEllerSøknadForSaksoversikt>,
-) : List<BehandlingEllerSøknadForSaksoversikt> by behandlinger
+) : List<BehandlingEllerSøknadForSaksoversikt> by behandlinger {
+    fun filter(fn: (BehandlingEllerSøknadForSaksoversikt) -> Boolean): Saksoversikt {
+        return Saksoversikt(behandlinger.filter(fn))
+    }
+}
 
 /**
  * @property id Vi har ikke en fellestype for behandlingId og søknadId, så vi bruker Ulid. Hvis ikke må vi endre denne til en sealed interface.

@@ -36,7 +36,10 @@ fun Route.behandlingBenkRoutes(
     get(BEHANDLINGER_PATH) {
         logger.debug("Mottatt get-request på $BEHANDLINGER_PATH for å hente alle behandlinger på benken")
         call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
-            val behandlinger = sakService.hentSaksoversikt(saksbehandler).fraBehandlingToBehandlingBenkDto()
+            val behandlinger = sakService.hentSaksoversikt(
+                saksbehandler = saksbehandler,
+                correlationId = call.correlationId(),
+            ).fraBehandlingToBehandlingBenkDto()
             call.respond(status = HttpStatusCode.OK, behandlinger)
         }
     }
@@ -99,7 +102,8 @@ fun Route.behandlingBenkRoutes(
             val behandlingId = BehandlingId.fromString(call.receive<BehandlingIdDTO>().id)
 
             val correlationId = call.correlationId()
-            val behandling = behandlingService.taBehandling(behandlingId, saksbehandler, correlationId = correlationId).toDTO()
+            val behandling =
+                behandlingService.taBehandling(behandlingId, saksbehandler, correlationId = correlationId).toDTO()
 
             auditService.logMedBehandlingId(
                 behandlingId = behandlingId,

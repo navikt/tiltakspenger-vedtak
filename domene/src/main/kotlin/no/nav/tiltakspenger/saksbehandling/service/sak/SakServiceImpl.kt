@@ -4,6 +4,7 @@ import arrow.core.Either
 import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
+import arrow.core.toNonEmptyListOrNull
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
@@ -161,11 +162,19 @@ class SakServiceImpl(
         return sak
     }
 
-    override fun hentSaksoversikt(saksbehandler: Saksbehandler): Saksoversikt {
-        require(saksbehandler.isSaksbehandler()) { "Saksbehandler ${saksbehandler.navIdent} må ha rollen SAKSBEHANDLER" }
-        // TODO pre-mvp tilgang jah: Legg på sjekk på kode 6/7/skjermet. Filtrerer vi bare bort de som er skjermet?
-        val saksoversikt = saksoversiktRepo.hentAlle()
-        return saksoversikt
+    override suspend fun hentSaksoversikt(
+        saksbehandler: Saksbehandler,
+        correlationId: CorrelationId,
+    ): Saksoversikt {
+        require(saksbehandler.isSaksbehandler() || saksbehandler.isBeslutter()) { "Saksbehandler ${saksbehandler.navIdent} må ha rollen SAKSBEHANDLER eller BESLUTTER" }
+        val saksoversikt: Saksoversikt = saksoversiktRepo.hentAlle()
+        if (saksoversikt.isEmpty()) return saksoversikt
+        val tilganger = tilgangsstyringService.harTilgangTilPersoner(
+            fnrListe = saksoversikt.map { it.fnr }.toNonEmptyListOrNull()!!,
+            roller = saksbehandler.roller,
+            correlationId = correlationId,
+        ).getOrElse { throw IllegalStateException("Feil ved henting av tilganger") }
+        return saksoversikt.filter { tilganger[it.fnr] == true }
     }
 
     override suspend fun hentEnkelPersonForSakId(sakId: SakId): Either<KunneIkkeHenteEnkelPerson, EnkelPerson> {

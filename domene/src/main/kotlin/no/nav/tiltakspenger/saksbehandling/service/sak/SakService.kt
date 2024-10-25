@@ -48,7 +48,10 @@ interface SakService {
         correlationId: CorrelationId,
     ): Sak?
 
-    fun hentSaksoversikt(saksbehandler: Saksbehandler): Saksoversikt
+    suspend fun hentSaksoversikt(
+        saksbehandler: Saksbehandler,
+        correlationId: CorrelationId,
+    ): Saksoversikt
 
     suspend fun hentEnkelPersonForSakId(sakId: SakId): Either<KunneIkkeHenteEnkelPerson, EnkelPerson>
 }
