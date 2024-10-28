@@ -38,14 +38,15 @@ internal suspend fun Rammevedtak.tobrevDTO(
             etternavn = brukersNavn.mellomnavnOgEtternavn,
             antallBarn = 0,
         ),
-        tiltaksnavn = "TODO pre-mvp",
+        tiltaksnavn = this.behandling.relatertTiltak(),
         rammevedtakFraDato = periode.fraOgMed.format(norskDatoFormatter),
         rammevedtakTilDato = periode.tilOgMed.format(norskDatoFormatter),
         saksnummer = saksnummer.verdi,
         barnetillegg = false,
         saksbehandlerNavn = saksbehandlersNavn,
         beslutterNavn = besluttersNavn,
-        kontor = "TODO pre-mvp: Dette bør ligge på behandlingen. Se NORG-oppgave i trello.",
+        // TODO post-produksjon: legg inn NORG integrasjon for å hente saksbehandlers kontor.
+        kontor = "Nav Tiltak Øst-Viken",
         // Dette er vår dato, det brukes typisk når bruker klager på vedtaksbrev på dato ...
         datoForUtsending = LocalDate.now().format(norskDatoFormatter),
         // TODO pre-mvp jah: Dette må ligge i behandlingen. Men dette vil kunne være en periodisering. Si f.eks. vedtaket går fra slutten av desember.
