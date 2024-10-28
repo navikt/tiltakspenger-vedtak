@@ -32,7 +32,7 @@ dependencies {
     testImplementation("io.kotest:kotest-assertions-json:$kotestVersion")
     testImplementation("io.kotest:kotest-extensions:$kotestVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
-    testImplementation("ch.qos.logback:logback-classic:1.5.11")
+    testImplementation("ch.qos.logback:logback-classic:1.5.12")
 
     testImplementation(kotlin("test"))
     testImplementation(project(":test-common"))
