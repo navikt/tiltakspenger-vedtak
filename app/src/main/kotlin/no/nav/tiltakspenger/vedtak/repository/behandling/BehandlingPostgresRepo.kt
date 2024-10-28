@@ -225,7 +225,7 @@ class BehandlingPostgresRepo(
             val status = string("status")
             val saksbehandler = stringOrNull("saksbehandler")
             val beslutter = stringOrNull("beslutter")
-            val søknad = SøknadDAO.hentForBehandlingId(id, session)!!
+            val søknad = SøknadDAO.hentForBehandlingId(id, session) ?: throw IllegalStateException("Forventet å finne tilknyttet søøknad for behandlingId $id")
 
             val stønadsdager = string("stønadsdager").toStønadsdager()
             val attesteringer = string("attesteringer").toAttesteringer()
