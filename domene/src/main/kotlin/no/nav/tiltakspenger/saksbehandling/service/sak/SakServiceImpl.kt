@@ -10,6 +10,7 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
+import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
@@ -174,7 +175,18 @@ class SakServiceImpl(
             roller = saksbehandler.roller,
             correlationId = correlationId,
         ).getOrElse { throw IllegalStateException("Feil ved henting av tilganger") }
-        return saksoversikt.filter { tilganger[it.fnr] == true }
+        return saksoversikt.filter {
+            val harTilgang = tilganger[it.fnr]
+            if (harTilgang == null) {
+                logger.debug { "tilgangsstyring: Filtrerte vekk bruker fra benk for saksbehandler $saksbehandler. Kunne ikke avgjøre om hen har tilgang. Se sikkerlogg for mer kontekst." }
+                sikkerlogg.debug { "tilgangsstyring: Filtrerte vekk bruker ${it.fnr.verdi} fra benk for saksbehandler $saksbehandler. Kunne ikke avgjøre om hen har tilgang." }
+            }
+            if (harTilgang == false) {
+                logger.debug { "tilgangsstyring: Filtrerte vekk bruker fra benk for saksbehandler $saksbehandler. Saksbehandler har ikke tilgang. Se sikkerlogg for mer kontekst." }
+                sikkerlogg.debug { "tilgangsstyring: Filtrerte vekk bruker ${it.fnr.verdi} fra benk for saksbehandler $saksbehandler. Saksbehandler har ikke tilgang." }
+            }
+            harTilgang == true
+        }
     }
 
     override suspend fun hentEnkelPersonForSakId(sakId: SakId): Either<KunneIkkeHenteEnkelPerson, EnkelPerson> {
