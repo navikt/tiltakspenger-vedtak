@@ -64,15 +64,19 @@ internal object SøknadDAO {
                 .asSingle,
         )!!
 
+    /**
+     * Knytter en søknad til en sak og behandling.
+     * @throws RuntimeException hvis søknaden allerede er knyttet til en sak eller behandling.
+     */
     fun knyttSøknadTilBehandling(
         behandlingId: BehandlingId,
         søknadId: SøknadId,
         sakId: SakId,
         session: Session,
     ) {
-        session.run(
+        val oppdaterteRader = session.run(
             queryOf(
-                """update søknad set behandling_id = :behandlingId, sak_id = :sakId where id = :soknadId""",
+                """update søknad set behandling_id = :behandlingId, sak_id = :sakId where id = :soknadId and behandling_id is null and sak_id is null""",
                 mapOf(
                     "behandlingId" to behandlingId.toString(),
                     "soknadId" to søknadId.toString(),
@@ -80,6 +84,9 @@ internal object SøknadDAO {
                 ),
             ).asUpdate,
         )
+        if (oppdaterteRader == 0) {
+            throw RuntimeException("Kunne ikke knytte søknad til behandling. Det finnes allerede en knytning. behandlingId: $behandlingId, søknadId: $søknadId, sakId: $sakId")
+        }
     }
 
     private fun søknadFinnes(

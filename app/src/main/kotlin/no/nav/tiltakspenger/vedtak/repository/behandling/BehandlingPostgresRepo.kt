@@ -135,12 +135,11 @@ class BehandlingPostgresRepo(
             val sistEndret = hentSistEndret(behandling.id, tx)
             if (sistEndret == null) {
                 opprettBehandling(behandling, tx)
-            } else {
-                oppdaterBehandling(sistEndret, behandling, tx)
-            }.also {
                 if (behandling is Førstegangsbehandling) {
                     SøknadDAO.knyttSøknadTilBehandling(behandling.id, behandling.søknad.id, behandling.sakId, tx)
                 }
+            } else {
+                oppdaterBehandling(sistEndret, behandling, tx)
             }
         }
 
