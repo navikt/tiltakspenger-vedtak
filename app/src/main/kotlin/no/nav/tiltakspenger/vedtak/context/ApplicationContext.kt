@@ -46,6 +46,7 @@ open class ApplicationContext(
             tiltakGateway = tiltakContext.tiltakGateway,
             personService = personContext.personService,
             gitHash = gitHash,
+            profile = Configuration.applicationProfile(),
         )
     }
     open val utbetalingContext by lazy {

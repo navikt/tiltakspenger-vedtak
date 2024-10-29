@@ -5,7 +5,7 @@ import io.ktor.util.date.getTimeMillis
 import kotliquery.queryOf
 import kotliquery.sessionOf
 import mu.KotlinLogging
-import no.nav.tiltakspenger.common.SaksnummerGenerator
+import no.nav.tiltakspenger.common.TestSaksnummerGenerator
 import org.flywaydb.core.Flyway
 import org.flywaydb.core.api.output.MigrateResult
 import org.testcontainers.containers.PostgreSQLContainer
@@ -42,7 +42,7 @@ internal class TestDatabaseManager {
 
     private val counter = AtomicInteger(0)
 
-    private val saksnummerGenerator = SaksnummerGenerator()
+    private val saksnummerGenerator = TestSaksnummerGenerator()
 
     private val started: Long by lazy { getTimeMillis() }
 

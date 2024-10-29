@@ -17,6 +17,7 @@ import no.nav.tiltakspenger.meldekort.domene.Meldeperioder
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saker
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
+import no.nav.tiltakspenger.saksbehandling.domene.sak.SaksnummerGenerator
 import no.nav.tiltakspenger.saksbehandling.domene.sak.TynnSak
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingPostgresRepo
@@ -29,6 +30,7 @@ import java.time.LocalDateTime
 
 internal class SakPostgresRepo(
     private val sessionFactory: PostgresSessionFactory,
+    private val saksnummerGenerator: SaksnummerGenerator,
 ) : SakRepo {
     override fun hentForFnr(fnr: Fnr): Saker {
         val saker =
@@ -151,7 +153,7 @@ internal class SakPostgresRepo(
                         .let { Saksnummer(it).nesteSaksnummer() }
                 }.asSingle,
             )
-        } ?: Saksnummer.genererSaknummer(dato = iDag)
+        } ?: saksnummerGenerator.generer(dato = iDag)
     }
 
     override fun hentForFørstegangsbehandlingId(behandlingId: BehandlingId): Sak? =
@@ -308,20 +310,6 @@ internal class SakPostgresRepo(
         @Language("SQL")
         private val sqlHent =
             """select * from sak where id = :id""".trimIndent()
-
-        @Language("SQL")
-        private val sqlHentForJournalpost =
-            """
-            select * 
-              from sak 
-             where id = (select sakid 
-                           from behandling 
-                          where id = (select behandling_id
-                                        from søknad
-                                       where journalpost_id = :journalpostId
-                                        )
-                           )
-            """.trimIndent()
 
         @Language("SQL")
         private val sqlHentSakerForIdent =

@@ -28,6 +28,7 @@ import no.nav.tiltakspenger.libs.person.AdressebeskyttelseGradering
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
 import no.nav.tiltakspenger.vedtak.AdRolle
+import no.nav.tiltakspenger.vedtak.Profile
 import no.nav.tiltakspenger.vedtak.auth2.MicrosoftEntraIdTokenService
 import no.nav.tiltakspenger.vedtak.auth2.TokenService
 import no.nav.tiltakspenger.vedtak.context.ApplicationContext
@@ -150,6 +151,7 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-gi
             tiltakGateway = tiltakGatewayFake,
             tilgangsstyringService = tilgangsstyringFakeGateway,
             gitHash = "fake-git-hash",
+            profile = Profile.LOCAL,
         ) {
             override val sakRepo = sakFakeRepo
             override val saksoversiktRepo = saksoversiktFakeRepo

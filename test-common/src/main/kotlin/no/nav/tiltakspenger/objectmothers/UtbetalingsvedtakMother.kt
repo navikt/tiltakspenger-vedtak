@@ -17,7 +17,7 @@ interface UtbetalingsvedtakMother {
     fun utbetalingsvedtak(
         id: VedtakId = VedtakId.random(),
         sakId: SakId = SakId.random(),
-        saksnummer: Saksnummer = Saksnummer.genererSaknummer(LocalDate.now()),
+        saksnummer: Saksnummer = Saksnummer.genererSaknummer(LocalDate.now(), "1001"),
         fnr: Fnr = Fnr.random(),
         rammevedtakId: VedtakId = VedtakId.random(),
         vedtakstidspunkt: LocalDateTime = nå(),

@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.vedtak.db
 
 import mu.KotlinLogging
-import no.nav.tiltakspenger.common.SaksnummerGenerator
+import no.nav.tiltakspenger.common.TestSaksnummerGenerator
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
 import no.nav.tiltakspenger.utbetaling.ports.UtbetalingsvedtakRepo
@@ -18,7 +18,7 @@ import javax.sql.DataSource
 
 internal class TestDataHelper(
     private val dataSource: DataSource,
-    val saksnummerGenerator: SaksnummerGenerator,
+    val saksnummerGenerator: TestSaksnummerGenerator,
 ) {
     private val log = KotlinLogging.logger {}
     private val sessionCounter = SessionCounter(log)
@@ -26,7 +26,7 @@ internal class TestDataHelper(
     val søknadRepo = PostgresSøknadRepo(sessionFactory)
     val behandlingRepo = BehandlingPostgresRepo(sessionFactory)
     val vedtakRepo = RammevedtakPostgresRepo(sessionFactory)
-    val sakRepo = SakPostgresRepo(sessionFactory)
+    val sakRepo = SakPostgresRepo(sessionFactory, saksnummerGenerator)
     val saksoversiktRepo = SaksoversiktPostgresRepo(sessionFactory)
     val statistikkSakRepo = StatistikkSakRepoImpl(sessionFactory)
     val statistikkStønadRepo = StatistikkStønadPostgresRepo(sessionFactory)
