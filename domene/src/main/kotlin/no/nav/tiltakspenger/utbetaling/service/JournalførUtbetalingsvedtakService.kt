@@ -2,10 +2,10 @@ package no.nav.tiltakspenger.utbetaling.service
 
 import arrow.core.Either
 import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.NavIdentClient
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.meldekort.ports.GenererMeldekortPdfGateway
 import no.nav.tiltakspenger.meldekort.ports.JournalførMeldekortGateway
-import no.nav.tiltakspenger.saksbehandling.service.person.PersonService
 import no.nav.tiltakspenger.utbetaling.ports.UtbetalingsvedtakRepo
 import java.time.LocalDateTime
 
@@ -17,7 +17,7 @@ class JournalførUtbetalingsvedtakService(
     private val journalførMeldekortGateway: JournalførMeldekortGateway,
     private val utbetalingsvedtakRepo: UtbetalingsvedtakRepo,
     private val genererMeldekortPdfGateway: GenererMeldekortPdfGateway,
-    private val personService: PersonService,
+    private val navIdentClient: NavIdentClient,
 ) {
     private val log = KotlinLogging.logger { }
 
@@ -26,7 +26,10 @@ class JournalførUtbetalingsvedtakService(
             log.info { "Journalfører utbetalingsvedtak. Saksnummer: ${utbetalingsvedtak.saksnummer}, sakId: ${utbetalingsvedtak.sakId}, utbetalingsvedtakId: ${utbetalingsvedtak.id}" }
             Either.catch {
                 val pdfOgJson =
-                    genererMeldekortPdfGateway.genererMeldekortPdf(utbetalingsvedtak.meldekort, personService::hentNavn)
+                    genererMeldekortPdfGateway.genererMeldekortPdf(
+                        utbetalingsvedtak.meldekort,
+                        hentSaksbehandlersNavn = navIdentClient::hentNavnForNavIdent,
+                    )
                 log.info { "Pdf generert for utbetalingsvedtak. Saksnummer: ${utbetalingsvedtak.saksnummer}, sakId: ${utbetalingsvedtak.sakId}, utbetalingsvedtakId: ${utbetalingsvedtak.id}" }
                 val journalpostId = journalførMeldekortGateway.journalførMeldekort(
                     meldekort = utbetalingsvedtak.meldekort,

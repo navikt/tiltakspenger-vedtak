@@ -196,8 +196,8 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-gi
             sessionFactory = sessionFactory,
             genererMeldekortPdfGateway = genererFakeMeldekortPdfGateway,
             journalførMeldekortGateway = journalførFakeMeldekortGateway,
-            personService = personContext.personService,
             entraIdSystemtokenClient = entraIdSystemtokenClient,
+            navIdentClient = personContext.navIdentClient,
         ) {
             override val utbetalingGateway = utbetalingGatewayFake
             override val utbetalingsvedtakRepo = utbetalingsvedtakFakeRepo
