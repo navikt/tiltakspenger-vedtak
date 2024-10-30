@@ -8,6 +8,8 @@ import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
 
 data class MeldekortDTO(
     val id: String,
+    val sakId: String,
+    val saksnummer: String,
     val periode: PeriodeDTO,
     val meldekortDager: List<MeldekortDagDTO>,
     val tiltaksnavn: String,
@@ -21,9 +23,16 @@ data class MeldekortDTO(
     val forrigeNavkontor: String?,
 )
 
-fun Meldekort.toDTO(vedtaksPeriode: Periode, tiltaksnavn: String, antallDager: Int, forrigeNavkontor: Navkontor?): MeldekortDTO =
-    MeldekortDTO(
+fun Meldekort.toDTO(
+    vedtaksPeriode: Periode,
+    tiltaksnavn: String,
+    antallDager: Int,
+    forrigeNavkontor: Navkontor?,
+): MeldekortDTO {
+    return MeldekortDTO(
         id = id.toString(),
+        sakId = sakId.toString(),
+        saksnummer = saksnummer.toString(),
         periode = periode.toDTO(),
         saksbehandler = saksbehandler,
         beslutter = beslutter,
@@ -36,3 +45,4 @@ fun Meldekort.toDTO(vedtaksPeriode: Periode, tiltaksnavn: String, antallDager: I
         navkontor = navkontor?.kontornummer,
         forrigeNavkontor = forrigeNavkontor?.kontornummer,
     )
+}

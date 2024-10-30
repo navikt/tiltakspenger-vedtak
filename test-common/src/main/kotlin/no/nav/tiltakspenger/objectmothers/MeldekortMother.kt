@@ -23,6 +23,7 @@ import no.nav.tiltakspenger.meldekort.domene.Meldeperiode
 import no.nav.tiltakspenger.meldekort.domene.MeldeperiodeId
 import no.nav.tiltakspenger.meldekort.domene.Meldeperioder
 import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.AvklartUtfallForPeriode
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -32,6 +33,7 @@ interface MeldekortMother {
     fun utfyltMeldekort(
         id: MeldekortId = MeldekortId.random(),
         sakId: SakId = SakId.random(),
+        saksnummer: Saksnummer = Saksnummer.genererSaknummer(løpenr = "1001"),
         fnr: Fnr = Fnr.random(),
         rammevedtakId: VedtakId = VedtakId.random(),
         meldekortperiode: Meldeperiode.UtfyltMeldeperiode =
@@ -51,6 +53,7 @@ interface MeldekortMother {
         id = id,
         meldeperiodeId = meldeperiodeId,
         sakId = sakId,
+        saksnummer = saksnummer,
         fnr = fnr,
         rammevedtakId = rammevedtakId,
         meldeperiode = meldekortperiode,
@@ -168,6 +171,7 @@ interface MeldekortMother {
         tiltakstype: TiltakstypeSomGirRett,
         meldekortId: MeldekortId,
         sakId: SakId,
+        saksnummer: Saksnummer = Saksnummer.genererSaknummer(løpenr = "1001"),
         fnr: Fnr = Fnr.random(),
         rammevedtakId: VedtakId,
         kommando: SendMeldekortTilBeslutterKommando,
@@ -181,6 +185,7 @@ interface MeldekortMother {
                 id = meldekortId,
                 meldeperiodeId = meldeperiodeId,
                 sakId = sakId,
+                saksnummer = saksnummer,
                 fnr = fnr,
                 rammevedtakId = rammevedtakId,
                 forrigeMeldekortId = null,
@@ -200,6 +205,7 @@ interface MeldekortMother {
     fun Meldeperioder.beregnNesteMeldekort(
         kommando: SendMeldekortTilBeslutterKommando,
         fnr: Fnr,
+        saksnummer: Saksnummer = Saksnummer.genererSaknummer(løpenr = "1001"),
         meldeperiodeId: MeldeperiodeId = MeldeperiodeId.fraPeriode(kommando.periode),
         navkontor: Navkontor = ObjectMother.navkontor(),
     ): Meldeperioder {
@@ -217,6 +223,7 @@ interface MeldekortMother {
                 id = meldekortId,
                 meldeperiodeId = meldeperiodeId,
                 sakId = sakId,
+                saksnummer = saksnummer,
                 fnr = fnr,
                 rammevedtakId = rammevedtakId,
                 forrigeMeldekortId = this.verdi.last().id,

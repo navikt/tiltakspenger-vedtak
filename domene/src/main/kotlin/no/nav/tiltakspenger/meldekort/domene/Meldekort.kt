@@ -12,6 +12,7 @@ import no.nav.tiltakspenger.libs.common.VedtakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.libs.tiltak.TiltakstypeSomGirRett
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.AvklartUtfallForPeriode
 import java.time.DayOfWeek
@@ -22,6 +23,7 @@ import java.time.temporal.TemporalAdjusters
 sealed interface Meldekort {
     val id: MeldekortId
     val sakId: SakId
+    val saksnummer: Saksnummer
     val fnr: Fnr
     val rammevedtakId: VedtakId
     val forrigeMeldekortId: MeldekortId?
@@ -52,6 +54,7 @@ sealed interface Meldekort {
         override val id: MeldekortId,
         override val meldeperiodeId: MeldeperiodeId,
         override val sakId: SakId,
+        override val saksnummer: Saksnummer,
         override val fnr: Fnr,
         override val rammevedtakId: VedtakId,
         override val forrigeMeldekortId: MeldekortId?,
@@ -84,6 +87,7 @@ sealed interface Meldekort {
                 id = meldekortId,
                 meldeperiodeId = MeldeperiodeId.fraPeriode(periode),
                 sakId = this.sakId,
+                saksnummer = this.saksnummer,
                 fnr = this.fnr,
                 rammevedtakId = this.rammevedtakId,
                 forrigeMeldekortId = this.id,
@@ -121,6 +125,7 @@ sealed interface Meldekort {
         override val id: MeldekortId,
         override val meldeperiodeId: MeldeperiodeId,
         override val sakId: SakId,
+        override val saksnummer: Saksnummer,
         override val fnr: Fnr,
         override val rammevedtakId: VedtakId,
         override val forrigeMeldekortId: MeldekortId?,
@@ -147,6 +152,7 @@ sealed interface Meldekort {
                 id = this.id,
                 meldeperiodeId = this.meldeperiodeId,
                 sakId = this.sakId,
+                saksnummer = this.saksnummer,
                 fnr = this.fnr,
                 rammevedtakId = this.rammevedtakId,
                 forrigeMeldekortId = this.forrigeMeldekortId,
@@ -175,6 +181,7 @@ fun Rammevedtak.opprettFørsteMeldekortForEnSak(): Meldekort.IkkeUtfyltMeldekort
         id = meldekortId,
         meldeperiodeId = MeldeperiodeId.fraPeriode(periode),
         sakId = this.sakId,
+        saksnummer = this.saksnummer,
         fnr = this.behandling.fnr,
         rammevedtakId = this.id,
         forrigeMeldekortId = null,

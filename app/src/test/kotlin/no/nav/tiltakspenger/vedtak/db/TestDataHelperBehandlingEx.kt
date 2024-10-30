@@ -13,6 +13,7 @@ import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.opprettVedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand.HarYtelseForPeriode
@@ -22,6 +23,7 @@ import java.time.LocalDate
 
 internal fun TestDataHelper.persisterOpprettetFørstegangsbehandling(
     sakId: SakId = SakId.random(),
+    saksnummer: Saksnummer = this.saksnummerGenerator.neste(),
     fnr: Fnr = Fnr.random(),
     deltakelseFom: LocalDate = 1.januar(2023),
     deltakelseTom: LocalDate = 31.mars(2023),
@@ -54,7 +56,7 @@ internal fun TestDataHelper.persisterOpprettetFørstegangsbehandling(
             søknad = søknad,
             fnr = fnr,
             vurderingsperiode = tiltaksOgVurderingsperiode,
-            saksnummer = this.saksnummerGenerator.neste(),
+            saksnummer = saksnummer,
             saksbehandler = saksbehandler,
             sakId = sakId,
         )
@@ -180,6 +182,7 @@ internal fun TestDataHelper.persisterRammevedtakMedUtfyltMeldekort(
             sakId = sak.id,
             rammevedtakId = sak.rammevedtak!!.id,
             fnr = sak.fnr,
+            saksnummer = sak.saksnummer,
         )
     meldekortRepo.lagre(utfyltMeldekort)
     return Pair(sakRepo.hentForSakId(sakId)!!, utfyltMeldekort)

@@ -21,6 +21,7 @@ import no.nav.tiltakspenger.meldekort.domene.MeldeperiodeId
 import no.nav.tiltakspenger.meldekort.domene.Meldeperioder
 import no.nav.tiltakspenger.meldekort.domene.tilMeldekortperioder
 import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo
+import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 
 class MeldekortPostgresRepo(
     private val sessionFactory: PostgresSessionFactory,
@@ -180,7 +181,7 @@ class MeldekortPostgresRepo(
             return session.run(
                 queryOf(
                     """
-                        select m.*,s.ident as fnr from meldekort m join sak s on s.id = m.sakId where m.id = :id
+                        select m.*,s.ident as fnr, s.saksnummer from meldekort m join sak s on s.id = m.sakId where m.id = :id
                     """.trimIndent(),
                     mapOf("id" to meldekortId.toString()),
                 ).map { row ->
@@ -195,7 +196,7 @@ class MeldekortPostgresRepo(
         ): Meldeperioder? {
             return session.run(
                 queryOf(
-                    "select m.*,s.ident as fnr from meldekort m join sak s on s.id = m.sakId where s.id = :sakId order by m.fraOgMed",
+                    "select m.*,s.ident as fnr, s.saksnummer from meldekort m join sak s on s.id = m.sakId where s.id = :sakId order by m.fraOgMed",
                     mapOf("sakId" to sakId.toString()),
                 ).map { fromRow(it) }.asList,
             ).let { it.toNonEmptyListOrNull()?.tilMeldekortperioder() }
@@ -204,6 +205,7 @@ class MeldekortPostgresRepo(
         private fun fromRow(row: Row): Meldekort {
             val id = MeldekortId.fromString(row.string("id"))
             val sakId = SakId.fromString(row.string("sakId"))
+            val saksnummer = Saksnummer(row.string("saksnummer"))
             val meldeperiodeId = MeldeperiodeId(row.string("meldeperiode_id"))
             val navkontor = row.stringOrNull("navkontor")?.let { Navkontor(it) }
             val rammevedtakId = VedtakId.fromString(row.string("rammevedtakId"))
@@ -212,10 +214,12 @@ class MeldekortPostgresRepo(
             return when (val status = row.string("status")) {
                 "GODKJENT", "KLAR_TIL_BESLUTNING" -> {
                     val meldekortperiode = row.string("meldekortdager").toUtfyltMeldekortperiode(sakId, id)
+
                     UtfyltMeldekort(
                         id = id,
                         meldeperiodeId = meldeperiodeId,
                         sakId = sakId,
+                        saksnummer = saksnummer,
                         fnr = fnr,
                         rammevedtakId = rammevedtakId,
                         meldeperiode = meldekortperiode,
@@ -236,6 +240,7 @@ class MeldekortPostgresRepo(
                         id = id,
                         meldeperiodeId = meldeperiodeId,
                         sakId = sakId,
+                        saksnummer = saksnummer,
                         fnr = fnr,
                         rammevedtakId = rammevedtakId,
                         meldeperiode = meldekortperiode,

@@ -20,6 +20,7 @@ class MeldekortRepoImplTest {
                     sakId = sak.id,
                     rammevedtakId = sak.rammevedtak!!.id,
                     fnr = sak.fnr,
+                    saksnummer = sak.saksnummer,
                 )
             val nesteMeldekort = meldekort.opprettNesteMeldekort(
                 utfallsperioder = Periodisering(
