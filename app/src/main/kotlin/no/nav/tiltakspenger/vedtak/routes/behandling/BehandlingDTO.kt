@@ -11,6 +11,7 @@ import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
 internal data class BehandlingDTO(
     val id: String,
     val sakId: String,
+    val saksnummer: String,
     val status: BehandlingsstatusDTO,
     val saksbehandler: String?,
     val beslutter: String?,
@@ -24,6 +25,7 @@ internal fun Behandling.toDTO() =
     BehandlingDTO(
         id = this.id.toString(),
         sakId = this.sakId.toString(),
+        saksnummer = this.saksnummer.toString(),
         saksbehandler = this.saksbehandler,
         beslutter = this.beslutter,
         status = this.status.toDTO(),
