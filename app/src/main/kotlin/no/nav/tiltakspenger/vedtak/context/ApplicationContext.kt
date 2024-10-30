@@ -54,8 +54,8 @@ open class ApplicationContext(
             sessionFactory = sessionFactory,
             genererMeldekortPdfGateway = dokumentContext.genererMeldekortPdfGateway,
             journalførMeldekortGateway = dokumentContext.journalførMeldekortGateway,
-            personService = personContext.personService,
             entraIdSystemtokenClient = entraIdSystemtokenClient,
+            navIdentClient = personContext.navIdentClient,
         )
     }
     open val meldekortContext by lazy {

@@ -82,9 +82,9 @@ internal class PdfgenHttpClient(
 
     override suspend fun genererMeldekortPdf(
         meldekort: Meldekort.UtfyltMeldekort,
-        hentBrukersNavn: suspend (Fnr) -> Navn,
+        hentSaksbehandlersNavn: suspend (String) -> String,
     ): PdfOgJson {
-        val data = meldekort.toPdf(hentBrukersNavn)
+        val data = meldekort.toPdf(hentSaksbehandlersNavn)
         return genererPdfFraJson(data)
     }
 

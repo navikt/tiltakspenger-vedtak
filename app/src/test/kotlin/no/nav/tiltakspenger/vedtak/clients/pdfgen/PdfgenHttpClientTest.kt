@@ -10,7 +10,7 @@ class PdfgenHttpClientTest {
     fun genererMeldekortPdf() {
         runTest {
             val meldekort = ObjectMother.utfyltMeldekort()
-            PdfgenHttpClient("unused").genererMeldekortPdf(meldekort) { ObjectMother.navn() }
+            PdfgenHttpClient("unused").genererMeldekortPdf(meldekort) { ObjectMother.saksbehandler().brukernavn }
         }
     }
 }

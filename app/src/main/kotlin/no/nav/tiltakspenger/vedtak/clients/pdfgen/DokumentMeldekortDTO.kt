@@ -1,28 +1,26 @@
 package no.nav.tiltakspenger.vedtak.clients.pdfgen
 
 import com.fasterxml.jackson.databind.JsonNode
-import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldekortdag
 import no.nav.tiltakspenger.meldekort.domene.ReduksjonAvYtelsePåGrunnAvFravær
-import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Navn
 import no.nav.tiltakspenger.vedtak.routes.objectMapper
 
 private data class DokumentMeldekortDTO(
     val meldekortId: String,
     val sakId: String,
     val meldekortPeriode: PeriodeDTO,
-    val saksbehandler: String,
+    val saksbehandler: SaksbehandlerDTO,
+    val beslutter: SaksbehandlerDTO,
     val meldekortDager: List<MeldekortDagDTO>,
     val tiltakstype: String,
     val iverksattTidspunkt: String,
-    val personopplysninger: PersonopplysningerDTO,
+    val fødselsnummer: String,
 ) {
 
-    data class PersonopplysningerDTO(
-        val fornavn: String,
-        val etternavn: String,
-        val ident: String,
+    data class SaksbehandlerDTO(
+        val navn: String,
+        val navIdent: String,
     )
 
     data class PeriodeDTO(
@@ -41,17 +39,20 @@ private data class DokumentMeldekortDTO(
 }
 
 suspend fun Meldekort.UtfyltMeldekort.toPdf(
-    hentBrukersNavn: suspend (Fnr) -> Navn,
+    hentSaksbehandlersNavn: suspend (String) -> String,
 ): JsonNode {
-    val navn = hentBrukersNavn(fnr)
+    requireNotNull(beslutter) { "Meldekort som skal journalføres må ha en beslutter. MeldekortId: $id" }
+
     return DokumentMeldekortDTO(
+        fødselsnummer = fnr.verdi,
+        saksbehandler = tilSaksbehadlerDto(saksbehandler, hentSaksbehandlersNavn),
+        beslutter = tilSaksbehadlerDto(beslutter!!, hentSaksbehandlersNavn),
         meldekortId = id.toString(),
         sakId = sakId.toString(),
         meldekortPeriode = DokumentMeldekortDTO.PeriodeDTO(
             fom = periode.fraOgMed.toString(),
             tom = periode.tilOgMed.toString(),
         ),
-        saksbehandler = saksbehandler,
         meldekortDager = this.meldeperiode.verdi.map { dag ->
             DokumentMeldekortDTO.MeldekortDagDTO(
                 dato = dag.dato.toString(),
@@ -65,12 +66,11 @@ suspend fun Meldekort.UtfyltMeldekort.toPdf(
         // TODO pre-mvp jah: Holder det med tiltakstype? Hva bør vi mappe den til?
         tiltakstype = tiltakstype.toString(),
         iverksattTidspunkt = this.iverksattTidspunkt.toString(),
-        personopplysninger = DokumentMeldekortDTO.PersonopplysningerDTO(
-            fornavn = navn.fornavn,
-            etternavn = navn.mellomnavnOgEtternavn,
-            ident = fnr.verdi,
-        ),
     ).let { objectMapper.valueToTree(it) }
+}
+
+private suspend fun tilSaksbehadlerDto(navIdent: String, hentSaksbehandlersNavn: suspend (String) -> String): DokumentMeldekortDTO.SaksbehandlerDTO {
+    return DokumentMeldekortDTO.SaksbehandlerDTO(navn = hentSaksbehandlersNavn(navIdent), navIdent = navIdent)
 }
 
 private fun Meldekortdag.toStatus(): String {
