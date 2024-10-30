@@ -9,14 +9,12 @@ import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.VedtakId
-import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldekort.IkkeUtfyltMeldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldekort.UtfyltMeldekort
-import no.nav.tiltakspenger.meldekort.domene.MeldekortSammendrag
 import no.nav.tiltakspenger.meldekort.domene.MeldeperiodeId
 import no.nav.tiltakspenger.meldekort.domene.Meldeperioder
 import no.nav.tiltakspenger.meldekort.domene.tilMeldekortperioder
@@ -124,33 +122,6 @@ class MeldekortPostgresRepo(
         return sessionFactory.withSession(sessionContext) { session ->
             hentForSakId(sakId, session)
         }
-    }
-
-    override fun hentSammendragforSakId(
-        sakId: SakId,
-        sessionContext: SessionContext?,
-    ): List<MeldekortSammendrag> {
-        return sessionFactory
-            .withSession(sessionContext) { session ->
-                session.run(
-                    queryOf(
-                        "select id,fraOgMed,tilOgMed,status,beslutter,saksbehandler from meldekort where sakId = :sakId order by fraOgMed",
-                        mapOf("sakId" to sakId.toString()),
-                    ).map { row ->
-                        MeldekortSammendrag(
-                            meldekortId = MeldekortId.fromString(row.string("id")),
-                            periode =
-                            Periode(
-                                fraOgMed = row.localDate("fraOgMed"),
-                                tilOgMed = row.localDate("tilOgMed"),
-                            ),
-                            status = row.string("status").toMeldekortStatus(),
-                            beslutter = row.stringOrNull("beslutter"),
-                            saksbehandler = row.stringOrNull("saksbehandler"),
-                        )
-                    }.asList,
-                )
-            }
     }
 
     override fun hentFnrForMeldekortId(

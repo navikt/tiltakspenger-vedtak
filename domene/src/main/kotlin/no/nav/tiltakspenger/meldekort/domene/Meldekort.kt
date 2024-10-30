@@ -128,17 +128,22 @@ sealed interface Meldekort {
         override val meldeperiode: Meldeperiode.IkkeUtfyltMeldeperiode,
         override val navkontor: Navkontor?,
     ) : Meldekort {
+
         override val beløpTotal = null
-        override val status = MeldekortStatus.KLAR_TIL_UTFYLLING
+        override val status = MeldekortStatus.IKKE_UTFYLT
+
         fun sendTilBeslutter(
-            meldekortperiode: Meldeperiode.UtfyltMeldeperiode,
+            utfyltMeldeperiode: Meldeperiode.UtfyltMeldeperiode,
             saksbehandler: Saksbehandler,
             navkontor: Navkontor,
         ): Either<KanIkkeSendeMeldekortTilBeslutter, UtfyltMeldekort> {
+            require(utfyltMeldeperiode.periode == this.periode) {
+                "Når man fyller ut et meldekort må meldekortperioden være den samme som den som er opprettet. Opprettet periode: ${this.meldeperiode.periode}, utfylt periode: ${utfyltMeldeperiode.periode}"
+            }
             if (!saksbehandler.isSaksbehandler()) {
                 return KanIkkeSendeMeldekortTilBeslutter.MåVæreSaksbehandler(saksbehandler.roller).left()
             }
-            if (LocalDate.now().isBefore(meldekortperiode.periode.fraOgMed)) {
+            if (!erKlarTilUtfylling()) {
                 // John har avklart med Sølvi og Taulant at vi bør ha en begrensning på at vi kan fylle ut et meldekort hvis dagens dato er innenfor meldekortperioden eller senere.
                 // Dette kan endres på ved behov.
                 return KanIkkeSendeMeldekortTilBeslutter.MeldekortperiodenKanIkkeVæreFremITid.left()
@@ -150,7 +155,7 @@ sealed interface Meldekort {
                 fnr = this.fnr,
                 rammevedtakId = this.rammevedtakId,
                 forrigeMeldekortId = this.forrigeMeldekortId,
-                meldeperiode = meldekortperiode,
+                meldeperiode = utfyltMeldeperiode,
                 tiltakstype = this.tiltakstype,
                 saksbehandler = saksbehandler.navIdent,
                 beslutter = this.beslutter,
@@ -162,6 +167,10 @@ sealed interface Meldekort {
 
         override val beslutter = null
         override val saksbehandler = null
+
+        fun erKlarTilUtfylling(): Boolean {
+            return !LocalDate.now().isBefore(periode.fraOgMed)
+        }
     }
 }
 

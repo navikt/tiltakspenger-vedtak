@@ -15,6 +15,7 @@ import no.nav.tiltakspenger.vedtak.routes.Standardfeil.fantIkkeMeldekort
 import no.nav.tiltakspenger.vedtak.routes.Standardfeil.fantIkkeSak
 import no.nav.tiltakspenger.vedtak.routes.correlationId
 import no.nav.tiltakspenger.vedtak.routes.meldekort.dto.toDTO
+import no.nav.tiltakspenger.vedtak.routes.respond400BadRequest
 import no.nav.tiltakspenger.vedtak.routes.respond404NotFound
 import no.nav.tiltakspenger.vedtak.routes.withMeldekortId
 import no.nav.tiltakspenger.vedtak.routes.withSakId
@@ -27,30 +28,6 @@ fun Route.hentMeldekortRoute(
     tokenService: TokenService,
 ) {
     val logger = KotlinLogging.logger { }
-    get("/sak/{sakId}/meldekort") {
-        logger.debug { "Mottatt get-request på /sak/{sakId}/meldekort - henter alle meldekort for sak" }
-        call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
-            call.withSakId { sakId ->
-                val correlationId = call.correlationId()
-                val meldekortperioder = hentMeldekortService.hentForSakId(
-                    sakId = sakId,
-                    saksbehandler = saksbehandler,
-                    correlationId = correlationId,
-                )
-                val responseJsonPayload = meldekortperioder.toDTO()
-
-                auditService.logMedSakId(
-                    sakId = sakId,
-                    navIdent = saksbehandler.navIdent,
-                    action = AuditLogEvent.Action.ACCESS,
-                    contextMessage = "Henter alle meldekortene for en sak",
-                    correlationId = correlationId,
-                )
-
-                call.respond(status = HttpStatusCode.OK, message = responseJsonPayload)
-            }
-        }
-    }
 
     get("/sak/{sakId}/meldekort/{meldekortId}") {
         logger.debug { "Motatt get-request på /sak/{sakId}/meldekort/{meldekortId}" }
@@ -71,7 +48,15 @@ fun Route.hentMeldekortRoute(
                         call.respond404NotFound(fantIkkeMeldekort())
                         return@withMeldekortId
                     }
-                    val forrigeMeldekort: Meldekort.UtfyltMeldekort? = meldekort.forrigeMeldekortId?.let { sak.hentMeldekort(it) as Meldekort.UtfyltMeldekort }
+                    if (meldekort is Meldekort.IkkeUtfyltMeldekort && !meldekort.erKlarTilUtfylling()) {
+                        call.respond400BadRequest(
+                            melding = "Meldekortet er ikke klart til utfylling",
+                            kode = "meldekortet_er_ikke_klart_til_utfylling",
+                        )
+                        return@withMeldekortId
+                    }
+                    val forrigeMeldekort: Meldekort.UtfyltMeldekort? =
+                        meldekort.forrigeMeldekortId?.let { sak.hentMeldekort(it) as Meldekort.UtfyltMeldekort }
                     val forrigeNavkontor = forrigeMeldekort?.navkontor
 
                     auditService.logMedMeldekortId(
@@ -82,7 +67,15 @@ fun Route.hentMeldekortRoute(
                         correlationId = correlationId,
                     )
                     // TODO pre-mvp: Her blir det mer riktig og bruke den totale perioden det skal meldes for.
-                    call.respond(status = HttpStatusCode.OK, message = meldekort.toDTO(sak.vedtaksperiode!!, sak.hentRelatertTiltak()!!, sak.hentAntallDager()!!, forrigeNavkontor))
+                    call.respond(
+                        status = HttpStatusCode.OK,
+                        message = meldekort.toDTO(
+                            sak.vedtaksperiode!!,
+                            sak.hentRelatertTiltak()!!,
+                            sak.hentAntallDager()!!,
+                            forrigeNavkontor,
+                        ),
+                    )
                 }
             }
         }

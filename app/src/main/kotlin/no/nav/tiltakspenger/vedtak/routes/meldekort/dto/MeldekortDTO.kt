@@ -21,14 +21,19 @@ data class MeldekortDTO(
     val forrigeNavkontor: String?,
 )
 
-fun Meldekort.toDTO(vedtaksPeriode: Periode, tiltaksnavn: String, antallDager: Int, forrigeNavkontor: Navkontor?): MeldekortDTO =
-    MeldekortDTO(
+fun Meldekort.toDTO(
+    vedtaksPeriode: Periode,
+    tiltaksnavn: String,
+    antallDager: Int,
+    forrigeNavkontor: Navkontor?,
+): MeldekortDTO {
+    return MeldekortDTO(
         id = id.toString(),
         periode = periode.toDTO(),
         saksbehandler = saksbehandler,
         beslutter = beslutter,
         tiltaksnavn = tiltaksnavn,
-        status = status.toDTO(),
+        status = this.toMeldekortstatusDTO(),
         meldekortDager = meldeperiode.toDTO(),
         totalbeløpTilUtbetaling = this.beløpTotal,
         vedtaksPeriode = vedtaksPeriode.toDTO(),
@@ -36,3 +41,4 @@ fun Meldekort.toDTO(vedtaksPeriode: Periode, tiltaksnavn: String, antallDager: I
         navkontor = navkontor?.kontornummer,
         forrigeNavkontor = forrigeNavkontor?.kontornummer,
     )
+}
