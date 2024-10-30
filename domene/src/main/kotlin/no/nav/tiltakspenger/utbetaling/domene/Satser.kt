@@ -8,10 +8,12 @@ import java.time.LocalDate
 
 class Satser {
     companion object {
+        /** Kommentar jah: Vi bruker standard norske avrundingsregler for redusert sats. Vi runder .01 til .49 ned og .50 til .99 opp. https://nav-it.slack.com/archives/C057TJ0K1FC/p1730294293866989 */
         private val satser =
             listOf(
                 Sats(Periode(1.januar(2023), 31.desember(2023)), 268, 201, 52, 39),
-                Sats(Periode(1.januar(2024), 31.desember(9999)), 285, 214, 53, 40),
+                Sats(Periode(1.januar(2024), 31.desember(2024)), 285, 214, 53, 40),
+                Sats(Periode(1.januar(2025), 31.desember(9999)), 298, 224, 55, 41),
             )
 
         fun sats(dato: LocalDate): Satsdag =
