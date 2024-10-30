@@ -85,7 +85,7 @@ private fun Meldekortdag.Utfylt.genererUtbetalingsperiode(
         ReduksjonAvYtelsePåGrunnAvFravær.IngenReduksjon, ReduksjonAvYtelsePåGrunnAvFravær.Reduksjon ->
             UtbetalingV2Dto(
                 beløp = this.beløp.toUInt(),
-                satstype = Satstype.DAGLIG,
+                satstype = Satstype.DAGLIG_INKL_HELG,
                 fraOgMedDato = this.dato,
                 tilOgMedDato = this.dato,
                 stønadsdata =

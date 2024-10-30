@@ -38,7 +38,7 @@ internal class UtbetalingDTOTest {
                 "utbetalinger": [
                   {
                     "beløp": 268,
-                    "satstype": "DAGLIG",
+                    "satstype": "DAGLIG_INKL_HELG",
                     "fraOgMedDato": "2023-01-02",
                     "tilOgMedDato": "2023-01-06",
                     "stønadsdata": {
@@ -50,7 +50,7 @@ internal class UtbetalingDTOTest {
                   },
                   {
                     "beløp": 268,
-                    "satstype": "DAGLIG",
+                    "satstype": "DAGLIG_INKL_HELG",
                     "fraOgMedDato": "2023-01-09",
                     "tilOgMedDato": "2023-01-13",
                     "stønadsdata": {
