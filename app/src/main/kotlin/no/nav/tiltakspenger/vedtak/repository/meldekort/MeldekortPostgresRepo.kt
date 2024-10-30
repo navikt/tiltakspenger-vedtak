@@ -73,7 +73,7 @@ class MeldekortPostgresRepo(
                         "saksbehandler" to meldekort.saksbehandler,
                         "beslutter" to meldekort.beslutter,
                         "status" to meldekort.status.toDb(),
-                        "navkontor" to meldekort.navkontor?.enhetsnummer,
+                        "navkontor" to meldekort.navkontor?.kontornummer,
                     ),
                 ).asUpdate,
             )
@@ -102,7 +102,7 @@ class MeldekortPostgresRepo(
                         "saksbehandler" to meldekort.saksbehandler,
                         "beslutter" to meldekort.beslutter,
                         "status" to meldekort.status.toDb(),
-                        "navkontor" to meldekort.navkontor.enhetsnummer,
+                        "navkontor" to meldekort.navkontor.kontornummer,
                     ),
                 ).asUpdate,
             )

@@ -1,5 +1,9 @@
 package no.nav.tiltakspenger.vedtak.routes.meldekort
 
+import arrow.core.Either
+import arrow.core.getOrElse
+import arrow.core.left
+import arrow.core.right
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -7,6 +11,7 @@ import io.ktor.server.routing.post
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Navkontor
 import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.felles.UgyldigKontornummer
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
@@ -39,12 +44,12 @@ private data class Body(
         meldekortId: MeldekortId,
         sakId: SakId,
         correlationId: CorrelationId,
-    ): SendMeldekortTilBeslutterKommando {
+    ): Either<UgyldigKontornummer, SendMeldekortTilBeslutterKommando> {
         return SendMeldekortTilBeslutterKommando(
             sakId = sakId,
             saksbehandler = saksbehandler,
             correlationId = correlationId,
-            navkontor = Navkontor(navkontor),
+            navkontor = Navkontor.tryCreate(navkontor).getOrElse { return it.left() },
             dager =
             this.dager.map { dag ->
                 Dag(
@@ -64,7 +69,7 @@ private data class Body(
                 )
             },
             meldekortId = meldekortId,
-        )
+        ).right()
     }
 }
 
@@ -81,16 +86,19 @@ fun Route.sendMeldekortTilBeslutterRoute(
                 call.withMeldekortId { meldekortId ->
                     call.withBody<Body> { body ->
                         val correlationId = call.correlationId()
-                        val meldekort =
-                            sendMeldekortTilBeslutterService.sendMeldekortTilBeslutter(
-                                body.toDomain(
-                                    saksbehandler = saksbehandler,
-                                    meldekortId = meldekortId,
-                                    sakId = sakId,
-                                    correlationId = correlationId,
-                                ),
+                        val kommando = body.toDomain(
+                            saksbehandler = saksbehandler,
+                            meldekortId = meldekortId,
+                            sakId = sakId,
+                            correlationId = correlationId,
+                        ).getOrElse {
+                            call.respond400BadRequest(
+                                melding = "Navkontor (enhetsnummer/kontornummer) er forventet å være 4 siffer.",
+                                kode = "ugyldig_kontornummer",
                             )
-                        meldekort.fold(
+                            return@withBody
+                        }
+                        sendMeldekortTilBeslutterService.sendMeldekortTilBeslutter(kommando).fold(
                             ifLeft = {
                                 when (it) {
                                     is KanIkkeSendeMeldekortTilBeslutter.MeldekortperiodenKanIkkeVæreFremITid -> {

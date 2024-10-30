@@ -53,7 +53,7 @@ fun Utbetalingsvedtak.toDTO(
 private fun Meldekort.UtfyltMeldekort.toUtbetalingDto(
     brukersNavKontor: Navkontor,
 ): List<UtbetalingV2Dto> {
-    return this.meldeperiode.fold((listOf<UtbetalingV2Dto>())) { acc: List<UtbetalingV2Dto>, meldekortdag ->
+    return this.meldeperiode.fold((listOf())) { acc: List<UtbetalingV2Dto>, meldekortdag ->
         meldekortdag as Meldekortdag.Utfylt
         val meldeperiodeId1 = this.meldeperiodeId
         when (val sisteUtbetalingsperiode = acc.lastOrNull()) {
@@ -93,7 +93,7 @@ private fun Meldekortdag.Utfylt.genererUtbetalingsperiode(
                     stønadstype = this.tiltakstype.mapStønadstype(),
                     // TODO post-mvp: Legg til barnetillegg
                     barnetillegg = false,
-                    brukersNavKontor = brukersNavKontor.enhetsnummer,
+                    brukersNavKontor = brukersNavKontor.kontornummer,
                     meldekortId = meldeperiodeId.verdi,
                 ),
             )

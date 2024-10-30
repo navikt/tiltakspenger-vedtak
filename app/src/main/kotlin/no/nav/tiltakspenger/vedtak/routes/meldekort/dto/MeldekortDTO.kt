@@ -33,6 +33,6 @@ fun Meldekort.toDTO(vedtaksPeriode: Periode, tiltaksnavn: String, antallDager: I
         totalbeløpTilUtbetaling = this.beløpTotal,
         vedtaksPeriode = vedtaksPeriode.toDTO(),
         antallDager = antallDager,
-        navkontor = navkontor?.enhetsnummer,
-        forrigeNavkontor = forrigeNavkontor?.enhetsnummer,
+        navkontor = navkontor?.kontornummer,
+        forrigeNavkontor = forrigeNavkontor?.kontornummer,
     )
