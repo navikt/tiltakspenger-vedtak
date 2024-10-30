@@ -28,7 +28,7 @@ class UtbetalingsvedtakRepoImplTest {
             utbetalingsvedtakRepo.markerSendtTilUtbetaling(
                 vedtakId = utbetalingsvedtak.id,
                 tidspunkt = LocalDateTime.now(),
-                utbetalingsrespons = SendtUtbetaling("myReq", "myRes"),
+                utbetalingsrespons = SendtUtbetaling("myReq", "myRes", 202),
             )
             utbetalingsvedtakRepo.hentUtbetalingJsonForVedtakId(utbetalingsvedtak.id) shouldBe "myReq"
 

@@ -18,7 +18,7 @@ class UtbetalingFakeGateway : UtbetalingGateway {
         forrigeUtbetalingJson: String?,
         correlationId: CorrelationId,
     ): Either<KunneIkkeUtbetale, SendtUtbetaling> {
-        val response = SendtUtbetaling("request - ${vedtak.id}", "response - ${vedtak.id}")
+        val response = SendtUtbetaling("request - ${vedtak.id}", "response - ${vedtak.id}", responseStatus = 202)
         val utbetaling = Utbetaling(vedtak, correlationId, response)
         utbetalinger.get()[vedtak.id] = utbetaling
         return response.right()

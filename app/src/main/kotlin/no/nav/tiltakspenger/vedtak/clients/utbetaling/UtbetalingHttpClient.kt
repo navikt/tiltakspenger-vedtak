@@ -72,7 +72,7 @@ class UtbetalingHttpClient(
             }.flatten()
         }
 
-    private suspend fun createRequest(
+    private fun createRequest(
         correlationId: CorrelationId,
         jsonPayload: String,
         token: String,
@@ -109,6 +109,7 @@ private fun mapStatus(
             return SendtUtbetaling(
                 request = request,
                 response = response,
+                responseStatus = status,
             ).right()
         }
 
@@ -143,6 +144,7 @@ private fun mapStatus(
             return SendtUtbetaling(
                 request = request,
                 response = response,
+                responseStatus = status,
             ).right()
         }
 

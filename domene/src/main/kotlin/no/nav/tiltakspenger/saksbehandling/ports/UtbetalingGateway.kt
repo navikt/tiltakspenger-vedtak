@@ -17,4 +17,5 @@ object KunneIkkeUtbetale
 data class SendtUtbetaling(
     val request: String,
     val response: String,
+    val responseStatus: Int,
 )

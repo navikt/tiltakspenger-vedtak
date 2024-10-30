@@ -9,13 +9,14 @@ internal class SendtUtbetalingExTest {
 
     @Test
     fun `empty and plain string`() {
-        val actual = SendtUtbetaling("", "response").toJson()
+        val actual = SendtUtbetaling("", "response", 202).toJson()
         objectMapper.readTree(actual)
         actual.shouldEqualJson(
             """
             {
             "request": "",
-            "response": "response"
+            "response": "response",
+            "responseStatus": 202
             }
             """.trimIndent(),
         )
@@ -23,13 +24,14 @@ internal class SendtUtbetalingExTest {
 
     @Test
     fun `blank string`() {
-        val actual = SendtUtbetaling(" ", " a ").toJson()
+        val actual = SendtUtbetaling(" ", " a ", 202).toJson()
         objectMapper.readTree(actual)
         actual.shouldEqualJson(
             """
             {
             "request": "",
-            "response": " a "
+            "response": " a ",
+            "responseStatus": 202
             }
             """.trimIndent(),
         )
@@ -39,13 +41,14 @@ internal class SendtUtbetalingExTest {
     fun `escapes non-json string`() {
         val nonEscapedString = """"\/\b\f\n\r\t"""
 
-        val actual = SendtUtbetaling("request", nonEscapedString).toJson()
+        val actual = SendtUtbetaling("request", nonEscapedString, 202).toJson()
         objectMapper.readTree(actual)
         actual.shouldEqualJson(
             """
             {
             "request": "request",
-            "response": "\"\\\/\\b\\f\\n\\r\\t"
+            "response": "\"\\\/\\b\\f\\n\\r\\t",
+            "responseStatus": 202
             }
             """.trimIndent(),
         )
@@ -55,13 +58,14 @@ internal class SendtUtbetalingExTest {
     fun `valid json string`() {
         val validJsonString = """{"key": "value"}"""
 
-        val actual = SendtUtbetaling("request", validJsonString).toJson()
+        val actual = SendtUtbetaling("request", validJsonString, 202).toJson()
         objectMapper.readTree(actual)
         actual.shouldEqualJson(
             """
             {
             "request": "request",
-            "response": {"key": "value"}
+            "response": {"key": "value"},
+            "responseStatus": 202
             }
             """.trimIndent(),
         )
@@ -71,13 +75,14 @@ internal class SendtUtbetalingExTest {
     fun `valid json string with escaped characters`() {
         val validJsonString = """{"key": "value", "escaped": "\"\\\/\\b\\f\\n\\r\\t"}"""
 
-        val actual = SendtUtbetaling("request", validJsonString).toJson()
+        val actual = SendtUtbetaling("request", validJsonString, 202).toJson()
         objectMapper.readTree(actual)
         actual.shouldEqualJson(
             """
             {
             "request": "request",
-            "response": {"key": "value", "escaped": "\"\\\/\\b\\f\\n\\r\\t"}
+            "response": {"key": "value", "escaped": "\"\\\/\\b\\f\\n\\r\\t"},
+            "responseStatus": 202
             }
             """.trimIndent(),
         )

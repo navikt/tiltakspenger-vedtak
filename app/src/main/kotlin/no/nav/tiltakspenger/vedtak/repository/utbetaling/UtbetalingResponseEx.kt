@@ -8,7 +8,8 @@ fun SendtUtbetaling.toJson(): String {
     return """
         {
         "request": ${this.request.toValidJson()},
-        "response": ${this.response.toValidJson()}
+        "response": ${this.response.toValidJson()},
+        "responseStatus": ${this.responseStatus}
         }
     """.trimIndent()
 }
