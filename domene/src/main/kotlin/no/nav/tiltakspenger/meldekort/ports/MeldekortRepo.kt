@@ -6,7 +6,6 @@ import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
-import no.nav.tiltakspenger.meldekort.domene.MeldekortSammendrag
 import no.nav.tiltakspenger.meldekort.domene.Meldeperioder
 
 interface MeldekortRepo {
@@ -29,11 +28,6 @@ interface MeldekortRepo {
         sakId: SakId,
         sessionContext: SessionContext? = null,
     ): Meldeperioder?
-
-    fun hentSammendragforSakId(
-        sakId: SakId,
-        sessionContext: SessionContext? = null,
-    ): List<MeldekortSammendrag>
 
     fun hentFnrForMeldekortId(
         meldekortId: MeldekortId,

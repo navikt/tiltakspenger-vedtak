@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.meldekort.domene
 
 enum class MeldekortStatus {
-    KLAR_TIL_UTFYLLING,
+    IKKE_UTFYLT,
     KLAR_TIL_BESLUTNING,
     GODKJENT,
 }

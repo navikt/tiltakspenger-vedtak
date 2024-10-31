@@ -8,7 +8,6 @@ import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldekort.UtfyltMeldekort
-import no.nav.tiltakspenger.meldekort.domene.MeldekortSammendrag
 import no.nav.tiltakspenger.meldekort.domene.Meldeperioder
 import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo
 
@@ -47,16 +46,6 @@ class MeldekortFakeRepo : MeldekortRepo {
                     Meldeperioder(it.tiltakstype, meldekort)
                 }
             }
-
-    override fun hentSammendragforSakId(
-        sakId: SakId,
-        sessionContext: SessionContext?,
-    ): List<MeldekortSammendrag> =
-        data
-            .get()
-            .values
-            .filter { it.sakId == sakId }
-            .map { MeldekortSammendrag(it.id, it.periode, it.status, it.saksbehandler, it.beslutter) }
 
     override fun hentFnrForMeldekortId(
         meldekortId: MeldekortId,

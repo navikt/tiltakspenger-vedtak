@@ -9,7 +9,6 @@ import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.personklient.pdl.TilgangsstyringService
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
-import no.nav.tiltakspenger.meldekort.domene.MeldekortSammendrag
 import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 
@@ -32,16 +31,6 @@ class HentMeldekortService(
         return meldekort.also {
             logger.info { "Hentet meldekort med meldekortId $meldekortId. saksbehandler: ${saksbehandler.navIdent}" }
         }
-    }
-
-    suspend fun hentForSakId(
-        sakId: SakId,
-        saksbehandler: Saksbehandler,
-        correlationId: CorrelationId,
-    ): List<MeldekortSammendrag> {
-        require(saksbehandler.isSaksbehandler() || saksbehandler.isBeslutter()) { "Saksbehandler ${saksbehandler.navIdent} må ha rollen saksbehandler eller beslutter" }
-        kastHvisIkkeTilgangTilSak(saksbehandler, sakId, correlationId)
-        return meldekortRepo.hentSammendragforSakId(sakId)
     }
 
     private suspend fun kastHvisIkkeTilgangTilSak(
