@@ -162,7 +162,7 @@ class BehandlingServiceImpl(
         require(systembruker.roller.harRolle(Rolle.HENTE_DATA)) { "Systembruker mangler rollen HENTE_DATA. Systembrukers roller: ${systembruker.roller}" }
         return førstegangsbehandlingRepo
             .hentAlleForIdent(fnr)
-            .filter { behandling -> !behandling.erIverksatt() }
+            .filter { behandling -> !behandling.erIverksatt }
             .filter { behandling ->
                 behandling.vurderingsperiode.overlapperMed(periode)
             }

@@ -428,8 +428,6 @@ private data class MeldekortBeregning(
     }
 }
 
-// private fun List<Meldekort>.tilDager(): List<Meldekortdag> = this.flatMap { it.meldekortDager }
-
 private enum class SykTilstand {
     FullUtbetaling,
     DelvisUtbetaling,
@@ -438,8 +436,9 @@ private enum class SykTilstand {
 
 fun SendMeldekortTilBeslutterKommando.beregnUtbetalingsdager(
     eksisterendeMeldekort: Meldeperioder,
-): Meldeperiode.UtfyltMeldeperiode =
-    MeldekortBeregning(
+): Meldeperiode.UtfyltMeldeperiode {
+    return MeldekortBeregning(
         utløsendeMeldekortId = this.meldekortId,
         saksbehandler = this.saksbehandler.navIdent,
     ).lagUtbetalingsdager(this, eksisterendeMeldekort)
+}

@@ -4,7 +4,6 @@ import arrow.atomic.Atomic
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
-import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldekort.UtfyltMeldekort
@@ -28,14 +27,8 @@ class MeldekortFakeRepo : MeldekortRepo {
         lagre(meldekort, transactionContext)
     }
 
-    override fun hentForMeldekortId(
-        meldekortId: MeldekortId,
-        sessionContext: SessionContext?,
-    ): Meldekort? = data.get()[meldekortId]
-
-    override fun hentForSakId(
+    fun hentForSakId(
         sakId: SakId,
-        sessionContext: SessionContext?,
     ): Meldeperioder? =
         data
             .get()
@@ -47,10 +40,7 @@ class MeldekortFakeRepo : MeldekortRepo {
                 }
             }
 
-    override fun hentFnrForMeldekortId(
+    fun hentFnrForMeldekortId(
         meldekortId: MeldekortId,
-        sessionContext: SessionContext?,
     ): Fnr? = data.get()[meldekortId]?.fnr
-
-    fun hentAlle(): List<UtfyltMeldekort> = data.get().values.filterIsInstance<UtfyltMeldekort>()
 }

@@ -23,6 +23,7 @@ import no.nav.tiltakspenger.meldekort.domene.Meldeperiode
 import no.nav.tiltakspenger.meldekort.domene.MeldeperiodeId
 import no.nav.tiltakspenger.meldekort.domene.Meldeperioder
 import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando
+import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando.Dager
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.AvklartUtfallForPeriode
 import java.time.LocalDate
@@ -49,6 +50,7 @@ interface MeldekortMother {
         status: MeldekortStatus = MeldekortStatus.GODKJENT,
         iverksattTidspunkt: LocalDateTime? = null,
         navkontor: Navkontor = ObjectMother.navkontor(),
+        antallDagerForMeldeperiode: Int = 10,
     ) = Meldekort.UtfyltMeldekort(
         id = id,
         meldeperiodeId = meldeperiodeId,
@@ -64,6 +66,7 @@ interface MeldekortMother {
         status = status,
         iverksattTidspunkt = iverksattTidspunkt,
         navkontor = navkontor,
+        antallDagerForMeldeperiode = antallDagerForMeldeperiode,
     )
 
     /**
@@ -133,7 +136,7 @@ interface MeldekortMother {
         saksbehandler: Saksbehandler = ObjectMother.saksbehandler(),
         sakId: SakId = SakId.random(),
         fnr: Fnr = Fnr.random(),
-        perioder: NonEmptyList<NonEmptyList<SendMeldekortTilBeslutterKommando.Dag>>,
+        perioder: NonEmptyList<NonEmptyList<Dager.Dag>>,
         rammevedtakId: VedtakId = VedtakId.random(),
         utfallsperioder: Periodisering<AvklartUtfallForPeriode> = Periodisering(
             initiellVerdi = AvklartUtfallForPeriode.OPPFYLT,
@@ -146,7 +149,7 @@ interface MeldekortMother {
                 sakId = sakId,
                 meldekortId = MeldekortId.random(),
                 saksbehandler = saksbehandler,
-                dager = dager,
+                dager = Dager(dager),
                 correlationId = CorrelationId.generate(),
                 navkontor = navkontor,
             )
@@ -198,6 +201,7 @@ interface MeldekortMother {
                     tiltakstype = tiltakstype,
                     meldekortId = meldekortId,
                 ),
+                antallDagerForMeldeperiode = kommando.dager.size,
             ),
         ),
     ).sendTilBeslutter(kommando).getOrFail()
@@ -236,6 +240,7 @@ interface MeldekortMother {
                     tiltakstype = tiltakstype,
                     meldekortId = meldekortId,
                 ),
+                antallDagerForMeldeperiode = kommando.dager.size,
             ),
         ).sendTilBeslutter(kommando).getOrFail().first
     }
@@ -246,7 +251,7 @@ fun Meldekort.IkkeUtfyltMeldekort.tilSendMeldekortTilBeslutterKommando(
     navkontor: Navkontor = this.navkontor ?: ObjectMother.navkontor(),
 ): SendMeldekortTilBeslutterKommando {
     val dager = meldeperiode.map { dag ->
-        SendMeldekortTilBeslutterKommando.Dag(
+        Dager.Dag(
             dag = dag.dato,
             status = when (dag) {
                 is Meldekortdag.IkkeUtfylt -> if (dag.dato.erHelg()) {
@@ -272,7 +277,7 @@ fun Meldekort.IkkeUtfyltMeldekort.tilSendMeldekortTilBeslutterKommando(
         sakId = sakId,
         meldekortId = id,
         saksbehandler = saksbehandler,
-        dager = dager,
+        dager = Dager(dager),
         correlationId = CorrelationId.generate(),
         navkontor = navkontor,
     )

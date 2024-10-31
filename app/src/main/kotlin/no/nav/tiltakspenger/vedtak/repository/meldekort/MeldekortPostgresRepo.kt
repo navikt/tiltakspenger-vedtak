@@ -108,15 +108,7 @@ class MeldekortPostgresRepo(
         }
     }
 
-    override fun hentForMeldekortId(
-        meldekortId: MeldekortId,
-        sessionContext: SessionContext?,
-    ): Meldekort? =
-        sessionFactory.withSession(sessionContext) { session ->
-            hentForMeldekortId(meldekortId, session)
-        }
-
-    override fun hentForSakId(
+    fun hentForSakId(
         sakId: SakId,
         sessionContext: SessionContext?,
     ): Meldeperioder? {
@@ -125,34 +117,25 @@ class MeldekortPostgresRepo(
         }
     }
 
-    override fun hentFnrForMeldekortId(
-        meldekortId: MeldekortId,
-        sessionContext: SessionContext?,
-    ): Fnr? =
-        sessionFactory.withSession(sessionContext) { session ->
-            session.run(
-                queryOf(
-                    """
-                    select sak.ident as fnr from sak
-                    join meldekort on sak.id = meldekort.sakId
-                    where meldekort.id = :meldekortId
-                    """.trimIndent(),
-                    mapOf("meldekortId" to meldekortId.toString()),
-                ).map { row ->
-                    Fnr.fromString(row.string("fnr"))
-                }.asSingle,
-            )
-        }
-
     companion object {
         internal fun hentForMeldekortId(
             meldekortId: MeldekortId,
             session: Session,
         ): Meldekort? {
+            // TODO post-mvp jah: Når vi legger til revurdering, må denne endres dersom vi får nye tabeller for revurdering og/eller dets vedtak.
             return session.run(
                 queryOf(
                     """
-                        select m.*,s.ident as fnr, s.saksnummer from meldekort m join sak s on s.id = m.sakId where m.id = :id
+                        select
+                          m.*,
+                          s.ident as fnr,
+                          s.saksnummer,
+                          (b.stønadsdager -> 'registerSaksopplysning' ->> 'antallDager')::int as antallDagerPerMeldeperiode
+                        from meldekort m
+                        join sak s on s.id = m.sakId
+                        join rammevedtak r on r.id = m.rammevedtakId
+                        join behandling b on b.id = r.behandling_id
+                        where m.id = :id
                     """.trimIndent(),
                     mapOf("id" to meldekortId.toString()),
                 ).map { row ->
@@ -167,13 +150,27 @@ class MeldekortPostgresRepo(
         ): Meldeperioder? {
             return session.run(
                 queryOf(
-                    "select m.*,s.ident as fnr, s.saksnummer from meldekort m join sak s on s.id = m.sakId where s.id = :sakId order by m.fraOgMed",
+                    """
+                        select
+                          m.*,
+                          s.ident as fnr,
+                          s.saksnummer,
+                          (b.stønadsdager -> 'registerSaksopplysning' ->> 'antallDager')::int as antallDagerPerMeldeperiode
+                        from meldekort m
+                        join sak s on s.id = m.sakId
+                        join rammevedtak r on r.id = m.rammevedtakId
+                        join behandling b on b.id = r.behandling_id
+                        where s.id = :sakId
+                        order by m.fraOgMed
+                    """.trimIndent(),
                     mapOf("sakId" to sakId.toString()),
                 ).map { fromRow(it) }.asList,
             ).let { it.toNonEmptyListOrNull()?.tilMeldekortperioder() }
         }
 
-        private fun fromRow(row: Row): Meldekort {
+        private fun fromRow(
+            row: Row,
+        ): Meldekort {
             val id = MeldekortId.fromString(row.string("id"))
             val sakId = SakId.fromString(row.string("sakId"))
             val saksnummer = Saksnummer(row.string("saksnummer"))
@@ -182,6 +179,7 @@ class MeldekortPostgresRepo(
             val rammevedtakId = VedtakId.fromString(row.string("rammevedtakId"))
             val fnr = Fnr.fromString(row.string("fnr"))
             val forrigeMeldekortId = row.stringOrNull("forrigeMeldekortId")?.let { MeldekortId.fromString(it) }
+            val antallDagerForMeldeperiode = row.int("antallDagerPerMeldeperiode")
             return when (val status = row.string("status")) {
                 "GODKJENT", "KLAR_TIL_BESLUTNING" -> {
                     val meldekortperiode = row.string("meldekortdager").toUtfyltMeldekortperiode(sakId, id)
@@ -201,6 +199,7 @@ class MeldekortPostgresRepo(
                         status = row.string("status").toMeldekortStatus(),
                         iverksattTidspunkt = row.localDateTimeOrNull("iverksatt_tidspunkt"),
                         navkontor = navkontor!!,
+                        antallDagerForMeldeperiode = antallDagerForMeldeperiode,
                     )
                 }
 
@@ -218,6 +217,7 @@ class MeldekortPostgresRepo(
                         forrigeMeldekortId = forrigeMeldekortId,
                         tiltakstype = meldekortperiode.tiltakstype,
                         navkontor = navkontor,
+                        antallDagerForMeldeperiode = antallDagerForMeldeperiode,
                     )
                 }
 

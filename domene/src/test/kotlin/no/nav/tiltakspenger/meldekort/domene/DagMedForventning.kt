@@ -15,7 +15,7 @@ internal data class DagMedForventning(
 
 internal fun NonEmptyList<NonEmptyList<DagMedForventning>>.assertForventning() {
     val actual = ObjectMother.beregnMeldekortperioder(
-        perioder = this.map { outer -> outer.map { SendMeldekortTilBeslutterKommando.Dag(it.dag, it.status) } },
+        perioder = this.map { outer -> outer.map { SendMeldekortTilBeslutterKommando.Dager.Dag(it.dag, it.status) } },
     )
     actual.utfylteDager.forEachIndexed { index, it ->
         (it.dato to it.reduksjon) shouldBe (this.flatten()[index].dag to flatten()[index].forventning)

@@ -37,6 +37,9 @@ sealed interface Meldekort {
     val status: MeldekortStatus
     val navkontor: Navkontor?
 
+    /** Vil være duplikat av det siste vedtaket som påvirker denne meldeperioden. Vil være et førstegangsvedtak i MVP, men vil på sikt også stamme fra revurderinger. */
+    val antallDagerForMeldeperiode: Int
+
     /** Totalsummen for meldeperioden */
     val beløpTotal: Int?
 
@@ -65,6 +68,7 @@ sealed interface Meldekort {
         override val status: MeldekortStatus,
         val iverksattTidspunkt: LocalDateTime?,
         override val navkontor: Navkontor,
+        override val antallDagerForMeldeperiode: Int,
     ) : Meldekort {
 
         init {
@@ -93,14 +97,14 @@ sealed interface Meldekort {
                 forrigeMeldekortId = this.id,
                 tiltakstype = this.tiltakstype,
                 navkontor = this.navkontor,
-                meldeperiode =
-                Meldeperiode.IkkeUtfyltMeldeperiode.fraPeriode(
+                meldeperiode = Meldeperiode.IkkeUtfyltMeldeperiode.fraPeriode(
                     meldeperiode = periode,
                     tiltakstype = this.tiltakstype,
                     meldekortId = meldekortId,
                     sakId = this.sakId,
                     utfallsperioder = utfallsperioder,
                 ),
+                antallDagerForMeldeperiode = this.antallDagerForMeldeperiode,
             ).right()
         }
 
@@ -111,6 +115,8 @@ sealed interface Meldekort {
             if (saksbehandler == beslutter.navIdent) {
                 return KanIkkeIverksetteMeldekort.SaksbehandlerOgBeslutterKanIkkeVæreLik.left()
             }
+            require(status == MeldekortStatus.KLAR_TIL_BESLUTNING)
+            require(this.beslutter == null)
             return this.copy(
                 beslutter = beslutter.navIdent,
                 status = MeldekortStatus.GODKJENT,
@@ -132,6 +138,7 @@ sealed interface Meldekort {
         override val tiltakstype: TiltakstypeSomGirRett,
         override val meldeperiode: Meldeperiode.IkkeUtfyltMeldeperiode,
         override val navkontor: Navkontor?,
+        override val antallDagerForMeldeperiode: Int,
     ) : Meldekort {
 
         override val beløpTotal = null
@@ -168,6 +175,7 @@ sealed interface Meldekort {
                 status = MeldekortStatus.KLAR_TIL_BESLUTNING,
                 iverksattTidspunkt = null,
                 navkontor = navkontor,
+                antallDagerForMeldeperiode = this.antallDagerForMeldeperiode,
             ).right()
         }
 
@@ -197,14 +205,14 @@ fun Rammevedtak.opprettFørsteMeldekortForEnSak(): Meldekort.IkkeUtfyltMeldekort
         tiltakstype = tiltakstype,
         // TODO post-mvp: Her har vi mulighet til å hente verdien fra brukers geografiske tilhørighet + norg2.
         navkontor = null,
-        meldeperiode =
-        Meldeperiode.IkkeUtfyltMeldeperiode.fraPeriode(
+        meldeperiode = Meldeperiode.IkkeUtfyltMeldeperiode.fraPeriode(
             meldeperiode = periode,
             utfallsperioder = utfallsperioder,
             tiltakstype = tiltakstype,
             meldekortId = meldekortId,
             sakId = this.sakId,
         ),
+        antallDagerForMeldeperiode = this.behandling.antallDagerPerMeldeperiode,
     )
 }
 

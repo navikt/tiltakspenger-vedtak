@@ -22,7 +22,7 @@ internal class TestDataHelper(
 ) {
     private val log = KotlinLogging.logger {}
     private val sessionCounter = SessionCounter(log)
-    private val sessionFactory = PostgresSessionFactory(dataSource, sessionCounter)
+    val sessionFactory = PostgresSessionFactory(dataSource, sessionCounter)
     val søknadRepo = PostgresSøknadRepo(sessionFactory)
     val behandlingRepo = BehandlingPostgresRepo(sessionFactory)
     val vedtakRepo = RammevedtakPostgresRepo(sessionFactory)

@@ -14,16 +14,12 @@ class UtbetalingsvedtakRepoImplTest {
     @Test
     fun `kan lagre og hente`() {
         withMigratedDb(runIsolated = true) { testDataHelper ->
+
             val (sak, meldekort) = testDataHelper.persisterRammevedtakMedUtfyltMeldekort()
-            val utbetalingsvedtakRepo = testDataHelper.utbetalingsvedtakRepo
+            val utbetalingsvedtakRepo = testDataHelper.utbetalingsvedtakRepo as UtbetalingsvedtakPostgresRepo
             val utbetalingsvedtak = meldekort.opprettUtbetalingsvedtak(sak.rammevedtak!!, null)
             utbetalingsvedtakRepo.lagre(utbetalingsvedtak)
-            utbetalingsvedtakRepo.hentForVedtakId(utbetalingsvedtak.id) shouldBe utbetalingsvedtak
             utbetalingsvedtakRepo.hentUtbetalingsvedtakForUtsjekk() shouldBe listOf(utbetalingsvedtak)
-            utbetalingsvedtakRepo.hentForFørstegangsbehandlingId(sak.førstegangsbehandling.id) shouldBe
-                listOf(
-                    utbetalingsvedtak,
-                )
             utbetalingsvedtakRepo.hentUtbetalingsvedtakForUtsjekk() shouldBe listOf(utbetalingsvedtak)
             utbetalingsvedtakRepo.markerSendtTilUtbetaling(
                 vedtakId = utbetalingsvedtak.id,
@@ -33,9 +29,10 @@ class UtbetalingsvedtakRepoImplTest {
             utbetalingsvedtakRepo.hentUtbetalingJsonForVedtakId(utbetalingsvedtak.id) shouldBe "myReq"
 
             utbetalingsvedtakRepo.hentUtbetalingsvedtakForUtsjekk() shouldBe emptyList()
-
-            val oppdatertMedUtbetalingsdata = utbetalingsvedtakRepo.hentForVedtakId(utbetalingsvedtak.id)!!
-            utbetalingsvedtakRepo.hentDeSomSkalJournalføres() shouldBe listOf(oppdatertMedUtbetalingsdata)
+            val oppdatertMedUtbetalingsdata = testDataHelper.sessionFactory.withSession { session ->
+                UtbetalingsvedtakPostgresRepo.hentForSakId(sak.id, session)
+            }
+            utbetalingsvedtakRepo.hentDeSomSkalJournalføres() shouldBe oppdatertMedUtbetalingsdata
             utbetalingsvedtakRepo.markerJournalført(
                 vedtakId = utbetalingsvedtak.id,
                 journalpostId = JournalpostId("123"),

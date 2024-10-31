@@ -56,7 +56,7 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-gi
     private val statistikkSakFakeRepo = StatistikkSakFakeRepo()
     private val utbetalingGatewayFake = UtbetalingFakeGateway()
     private val meldekortFakeRepo = MeldekortFakeRepo()
-    private val utbetalingsvedtakFakeRepo = UtbetalingsvedtakFakeRepo(rammevedtakFakeRepo, meldekortFakeRepo)
+    private val utbetalingsvedtakFakeRepo = UtbetalingsvedtakFakeRepo()
     private val søknadFakeRepo = SøknadFakeRepo()
     private val tiltakGatewayFake = TiltakFakeGateway()
     private val behandlingFakeRepo = BehandlingFakeRepo()
