@@ -14,9 +14,8 @@ class SendUtbetalingerService(
     private val utbetalingsvedtakRepo: UtbetalingsvedtakRepo,
     private val utbetalingsklient: UtbetalingGateway,
 ) {
+    val logger = KotlinLogging.logger { }
     suspend fun send(correlationId: CorrelationId) {
-        val logger = KotlinLogging.logger { }
-
         utbetalingsvedtakRepo.hentUtbetalingsvedtakForUtsjekk().forEach { utbetalingsvedtak ->
             Either.catch {
                 val forrigeUtbetalingJson =
