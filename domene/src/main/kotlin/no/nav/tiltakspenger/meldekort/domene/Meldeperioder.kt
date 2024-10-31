@@ -2,19 +2,21 @@ package no.nav.tiltakspenger.meldekort.domene
 
 import arrow.core.Either
 import arrow.core.NonEmptyList
+import arrow.core.left
 import arrow.core.toNonEmptyListOrNull
+import no.nav.tiltakspenger.felles.singleOrNullOrThrow
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.tiltak.TiltakstypeSomGirRett
+import no.nav.tiltakspenger.meldekort.domene.Meldekort.IkkeUtfyltMeldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldekort.UtfyltMeldekort
 
 /**
  * Består av ingen, én eller flere [Meldeperiode].
- * Vil ingen fram til første innvilgede førstegangsbehandling.
+ * Vil være tom fram til første innvilgede førstegangsbehandling.
  * Kun den siste vil kunne være ikke-utfylt (åpen).
  * @param tiltakstype I MVP støtter vi kun ett tiltak, men på sikt kan vi ikke garantere at det er én til én mellom meldekortperioder og tiltakstype.
- *
  */
 data class Meldeperioder(
     val tiltakstype: TiltakstypeSomGirRett,
@@ -22,13 +24,20 @@ data class Meldeperioder(
 ) : List<Meldekort> by verdi {
 
     /**
-     * @throws NullPointerException Dersom det ikke er noen meldekort som kan sendes til beslutter.
+     * @throws NullPointerException Dersom det ikke er noen meldekort som kan sendes til beslutter. Eller siste meldekort ikke er i tilstanden 'ikke utfylt'.
+     * @throws IllegalArgumentException Dersom innsendt meldekortid ikke samsvarer med siste meldekortperiode.
      */
     fun sendTilBeslutter(
         kommando: SendMeldekortTilBeslutterKommando,
     ): Either<KanIkkeSendeMeldekortTilBeslutter, Pair<Meldeperioder, UtfyltMeldekort>> {
         val meldekortperiode = kommando.beregnUtbetalingsdager(eksisterendeMeldekort = this)
         val ikkeUtfyltMeldekort = this.ikkeUtfyltMeldekort!!
+        if (kommando.dager.antallDagerMedFraværEllerDeltatt > ikkeUtfyltMeldekort.antallDagerForMeldeperiode) {
+            return KanIkkeSendeMeldekortTilBeslutter.ForMangeDagerUtfylt(
+                antallDagerForMeldeperiode = ikkeUtfyltMeldekort.antallDagerForMeldeperiode,
+                antallDagerUtfylt = kommando.dager.antallDagerMedFraværEllerDeltatt,
+            ).left()
+        }
         require(ikkeUtfyltMeldekort.id == kommando.meldekortId) {
             "MeldekortId i kommando (${kommando.meldekortId}) samsvarer ikke med siste meldekortperiode (${ikkeUtfyltMeldekort.id})"
         }
@@ -55,8 +64,7 @@ data class Meldeperioder(
     val utfylteDager: List<Meldekortdag.Utfylt> = utfylteMeldekort.flatMap { it.meldeperiode.verdi }
 
     /** Så lenge saken er aktiv, vil det siste meldekortet være i tilstanden ikke utfylt. Vil også være null fram til første innvilgelse. */
-    val ikkeUtfyltMeldekort: Meldekort.IkkeUtfyltMeldekort? =
-        verdi.filterIsInstance<Meldekort.IkkeUtfyltMeldekort>().firstOrNull()
+    val ikkeUtfyltMeldekort: IkkeUtfyltMeldekort? = verdi.filterIsInstance<IkkeUtfyltMeldekort>().singleOrNullOrThrow()
 
     val sakId: SakId by lazy { verdi.first().sakId }
 

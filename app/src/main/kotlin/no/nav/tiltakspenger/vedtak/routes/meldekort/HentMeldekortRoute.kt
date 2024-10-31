@@ -6,7 +6,6 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import mu.KotlinLogging
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
-import no.nav.tiltakspenger.meldekort.service.HentMeldekortService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
@@ -22,7 +21,6 @@ import no.nav.tiltakspenger.vedtak.routes.withSakId
 import no.nav.tiltakspenger.vedtak.routes.withSaksbehandler
 
 fun Route.hentMeldekortRoute(
-    hentMeldekortService: HentMeldekortService,
     sakService: SakService,
     auditService: AuditService,
     tokenService: TokenService,

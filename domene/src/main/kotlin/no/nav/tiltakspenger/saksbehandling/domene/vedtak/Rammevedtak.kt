@@ -13,7 +13,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.AvklartUtfallForPeriod
 import java.time.LocalDateTime
 
 data class Rammevedtak(
-    val id: VedtakId = VedtakId.random(),
+    override val id: VedtakId = VedtakId.random(),
     val sakId: SakId,
     val saksnummer: Saksnummer,
     val behandling: Førstegangsbehandling,
@@ -26,9 +26,10 @@ data class Rammevedtak(
     val journalføringstidstpunkt: LocalDateTime?,
     val distribusjonId: DistribusjonId? = null,
     val distribusjonstidspunkt: LocalDateTime? = null,
-) {
+) : Vedtak {
     val fnr = behandling.fnr
     val utfallsperioder: Periodisering<AvklartUtfallForPeriode> get() = behandling.avklarteUtfallsperioder
+    override val antallDagerPerMeldeperiode: Int = behandling.antallDagerPerMeldeperiode
 }
 
 enum class Vedtakstype(

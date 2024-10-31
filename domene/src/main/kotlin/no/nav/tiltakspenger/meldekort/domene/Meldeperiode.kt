@@ -42,7 +42,7 @@ sealed interface Meldeperiode : List<Meldekortdag> {
                     "Datoene må være sammenhengende og sortert, men var ${verdi.map { it.dato }}"
                 }
             }
-            // TODO post-mvp jah: Vurder om Meldekortperiode skal forholde seg til antallDager eller om fordeleren [Meldekort] skal gjøre det.
+            // TODO post-mvp jah: Vurder om Meldeperiode skal forholde seg til antallDager eller om fordeleren [Meldekort] skal gjøre det.
             require(verdi.count { it.harDeltattEllerFravær } <= 5 * 2) {
                 // TODO jah: Dette bør være en mer felles konstant. Kan også skrive en mer spesifikk sjekk per uke.
                 "Det kan maks være 5*2 tiltaksdager i en meldekortperiode, men var ${verdi.count { it.harDeltattEllerFravær }}"

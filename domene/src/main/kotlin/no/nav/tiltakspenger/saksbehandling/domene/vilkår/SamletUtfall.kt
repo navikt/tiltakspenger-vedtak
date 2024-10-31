@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår
 
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
-import java.lang.IllegalStateException
 
 /**
  * Det samlede utfallet for et vilkår og vilkårsettet.

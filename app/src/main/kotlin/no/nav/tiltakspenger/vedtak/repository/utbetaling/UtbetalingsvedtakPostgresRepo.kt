@@ -4,7 +4,6 @@ import kotliquery.Row
 import kotliquery.Session
 import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.journalføring.JournalpostId
-import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
@@ -105,19 +104,6 @@ internal class UtbetalingsvedtakPostgresRepo(
         }
     }
 
-    override fun hentForVedtakId(vedtakId: VedtakId): Utbetalingsvedtak? {
-        return sessionFactory.withSession { session ->
-            session.run(
-                queryOf(
-                    "select u.*,s.ident as fnr,s.saksnummer from utbetalingsvedtak u join sak s on s.id = u.sakid where u.id = :id",
-                    mapOf("id" to vedtakId.toString()),
-                ).map { row ->
-                    row.toVedtak(session)
-                }.asSingle,
-            )
-        }
-    }
-
     override fun hentUtbetalingJsonForVedtakId(vedtakId: VedtakId): String? {
         return sessionFactory.withSession { session ->
             session.run(
@@ -128,25 +114,6 @@ internal class UtbetalingsvedtakPostgresRepo(
                     row.stringOrNull("req")
                 }.asSingle,
             )
-        }
-    }
-
-    override fun hentForFørstegangsbehandlingId(behandlingId: BehandlingId): Utbetalinger {
-        return sessionFactory.withSession { session ->
-            session.run(
-                queryOf(
-                    """
-                        select u.*, s.ident as fnr, s.saksnummer
-                        from utbetalingsvedtak u
-                        join sak s on s.id = u.sakid
-                        join rammevedtak v on u.rammevedtakId = v.id
-                        where v.behandling_id = :behandlingId
-                    """.trimIndent(),
-                    mapOf("behandlingId" to behandlingId.toString()),
-                ).map { row ->
-                    row.toVedtak(session)
-                }.asList,
-            ).let { Utbetalinger(it) }
         }
     }
 

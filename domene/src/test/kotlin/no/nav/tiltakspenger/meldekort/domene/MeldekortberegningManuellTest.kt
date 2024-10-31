@@ -5,7 +5,7 @@ import no.nav.tiltakspenger.felles.april
 import no.nav.tiltakspenger.felles.februar
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
-import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando.Dag
+import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando.Dager.Dag
 import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando.Status.DELTATT_UTEN_LØNN_I_TILTAKET
 import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando.Status.FRAVÆR_SYK
 import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando.Status.FRAVÆR_SYKT_BARN

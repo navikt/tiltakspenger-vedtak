@@ -17,7 +17,7 @@ import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.meldekort.domene.KanIkkeSendeMeldekortTilBeslutter
 import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando
-import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando.Dag
+import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando.Dager
 import no.nav.tiltakspenger.meldekort.service.SendMeldekortTilBeslutterService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
@@ -50,24 +50,25 @@ private data class Body(
             saksbehandler = saksbehandler,
             correlationId = correlationId,
             navkontor = Navkontor.tryCreate(navkontor).getOrElse { return it.left() },
-            dager =
-            this.dager.map { dag ->
-                Dag(
-                    dag = LocalDate.parse(dag.dato),
-                    status =
-                    when (dag.status) {
-                        "SPERRET" -> SendMeldekortTilBeslutterKommando.Status.SPERRET
-                        "DELTATT_UTEN_LØNN_I_TILTAKET" -> SendMeldekortTilBeslutterKommando.Status.DELTATT_UTEN_LØNN_I_TILTAKET
-                        "DELTATT_MED_LØNN_I_TILTAKET" -> SendMeldekortTilBeslutterKommando.Status.DELTATT_MED_LØNN_I_TILTAKET
-                        "IKKE_DELTATT" -> SendMeldekortTilBeslutterKommando.Status.IKKE_DELTATT
-                        "FRAVÆR_SYK" -> SendMeldekortTilBeslutterKommando.Status.FRAVÆR_SYK
-                        "FRAVÆR_SYKT_BARN" -> SendMeldekortTilBeslutterKommando.Status.FRAVÆR_SYKT_BARN
-                        "FRAVÆR_VELFERD_GODKJENT_AV_NAV" -> SendMeldekortTilBeslutterKommando.Status.FRAVÆR_VELFERD_GODKJENT_AV_NAV
-                        "FRAVÆR_VELFERD_IKKE_GODKJENT_AV_NAV" -> SendMeldekortTilBeslutterKommando.Status.FRAVÆR_VELFERD_IKKE_GODKJENT_AV_NAV
-                        else -> throw IllegalArgumentException("Ukjent status: ${dag.status}")
-                    },
-                )
-            },
+            dager = Dager(
+                this.dager.map { dag ->
+                    Dager.Dag(
+                        dag = LocalDate.parse(dag.dato),
+                        status =
+                        when (dag.status) {
+                            "SPERRET" -> SendMeldekortTilBeslutterKommando.Status.SPERRET
+                            "DELTATT_UTEN_LØNN_I_TILTAKET" -> SendMeldekortTilBeslutterKommando.Status.DELTATT_UTEN_LØNN_I_TILTAKET
+                            "DELTATT_MED_LØNN_I_TILTAKET" -> SendMeldekortTilBeslutterKommando.Status.DELTATT_MED_LØNN_I_TILTAKET
+                            "IKKE_DELTATT" -> SendMeldekortTilBeslutterKommando.Status.IKKE_DELTATT
+                            "FRAVÆR_SYK" -> SendMeldekortTilBeslutterKommando.Status.FRAVÆR_SYK
+                            "FRAVÆR_SYKT_BARN" -> SendMeldekortTilBeslutterKommando.Status.FRAVÆR_SYKT_BARN
+                            "FRAVÆR_VELFERD_GODKJENT_AV_NAV" -> SendMeldekortTilBeslutterKommando.Status.FRAVÆR_VELFERD_GODKJENT_AV_NAV
+                            "FRAVÆR_VELFERD_IKKE_GODKJENT_AV_NAV" -> SendMeldekortTilBeslutterKommando.Status.FRAVÆR_VELFERD_IKKE_GODKJENT_AV_NAV
+                            else -> throw IllegalArgumentException("Ukjent status: ${dag.status}")
+                        },
+                    )
+                },
+            ),
             meldekortId = meldekortId,
         ).right()
     }
@@ -112,6 +113,13 @@ fun Route.sendMeldekortTilBeslutterRoute(
                                         call.respond400BadRequest(
                                             melding = "Kan ikke sende meldekort til beslutter. Krever saksbehandler-rolle.",
                                             kode = "må_være_saksbehandler",
+                                        )
+                                    }
+
+                                    is KanIkkeSendeMeldekortTilBeslutter.ForMangeDagerUtfylt -> {
+                                        call.respond400BadRequest(
+                                            melding = "Kan ikke sende meldekort til beslutter. For mange dager er utfylt. Maks antall for dette meldekortet er ${it.antallDagerForMeldeperiode}, mens antall utfylte dager er ${it.antallDagerUtfylt}.",
+                                            kode = "for_mange_dager_utfylt",
                                         )
                                     }
                                 }

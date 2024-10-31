@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.meldekort.service
 
 import arrow.core.Either
+import arrow.core.left
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
@@ -13,53 +14,58 @@ import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando
 import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo
 import no.nav.tiltakspenger.saksbehandling.service.person.PersonService
-import java.lang.IllegalStateException
+import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 
 /**
- * Genererer meldekort for alle rammevedtak som ikke har meldekort.
- * Dette vil kun gjelde det første meldekortet
+ * Har ansvar for å ta imot et utfylt meldekort og sende det til beslutter.
  */
 class SendMeldekortTilBeslutterService(
     private val tilgangsstyringService: TilgangsstyringService,
     private val personService: PersonService,
     private val meldekortRepo: MeldekortRepo,
+    private val sakService: SakService,
 ) {
     private val logger = KotlinLogging.logger {}
 
+    /**
+     * @throws IllegalStateException Dersom vi ikke fant saken.
+     */
     suspend fun sendMeldekortTilBeslutter(
         kommando: SendMeldekortTilBeslutterKommando,
     ): Either<KanIkkeSendeMeldekortTilBeslutter, Meldekort.UtfyltMeldekort> {
-        require(kommando.saksbehandler.isSaksbehandler()) { "Saksbehandler ${kommando.saksbehandler.navIdent} må ha rollen saksbehandler" }
+        if (!kommando.saksbehandler.isSaksbehandler()) {
+            return KanIkkeSendeMeldekortTilBeslutter.MåVæreSaksbehandler(
+                kommando.saksbehandler.roller,
+            ).left()
+        }
 
         val sakId = kommando.sakId
-        kastHvisIkkeTilgang(kommando.saksbehandler, kommando.meldekortId, kommando.correlationId)
-        val eksisterendeMeldekort =
-            meldekortRepo.hentForSakId(sakId)
-                ?: throw IllegalStateException("Det finnes ingen eksisterende meldekort for sak $sakId")
-        return eksisterendeMeldekort
+        kastHvisIkkeTilgangTilPerson(kommando.saksbehandler, kommando.meldekortId, kommando.correlationId)
+        val sak = sakService.hentForSakId(kommando.sakId, kommando.saksbehandler, kommando.correlationId)
+            ?: throw IllegalStateException("Fant ikke sak med id $sakId")
+        return sak.meldeperioder
             .sendTilBeslutter(kommando)
             .map { it.second }
             .onRight {
                 meldekortRepo.oppdater(it)
-                logger.info { "Meldekort med id ${it.id} sendt til beslutter." }
+                logger.info { "Meldekort med id ${it.id} sendt til beslutter. Saksbehandler: ${kommando.saksbehandler.navIdent}" }
             }
     }
 
-    private suspend fun kastHvisIkkeTilgang(
+    private suspend fun kastHvisIkkeTilgangTilPerson(
         saksbehandler: Saksbehandler,
         meldekortId: MeldekortId,
         correlationId: CorrelationId,
     ) {
         val fnr = personService.hentFnrForMeldekortId(meldekortId)
-        tilgangsstyringService
-            .harTilgangTilPerson(
-                fnr = fnr,
-                roller = saksbehandler.roller,
-                correlationId = correlationId,
-            ).onLeft {
-                throw IkkeFunnetException("Feil ved sjekk av tilgang til person. meldekortId: $meldekortId. CorrelationId: $correlationId")
-            }.onRight {
-                if (!it) throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til person")
-            }
+        tilgangsstyringService.harTilgangTilPerson(
+            fnr = fnr,
+            roller = saksbehandler.roller,
+            correlationId = correlationId,
+        ).onLeft {
+            throw IkkeFunnetException("Feil ved sjekk av tilgang til person. meldekortId: $meldekortId. CorrelationId: $correlationId")
+        }.onRight {
+            if (!it) throw TilgangException("Saksbehandler ${saksbehandler.navIdent} har ikke tilgang til person")
+        }
     }
 }

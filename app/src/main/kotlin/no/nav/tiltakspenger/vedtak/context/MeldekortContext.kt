@@ -4,7 +4,6 @@ import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.personklient.pdl.TilgangsstyringService
 import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo
-import no.nav.tiltakspenger.meldekort.service.HentMeldekortService
 import no.nav.tiltakspenger.meldekort.service.IverksettMeldekortService
 import no.nav.tiltakspenger.meldekort.service.SendMeldekortTilBeslutterService
 import no.nav.tiltakspenger.saksbehandling.ports.StatistikkStønadRepo
@@ -30,13 +29,6 @@ open class MeldekortContext(
             sessionFactory = sessionFactory as PostgresSessionFactory,
         )
     }
-    val hentMeldekortService by lazy {
-        HentMeldekortService(
-            meldekortRepo = meldekortRepo,
-            sakService = sakService,
-            tilgangsstyringService = tilgangsstyringService,
-        )
-    }
     val iverksettMeldekortService by lazy {
         IverksettMeldekortService(
             meldekortRepo = meldekortRepo,
@@ -48,5 +40,12 @@ open class MeldekortContext(
             personService = personService,
         )
     }
-    val sendMeldekortTilBeslutterService by lazy { SendMeldekortTilBeslutterService(tilgangsstyringService = tilgangsstyringService, personService = personService, meldekortRepo = meldekortRepo) }
+    val sendMeldekortTilBeslutterService by lazy {
+        SendMeldekortTilBeslutterService(
+            tilgangsstyringService = tilgangsstyringService,
+            personService = personService,
+            meldekortRepo = meldekortRepo,
+            sakService = sakService,
+        )
+    }
 }

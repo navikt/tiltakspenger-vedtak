@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.meldekort.service
 
 import arrow.core.Either
+import arrow.core.left
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
@@ -11,6 +12,7 @@ import no.nav.tiltakspenger.libs.personklient.pdl.TilgangsstyringService
 import no.nav.tiltakspenger.meldekort.domene.IverksettMeldekortKommando
 import no.nav.tiltakspenger.meldekort.domene.KanIkkeIverksetteMeldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
+import no.nav.tiltakspenger.meldekort.domene.MeldekortStatus
 import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo
 import no.nav.tiltakspenger.saksbehandling.ports.StatistikkStønadRepo
 import no.nav.tiltakspenger.saksbehandling.service.person.PersonService
@@ -31,21 +33,21 @@ class IverksettMeldekortService(
     suspend fun iverksettMeldekort(
         kommando: IverksettMeldekortKommando,
     ): Either<KanIkkeIverksetteMeldekort, Meldekort.UtfyltMeldekort> {
-        require(kommando.beslutter.isBeslutter()) { "Saksbehandler ${kommando.beslutter.navIdent} må ha rollen beslutter" }
-
+        if (!kommando.beslutter.isBeslutter()) {
+            return KanIkkeIverksetteMeldekort.MåVæreBeslutter(kommando.beslutter.roller).left()
+        }
         val meldekortId = kommando.meldekortId
         val sakId = kommando.sakId
-        kastHvisIkkeTilgang(kommando.beslutter, meldekortId, kommando.correlationId)
+        kastHvisIkkeTilgangTilPerson(kommando.beslutter, meldekortId, kommando.correlationId)
 
         val sak = sakService.hentForSakId(sakId, kommando.beslutter, correlationId = kommando.correlationId)
             ?: throw IllegalArgumentException("Fant ikke sak med id $sakId")
         val meldekort: Meldekort = sak.hentMeldekort(meldekortId)
             ?: throw IllegalArgumentException("Fant ikke meldekort med id $meldekortId i sak $sakId")
         meldekort as Meldekort.UtfyltMeldekort
-        require(meldekort.beslutter == null) {
+        require(meldekort.beslutter == null && meldekort.status == MeldekortStatus.KLAR_TIL_BESLUTNING) {
             "Meldekort $meldekortId er allerede iverksatt"
         }
-
         val rammevedtak = sak.rammevedtak
             ?: throw IllegalArgumentException("Fant ikke rammevedtak for sak $sakId")
 
@@ -64,7 +66,7 @@ class IverksettMeldekortService(
         }
     }
 
-    private suspend fun kastHvisIkkeTilgang(
+    private suspend fun kastHvisIkkeTilgangTilPerson(
         saksbehandler: Saksbehandler,
         meldekortId: MeldekortId,
         correlationId: CorrelationId,

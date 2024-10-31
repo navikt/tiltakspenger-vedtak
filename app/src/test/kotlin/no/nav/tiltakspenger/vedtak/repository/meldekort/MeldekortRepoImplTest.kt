@@ -21,6 +21,7 @@ class MeldekortRepoImplTest {
                     rammevedtakId = sak.rammevedtak!!.id,
                     fnr = sak.fnr,
                     saksnummer = sak.saksnummer,
+                    antallDagerForMeldeperiode = sak.rammevedtak!!.antallDagerPerMeldeperiode,
                 )
             val nesteMeldekort = meldekort.opprettNesteMeldekort(
                 utfallsperioder = Periodisering(
@@ -33,10 +34,18 @@ class MeldekortRepoImplTest {
             ).getOrFail()
             val meldekortRepo = testDataHelper.meldekortRepo
             meldekortRepo.lagre(meldekort)
-            val hentForMeldekortId = meldekortRepo.hentForMeldekortId(meldekort.id)!!
+            val hentForMeldekortId = testDataHelper.sessionFactory.withSession {
+                MeldekortPostgresRepo.hentForMeldekortId(meldekort.id, it)!!
+            }
             hentForMeldekortId shouldBe meldekort
             meldekortRepo.lagre(nesteMeldekort)
-            val hentForMeldekortId2 = meldekortRepo.hentForMeldekortId(nesteMeldekort.id)!!
+            val hentForMeldekortId2 =
+                testDataHelper.sessionFactory.withSession {
+                    MeldekortPostgresRepo.hentForMeldekortId(
+                        nesteMeldekort.id,
+                        it,
+                    )
+                }
             hentForMeldekortId2 shouldBe nesteMeldekort
         }
     }

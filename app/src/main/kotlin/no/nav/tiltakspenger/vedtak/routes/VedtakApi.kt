@@ -72,7 +72,6 @@ internal fun Application.vedtakApi(
             auditService = applicationContext.personContext.auditService,
         )
         meldekortRoutes(
-            hentMeldekortService = applicationContext.meldekortContext.hentMeldekortService,
             iverksettMeldekortService = applicationContext.meldekortContext.iverksettMeldekortService,
             sendMeldekortTilBeslutterService = applicationContext.meldekortContext.sendMeldekortTilBeslutterService,
             auditService = applicationContext.personContext.auditService,

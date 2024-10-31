@@ -88,7 +88,7 @@ interface PersonMother {
         kilde: Tiltakskilde = Komet,
         deltakelseProsent: Float? = 100F,
         status: TiltakDeltakerstatus = Deltar,
-        antallDagerPerUke: Float? = 1F,
+        antallDagerPerUke: Float? = 5F,
         registrertDato: LocalDateTime = 1.januarDateTime(2022),
         innhentet: LocalDateTime = 1.januarDateTime(2022),
     ): Tiltak =
