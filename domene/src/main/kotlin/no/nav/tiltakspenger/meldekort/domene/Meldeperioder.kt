@@ -30,7 +30,6 @@ data class Meldeperioder(
     fun sendTilBeslutter(
         kommando: SendMeldekortTilBeslutterKommando,
     ): Either<KanIkkeSendeMeldekortTilBeslutter, Pair<Meldeperioder, UtfyltMeldekort>> {
-        val meldekortperiode = kommando.beregnUtbetalingsdager(eksisterendeMeldekort = this)
         val ikkeUtfyltMeldekort = this.ikkeUtfyltMeldekort!!
         if (kommando.dager.antallDagerMedFraværEllerDeltatt > ikkeUtfyltMeldekort.antallDagerForMeldeperiode) {
             return KanIkkeSendeMeldekortTilBeslutter.ForMangeDagerUtfylt(
@@ -41,6 +40,7 @@ data class Meldeperioder(
         require(ikkeUtfyltMeldekort.id == kommando.meldekortId) {
             "MeldekortId i kommando (${kommando.meldekortId}) samsvarer ikke med siste meldekortperiode (${ikkeUtfyltMeldekort.id})"
         }
+        val meldekortperiode = kommando.beregnUtbetalingsdager(eksisterendeMeldekort = this)
         return ikkeUtfyltMeldekort.sendTilBeslutter(meldekortperiode, kommando.saksbehandler, kommando.navkontor).map {
             Pair(
                 Meldeperioder(
