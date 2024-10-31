@@ -4,6 +4,7 @@ import arrow.core.Either
 import arrow.core.getOrElse
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.NavIdentClient
+import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.saksbehandling.ports.GenererVedtaksbrevGateway
 import no.nav.tiltakspenger.saksbehandling.ports.JournalførVedtaksbrevGateway
@@ -24,22 +25,28 @@ class JournalførVedtaksbrevService(
     suspend fun journalfør(
         correlationId: CorrelationId,
     ) {
-        rammevedtakRepo.hentRammevedtakSomSkalJournalføres().forEach { vedtak ->
-            log.info { "Journalfører vedtaksbrev for vedtak ${vedtak.id}" }
-            Either.catch {
-                val pdfOgJson = genererVedtaksbrevGateway.genererVedtaksbrev(
-                    vedtak = vedtak,
-                    hentBrukersNavn = personService::hentNavn,
-                    hentSaksbehandlersNavn = navIdentClient::hentNavnForNavIdent,
-                ).getOrElse { return@forEach }
-                log.info { "Vedtaksbrev generert for vedtak ${vedtak.id}" }
-                val journalpostId = journalførVedtaksbrevGateway.journalførVedtaksbrev(vedtak, pdfOgJson, correlationId)
-                log.info { "Vedtaksbrev journalført for vedtak ${vedtak.id}" }
-                rammevedtakRepo.markerJournalført(vedtak.id, journalpostId, LocalDateTime.now())
-                log.info { "Vedtaksbrev markert som journalført for vedtak ${vedtak.id}" }
-            }.onLeft {
-                log.error(it) { "Feil ved journalføring av vedtaksbrev for vedtak ${vedtak.id}" }
+        Either.catch {
+            rammevedtakRepo.hentRammevedtakSomSkalJournalføres().forEach { vedtak ->
+                log.info { "Journalfører vedtaksbrev for vedtak ${vedtak.id}" }
+                Either.catch {
+                    val pdfOgJson = genererVedtaksbrevGateway.genererVedtaksbrev(
+                        vedtak = vedtak,
+                        hentBrukersNavn = personService::hentNavn,
+                        hentSaksbehandlersNavn = navIdentClient::hentNavnForNavIdent,
+                    ).getOrElse { return@forEach }
+                    log.info { "Vedtaksbrev generert for vedtak ${vedtak.id}" }
+                    val journalpostId =
+                        journalførVedtaksbrevGateway.journalførVedtaksbrev(vedtak, pdfOgJson, correlationId)
+                    log.info { "Vedtaksbrev journalført for vedtak ${vedtak.id}" }
+                    rammevedtakRepo.markerJournalført(vedtak.id, journalpostId, LocalDateTime.now())
+                    log.info { "Vedtaksbrev markert som journalført for vedtak ${vedtak.id}" }
+                }.onLeft {
+                    log.error(it) { "Feil ved journalføring av vedtaksbrev for vedtak ${vedtak.id}" }
+                }
             }
+        }.onLeft {
+            log.error(RuntimeException("Trigger stacktrace for enklere debug.")) { "Ukjent feil skjedde under journalføring av førstegangsvedtak." }
+            sikkerlogg.error(it) { "Ukjent feil skjedde under journalføring av førstegangsvedtak." }
         }
     }
 }
