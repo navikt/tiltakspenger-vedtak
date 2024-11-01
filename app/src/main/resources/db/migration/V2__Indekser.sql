@@ -11,24 +11,6 @@ CREATE INDEX saks_ident
          ident
             );
 
-CREATE INDEX sakPersonopplysningerSøker
-    ON sak_personopplysninger_søker
-        (
-         sakId
-            );
-
-CREATE INDEX sakPersonopplysningerBarnMedIdent
-    ON sak_personopplysninger_barn_med_ident
-        (
-         sakId
-            );
-
-CREATE INDEX sakPersonopplysningerBarnUtenIdent
-    ON sak_personopplysninger_barn_uten_ident
-        (
-         sakId
-            );
-
 CREATE INDEX søknad_ident
     ON søknad
         (
@@ -41,13 +23,13 @@ CREATE INDEX søknad_behandling
          behandling_id
             );
 
-CREATE INDEX søknadTiltak_søknad
+CREATE INDEX søknad_tiltak_søknad_id
     ON søknad_tiltak
         (
          søknad_id
             );
 
-CREATE INDEX søknadBarnetillegg_søknad
+CREATE INDEX søknad_barnetillegg_søknad_id
     ON søknad_barnetillegg
         (
          søknad_id
