@@ -1,4 +1,4 @@
-tiltakspenger-vedtak
+tiltakspenger-saksbehandling-api
 ================
 
 Håndterer vedtak om [tiltakspenger](https://www.nav.no/no/person/arbeid/oppfolging-og-tiltak-for-a-komme-i-jobb/stonader-ved-tiltak). 
@@ -24,13 +24,13 @@ For å bygge artifaktene:
 For å gjøre spørringer mot GCP-databasene (DEV eller PROD) fra lokal maskin, må [Cloud SQL Proxy](https://cloud.google.com/sql/docs/postgres/sql-proxy) kjøre:
 
 ```sh
-cloud_sql_proxy -instances=tpts-dev-6211:europe-north1:tiltakspenger-vedtak=tcp:5432 -enable_iam_login
+cloud_sql_proxy -instances=tpts-dev-6211:europe-north1:tiltakspenger-saksbehandling-api=tcp:5432 -enable_iam_login
 ```
 
 ### Kjøre opp appen lokalt
 
-For å kjøre opp tiltakspenger-vedtak lokalt fra et IDE som for eksempel IntelliJ, kan man kjøre opp `main`-funksjonen 
-som ligger i `App.kt` ([link](https://github.com/navikt/tiltakspenger-vedtak/blob/main/app/src/main/kotlin/no/nav/tiltakspenger/vedtak/App.kt)).
+For å kjøre opp tiltakspenger-saksbehandling-api lokalt fra et IDE som for eksempel IntelliJ, kan man kjøre opp `main`-funksjonen 
+som ligger i `App.kt` ([link](https://github.com/navikt/tiltakspenger-saksbehandling-api/blob/main/app/src/main/kotlin/no/nav/tiltakspenger/vedtak/App.kt)).
 
 For at det skal funke å kjøre opp appen fra IntelliJ eller tilsvarende IDE må man sette opp noen miljøvariabler. I IntelliJ kan
 de konfigureres opp i relevant Run Configuration som blir lagd når man kjører opp App.kt for første gang.
@@ -55,9 +55,9 @@ NAIS_CLUSTER_NAME=
 TPTS_TOPIC=
 ```
 
-**OBS!** `tiltakspenger-vedtak` er avhengig av at man har en større verdikjede kjørende i miljø for å kunne kjøres opp 
+**OBS!** `tiltakspenger-saksbehandling-api` er avhengig av at man har en større verdikjede kjørende i miljø for å kunne kjøres opp 
 lokalt, f.eks. ting som Kafka og postgres. Man anbefales å se i [meta-repoet for tiltakspenger](https://github.com/navikt/tiltakspenger) 
-for hvordan man kan få kjørt opp de greiene lokalt. Meta-repoet er også behjelpelig med å få kjørt opp `tiltakspenger-vedtak` i en docker-container.
+for hvordan man kan få kjørt opp de greiene lokalt. Meta-repoet er også behjelpelig med å få kjørt opp `tiltakspenger-saksbehandling-api` i en docker-container.
 
 ## Arkitekturbeslutninger
 Se [docs/adr/index.md](docs/adr/index.md)

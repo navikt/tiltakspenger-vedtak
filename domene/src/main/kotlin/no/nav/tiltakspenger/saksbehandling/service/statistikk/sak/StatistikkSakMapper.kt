@@ -41,7 +41,7 @@ fun opprettBehandlingMapper(sak: TynnSak, behandling: Behandling, gjelderKode6: 
         tilbakekrevingsbeløp = null,
         funksjonellPeriodeFom = null,
         funksjonellPeriodeTom = null,
-        avsender = "tiltakspenger-vedtak",
+        avsender = "tiltakspenger-saksbehandling-api",
         versjon = versjon,
         hendelse = "opprettet_behandling",
     )
@@ -85,7 +85,7 @@ fun iverksettBehandlingMapper(sak: TynnSak, behandling: Behandling, vedtak: Ramm
         tilbakekrevingsbeløp = null,
         funksjonellPeriodeFom = null,
         funksjonellPeriodeTom = null,
-        avsender = "tiltakspenger-vedtak",
+        avsender = "tiltakspenger-saksbehandling-api",
         versjon = versjon,
         hendelse = "iverksatt_behandling",
     )

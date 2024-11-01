@@ -1,5 +1,5 @@
 ## Hva skjedde?
-Tiltakspenger-vedtak var nede i 90 min etter merge av en stor branch inn i main.
+tiltakspenger-saksbehandling-api var nede i 90 min etter merge av en stor branch inn i main.
 
 ## Hvilken effekt hadde det?
 Dette gjorde at Tiltakspenger-saksbehandler var utilgjengelig i dette tidsrommet og at innkomne søknader midlertidig ikke ble behandlet
@@ -29,4 +29,4 @@ Skrev for få tester
 - (EV) lage ende-til-ende tester
 - huske å lage flere tester
 - ikke så store brancher/kanskje ikke branch?
-- dele tiltakspenger-vedtak i en api del og en kafka del?
+- dele tiltakspenger-saksbehandling-api i en api del og en kafka del?

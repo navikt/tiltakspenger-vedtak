@@ -57,7 +57,7 @@ internal suspend inline fun ApplicationCall.withBruker(
                 )
 
                 is Valideringsfeil.UgyldigToken -> this.respond401Unauthorized(
-                    melding = "Ugyldig token. Se tiltakspenger-vedtak sine logger for mer detaljer.",
+                    melding = "Ugyldig token. Se tiltakspenger-saksbehandling-api sine logger for mer detaljer.",
                     kode = "ugyldig_token",
                 )
 
@@ -89,7 +89,7 @@ internal suspend fun ApplicationCall.getBearerToken(): String? {
 
 private suspend fun ApplicationCall.respondWithChallenge(): String? {
     // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/WWW-Authenticate
-    this.response.headers.append("WWW-Authenticate", "Bearer realm=\"tiltakspenger-vedtak\"")
+    this.response.headers.append("WWW-Authenticate", "Bearer realm=\"tiltakspenger-saksbehandling-api\"")
     this.respond(HttpStatusCode.Unauthorized)
     return null
 }

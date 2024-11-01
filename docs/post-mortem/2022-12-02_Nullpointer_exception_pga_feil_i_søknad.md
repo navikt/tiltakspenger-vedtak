@@ -1,6 +1,6 @@
 ## Hva skjedde?
 
-tiltakspenger-vedtak var nede i 2,5 timer etter at det kom inn en søknad der hverken ArenaTiltak eller
+tiltakspenger-saksbehandling-api var nede i 2,5 timer etter at det kom inn en søknad der hverken ArenaTiltak eller
 BrukerregistrertTiltak var satt
 
 ## Hvilken effekt hadde det?
@@ -62,5 +62,5 @@ Brukte litt lang tid, men det var greit siden vi ikke er fullt i produksjon enn�
 
 ## Hvordan hindrer vi at noe lignende skjer igjen? (tiltak)
 
-- dele tiltakspenger-vedtak i en api del og en kafka del? (tiltak fra forrige post-mortem)
+- dele tiltakspenger-saksbehandling-api i en api del og en kafka del? (tiltak fra forrige post-mortem)
 - ta eierskap til søknaden. I dag har vi liten kontroll på hva vi får og det er ikke lett å rette eventuelle feil

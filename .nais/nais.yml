@@ -1,7 +1,7 @@
 apiVersion: nais.io/v1alpha1
 kind: Application
 metadata:
-  name: tiltakspenger-vedtak
+  name: tiltakspenger-saksbehandling-api
   namespace: tpts
   labels:
     team: tpts
@@ -39,9 +39,8 @@ spec:
   leaderElection: true
   gcp:
     sqlInstances:
-      - name: tiltakspenger-vedtak
-        cascadingDelete: true
-        type: POSTGRES_15
+      - name: tiltakspenger-saksbehandling-api
+        type: POSTGRES_16
         tier: {{ sqlInstances.tier }}
         diskAutoresize: {{ sqlInstances.diskAutoresize }}
         pointInTimeRecovery: {{ sqlInstances.pointInTimeRecovery }}
@@ -49,7 +48,7 @@ spec:
           - name: cloudsql.logical_decoding
             value: "on"
         databases:
-          - name: vedtak
+          - name: saksbehandling
             envVarPrefix: DB
             users:
               - name: tpts_ds

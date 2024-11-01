@@ -3,7 +3,7 @@ sqlInstances:
   pointInTimeRecovery: true
   tier: db-custom-1-3840
 ingress:
-  url: https://tiltakspenger-vedtak.intern.nav.no
+  url: https://tiltakspenger-saksbehandling-api.intern.nav.no
 cluster: prod-gcp
 tenant: nav.no
 urlPdl: pdl-api.prod-fss-pub.nais.io

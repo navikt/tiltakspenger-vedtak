@@ -1,5 +1,5 @@
 ## Hva skjedde?
-tiltakspenger-vedtak var nede i 1 time etter at vi hentet et tiltak fra Arena der deltakelseperioden hadde en fra-dato som var _etter_ til-dato
+tiltakspenger-saksbehandling-api var nede i 1 time etter at vi hentet et tiltak fra Arena der deltakelseperioden hadde en fra-dato som var _etter_ til-dato
 
 ## Hvilken effekt hadde det?
 tiltakspenger-saksbehandler var utilgjengelig i dette tidsrommet og innkomne søknader ble midlertidig ikke håndtert
@@ -34,6 +34,6 @@ Rullet fremover
 :shrug:
 
 ## Hvordan hindrer vi at noe lignende skjer igjen? (tiltak)
-- dele tiltakspenger-vedtak i en api-del og en rivers-del. [Arbeid pågår](https://trello.com/c/gOk7H3FH/74-splitte-rest-og-rr-i-tiltakspenger-vedtak)
+- dele tiltakspenger-saksbehandling-api i en api-del og en rivers-del. [Arbeid pågår](https://trello.com/c/gOk7H3FH/74-splitte-rest-og-rr-i-tiltakspenger-saksbehandling-api)
 - sjekke med Arena om det er mulig å rette feilen: https://nav-it.slack.com/archives/C02FZ09S7T6/p1670503420897609
 - innføre en mekanisme som sender dette til manuell behandling dersom det er et relevant tiltak. Avventer denne for å se hva svaret på ovenstående blir

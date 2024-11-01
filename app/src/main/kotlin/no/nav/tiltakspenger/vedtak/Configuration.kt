@@ -9,7 +9,7 @@ import com.natpryce.konfig.overriding
 import com.natpryce.konfig.stringType
 import no.nav.tiltakspenger.libs.common.Rolle
 
-private const val APPLICATION_NAME = "tiltakspenger-vedtak"
+private const val APPLICATION_NAME = "tiltakspenger-saksbehandling-api"
 
 enum class Profile {
     LOCAL,
@@ -74,7 +74,7 @@ object Configuration {
                 "PDFGEN_SCOPE" to "localhost",
                 "PDFGEN_URL" to "http://localhost:8081",
                 "NAIS_APP_IMAGE" to "http://localhost8080:githubhash",
-                "AZURE_APP_CLIENT_ID" to "tiltakspenger-vedtak",
+                "AZURE_APP_CLIENT_ID" to "tiltakspenger-saksbehandling-api",
                 "AZURE_APP_CLIENT_SECRET" to "secret",
                 "AZURE_APP_WELL_KNOWN_URL" to "http://host.docker.internal:6969/azure/.well-known/openid-configuration",
                 "AZURE_OPENID_CONFIG_TOKEN_ENDPOINT" to "http://host.docker.internal:6969/default/token",

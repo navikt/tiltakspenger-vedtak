@@ -46,7 +46,7 @@ internal class ApplicationCallAutentiseringExTest {
                             "Body: ${this.bodyAsText()}\n",
                     ) {
                         status shouldBe HttpStatusCode.Unauthorized
-                        headers["WWW-Authenticate"] shouldBe """Bearer realm="tiltakspenger-vedtak""""
+                        headers["WWW-Authenticate"] shouldBe """Bearer realm="tiltakspenger-saksbehandling-api""""
                     }
                 }
             }
