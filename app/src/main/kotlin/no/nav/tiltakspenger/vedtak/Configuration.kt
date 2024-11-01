@@ -41,6 +41,7 @@ object Configuration {
             "logback.configurationFile" to "logback.xml",
             "ELECTOR_PATH" to System.getenv("ELECTOR_PATH"),
             "NAIS_APP_IMAGE" to System.getenv("NAIS_APP_IMAGE"),
+            "DB_JDBC_URL" to System.getenv("DB_JDBC_URL"),
         ),
     )
 
@@ -229,6 +230,7 @@ object Configuration {
         val passord: String,
         val port: Int,
         val brukernavn: String,
+        val url: String,
     )
 
     fun database() = DataBaseConf(
@@ -237,5 +239,6 @@ object Configuration {
         passord = config()[Key("DB_PASSWORD", stringType)],
         brukernavn = config()[Key("DB_USERNAME", stringType)],
         port = config()[Key("DB_PORT", intType)],
+        url = config()[Key("DB_JDBC_URL", stringType)],
     )
 }

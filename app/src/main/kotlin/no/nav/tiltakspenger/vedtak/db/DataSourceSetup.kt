@@ -17,6 +17,7 @@ object DataSourceSetup {
         }
 
         return HikariDataSource().apply {
+            jdbcUrl = config.url
             dataSourceClassName = "org.postgresql.ds.PGSimpleDataSource"
             addDataSourceProperty("serverName", config.host)
             addDataSourceProperty("portNumber", config.port)
