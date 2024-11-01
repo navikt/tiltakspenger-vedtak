@@ -60,7 +60,8 @@ fun main() {
             runCheckFactory = runCheckFactory,
             tasks =
             listOf { correlationId ->
-                applicationContext.utbetalingContext.sendUtbetalingerService.send(correlationId)
+                // Kew: Disabler denne siden OS/UR har slettet basen i dev og vi ikke skal sende over noe før vi har tømt vår egen database
+                // applicationContext.utbetalingContext.sendUtbetalingerService.send(correlationId)
                 applicationContext.utbetalingContext.journalførUtbetalingsvedtakService.journalfør(correlationId)
                 applicationContext.førstegangsbehandlingContext.journalførVedtaksbrevService.journalfør(correlationId)
                 applicationContext.førstegangsbehandlingContext.distribuerVedtaksbrevService.distribuer(correlationId)
