@@ -30,8 +30,8 @@ CREATE TABLE behandling
 (
     id                  VARCHAR PRIMARY KEY,
     sak_id              VARCHAR     NOT NULL REFERENCES sak (id),
-    fom                 DATE        NOT NULL,
-    tom                 DATE        NOT NULL,
+    fra_og_med                 DATE        NOT NULL,
+    til_og_med                 DATE        NOT NULL,
     status              VARCHAR     NOT NULL,
     saksbehandler       VARCHAR NULL,
     beslutter           VARCHAR NULL,
@@ -50,8 +50,8 @@ CREATE TABLE rammevedtak
     behandling_id           VARCHAR NULL REFERENCES behandling (id),
     vedtakstype             VARCHAR     NOT NULL,
     vedtaksdato             TIMESTAMPTZ NOT NULL,
-    fom                     DATE        NOT NULL,
-    tom                     DATE        NOT NULL,
+    fra_og_med                     DATE        NOT NULL,
+    til_og_med                     DATE        NOT NULL,
     saksbehandler           VARCHAR     NOT NULL,
     beslutter               VARCHAR     NOT NULL,
     opprettet               TIMESTAMPTZ NOT NULL,
@@ -128,7 +128,7 @@ CREATE TABLE søknad_barnetillegg
     opphold_i_eos_type VARCHAR NOT NULL
 );
 
-CREATE TABLE søknad_tiltak
+CREATE TABLE søknadstiltak
 (
     id             VARCHAR PRIMARY KEY,
     søknad_id      VARCHAR NOT NULL REFERENCES søknad (id),
@@ -136,8 +136,8 @@ CREATE TABLE søknad_tiltak
     arrangørnavn   VARCHAR NULL,
     typekode       VARCHAR NOT NULL,
     typenavn       VARCHAR NOT NULL,
-    deltakelse_fom DATE    NOT NULL,
-    deltakelse_tom DATE NULL
+    deltakelse_fra_og_med DATE    NOT NULL,
+    deltakelse_til_og_med DATE NULL
 );
 
 CREATE TABLE tiltak
@@ -150,8 +150,8 @@ CREATE TABLE tiltak
     tiltaktype_navn       VARCHAR     NOT NULL,
     arrangørnavn          VARCHAR     NOT NULL,
     rett_på_tiltakspenger BOOLEAN     NOT NULL,
-    deltakelse_fom        DATE NULL,
-    deltakelse_tom        DATE NULL,
+    deltakelse_fra_og_med        DATE NULL,
+    deltakelse_til_og_med        DATE NULL,
     deltakelse_prosent    FLOAT NULL,
     deltakelse_status     VARCHAR     NOT NULL,
     kilde                 VARCHAR     NOT NULL,
@@ -163,8 +163,8 @@ CREATE TABLE stønadsdager_tiltak
 (
     id                  VARCHAR PRIMARY KEY,
     antall_dager        NUMERIC     NOT NULL,
-    fom                 DATE        NOT NULL,
-    tom                 DATE        NOT NULL,
+    fra_og_med                 DATE        NOT NULL,
+    til_og_med                 DATE        NOT NULL,
     datakilde           VARCHAR     NOT NULL,
     tidsstempel_kilde   TIMESTAMPTZ NOT NULL,
     tidsstempel_hos_oss TIMESTAMPTZ NOT NULL,
@@ -237,8 +237,8 @@ create table statistikk_stønad
     vedtak_id              varchar null,
     type                   varchar null,
     vedtak_dato            date null,
-    fom                    date null,
-    tom                    date null,
+    fra_og_med                    date null,
+    til_og_med                    date null,
     oppfølging_enhet_kode  varchar null,
     oppfølging_enhet_navn  varchar null,
     beslutning_enhet_kode  varchar null,
@@ -292,8 +292,8 @@ create table statistikk_sak
     ansvarligbeslutter         varchar null,
     ansvarligenhet             varchar null,
     tilbakekrevingsbeløp       decimal null,
-    funksjonellperiodefom      date null,
-    funksjonellperiodetom      date null,
+    funksjonellperiode_fra_og_med      date null,
+    funksjonellperiode_til_og_med      date null,
     hendelse                   varchar null,
     avsender                   varchar null,
     versjon                    varchar null

@@ -188,11 +188,11 @@ class BehandlingPostgresRepo(
                     sqlOpprettBehandling,
                     mapOf(
                         "id" to behandling.id.toString(),
-                        "sakId" to behandling.sakId.toString(),
+                        "sak_id" to behandling.sakId.toString(),
                         "fom" to behandling.vurderingsperiode.fraOgMed,
                         "tom" to behandling.vurderingsperiode.tilOgMed,
                         "status" to behandling.status.toDb(),
-                        "sistEndret" to nå,
+                        "sist_endret" to nå,
                         "opprettet" to behandling.opprettet,
                         "vilkaarssett" to behandling.vilkårssett.toDbJson(),
                         "stonadsdager" to behandling.stønadsdager.toDbJson(),
