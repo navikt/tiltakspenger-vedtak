@@ -117,7 +117,7 @@ class BehandlingPostgresRepo(
                     queryOf(
                         sqlHentBehandlingForSak,
                         mapOf(
-                            "sakId" to sakId.toString(),
+                            "sak_id" to sakId.toString(),
                         ),
                     ).map { row ->
                         row.toBehandling(session)
@@ -156,12 +156,12 @@ class BehandlingPostgresRepo(
                         sqlOppdaterBehandling,
                         mapOf(
                             "id" to behandling.id.toString(),
-                            "sakId" to behandling.sakId.toString(),
-                            "fom" to behandling.vurderingsperiode.fraOgMed,
-                            "tom" to behandling.vurderingsperiode.tilOgMed,
+                            "sak_id" to behandling.sakId.toString(),
+                            "fra_og_med" to behandling.vurderingsperiode.fraOgMed,
+                            "til_og_med" to behandling.vurderingsperiode.tilOgMed,
                             "status" to behandling.status.toDb(),
-                            "sistEndretOld" to sistEndret,
-                            "sistEndret" to nå(),
+                            "sist_endret_old" to sistEndret,
+                            "sist_endret" to nå(),
                             "saksbehandler" to behandling.saksbehandler,
                             "beslutter" to behandling.beslutter,
                             "vilkaarssett" to behandling.vilkårssett.toDbJson(),
@@ -189,8 +189,8 @@ class BehandlingPostgresRepo(
                     mapOf(
                         "id" to behandling.id.toString(),
                         "sak_id" to behandling.sakId.toString(),
-                        "fom" to behandling.vurderingsperiode.fraOgMed,
-                        "tom" to behandling.vurderingsperiode.tilOgMed,
+                        "fra_og_med" to behandling.vurderingsperiode.fraOgMed,
+                        "til_og_med" to behandling.vurderingsperiode.tilOgMed,
                         "status" to behandling.status.toDb(),
                         "sist_endret" to nå,
                         "opprettet" to behandling.opprettet,
@@ -219,8 +219,8 @@ class BehandlingPostgresRepo(
 
         private fun Row.toBehandling(session: Session): Førstegangsbehandling {
             val id = BehandlingId.fromString(string("id"))
-            val sakId = SakId.fromString(string("sakId"))
-            val vurderingsperiode = Periode(localDate("fom"), localDate("tom"))
+            val sakId = SakId.fromString(string("sak_id"))
+            val vurderingsperiode = Periode(localDate("fra_og_med"), localDate("til_og_med"))
             val status = string("status")
             val saksbehandler = stringOrNull("saksbehandler")
             val beslutter = stringOrNull("beslutter")
@@ -254,9 +254,9 @@ class BehandlingPostgresRepo(
             """
             insert into behandling (
                 id,
-                sakId,
-                fom,
-                tom,
+                sak_id,
+                fra_og_med,
+                til_og_med,
                 status,
                 sist_endret,
                 opprettet,
@@ -267,11 +267,11 @@ class BehandlingPostgresRepo(
                 attesteringer
             ) values (
                 :id,
-                :sakId,
-                :fom,
-                :tom,
+                :sak_id,
+                :fra_og_med,
+                :til_og_med,
                 :status,
-                :sistEndret,
+                :sist_endret,
                 :opprettet,
                 to_jsonb(:vilkaarssett::jsonb),
                 to_jsonb(:stonadsdager::jsonb),
@@ -285,37 +285,37 @@ class BehandlingPostgresRepo(
         private val sqlOppdaterBehandling =
             """
             update behandling set 
-                fom = :fom,
-                tom = :tom,
-                sakId = :sakId,
+                fra_og_med = :fra_og_med,
+                til_og_med = :til_og_med,
+                sak_id = :sak_id,
                 status = :status,
-                sist_endret = :sistEndret,
+                sist_endret = :sist_endret,
                 saksbehandler = :saksbehandler,
                 beslutter = :beslutter,
                 vilkårssett = to_jsonb(:vilkaarssett::json),
                 stønadsdager = to_jsonb(:stonadsdager::json),
                 attesteringer = to_jsonb(:attesteringer::json)
             where id = :id
-              and sist_endret = :sistEndretOld
+              and sist_endret = :sist_endret_old
             """.trimIndent()
 
         @Language("SQL")
         private val sqlHentBehandling =
             """
-            select b.*,s.ident, s.saksnummer from behandling b join sak s on s.id = b.sakid where b.id = :id
+            select b.*,s.ident, s.saksnummer from behandling b join sak s on s.id = b.sak_id where b.id = :id
             """.trimIndent()
 
         @Language("SQL")
         private val sqlHentBehandlingForSak =
             """
-            select b.*,s.ident, s.saksnummer from behandling b join sak s on s.id = b.sakid where b.sakId = :sakId
+            select b.*,s.ident, s.saksnummer from behandling b join sak s on s.id = b.sak_id where b.sak_id = :sak_id
             """.trimIndent()
 
         @Language("SQL")
         private val sqlHentBehandlingForIdent =
             """
             select b.*,s.ident, s.saksnummer from behandling b
-              join sak s on s.id = b.sakid
+              join sak s on s.id = b.sak_id
                where s.ident = :ident
             """.trimIndent()
     }

@@ -45,13 +45,13 @@ internal object SøknadTiltakDAO {
                 lagreTiltak,
                 mapOf(
                     "id" to random(ULID_PREFIX_TILTAK).toString(),
-                    "soknadId" to søknadId.toString(),
-                    "eksternId" to søknadstiltak.id,
+                    "soknad_id" to søknadId.toString(),
+                    "ekstern_id" to søknadstiltak.id,
                     "arrangornavn" to søknadstiltak.arrangør,
                     "typekode" to søknadstiltak.typeKode,
                     "typenavn" to søknadstiltak.typeNavn,
-                    "deltakelseFom" to søknadstiltak.deltakelseFom,
-                    "deltakelseTom" to søknadstiltak.deltakelseTom,
+                    "deltakelse_fra_og_med" to søknadstiltak.deltakelseFom,
+                    "deltakelse_til_og_med" to søknadstiltak.deltakelseTom,
                 ),
             ).asUpdate,
         )
@@ -69,8 +69,8 @@ internal object SøknadTiltakDAO {
         val arrangørnavn = string("arrangørnavn")
         val typekode = string("typekode")
         val typenavn = string("typenavn")
-        val deltakelseFom = localDate("deltakelse_fom")
-        val deltakelseTom = localDate("deltakelse_tom")
+        val deltakelseFom = localDate("deltakelse_fra_og_med")
+        val deltakelseTom = localDate("deltakelse_til_og_med")
         return Søknadstiltak(
             id = eksternId,
             deltakelseFom = deltakelseFom,
@@ -97,17 +97,17 @@ internal object SøknadTiltakDAO {
             arrangørnavn, 
             typekode,
             typenavn,
-            deltakelse_fom,
-            deltakelse_tom
+            deltakelse_fra_og_med,
+            deltakelse_til_og_med
         ) values (
             :id,
-            :soknadId,
-            :eksternId,
+            :soknad_id,
+            :ekstern_id,
             :arrangornavn, 
             :typekode,
             :typenavn,
-            :deltakelseFom,
-            :deltakelseTom
+            :deltakelse_fra_og_med,
+            :deltakelse_til_og_med
         )
         """.trimIndent()
 }

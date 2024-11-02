@@ -168,9 +168,9 @@ class RammevedtakPostgresRepo(
         ): Rammevedtak? {
             return session.run(
                 queryOf(
-                    "select v.*, s.saksnummer from rammevedtak v join sak s on s.id = v.sak_id where v.sak_id = :sakId",
+                    "select v.*, s.saksnummer from rammevedtak v join sak s on s.id = v.sak_id where v.sak_id = :sak_id",
                     mapOf(
-                        "sakId" to sakId.toString(),
+                        "sak_id" to sakId.toString(),
                     ),
                 ).map { row ->
                     row.toVedtak(session)
@@ -191,19 +191,19 @@ class RammevedtakPostgresRepo(
                         behandling_id, 
                         vedtakstype, 
                         vedtaksdato, 
-                        fom, 
-                        tom, 
+                        fra_og_med, 
+                        til_og_med, 
                         saksbehandler, 
                         beslutter,
                         opprettet
                     ) values (
                         :id, 
-                        :sakId, 
-                        :behandlingId, 
+                        :sak_id, 
+                        :behandling_id, 
                         :vedtakstype, 
                         :vedtaksdato, 
-                        :fom, 
-                        :tom, 
+                        :fra_og_med, 
+                        :til_og_med, 
                         :saksbehandler, 
                         :beslutter,
                         :opprettet
@@ -211,12 +211,12 @@ class RammevedtakPostgresRepo(
                     """.trimIndent(),
                     mapOf(
                         "id" to vedtak.id.toString(),
-                        "sakId" to vedtak.sakId.toString(),
-                        "behandlingId" to vedtak.behandling.id.toString(),
+                        "sak_id" to vedtak.sakId.toString(),
+                        "behandling_id" to vedtak.behandling.id.toString(),
                         "vedtakstype" to vedtak.vedtaksType.toString(),
                         "vedtaksdato" to vedtak.vedtaksdato,
-                        "fom" to vedtak.periode.fraOgMed,
-                        "tom" to vedtak.periode.tilOgMed,
+                        "fra_og_med" to vedtak.periode.fraOgMed,
+                        "til_og_med" to vedtak.periode.tilOgMed,
                         "saksbehandler" to vedtak.saksbehandlerNavIdent,
                         "beslutter" to vedtak.beslutterNavIdent,
                         "opprettet" to LocalDateTime.now(),
@@ -238,7 +238,7 @@ class RammevedtakPostgresRepo(
                 )!!,
                 vedtaksdato = localDateTime("vedtaksdato"),
                 vedtaksType = Vedtakstype.valueOf(string("vedtakstype")),
-                periode = Periode(fraOgMed = localDate("fom"), tilOgMed = localDate("tom")),
+                periode = Periode(fraOgMed = localDate("fra_og_med"), tilOgMed = localDate("til_og_med")),
                 saksbehandlerNavIdent = string("saksbehandler"),
                 beslutterNavIdent = string("beslutter"),
                 journalpostId = stringOrNull("journalpost_id")?.let { JournalpostId(it) },

@@ -217,8 +217,8 @@ internal class SakPostgresRepo(
                         mapOf(
                             "id" to sak.id.toString(),
                             "ident" to sak.fnr.verdi,
-                            "sistEndretOld" to sistEndret,
-                            "sistEndret" to nå(),
+                            "sist_endret_old" to sistEndret,
+                            "sist_endret" to nå(),
                         ),
                     ).asUpdate,
                 )
@@ -308,7 +308,7 @@ internal class SakPostgresRepo(
               ident = :ident,
               sist_endret = :sistEndret
            where id = :id
-             and sist_endret = :sistEndretOld
+             and sist_endret = :sist_endret_old
             """.trimMargin()
 
         @Language("SQL")

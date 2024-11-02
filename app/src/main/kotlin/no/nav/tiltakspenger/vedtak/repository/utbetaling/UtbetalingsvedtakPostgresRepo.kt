@@ -29,27 +29,27 @@ internal class UtbetalingsvedtakPostgresRepo(
                     """
                     insert into utbetalingsvedtak (
                         id,
-                        sakId,
-                        rammevedtakId,
+                        sak_id,
+                        rammevedtak_id,
                         vedtakstidspunkt,
-                        forrigeVedtakId,
-                        meldekortId
+                        forrige_vedtak_id,
+                        meldekort_id
                     ) values (
                         :id,
-                        :sakId,
-                        :rammevedtakId,
+                        :sak_id,
+                        :rammevedtak_id,
                         :vedtakstidspunkt,
-                        :forrigeVedtakId,
-                        :meldekortId
+                        :forrige_vedtak_id,
+                        :meldekort_id
                     )
                     """.trimIndent(),
                     mapOf(
                         "id" to vedtak.id.toString(),
-                        "sakId" to vedtak.sakId.toString(),
-                        "rammevedtakId" to vedtak.rammevedtakId.toString(),
+                        "sak_id" to vedtak.sakId.toString(),
+                        "rammevedtak_id" to vedtak.rammevedtakId.toString(),
                         "vedtakstidspunkt" to vedtak.vedtakstidspunkt,
-                        "forrigeVedtakId" to vedtak.forrigeUtbetalingsvedtakId?.toString(),
-                        "meldekortId" to vedtak.meldekortId.toString(),
+                        "forrige_vedtak_id" to vedtak.forrigeUtbetalingsvedtakId?.toString(),
+                        "meldekort_id" to vedtak.meldekortId.toString(),
                     ),
                 ).asUpdate,
             )
@@ -90,13 +90,13 @@ internal class UtbetalingsvedtakPostgresRepo(
                 queryOf(
                     """
                       update utbetalingsvedtak 
-                      set journalpost_id = :journalpostId,
+                      set journalpost_id = :journalpost_id,
                           journalføringstidspunkt = :tidspunkt
                       where id = :id
                     """.trimIndent(),
                     mapOf(
                         "id" to vedtakId.toString(),
-                        "journalpostId" to journalpostId.toString(),
+                        "journalpost_id" to journalpostId.toString(),
                         "tidspunkt" to tidspunkt,
                     ),
                 ).asUpdate,
@@ -124,7 +124,7 @@ internal class UtbetalingsvedtakPostgresRepo(
                     """
                     select u.*,s.ident as fnr,s.saksnummer 
                     from utbetalingsvedtak u 
-                    join sak s on s.id = u.sakid 
+                    join sak s on s.id = u.sak_id 
                     where u.sendt_til_utbetaling_tidspunkt is null
                     limit :limit
                     """.trimIndent(),
@@ -142,7 +142,7 @@ internal class UtbetalingsvedtakPostgresRepo(
                     """
                     select u.*,s.ident as fnr,s.saksnummer 
                     from utbetalingsvedtak u 
-                    join sak s on s.id = u.sakid 
+                    join sak s on s.id = u.sak_id 
                     where u.journalpost_id is null
                     limit :limit
                     """.trimIndent(),
@@ -157,8 +157,8 @@ internal class UtbetalingsvedtakPostgresRepo(
         fun hentForSakId(sakId: SakId, session: Session): Utbetalinger {
             return session.run(
                 queryOf(
-                    "select u.*, s.saksnummer, s.ident as fnr from utbetalingsvedtak u join sak s on s.id = u.sakid where u.sakId = :sakId order by u.vedtakstidspunkt",
-                    mapOf("sakId" to sakId.toString()),
+                    "select u.*, s.saksnummer, s.ident as fnr from utbetalingsvedtak u join sak s on s.id = u.sak_id where u.sak_id = :sak_id order by u.vedtakstidspunkt",
+                    mapOf("sak_id" to sakId.toString()),
                 ).map { row ->
                     row.toVedtak(session)
                 }.asList,
@@ -169,16 +169,16 @@ internal class UtbetalingsvedtakPostgresRepo(
             val vedtakId = VedtakId.fromString(string("id"))
             return Utbetalingsvedtak(
                 id = vedtakId,
-                sakId = SakId.fromString(string("sakId")),
+                sakId = SakId.fromString(string("sak_id")),
                 saksnummer = Saksnummer(string("saksnummer")),
                 fnr = Fnr.fromString(string("fnr")),
-                rammevedtakId = VedtakId.fromString(string("rammevedtakId")),
+                rammevedtakId = VedtakId.fromString(string("rammevedtak_id")),
                 vedtakstidspunkt = localDateTime("vedtakstidspunkt"),
-                forrigeUtbetalingsvedtakId = stringOrNull("forrigeVedtakId")?.let { VedtakId.fromString(it) },
+                forrigeUtbetalingsvedtakId = stringOrNull("forrige_vedtak_id")?.let { VedtakId.fromString(it) },
                 meldekort =
                 MeldekortPostgresRepo
                     .hentForMeldekortId(
-                        MeldekortId.fromString(string("meldekortId")),
+                        MeldekortId.fromString(string("meldekort_id")),
                         session,
                     )!! as UtfyltMeldekort,
                 sendtTilUtbetaling = localDateTimeOrNull("sendt_til_utbetaling_tidspunkt"),

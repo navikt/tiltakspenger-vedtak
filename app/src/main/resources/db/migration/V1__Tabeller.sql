@@ -140,40 +140,6 @@ CREATE TABLE søknadstiltak
     deltakelse_til_og_med DATE NULL
 );
 
-CREATE TABLE tiltak
-(
-    id                    VARCHAR PRIMARY KEY,
-    behandling_id         VARCHAR     NOT NULL REFERENCES behandling (id),
-    ekstern_id            VARCHAR     NOT NULL,
-    gjennomføring_id      VARCHAR     NOT NULL,
-    tiltaktype_kode       VARCHAR     NOT NULL,
-    tiltaktype_navn       VARCHAR     NOT NULL,
-    arrangørnavn          VARCHAR     NOT NULL,
-    rett_på_tiltakspenger BOOLEAN     NOT NULL,
-    deltakelse_fra_og_med        DATE NULL,
-    deltakelse_til_og_med        DATE NULL,
-    deltakelse_prosent    FLOAT NULL,
-    deltakelse_status     VARCHAR     NOT NULL,
-    kilde                 VARCHAR     NOT NULL,
-    tidsstempel_kilde     TIMESTAMPTZ NOT NULL,
-    tidsstempel_hos_oss   TIMESTAMPTZ NOT NULL
-);
-
-CREATE TABLE stønadsdager_tiltak
-(
-    id                  VARCHAR PRIMARY KEY,
-    antall_dager        NUMERIC     NOT NULL,
-    fra_og_med                 DATE        NOT NULL,
-    til_og_med                 DATE        NOT NULL,
-    datakilde           VARCHAR     NOT NULL,
-    tidsstempel_kilde   TIMESTAMPTZ NOT NULL,
-    tidsstempel_hos_oss TIMESTAMPTZ NOT NULL,
-    tiltak_id           VARCHAR     NOT NULL REFERENCES tiltak (id),
-    behandling_id       VARCHAR     NOT NULL REFERENCES behandling (id),
-    avklart_tidspunkt   TIMESTAMPTZ NULL,
-    saksbehandler       VARCHAR NULL
-);
-
 create table meldekort
 (
     id                   varchar primary key,

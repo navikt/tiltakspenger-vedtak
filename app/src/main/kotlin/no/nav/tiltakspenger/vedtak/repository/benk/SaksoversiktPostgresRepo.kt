@@ -27,35 +27,35 @@ class SaksoversiktPostgresRepo(
                     queryOf(
                         //language=SQL
                         """
-                        select s.id søknadId,
+                        select s.id søknad_id,
                           s.ident,
                           s.opprettet,
-                          b.id behandlingId,
-                          b.fom,
-                          b.tom,
+                          b.id behandling_id,
+                          b.fra_og_med,
+                          b.til_og_med,
                           b.status,
                           sak.saksnummer,
                           b.saksbehandler,
                           b.beslutter,
                           b.attesteringer,
-                          b.sakId,
+                          b.sak_id,
                           (b.vilkårssett -> 'kravfristVilkår' -> 'avklartSaksopplysning' ->> 'kravdato') as kravdato
                           
                         from søknad s 
                         left join behandling b on b.id = s.behandling_id 
-                        left join sak on sak.id = b.sakId 
+                        left join sak on sak.id = b.sak_id 
                         order by s.id, sak.saksnummer, b.id
                         """.trimIndent(),
                     ).map { row ->
-                        val erFørstegangsbehandling = row.stringOrNull("behandlingId") != null
+                        val erFørstegangsbehandling = row.stringOrNull("behandling_id") != null
                         val id =
-                            row.stringOrNull("behandlingId")?.let { BehandlingId.fromString(it) }
-                                ?: SøknadId.fromString(row.string("søknadId"))
+                            row.stringOrNull("behandling_id")?.let { BehandlingId.fromString(it) }
+                                ?: SøknadId.fromString(row.string("søknad_id"))
                         val periode =
                             if (erFørstegangsbehandling) {
                                 Periode(
-                                    fraOgMed = row.localDate("fom"),
-                                    tilOgMed = row.localDate("tom"),
+                                    fraOgMed = row.localDate("fra_og_med"),
+                                    tilOgMed = row.localDate("til_og_med"),
                                 )
                             } else {
                                 null
@@ -84,7 +84,7 @@ class SaksoversiktPostgresRepo(
                             id = id,
                             saksbehandler = saksbehandler,
                             beslutter = beslutter,
-                            sakId = row.stringOrNull("sakId")?.let { SakId.fromString(it) },
+                            sakId = row.stringOrNull("sak_id")?.let { SakId.fromString(it) },
                         )
                     }.asList,
                 ).let {

@@ -34,12 +34,12 @@ class MeldekortPostgresRepo(
                     """
                     insert into meldekort (
                         id,
-                        forrigeMeldekortId,
+                        forrige_meldekort_id,
                         meldeperiode_id,
-                        sakId,
-                        rammevedtakId,
-                        fraOgMed,
-                        tilOgMed,
+                        sak_id,
+                        rammevedtak_id,
+                        fra_og_med,
+                        til_og_med,
                         meldekortdager,
                         saksbehandler,
                         beslutter,
@@ -47,12 +47,12 @@ class MeldekortPostgresRepo(
                         navkontor
                     ) values (
                         :id,
-                        :forrigeMeldekortId,
+                        :forrige_meldekort_id,
                         :meldeperiode_id,
-                        :sakId,
-                        :rammevedtakId,
-                        :fraOgMed,
-                        :tilOgMed,
+                        :sak_id,
+                        :rammevedtak_id,
+                        :fra_og_med,
+                        :til_og_med,
                         to_jsonb(:meldekortdager::jsonb),
                         :saksbehandler,
                         :beslutter,
@@ -62,12 +62,12 @@ class MeldekortPostgresRepo(
                     """.trimIndent(),
                     mapOf(
                         "id" to meldekort.id.toString(),
-                        "forrigeMeldekortId" to meldekort.forrigeMeldekortId?.toString(),
+                        "forrige_meldekort_id" to meldekort.forrigeMeldekortId?.toString(),
                         "meldeperiode_id" to meldekort.meldeperiodeId.toString(),
-                        "sakId" to meldekort.sakId.toString(),
-                        "rammevedtakId" to meldekort.rammevedtakId.toString(),
-                        "fraOgMed" to meldekort.fraOgMed,
-                        "tilOgMed" to meldekort.periode.tilOgMed,
+                        "sak_id" to meldekort.sakId.toString(),
+                        "rammevedtak_id" to meldekort.rammevedtakId.toString(),
+                        "fra_og_med" to meldekort.fraOgMed,
+                        "til_og_med" to meldekort.periode.tilOgMed,
                         "meldekortdager" to meldekort.meldeperiode.toDbJson(),
                         "saksbehandler" to meldekort.saksbehandler,
                         "beslutter" to meldekort.beslutter,
@@ -130,10 +130,10 @@ class MeldekortPostgresRepo(
                           m.*,
                           s.ident as fnr,
                           s.saksnummer,
-                          (b.stønadsdager -> 'registerSaksopplysning' ->> 'antallDager')::int as antallDagerPerMeldeperiode
+                          (b.stønadsdager -> 'registerSaksopplysning' ->> 'antallDager')::int as antall_dager_per_meldeperiode
                         from meldekort m
-                        join sak s on s.id = m.sakId
-                        join rammevedtak r on r.id = m.rammevedtakId
+                        join sak s on s.id = m.sak_id
+                        join rammevedtak r on r.id = m.rammevedtak_id
                         join behandling b on b.id = r.behandling_id
                         where m.id = :id
                     """.trimIndent(),
@@ -155,13 +155,13 @@ class MeldekortPostgresRepo(
                           m.*,
                           s.ident as fnr,
                           s.saksnummer,
-                          (b.stønadsdager -> 'registerSaksopplysning' ->> 'antallDager')::int as antallDagerPerMeldeperiode
+                          (b.stønadsdager -> 'registerSaksopplysning' ->> 'antallDager')::int as antall_dager_per_meldeperiode
                         from meldekort m
-                        join sak s on s.id = m.sakId
-                        join rammevedtak r on r.id = m.rammevedtakId
+                        join sak s on s.id = m.sak_id
+                        join rammevedtak r on r.id = m.rammevedtak_id
                         join behandling b on b.id = r.behandling_id
                         where s.id = :sakId
-                        order by m.fraOgMed
+                        order by m.fra_og_med
                     """.trimIndent(),
                     mapOf("sakId" to sakId.toString()),
                 ).map { fromRow(it) }.asList,
@@ -172,14 +172,14 @@ class MeldekortPostgresRepo(
             row: Row,
         ): Meldekort {
             val id = MeldekortId.fromString(row.string("id"))
-            val sakId = SakId.fromString(row.string("sakId"))
+            val sakId = SakId.fromString(row.string("sak_id"))
             val saksnummer = Saksnummer(row.string("saksnummer"))
             val meldeperiodeId = MeldeperiodeId(row.string("meldeperiode_id"))
             val navkontor = row.stringOrNull("navkontor")?.let { Navkontor(it) }
-            val rammevedtakId = VedtakId.fromString(row.string("rammevedtakId"))
+            val rammevedtakId = VedtakId.fromString(row.string("rammevedtak_id"))
             val fnr = Fnr.fromString(row.string("fnr"))
-            val forrigeMeldekortId = row.stringOrNull("forrigeMeldekortId")?.let { MeldekortId.fromString(it) }
-            val antallDagerForMeldeperiode = row.int("antallDagerPerMeldeperiode")
+            val forrigeMeldekortId = row.stringOrNull("forrige_meldekort_id")?.let { MeldekortId.fromString(it) }
+            val antallDagerForMeldeperiode = row.int("antall_dager_per_meldeperiode")
             return when (val status = row.string("status")) {
                 "GODKJENT", "KLAR_TIL_BESLUTNING" -> {
                     val meldekortperiode = row.string("meldekortdager").toUtfyltMeldekortperiode(sakId, id)
