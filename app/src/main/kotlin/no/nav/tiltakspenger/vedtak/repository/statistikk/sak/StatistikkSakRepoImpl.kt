@@ -109,8 +109,8 @@ internal class StatistikkSakRepoImpl(
             ansvarligBeslutter,
             ansvarligEnhet,
             tilbakekrevingsbeløp,
-            funksjonellPeriodeFom,
-            funksjonellPeriodeTom,
+            funksjonellperiode_fra_og_med,
+            funksjonellperiode_til_og_med,
             hendelse,
             avsender,
             versjon        
