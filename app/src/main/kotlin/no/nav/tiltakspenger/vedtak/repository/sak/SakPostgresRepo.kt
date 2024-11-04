@@ -297,7 +297,7 @@ internal class SakPostgresRepo(
                 :id,
                 :ident,
                 :saksnummer,
-                :sistEndret,
+                :sist_endret,
                 :opprettet
             )
             """.trimIndent()
