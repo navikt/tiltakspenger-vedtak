@@ -83,7 +83,7 @@ class MicrosoftGraphApiClient(
             val body = httpResponse.body()
             sikkerlogg.debug { "Logger response fra microsoftGraphApi for å debugge -> $status - $body" }
             if (status == 401 || status == 403) {
-                log.error(RuntimeException("Trigger stacktrace for debug.")) { "Invaliderer cache for systemtoken mot PDL. status: $status." }
+                log.error(RuntimeException("Trigger stacktrace for debug.")) { "Invaliderer cache for systemtoken mot Microsoft Graph API. status: $status." }
                 token.invaliderCache()
             }
             val jsonResponse = deserialize<ListOfMicrosoftGraphResponse>(body)

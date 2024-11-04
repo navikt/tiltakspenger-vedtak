@@ -112,7 +112,7 @@ internal class JoarkHttpClient(
             if (throwable is ClientRequestException) {
                 val status = throwable.response.status
                 if (status == Unauthorized || status == Forbidden) {
-                    log.error(RuntimeException("Trigger stacktrace for debug.")) { "Invaliderer cache for systemtoken mot PDL. status: $status." }
+                    log.error(RuntimeException("Trigger stacktrace for debug.")) { "Invaliderer cache for systemtoken mot joark. status: $status." }
                     token.invaliderCache()
                 }
                 if (status == Conflict) {

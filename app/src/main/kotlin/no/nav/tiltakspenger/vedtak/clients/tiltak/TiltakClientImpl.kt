@@ -52,7 +52,7 @@ class TiltakClientImpl(
             HttpStatusCode.OK -> httpResponse.call.response.body()
             else -> {
                 if (httpResponse.status == Unauthorized || httpResponse.status == Forbidden) {
-                    log.error(RuntimeException("Trigger stacktrace for debug.")) { "Invaliderer cache for systemtoken mot PDL. status: $httpResponse.status." }
+                    log.error(RuntimeException("Trigger stacktrace for debug.")) { "Invaliderer cache for systemtoken mot tiltakspenger-tiltak. status: $httpResponse.status." }
                     token.invaliderCache()
                 }
                 throw RuntimeException("error (responseCode=${httpResponse.status.value}) from Tiltak")

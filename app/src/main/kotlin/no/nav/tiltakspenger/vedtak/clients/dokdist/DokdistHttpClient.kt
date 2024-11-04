@@ -52,7 +52,7 @@ class DokdistHttpClient(
                 val status = httpResponse.statusCode()
                 val jsonResponse = httpResponse.body()
                 if (status == 401 || status == 403) {
-                    log.error(RuntimeException("Trigger stacktrace for debug.")) { "Invaliderer cache for systemtoken mot PDL. status: $status." }
+                    log.error(RuntimeException("Trigger stacktrace for debug.")) { "Invaliderer cache for systemtoken mot dokdist. status: $status." }
                     token.invaliderCache()
                 }
                 if (status != 409 && status != 200) {
