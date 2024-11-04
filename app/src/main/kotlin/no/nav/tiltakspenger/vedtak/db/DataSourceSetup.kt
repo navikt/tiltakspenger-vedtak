@@ -12,18 +12,11 @@ object DataSourceSetup {
 
     fun createDatasource(): HikariDataSource {
         LOG.info {
-            "Kobler til Postgres '${config.brukernavn}:xxx@" +
-                "${config.host}:${config.port}/${config.database}'"
+            "Kobler til Postgres. Bruker bare jdbc-urlen i config (+ timeout og maxpools)."
         }
 
         return HikariDataSource().apply {
             jdbcUrl = config.url
-            dataSourceClassName = "org.postgresql.ds.PGSimpleDataSource"
-            addDataSourceProperty("serverName", config.host)
-            addDataSourceProperty("portNumber", config.port)
-            addDataSourceProperty("databaseName", config.database)
-            addDataSourceProperty("user", config.brukernavn)
-            addDataSourceProperty("password", config.passord)
             initializationFailTimeout = 5000
             maximumPoolSize = MAX_POOLS
         }.also {
