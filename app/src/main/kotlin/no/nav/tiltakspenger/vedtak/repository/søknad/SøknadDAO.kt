@@ -76,11 +76,11 @@ internal object SøknadDAO {
     ) {
         val oppdaterteRader = session.run(
             queryOf(
-                """update søknad set behandling_id = :behandlingId, sak_id = :sakId where id = :soknadId and behandling_id is null and sak_id is null""",
+                """update søknad set behandling_id = :behandling_id, sak_id = :sak_id where id = :soknad_id and behandling_id is null and sak_id is null""",
                 mapOf(
-                    "behandlingId" to behandlingId.toString(),
-                    "soknadId" to søknadId.toString(),
-                    "sakId" to sakId.toString(),
+                    "behandling_id" to behandlingId.toString(),
+                    "soknad_id" to søknadId.toString(),
+                    "sak_id" to sakId.toString(),
                 ),
             ).asUpdate,
         )
@@ -147,14 +147,14 @@ internal object SøknadDAO {
                     mapOf(
                         "id" to søknad.id.toString(),
                         "versjon" to søknad.versjon,
-                        "behandlingId" to null,
+                        "behandling_id" to null,
                         "fornavn" to søknad.personopplysninger.fornavn,
                         "etternavn" to søknad.personopplysninger.etternavn,
                         "ident" to søknad.fnr.verdi,
-                        "journalpostId" to søknad.journalpostId,
+                        "journalpost_id" to søknad.journalpostId,
                         "vedlegg" to søknad.vedlegg,
                         "opprettet" to søknad.opprettet,
-                        "tidsstempelHosOss" to søknad.tidsstempelHosOss,
+                        "tidsstempel_hos_oss" to søknad.tidsstempelHosOss,
                     ),
             ).asUpdate,
         )

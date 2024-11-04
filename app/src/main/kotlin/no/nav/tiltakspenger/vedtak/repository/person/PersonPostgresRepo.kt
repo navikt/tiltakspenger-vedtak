@@ -80,11 +80,11 @@ class PersonPostgresRepo(
                 queryOf(
                     """
                         select sak.ident from utbetalingsvedtak vedtak
-                        join public.sak sak on sak.id = vedtak.sakid
-                        where vedtak.id = :vedtakId
+                        join public.sak sak on sak.id = vedtak.sak_id
+                        where vedtak.id = :vedtak_id
                     """.trimIndent(),
                     mapOf(
-                        "vedtakId" to vedtakId.toString(),
+                        "vedtak_id" to vedtakId.toString(),
                     ),
                 ).map { row ->
                     Fnr.fromString(row.string("ident"))
@@ -99,10 +99,10 @@ class PersonPostgresRepo(
                     """
                         select sak.ident from meldekort m
                         join public.sak sak on sak.id = m.sak_id
-                        where m.id = :meldekortId
+                        where m.id = :meldekort_id
                     """.trimMargin(),
                     mapOf(
-                        "meldekortId" to meldekortId.toString(),
+                        "meldekort_id" to meldekortId.toString(),
                     ),
                 ).map { row ->
                     Fnr.fromString(row.string("ident"))

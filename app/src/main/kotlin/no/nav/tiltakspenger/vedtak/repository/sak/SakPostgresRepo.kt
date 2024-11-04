@@ -117,8 +117,8 @@ internal class SakPostgresRepo(
         sessionFactory.withSession(sessionContext) { session ->
             session.run(
                 queryOf(
-                    "select ident as fnr from sak  where sak.id = :sakId",
-                    mapOf("sakId" to sakId.toString()),
+                    "select ident as fnr from sak  where sak.id = :sak_id",
+                    mapOf("sak_id" to sakId.toString()),
                 ).map { row ->
                     Fnr.fromString(row.string("fnr"))
                 }.asSingle,
@@ -162,8 +162,8 @@ internal class SakPostgresRepo(
             sessionContext.withSession { session ->
                 session.run(
                     queryOf(
-                        "select * from sak where id = (select sakid from behandling where id = :behandlingId)",
-                        mapOf("behandlingId" to behandlingId.toString()),
+                        "select * from sak where id = (select sak_id from behandling where id = :behandling_id)",
+                        mapOf("behandling_id" to behandlingId.toString()),
                     ).map { row ->
                         row.toSak(sessionContext)
                     }.asSingle,
@@ -179,10 +179,10 @@ internal class SakPostgresRepo(
                         """
                         select s.* from søknad sø
                         join behandling b on b.id = sø.behandling_id
-                        join sak s on s.id = b.sakid
-                        where sø.id = :soknadId
+                        join sak s on s.id = b.sak_id
+                        where sø.id = :soknad_id
                         """.trimIndent(),
-                        mapOf("soknadId" to søknadId.toString()),
+                        mapOf("soknad_id" to søknadId.toString()),
                     ).map { row ->
                         row.toSak(sessionContext)
                     }.asSingle,
@@ -243,7 +243,7 @@ internal class SakPostgresRepo(
                         "id" to sak.id.toString(),
                         "ident" to sak.fnr.verdi,
                         "saksnummer" to sak.saksnummer.verdi,
-                        "sistEndret" to nå,
+                        "sist_endret" to nå,
                         "opprettet" to nå,
                     ),
                 ).asUpdate,

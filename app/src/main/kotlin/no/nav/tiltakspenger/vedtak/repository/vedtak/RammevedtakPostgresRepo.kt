@@ -118,13 +118,13 @@ class RammevedtakPostgresRepo(
                 queryOf(
                     """
                     update rammevedtak
-                    set journalpost_id = :journalpostId,
+                    set journalpost_id = :journalpost_id,
                         journalføringstidspunkt = :tidspunkt
                     where id = :id
                     """.trimIndent(),
                     mapOf(
                         "id" to id.toString(),
-                        "journalpostId" to journalpostId.toString(),
+                        "journalpost_id" to journalpostId.toString(),
                         "tidspunkt" to tidspunkt,
                     ),
                 ).asUpdate,
@@ -138,13 +138,13 @@ class RammevedtakPostgresRepo(
                 queryOf(
                     """
                     update rammevedtak
-                    set distribusjon_id = :distribusjonId,
+                    set distribusjon_id = :distribusjon_id,
                         distribusjonstidspunkt = :tidspunkt
                     where id = :id
                     """.trimIndent(),
                     mapOf(
                         "id" to id.toString(),
-                        "distribusjonId" to distribusjonId.toString(),
+                        "distribusjon_id" to distribusjonId.toString(),
                         "tidspunkt" to tidspunkt,
                     ),
                 ).asUpdate,

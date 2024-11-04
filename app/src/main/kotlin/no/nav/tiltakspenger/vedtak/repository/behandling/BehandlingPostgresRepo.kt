@@ -71,7 +71,7 @@ class BehandlingPostgresRepo(
                     select b.*,sak.saksnummer,sak.ident
                       from behandling b
                       join søknad s on b.id = s.behandling_id
-                      join sak on sak.id = b.sakId
+                      join sak on sak.id = b.sak_id
                       where s.id = :id
                     """.trimIndent(),
                     mapOf(
