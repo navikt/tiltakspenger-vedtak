@@ -65,7 +65,7 @@ class SakServiceImpl(
             throw IllegalStateException("Vi støtter ikke flere saker per søker i piloten. søknadId: $søknadId")
         }
 
-        val registrerteTiltak = runBlocking { tiltakGateway.hentTiltak(fnr) }
+        val registrerteTiltak = runBlocking { tiltakGateway.hentTiltak(fnr, correlationId) }
         if (registrerteTiltak.isEmpty()) {
             return KanIkkeStarteFørstegangsbehandling.OppretteBehandling(
                 KanIkkeOppretteBehandling.FantIkkeTiltak,
