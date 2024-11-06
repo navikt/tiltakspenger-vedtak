@@ -12,7 +12,7 @@ on:
 
 jobs:
   build:
-    name: Deploy to NAIS
+    name: Deploy to NAIS (${{ inputs.NAIS_ENV }})
     runs-on: ubuntu-latest
     environment: ${{ inputs.NAIS_ENV }}
     permissions:

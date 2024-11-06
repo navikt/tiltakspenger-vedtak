@@ -26,3 +26,4 @@ azure:
       id: e750ceb5-b70b-4d94-b4fa-9d22467b786b
     - name: ROLE_DRIFT
       id: 0405ed09-1248-47f7-a6e3-e998bc90feca
+replicas: 1 # TODO: sett til 2
