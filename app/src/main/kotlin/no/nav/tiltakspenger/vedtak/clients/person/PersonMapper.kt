@@ -37,7 +37,6 @@ internal fun mapPersonopplysninger(
 ): PersonopplysningerSøker {
     val data: PdlResponseData = objectMapper.readValue<PdlResponseData>(json)
     val person: PdlPerson = data.hentPerson
-    val geografiskTilknytning: GeografiskTilknytning? = data.hentGeografiskTilknytning
     val navn = avklarNavn(person.navn).getOrElse { it.mapError() }
     val fødsel = avklarFødsel(person.foedselsdato).getOrElse { it.mapError() }
     val adressebeskyttelse: AdressebeskyttelseGradering = avklarGradering(person.adressebeskyttelse).getOrElse { it.mapError() }
@@ -50,8 +49,6 @@ internal fun mapPersonopplysninger(
         fortrolig = adressebeskyttelse.erFortrolig(),
         strengtFortrolig = adressebeskyttelse.erStrengtFortrolig(),
         strengtFortroligUtland = adressebeskyttelse.erStrengtFortroligUtland(),
-        kommune = geografiskTilknytning?.gtKommune,
-        bydel = geografiskTilknytning?.gtBydel,
     )
 }
 

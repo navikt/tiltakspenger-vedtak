@@ -43,8 +43,6 @@ interface PersonMother {
             fortrolig = fortrolig,
             strengtFortrolig = strengtFortrolig,
             strengtFortroligUtland = strengtFortroligUtland,
-            kommune = kommune,
-            bydel = bydel,
         )
 
     fun personopplysningMaxFyr(
@@ -68,8 +66,6 @@ interface PersonMother {
             fortrolig = fortrolig,
             strengtFortrolig = strengtFortrolig,
             strengtFortroligUtland = strengtFortroligUtland,
-            kommune = kommune,
-            bydel = bydel,
         )
 
     fun tiltak(

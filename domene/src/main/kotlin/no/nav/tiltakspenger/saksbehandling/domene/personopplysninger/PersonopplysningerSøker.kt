@@ -12,7 +12,4 @@ data class PersonopplysningerSøker(
     val fortrolig: Boolean,
     val strengtFortrolig: Boolean,
     val strengtFortroligUtland: Boolean,
-    // TODO pre-mvp jah: Trenger vi kommune + bydel, eller kan vi slette?
-    val kommune: String?,
-    val bydel: String?,
 )

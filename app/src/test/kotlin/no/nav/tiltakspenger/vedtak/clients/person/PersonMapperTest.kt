@@ -24,8 +24,6 @@ internal class PersonMapperTest {
                     etternavn = "Eksamen",
                     fortrolig = false,
                     strengtFortrolig = false,
-                    bydel = null,
-                    kommune = "5444",
                     strengtFortroligUtland = false,
                 )
         }
