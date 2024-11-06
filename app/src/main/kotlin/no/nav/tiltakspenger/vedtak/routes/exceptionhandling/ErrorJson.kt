@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.routes
+package no.nav.tiltakspenger.vedtak.routes.exceptionhandling
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
@@ -55,13 +55,6 @@ suspend fun ApplicationCall.respond400BadRequest(errorJson: ErrorJson) {
     this.respondError(HttpStatusCode.BadRequest, errorJson)
 }
 
-suspend fun ApplicationCall.respond404NotFound(melding: String, kode: String) {
-    this.respondError(
-        status = HttpStatusCode.NotFound,
-        melding = melding,
-        kode = kode,
-    )
-}
 suspend fun ApplicationCall.respond404NotFound(errorJson: ErrorJson) {
     this.respondError(HttpStatusCode.NotFound, errorJson)
 }
@@ -81,4 +74,8 @@ suspend fun ApplicationCall.respondError(status: HttpStatusCode, errorJson: Erro
         message = errorJson,
         status = status,
     )
+}
+
+suspend fun ApplicationCall.respond501NotImplemented(errorJson: ErrorJson) {
+    this.respondError(HttpStatusCode.NotImplemented, errorJson)
 }

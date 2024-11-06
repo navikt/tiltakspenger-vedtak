@@ -14,9 +14,9 @@ import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.auth2.TokenService
-import no.nav.tiltakspenger.vedtak.routes.Standardfeil
 import no.nav.tiltakspenger.vedtak.routes.correlationId
-import no.nav.tiltakspenger.vedtak.routes.respond400BadRequest
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond400BadRequest
 import no.nav.tiltakspenger.vedtak.routes.withSaksbehandler
 import no.nav.tiltakspenger.vedtak.routes.withSaksnummer
 

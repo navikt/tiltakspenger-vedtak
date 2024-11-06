@@ -3,7 +3,6 @@ package no.nav.tiltakspenger.vedtak.routes
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
@@ -14,7 +13,6 @@ import io.ktor.server.plugins.calllogging.CallLogging
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.request.path
-import io.ktor.server.response.respondText
 import io.ktor.server.routing.routing
 import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
 import no.nav.tiltakspenger.vedtak.context.ApplicationContext
@@ -23,6 +21,8 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.benk.behandlingBenkRoutes
 import no.nav.tiltakspenger.vedtak.routes.datadeling.datadelingRoutes
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.ExceptionHandler
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.ikkeImplementert
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond501NotImplemented
 import no.nav.tiltakspenger.vedtak.routes.meldekort.meldekortRoutes
 import no.nav.tiltakspenger.vedtak.routes.sak.sakRoutes
 import no.nav.tiltakspenger.vedtak.routes.saksbehandler.saksbehandlerRoutes
@@ -109,7 +109,7 @@ fun Application.configureExceptions() {
     install(StatusPages) {
         exception<Throwable> { call, cause ->
             if (cause is IkkeImplementertException) {
-                call.respondText(text = "Støtter ikke utfall: $cause", status = HttpStatusCode.NotImplemented)
+                call.respond501NotImplemented(ikkeImplementert())
             } else {
                 ExceptionHandler.handle(call, cause)
             }

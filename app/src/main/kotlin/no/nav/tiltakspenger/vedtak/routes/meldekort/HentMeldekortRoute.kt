@@ -10,12 +10,12 @@ import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.auth2.TokenService
-import no.nav.tiltakspenger.vedtak.routes.Standardfeil.fantIkkeMeldekort
-import no.nav.tiltakspenger.vedtak.routes.Standardfeil.fantIkkeSak
 import no.nav.tiltakspenger.vedtak.routes.correlationId
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.fantIkkeMeldekort
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.fantIkkeSak
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond400BadRequest
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond404NotFound
 import no.nav.tiltakspenger.vedtak.routes.meldekort.dto.toDTO
-import no.nav.tiltakspenger.vedtak.routes.respond400BadRequest
-import no.nav.tiltakspenger.vedtak.routes.respond404NotFound
 import no.nav.tiltakspenger.vedtak.routes.withMeldekortId
 import no.nav.tiltakspenger.vedtak.routes.withSakId
 import no.nav.tiltakspenger.vedtak.routes.withSaksbehandler

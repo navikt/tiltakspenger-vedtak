@@ -8,6 +8,9 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.Systembruker
 import no.nav.tiltakspenger.vedtak.auth2.TokenService
 import no.nav.tiltakspenger.vedtak.auth2.Valideringsfeil
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond401Unauthorized
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond403Forbidden
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond500InternalServerError
 import kotlin.text.startsWith
 import kotlin.text.substring
 

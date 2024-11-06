@@ -1,16 +1,19 @@
 package no.nav.tiltakspenger.vedtak.routes.exceptionhandling
 
-import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.request.ContentTransformationException
 import io.ktor.server.request.uri
-import io.ktor.server.response.respond
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
 import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.vedtak.exceptions.ManglendeJWTTokenException
 import no.nav.tiltakspenger.vedtak.exceptions.UgyldigRequestException
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.ikkeAutorisert
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.ikkeFunnet
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.ikkeTilgang
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.serverfeil
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.ugyldigRequest
 
 object ExceptionHandler {
     private val logger = KotlinLogging.logger {}
@@ -23,44 +26,33 @@ object ExceptionHandler {
         sikkerlogg.error(cause) { "Ktor mottok exception i ytterste lag. Uri: $uri." }
         when (cause) {
             is IllegalStateException -> {
-                call.respondWith(HttpStatusCode.InternalServerError, cause)
+                call.respond500InternalServerError(serverfeil())
             }
 
             is ManglendeJWTTokenException -> {
-                call.respondWith(HttpStatusCode.Unauthorized, cause)
+                call.respond401Unauthorized(ikkeAutorisert())
             }
 
             is UgyldigRequestException -> {
-                call.respondWith(HttpStatusCode.BadRequest, cause)
+                call.respond400BadRequest(ugyldigRequest())
             }
 
             is ContentTransformationException -> {
-                call.respondWith(HttpStatusCode.BadRequest, cause)
+                call.respond400BadRequest(ugyldigRequest())
             }
 
             is TilgangException -> {
-                call.respondWith(HttpStatusCode.Forbidden, cause)
+                call.respond403Forbidden(ikkeTilgang())
             }
 
             is IkkeFunnetException -> {
-                call.respondWith(HttpStatusCode.NotFound, cause)
+                call.respond404NotFound(ikkeFunnet())
             }
 
             // Catch all
             else -> {
-                call.respondWith(HttpStatusCode.InternalServerError, cause)
+                call.respond500InternalServerError(serverfeil())
             }
         }
-    }
-
-    // TODO pre-mvp jah: Føles ikke bra at vi returnerer cause fra exceptions. Her kan vi blø data vi ikke ønsker å dele.
-    private suspend fun ApplicationCall.respondWith(
-        statusCode: HttpStatusCode,
-        ex: Throwable,
-    ) {
-        this.respond(
-            statusCode,
-            ExceptionResponse(ex, statusCode),
-        )
     }
 }

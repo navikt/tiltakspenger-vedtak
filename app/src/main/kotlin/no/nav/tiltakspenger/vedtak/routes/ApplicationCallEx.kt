@@ -13,6 +13,7 @@ import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.vedtak.db.deserialize
 import no.nav.tiltakspenger.vedtak.exceptions.UgyldigRequestException
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond400BadRequest
 
 private val logger = KotlinLogging.logger {}
 
