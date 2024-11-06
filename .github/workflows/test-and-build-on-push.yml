@@ -1,9 +1,9 @@
-name: Test on feature branch push
+name: Test/build on feature branch push
 
 on:
   push:
-    branches:
-      - '!main'
+    branches-ignore:
+      - main
 
 jobs:
   build:
