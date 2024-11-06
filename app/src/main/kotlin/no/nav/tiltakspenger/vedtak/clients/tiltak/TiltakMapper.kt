@@ -45,6 +45,7 @@ internal fun mapTiltak(
             Tiltak(
                 id = TiltakId.random(),
                 eksternId = tiltakDto.id,
+                gjennomforingId = tiltakDto.gjennomføringId,
                 typeNavn = tiltakDto.typeNavn,
                 typeKode = tiltakDto.typeKode.toTiltakstypeSomGirRett().getOrElse {
                     throw IllegalStateException(
