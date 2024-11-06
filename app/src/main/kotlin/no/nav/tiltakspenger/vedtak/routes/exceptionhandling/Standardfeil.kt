@@ -53,8 +53,8 @@ object Standardfeil {
     )
 
     fun serverfeil(): ErrorJson = ErrorJson(
-        "Kunne ikke autorisere bruker",
-        "ikke_autorisert",
+        "Noe gikk galt på serversiden",
+        "server_feil",
     )
 
     fun ugyldigRequest(): ErrorJson = ErrorJson(
