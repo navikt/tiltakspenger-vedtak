@@ -2,6 +2,11 @@ name: Test and build
 
 on:
   workflow_call:
+    inputs:
+      buildImage:
+        required: false
+        type: boolean
+        default: true
     outputs:
       IMAGE:
         description: "Docker image"
@@ -39,6 +44,7 @@ jobs:
       - name: Build and push docker image
         uses: nais/docker-build-push@v0
         id: docker-push
+        if: inputs.buildImage == true
         with:
           team: tpts
           project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}

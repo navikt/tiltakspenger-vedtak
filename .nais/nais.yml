@@ -11,6 +11,11 @@ spec:
   replicas:
     min: {{ replicas }}
     max: {{ replicas }}
+  resources:
+    limits:
+      memory: 2Gi
+    requests:
+      memory: 500Mi
   ingresses:
     - {{ ingress.url }}
   liveness:
