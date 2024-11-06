@@ -12,10 +12,10 @@ import no.nav.tiltakspenger.meldekort.service.IverksettMeldekortService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.auth2.TokenService
-import no.nav.tiltakspenger.vedtak.routes.Standardfeil.måVæreBeslutter
-import no.nav.tiltakspenger.vedtak.routes.Standardfeil.saksbehandlerOgBeslutterKanIkkeVæreLik
 import no.nav.tiltakspenger.vedtak.routes.correlationId
-import no.nav.tiltakspenger.vedtak.routes.respond400BadRequest
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.måVæreBeslutter
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.saksbehandlerOgBeslutterKanIkkeVæreLik
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond400BadRequest
 import no.nav.tiltakspenger.vedtak.routes.withMeldekortId
 import no.nav.tiltakspenger.vedtak.routes.withSakId
 import no.nav.tiltakspenger.vedtak.routes.withSaksbehandler

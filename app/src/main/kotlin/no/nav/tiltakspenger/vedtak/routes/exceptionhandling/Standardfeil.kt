@@ -1,4 +1,4 @@
-package no.nav.tiltakspenger.vedtak.routes
+package no.nav.tiltakspenger.vedtak.routes.exceptionhandling
 
 object Standardfeil {
 
@@ -40,5 +40,35 @@ object Standardfeil {
     fun saksbehandlerOgBeslutterKanIkkeVæreLik(): ErrorJson = ErrorJson(
         "Beslutter kan ikke være den samme som saksbehandler.",
         "beslutter_og_saksbehandler_kan_ikke_være_lik",
+    )
+
+    fun ikkeImplementert(): ErrorJson = ErrorJson(
+        "Vi mangler en implementasjon for å gjennomføre denne operasjonen",
+        "ikke_implementert",
+    )
+
+    fun ikkeAutorisert(): ErrorJson = ErrorJson(
+        "Kunne ikke autorisere bruker",
+        "ikke_autorisert",
+    )
+
+    fun serverfeil(): ErrorJson = ErrorJson(
+        "Kunne ikke autorisere bruker",
+        "ikke_autorisert",
+    )
+
+    fun ugyldigRequest(): ErrorJson = ErrorJson(
+        "Kunne ikke prosessere request",
+        "ugyldig_request",
+    )
+
+    fun ikkeTilgang(): ErrorJson = ErrorJson(
+        "Bruker har ikke tilgang",
+        "ikke_tilgang",
+    )
+
+    fun ikkeFunnet(): ErrorJson = ErrorJson(
+        "Fant ikke resursen",
+        "ikke_funnet",
     )
 }
