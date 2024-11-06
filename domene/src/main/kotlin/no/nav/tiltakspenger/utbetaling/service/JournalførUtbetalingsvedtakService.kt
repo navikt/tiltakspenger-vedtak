@@ -29,7 +29,7 @@ class JournalførUtbetalingsvedtakService(
                 Either.catch {
                     val pdfOgJson =
                         genererMeldekortPdfGateway.genererMeldekortPdf(
-                            utbetalingsvedtak.meldekort,
+                            utbetalingsvedtak,
                             hentSaksbehandlersNavn = navIdentClient::hentNavnForNavIdent,
                         )
                     log.info { "Pdf generert for utbetalingsvedtak. Saksnummer: ${utbetalingsvedtak.saksnummer}, sakId: ${utbetalingsvedtak.sakId}, utbetalingsvedtakId: ${utbetalingsvedtak.id}" }
