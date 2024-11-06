@@ -5,16 +5,15 @@ on:
 
 jobs:
   build:
-    name: Build and deploy
+    name: Test and build
     uses: ./.github/workflows/.test-and-build.yml
     permissions:
       contents: read
       id-token: write
-    with:
-      NAIS_ENV: dev
     secrets:
       NAIS_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
       SLACK_INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_INCOMING_WEBHOOK_URL }}
+
   deploy:
     name: Deploy to NAIS (dev)
     needs: build

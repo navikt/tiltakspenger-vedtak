@@ -1,11 +1,7 @@
-name: Build and test
+name: Test and build
 
 on:
   workflow_call:
-    inputs:
-      NAIS_ENV:
-        required: true
-        type: string
     outputs:
       IMAGE:
         description: "Docker image"
@@ -20,7 +16,6 @@ jobs:
   build:
     name: Test, build and push
     runs-on: ubuntu-latest
-    environment: ${{ inputs.NAIS_ENV }}
     permissions:
       contents: read
       id-token: write
@@ -48,7 +43,6 @@ jobs:
           team: tpts
           project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
           identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
-          image_suffix: ${{ inputs.NAIS_ENV }}
 
       - name: Notify Slack in case of build failure
         if: failure() && github.ref == 'refs/heads/main'

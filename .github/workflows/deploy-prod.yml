@@ -10,26 +10,15 @@ on:
 
 jobs:
   build:
-    name: Build and deploy
+    name: Test and build
     uses: ./.github/workflows/.test-and-build.yml
     permissions:
       contents: read
       id-token: write
-    with:
-      NAIS_ENV: prod
     secrets:
       NAIS_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
       SLACK_INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_INCOMING_WEBHOOK_URL }}
-  deploy-prod:
-    name: Deploy to NAIS (prod)
-    needs: build
-    uses: ./.github/workflows/.deploy-to-nais.yml
-    permissions:
-      contents: read
-      id-token: write
-    with:
-      NAIS_ENV: prod
-      IMAGE: ${{ needs.build.outputs.IMAGE }}
+
   deploy-dev:
     name: Deploy to NAIS (dev)
     needs: build
@@ -40,3 +29,14 @@ jobs:
     with:
       NAIS_ENV: dev
       IMAGE: ${{ needs.build.outputs.IMAGE }}
+
+#  deploy-prod:
+#    name: Deploy to NAIS (prod)
+#    needs: build
+#    uses: ./.github/workflows/.deploy-to-nais.yml
+#    permissions:
+#      contents: read
+#      id-token: write
+#    with:
+#      NAIS_ENV: prod
+#      IMAGE: ${{ needs.build.outputs.IMAGE }}
