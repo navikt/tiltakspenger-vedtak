@@ -9,7 +9,7 @@ on:
     outputs:
       IMAGE:
         description: "Docker image"
-        value: ${{ jobs.build.outputs.image }}
+        value: ${{ jobs.build.outputs.IMAGE }}
     secrets:
       NAIS_WORKLOAD_IDENTITY_PROVIDER:
         required: true
