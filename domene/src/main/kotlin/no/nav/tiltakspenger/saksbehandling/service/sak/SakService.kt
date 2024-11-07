@@ -13,7 +13,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.EnkelPerson
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.service.person.KunneIkkeHenteEnkelPerson
-import no.nav.tiltakspenger.saksbehandling.service.sak.SakServiceImpl.FantIkkeSakForFnr
 
 interface SakService {
     suspend fun startFørstegangsbehandling(
@@ -38,7 +37,7 @@ interface SakService {
         fnr: Fnr,
         saksbehandler: Saksbehandler,
         correlationId: CorrelationId,
-    ): Either<FantIkkeSakForFnr, Sak>
+    ): Either<KunneIkkeHenteSakForFnr, Sak>
 
     fun hentFnrForSakId(sakId: SakId): Fnr?
 

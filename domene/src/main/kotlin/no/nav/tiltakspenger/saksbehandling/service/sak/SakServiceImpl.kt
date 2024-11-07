@@ -133,15 +133,20 @@ class SakServiceImpl(
         return sak
     }
 
-    data object FantIkkeSakForFnr
-
     override suspend fun hentForFnr(
         fnr: Fnr,
         saksbehandler: Saksbehandler,
         correlationId: CorrelationId,
-    ): Either<FantIkkeSakForFnr, Sak> {
+    ): Either<KunneIkkeHenteSakForFnr, Sak> {
+        if (!saksbehandler.isSaksbehandler() && !saksbehandler.isBeslutter()) {
+            logger.warn { "Navident ${saksbehandler.navIdent} med rollene ${saksbehandler.roller} har ikke tilgang til å hente sak for fnr" }
+            return KunneIkkeHenteSakForFnr.HarIkkeTilgang(
+                kreverEnAvRollene = listOf(Rolle.SAKSBEHANDLER, Rolle.BESLUTTER),
+                harRollene = saksbehandler.roller,
+            ).left()
+        }
         val saker = sakRepo.hentForFnr(fnr)
-        if (saker.saker.isEmpty()) return FantIkkeSakForFnr.left()
+        if (saker.saker.isEmpty()) return KunneIkkeHenteSakForFnr.FantIkkeSakForFnr.left()
         if (saker.size > 1) throw IllegalStateException("Vi støtter ikke flere saker per søker i piloten.")
 
         val sak = saker.single()
