@@ -9,6 +9,7 @@ import java.time.LocalDateTime
 
 internal data class StønadsdagerSaksopplysningDbJson(
     val tiltakNavn: String,
+    val eksternId: String,
     val antallDager: Int,
     val periode: PeriodeDbJson,
     val tidsstempel: String,
@@ -17,6 +18,7 @@ internal data class StønadsdagerSaksopplysningDbJson(
     fun toDomain(): StønadsdagerSaksopplysning =
         StønadsdagerSaksopplysning.Register(
             tiltakNavn = tiltakNavn,
+            eksternId = eksternId,
             antallDager = antallDager,
             tidsstempel = LocalDateTime.parse(tidsstempel),
             periode = periode.toDomain(),
@@ -27,6 +29,7 @@ internal data class StønadsdagerSaksopplysningDbJson(
 internal fun StønadsdagerSaksopplysning.toDbJson(): StønadsdagerSaksopplysningDbJson =
     StønadsdagerSaksopplysningDbJson(
         tiltakNavn = tiltakNavn,
+        eksternId = eksternId,
         antallDager = antallDager,
         tidsstempel = tidsstempel.toString(),
         periode = periode.toDbJson(),

@@ -12,4 +12,5 @@ fun Tiltak.tilRegisterSaksopplysning(): TiltakDeltagelseSaksopplysning.Register 
         girRett = this.gjennomføring.rettPåTiltakspenger,
         tidsstempel = LocalDateTime.now(),
         tiltakstype = this.gjennomføring.typeKode,
+        eksternId = this.eksternId,
     )

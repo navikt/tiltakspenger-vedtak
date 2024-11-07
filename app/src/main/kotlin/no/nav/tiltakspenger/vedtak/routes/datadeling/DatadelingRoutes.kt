@@ -11,6 +11,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.vedtak.RammevedtakService
+import no.nav.tiltakspenger.utbetaling.domene.Satser
 import no.nav.tiltakspenger.vedtak.auth2.TokenService
 import no.nav.tiltakspenger.vedtak.routes.withBody
 import no.nav.tiltakspenger.vedtak.routes.withSystembruker
@@ -103,12 +104,12 @@ private fun mapVedtak(vedtak: List<Rammevedtak>): List<DatadelingVedtakJsonRespo
             tom = it.periode.tilOgMed,
             sakId = it.sakId.toString(),
             saksnummer = it.saksnummer.toString(),
-            // TODO pre-mvp: Resten av feltene.
-            antallDager = 0.0,
-            dagsatsTiltakspenger = 0,
-            dagsatsBarnetillegg = 0,
+            antallDager = it.antallDagerPerMeldeperiode.toDouble(),
+            dagsatsTiltakspenger = Satser.sats(it.periode.fraOgMed).sats,
+            dagsatsBarnetillegg = Satser.sats(it.periode.fraOgMed).satsBarnetillegg,
+            relaterteTiltak = it.behandling.tiltaksid,
+            // TODO post-mvp: Fyll inn riktig antall og rettighet når vi behandler barnetillegg
             antallBarn = 0,
-            relaterteTiltak = "",
             rettighet = Rettighet.TILTAKSPENGER,
         )
     }
