@@ -18,7 +18,6 @@ interface SøknadMother {
         id: String = "arenaId",
         deltakelseFom: LocalDate = 1.januar(2022),
         deltakelseTom: LocalDate = 31.januar(2022),
-        arrangør: String = "arrangørnavn",
         typeKode: String = "JOBBK",
         typeNavn: String = "JOBBK",
     ): Søknadstiltak =
@@ -26,7 +25,6 @@ interface SøknadMother {
             id = id,
             deltakelseFom = deltakelseFom,
             deltakelseTom = deltakelseTom,
-            arrangør = arrangør,
             typeKode = typeKode,
             typeNavn = typeNavn,
         )

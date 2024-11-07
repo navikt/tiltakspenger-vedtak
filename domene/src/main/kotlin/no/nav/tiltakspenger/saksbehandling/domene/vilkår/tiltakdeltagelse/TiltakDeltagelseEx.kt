@@ -6,6 +6,8 @@ import java.time.LocalDateTime
 fun Tiltak.tilRegisterSaksopplysning(): TiltakDeltagelseSaksopplysning.Register =
     TiltakDeltagelseSaksopplysning.Register(
         tiltakNavn = this.typeNavn,
+        eksternTiltakId = this.eksternId,
+        gjennomføringId = this.gjennomføringId,
         deltagelsePeriode = this.deltakelsesperiode,
         kilde = this.kilde,
         status = this.deltakelseStatus,
