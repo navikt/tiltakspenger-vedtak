@@ -9,7 +9,8 @@ import java.time.LocalDateTime
 
 internal data class TiltakDeltagelseSaksopplysningDbJson(
     val tiltakNavn: String,
-    val eksternId: String,
+    val eksternTiltakId: String,
+    val gjennomføringId: String?,
     val tidsstempel: String,
     val deltagelsePeriode: PeriodeDbJson,
     val girRett: Boolean,
@@ -20,7 +21,8 @@ internal data class TiltakDeltagelseSaksopplysningDbJson(
     fun toDomain(): TiltakDeltagelseSaksopplysning =
         TiltakDeltagelseSaksopplysning.Register(
             tiltakNavn = tiltakNavn,
-            eksternId = eksternId,
+            eksternTiltakId = eksternTiltakId,
+            gjennomføringId = gjennomføringId,
             tidsstempel = LocalDateTime.parse(tidsstempel),
             deltagelsePeriode = deltagelsePeriode.toDomain(),
             girRett = girRett,
@@ -33,7 +35,8 @@ internal data class TiltakDeltagelseSaksopplysningDbJson(
 internal fun TiltakDeltagelseSaksopplysning.toDbJson(): TiltakDeltagelseSaksopplysningDbJson =
     TiltakDeltagelseSaksopplysningDbJson(
         tiltakNavn = tiltakNavn,
-        eksternId = eksternId,
+        eksternTiltakId = eksternTiltakId,
+        gjennomføringId = gjennomføringId,
         tidsstempel = tidsstempel.toString(),
         deltagelsePeriode = deltagelsePeriode.toDbJson(),
         girRett = girRett,

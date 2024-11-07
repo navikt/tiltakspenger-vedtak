@@ -96,7 +96,7 @@ data class Førstegangsbehandling(
     val antallDagerPerMeldeperiode: Int = stønadsdager.registerSaksopplysning.antallDager
 
     val tiltakstype: TiltakstypeSomGirRett = vilkårssett.tiltakDeltagelseVilkår.registerSaksopplysning.tiltakstype
-    val tiltaksid: String = vilkårssett.tiltakDeltagelseVilkår.registerSaksopplysning.eksternId
+    val tiltaksid: String = vilkårssett.tiltakDeltagelseVilkår.registerSaksopplysning.eksternTiltakId
     val samletUtfall = vilkårssett.samletUtfall
 
     companion object {

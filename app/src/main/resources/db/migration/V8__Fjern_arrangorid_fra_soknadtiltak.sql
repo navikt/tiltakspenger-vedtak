@@ -1,0 +1,1 @@
+ALTER TABLE søknadstiltak DROP COLUMN IF EXISTS arrangørnavn;

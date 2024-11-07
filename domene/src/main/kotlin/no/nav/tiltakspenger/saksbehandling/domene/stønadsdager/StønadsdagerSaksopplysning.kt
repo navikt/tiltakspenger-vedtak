@@ -6,7 +6,8 @@ import java.time.LocalDateTime
 
 sealed interface StønadsdagerSaksopplysning {
     val tiltakNavn: String
-    val eksternId: String
+    val eksternTiltakId: String
+    val gjennomføringId: String?
     val antallDager: Int
     val periode: Periode
     val kilde: Tiltakskilde
@@ -14,7 +15,8 @@ sealed interface StønadsdagerSaksopplysning {
 
     data class Register(
         override val tiltakNavn: String,
-        override val eksternId: String,
+        override val eksternTiltakId: String,
+        override val gjennomføringId: String?,
         override val antallDager: Int,
         override val periode: Periode,
         override val tidsstempel: LocalDateTime,
