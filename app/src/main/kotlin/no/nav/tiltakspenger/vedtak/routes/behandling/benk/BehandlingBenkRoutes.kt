@@ -51,7 +51,7 @@ fun Route.behandlingBenkRoutes(
                 {
                     when (it) {
                         is KanIkkeHenteSaksoversikt.HarIkkeTilgang -> call.respond403Forbidden(
-                            ikkeTilgang("Må ha en av rollene SAKSBEHANDLER eller BESLUTTER for å hente behandlinger på benken."),
+                            ikkeTilgang("Må ha en av rollene ${it.kreverEnAvRollene} for å hente behandlinger på benken."),
                         )
                     }
                 },
@@ -86,6 +86,12 @@ fun Route.behandlingBenkRoutes(
 
                                     is StøtterKunInnvilgelse -> call.respond400BadRequest(støtterIkkeDelvisEllerAvslag())
                                 }
+
+                            is KanIkkeStarteFørstegangsbehandling.HarIkkeTilgang -> {
+                                call.respond403Forbidden(
+                                    ikkeTilgang("Krever en av rollene ${it.kreverEnAvRollene} for å starte en behandling."),
+                                )
+                            }
                         }
                     },
                     {

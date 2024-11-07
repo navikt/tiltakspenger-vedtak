@@ -5,6 +5,7 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.Rolle
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling
@@ -21,17 +22,11 @@ interface SakService {
         correlationId: CorrelationId,
     ): Either<KanIkkeStarteFørstegangsbehandling, Sak>
 
-    suspend fun hentForFørstegangsbehandlingId(
-        behandlingId: BehandlingId,
-        saksbehandler: Saksbehandler,
-        correlationId: CorrelationId,
-    ): Sak
-
     suspend fun hentForSaksnummer(
         saksnummer: Saksnummer,
         saksbehandler: Saksbehandler,
         correlationId: CorrelationId,
-    ): Sak
+    ): Either<KunneIkkeHenteSakForSaksnummer, Sak>
 
     suspend fun hentForFnr(
         fnr: Fnr,
@@ -39,20 +34,21 @@ interface SakService {
         correlationId: CorrelationId,
     ): Either<KunneIkkeHenteSakForFnr, Sak>
 
-    fun hentFnrForSakId(sakId: SakId): Fnr?
-
     suspend fun hentForSakId(
         sakId: SakId,
         saksbehandler: Saksbehandler,
         correlationId: CorrelationId,
-    ): Sak?
+    ): Either<KunneIkkeHenteSakForSakId, Sak>
 
     suspend fun hentSaksoversikt(
         saksbehandler: Saksbehandler,
         correlationId: CorrelationId,
     ): Either<KanIkkeHenteSaksoversikt, Saksoversikt>
 
-    suspend fun hentEnkelPersonForSakId(sakId: SakId): Either<KunneIkkeHenteEnkelPerson, EnkelPerson>
+    suspend fun hentEnkelPersonForSakId(
+        sakId: SakId,
+        saksbehandler: Saksbehandler,
+    ): Either<KunneIkkeHenteEnkelPerson, EnkelPerson>
 }
 
 sealed interface KanIkkeStarteFørstegangsbehandling {
@@ -62,5 +58,10 @@ sealed interface KanIkkeStarteFørstegangsbehandling {
 
     data class OppretteBehandling(
         val underliggende: KanIkkeOppretteBehandling,
+    ) : KanIkkeStarteFørstegangsbehandling
+
+    data class HarIkkeTilgang(
+        val kreverEnAvRollene: List<Rolle>,
+        val harRollene: List<Rolle>,
     ) : KanIkkeStarteFørstegangsbehandling
 }

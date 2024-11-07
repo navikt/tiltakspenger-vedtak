@@ -19,11 +19,14 @@ import no.nav.tiltakspenger.meldekort.domene.KanIkkeSendeMeldekortTilBeslutter
 import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando
 import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando.Dager
 import no.nav.tiltakspenger.meldekort.service.SendMeldekortTilBeslutterService
+import no.nav.tiltakspenger.saksbehandling.service.sak.KunneIkkeHenteSakForSakId
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.auth2.TokenService
 import no.nav.tiltakspenger.vedtak.routes.correlationId
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond400BadRequest
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond403Forbidden
 import no.nav.tiltakspenger.vedtak.routes.withBody
 import no.nav.tiltakspenger.vedtak.routes.withMeldekortId
 import no.nav.tiltakspenger.vedtak.routes.withSakId
@@ -120,6 +123,15 @@ fun Route.sendMeldekortTilBeslutterRoute(
                                         call.respond400BadRequest(
                                             melding = "Kan ikke sende meldekort til beslutter. For mange dager er utfylt. Maks antall for dette meldekortet er ${it.antallDagerForMeldeperiode}, mens antall utfylte dager er ${it.antallDagerUtfylt}.",
                                             kode = "for_mange_dager_utfylt",
+                                        )
+                                    }
+
+                                    is KanIkkeSendeMeldekortTilBeslutter.KunneIkkeHenteSak -> when (
+                                        val u =
+                                            it.underliggende
+                                    ) {
+                                        is KunneIkkeHenteSakForSakId.HarIkkeTilgang -> call.respond403Forbidden(
+                                            Standardfeil.ikkeTilgang("Må ha en av rollene ${u.kreverEnAvRollene} for å hente sak"),
                                         )
                                     }
                                 }

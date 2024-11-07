@@ -11,7 +11,6 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
 import no.nav.tiltakspenger.felles.sikkerlogg
-import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.Rolle
@@ -53,6 +52,13 @@ class SakServiceImpl(
         saksbehandler: Saksbehandler,
         correlationId: CorrelationId,
     ): Either<KanIkkeStarteFørstegangsbehandling, Sak> {
+        if (!saksbehandler.erSaksbehandler()) {
+            logger.warn { "Navident ${saksbehandler.navIdent} med rollene ${saksbehandler.roller} har ikke tilgang til å hente sak for fnr" }
+            return KanIkkeStarteFørstegangsbehandling.HarIkkeTilgang(
+                kreverEnAvRollene = listOf(Rolle.SAKSBEHANDLER),
+                harRollene = saksbehandler.roller,
+            ).left()
+        }
         val fnr = personService.hentFnrForSøknadId(søknadId)
 
         sjekkTilgangTilSøknad(fnr, søknadId, saksbehandler, correlationId)
@@ -83,15 +89,14 @@ class SakServiceImpl(
                 }
         require(adressebeskyttelseGradering != null) { "Fant ikke adressebeskyttelse for person. SøknadId: $søknadId" }
 
-        val sak =
-            Sak
-                .lagSak(
-                    saksnummer = sakRepo.hentNesteSaksnummer(),
-                    fødselsdato = personopplysninger.fødselsdato,
-                    søknad = søknad,
-                    saksbehandler = saksbehandler,
-                    registrerteTiltak = registrerteTiltak,
-                ).getOrElse { return KanIkkeStarteFørstegangsbehandling.OppretteBehandling(it).left() }
+        val sak = Sak
+            .lagSak(
+                saksnummer = sakRepo.hentNesteSaksnummer(),
+                fødselsdato = personopplysninger.fødselsdato,
+                søknad = søknad,
+                saksbehandler = saksbehandler,
+                registrerteTiltak = registrerteTiltak,
+            ).getOrElse { return KanIkkeStarteFørstegangsbehandling.OppretteBehandling(it).left() }
         val statistikk =
             opprettBehandlingMapper(
                 sak = sak.hentTynnSak(),
@@ -108,29 +113,23 @@ class SakServiceImpl(
         return sak.right()
     }
 
-    override suspend fun hentForFørstegangsbehandlingId(
-        behandlingId: BehandlingId,
-        saksbehandler: Saksbehandler,
-        correlationId: CorrelationId,
-    ): Sak {
-        val sak = sakRepo.hentForFørstegangsbehandlingId(behandlingId) ?: throw IkkeFunnetException("Sak ikke funnet")
-
-        sjekkTilgangTilSak(sak.id, saksbehandler, correlationId)
-
-        return sak
-    }
-
     override suspend fun hentForSaksnummer(
         saksnummer: Saksnummer,
         saksbehandler: Saksbehandler,
         correlationId: CorrelationId,
-    ): Sak {
-        val sak =
-            sakRepo.hentForSaksnummer(saksnummer)
-                ?: throw IkkeFunnetException("Fant ikke sak med saksnummer $saksnummer")
+    ): Either<KunneIkkeHenteSakForSaksnummer, Sak> {
+        if (!saksbehandler.erSaksbehandlerEllerBeslutter()) {
+            logger.warn { "Navident ${saksbehandler.navIdent} med rollene ${saksbehandler.roller} har ikke tilgang til å hente sak for saksnummer" }
+            return KunneIkkeHenteSakForSaksnummer.HarIkkeTilgang(
+                kreverEnAvRollene = listOf(Rolle.SAKSBEHANDLER, Rolle.BESLUTTER),
+                harRollene = saksbehandler.roller,
+            ).left()
+        }
+        val sak = sakRepo.hentForSaksnummer(saksnummer)
+            ?: throw IkkeFunnetException("Fant ikke sak med saksnummer $saksnummer")
         sjekkTilgangTilSak(sak.id, saksbehandler, correlationId)
 
-        return sak
+        return sak.right()
     }
 
     override suspend fun hentForFnr(
@@ -138,7 +137,7 @@ class SakServiceImpl(
         saksbehandler: Saksbehandler,
         correlationId: CorrelationId,
     ): Either<KunneIkkeHenteSakForFnr, Sak> {
-        if (!saksbehandler.isSaksbehandler() && !saksbehandler.isBeslutter()) {
+        if (!saksbehandler.erSaksbehandlerEllerBeslutter()) {
             logger.warn { "Navident ${saksbehandler.navIdent} med rollene ${saksbehandler.roller} har ikke tilgang til å hente sak for fnr" }
             return KunneIkkeHenteSakForFnr.HarIkkeTilgang(
                 kreverEnAvRollene = listOf(Rolle.SAKSBEHANDLER, Rolle.BESLUTTER),
@@ -155,25 +154,27 @@ class SakServiceImpl(
         return sak.right()
     }
 
-    override fun hentFnrForSakId(sakId: SakId): Fnr? = sakRepo.hentFnrForSakId(sakId)
-
     override suspend fun hentForSakId(
         sakId: SakId,
         saksbehandler: Saksbehandler,
         correlationId: CorrelationId,
-    ): Sak? {
+    ): Either<KunneIkkeHenteSakForSakId, Sak> {
+        if (!saksbehandler.erSaksbehandlerEllerBeslutter()) {
+            logger.warn { "Navident ${saksbehandler.navIdent} med rollene ${saksbehandler.roller} har ikke tilgang til å hente sak for fnr" }
+            return KunneIkkeHenteSakForSakId.HarIkkeTilgang(
+                kreverEnAvRollene = listOf(Rolle.SAKSBEHANDLER, Rolle.BESLUTTER),
+                harRollene = saksbehandler.roller,
+            ).left()
+        }
         sjekkTilgangTilSak(sakId, saksbehandler, correlationId)
-
-        val sak = sakRepo.hentForSakId(sakId) ?: return null
-
-        return sak
+        return sakRepo.hentForSakId(sakId)!!.right()
     }
 
     override suspend fun hentSaksoversikt(
         saksbehandler: Saksbehandler,
         correlationId: CorrelationId,
     ): Either<KanIkkeHenteSaksoversikt, Saksoversikt> {
-        if (!saksbehandler.isSaksbehandler() && !saksbehandler.isBeslutter()) {
+        if (!saksbehandler.erSaksbehandlerEllerBeslutter()) {
             logger.warn { "Navident ${saksbehandler.navIdent} med rollene ${saksbehandler.roller} har ikke tilgang til å hente saksoversikt" }
             return KanIkkeHenteSaksoversikt.HarIkkeTilgang(
                 kreverEnAvRollene = listOf(Rolle.SAKSBEHANDLER, Rolle.BESLUTTER),
@@ -201,7 +202,17 @@ class SakServiceImpl(
         }.right()
     }
 
-    override suspend fun hentEnkelPersonForSakId(sakId: SakId): Either<KunneIkkeHenteEnkelPerson, EnkelPerson> {
+    override suspend fun hentEnkelPersonForSakId(
+        sakId: SakId,
+        saksbehandler: Saksbehandler,
+    ): Either<KunneIkkeHenteEnkelPerson, EnkelPerson> {
+        if (!saksbehandler.erSaksbehandlerEllerBeslutter()) {
+            logger.warn { "Navident ${saksbehandler.navIdent} med rollene ${saksbehandler.roller} har ikke tilgang til å hente sak for fnr" }
+            return KunneIkkeHenteEnkelPerson.HarIkkeTilgang(
+                kreverEnAvRollene = listOf(Rolle.SAKSBEHANDLER, Rolle.BESLUTTER),
+                harRollene = saksbehandler.roller,
+            ).left()
+        }
         val fnr = sakRepo.hentFnrForSakId(sakId) ?: return KunneIkkeHenteEnkelPerson.FantIkkeSakId.left()
         return personService.hentEnkelPersonFnr(fnr)
     }

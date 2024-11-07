@@ -2,24 +2,28 @@ package no.nav.tiltakspenger.vedtak.routes.kravfrist
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.assertions.withClue
 import io.kotest.matchers.shouldBe
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLProtocol
+import io.ktor.http.contentType
 import io.ktor.http.path
 import io.ktor.server.routing.routing
 import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.common.TestApplicationContext
-import no.nav.tiltakspenger.felles.exceptions.StøtterIkkeUtfallException
 import no.nav.tiltakspenger.felles.januar
+import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.førstegangsbehandlingUavklart
+import no.nav.tiltakspenger.objectmothers.nySøknad
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
+import no.nav.tiltakspenger.vedtak.routes.behandling.benk.behandlingBenkRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.SamletUtfallDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kravfrist.KravfristVilkårDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kravfrist.kravfristRoutes
@@ -49,8 +53,6 @@ internal class KravfristRoutesTest {
                         )
                     }
                 }
-
-                // Sjekk at man kan kjøre Get
                 defaultRequest(
                     HttpMethod.Get,
                     url {
@@ -70,8 +72,48 @@ internal class KravfristRoutesTest {
     @Test
     fun `test at behandlingen ikke kan opprettes om om det er søkt for lenge etter fristen`() = runTest {
         with(TestApplicationContext()) {
-            shouldThrow<StøtterIkkeUtfallException> {
-                this.førstegangsbehandlingUavklart(Periode(1.januar(2021), 31.januar(2021)))
+            val tac = this
+
+            val vurderingsperiode = Periode(1.januar(2021), 31.januar(2021))
+            val søknad = this.nySøknad(
+                periode = vurderingsperiode,
+                tidsstempelHosOss = 1.januarDateTime(2022),
+            )
+
+            testApplication {
+                application {
+                    jacksonSerialization()
+                    routing {
+                        behandlingBenkRoutes(
+                            tokenService = tac.tokenService,
+                            behandlingService = tac.førstegangsbehandlingContext.behandlingService,
+                            sakService = tac.sakContext.sakService,
+                            auditService = tac.personContext.auditService,
+                        )
+                    }
+                }
+                defaultRequest(
+                    HttpMethod.Post,
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        path("$BEHANDLING_PATH/startbehandling")
+                    },
+                    jwt = tac.jwtGenerator.createJwtForSaksbehandler(),
+                ) {
+                    setBody("""{"id":"${søknad.id}"}""")
+                }.apply {
+                    withClue(
+                        "Response details:\n" +
+                            "Status: ${this.status}\n" +
+                            "Content-Type: ${this.contentType()}\n" +
+                            "Body: ${this.bodyAsText()}\n",
+                    ) {
+                        status shouldBe HttpStatusCode.BadRequest
+                        bodyAsText() shouldBe """
+                            {"melding":"Vi støtter ikke delvis innvilgelse eller avslag.","kode":"støtter_ikke_delvis_innvilgelse_eller_avslag"}
+                        """.trimIndent()
+                    }
+                }
             }
         }
     }

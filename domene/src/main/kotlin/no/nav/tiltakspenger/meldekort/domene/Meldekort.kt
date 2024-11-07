@@ -109,7 +109,7 @@ sealed interface Meldekort {
         }
 
         fun iverksettMeldekort(beslutter: Saksbehandler): Either<KanIkkeIverksetteMeldekort, UtfyltMeldekort> {
-            if (!beslutter.isBeslutter()) {
+            if (!beslutter.erBeslutter()) {
                 return KanIkkeIverksetteMeldekort.MåVæreBeslutter(beslutter.roller).left()
             }
             if (saksbehandler == beslutter.navIdent) {
@@ -152,7 +152,7 @@ sealed interface Meldekort {
             require(utfyltMeldeperiode.periode == this.periode) {
                 "Når man fyller ut et meldekort må meldekortperioden være den samme som den som er opprettet. Opprettet periode: ${this.meldeperiode.periode}, utfylt periode: ${utfyltMeldeperiode.periode}"
             }
-            if (!saksbehandler.isSaksbehandler()) {
+            if (!saksbehandler.erSaksbehandler()) {
                 return KanIkkeSendeMeldekortTilBeslutter.MåVæreSaksbehandler(saksbehandler.roller).left()
             }
             if (!erKlarTilUtfylling()) {

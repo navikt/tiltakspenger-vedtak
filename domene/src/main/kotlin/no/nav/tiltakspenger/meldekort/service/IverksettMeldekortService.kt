@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.meldekort.service
 
 import arrow.core.Either
+import arrow.core.getOrElse
 import arrow.core.left
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
@@ -33,15 +34,15 @@ class IverksettMeldekortService(
     suspend fun iverksettMeldekort(
         kommando: IverksettMeldekortKommando,
     ): Either<KanIkkeIverksetteMeldekort, Meldekort.UtfyltMeldekort> {
-        if (!kommando.beslutter.isBeslutter()) {
+        if (!kommando.beslutter.erBeslutter()) {
             return KanIkkeIverksetteMeldekort.MåVæreBeslutter(kommando.beslutter.roller).left()
         }
         val meldekortId = kommando.meldekortId
         val sakId = kommando.sakId
         kastHvisIkkeTilgangTilPerson(kommando.beslutter, meldekortId, kommando.correlationId)
 
-        val sak = sakService.hentForSakId(sakId, kommando.beslutter, correlationId = kommando.correlationId)
-            ?: throw IllegalArgumentException("Fant ikke sak med id $sakId")
+        val sak = sakService.hentForSakId(sakId, kommando.beslutter, kommando.correlationId)
+            .getOrElse { return KanIkkeIverksetteMeldekort.KunneIkkeHenteSak(it).left() }
         val meldekort: Meldekort = sak.hentMeldekort(meldekortId)
             ?: throw IllegalArgumentException("Fant ikke meldekort med id $meldekortId i sak $sakId")
         meldekort as Meldekort.UtfyltMeldekort

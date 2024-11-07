@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.meldekort.service
 
 import arrow.core.Either
+import arrow.core.getOrElse
 import arrow.core.left
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Saksbehandler
@@ -33,7 +34,7 @@ class SendMeldekortTilBeslutterService(
     suspend fun sendMeldekortTilBeslutter(
         kommando: SendMeldekortTilBeslutterKommando,
     ): Either<KanIkkeSendeMeldekortTilBeslutter, Meldekort.UtfyltMeldekort> {
-        if (!kommando.saksbehandler.isSaksbehandler()) {
+        if (!kommando.saksbehandler.erSaksbehandler()) {
             return KanIkkeSendeMeldekortTilBeslutter.MåVæreSaksbehandler(
                 kommando.saksbehandler.roller,
             ).left()
@@ -42,7 +43,7 @@ class SendMeldekortTilBeslutterService(
         val sakId = kommando.sakId
         kastHvisIkkeTilgangTilPerson(kommando.saksbehandler, kommando.meldekortId, kommando.correlationId)
         val sak = sakService.hentForSakId(kommando.sakId, kommando.saksbehandler, kommando.correlationId)
-            ?: throw IllegalStateException("Fant ikke sak med id $sakId")
+            .getOrElse { return KanIkkeSendeMeldekortTilBeslutter.KunneIkkeHenteSak(it).left() }
         return sak.meldeperioder
             .sendTilBeslutter(kommando)
             .map { it.second }

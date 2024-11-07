@@ -12,6 +12,8 @@ import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.auth2.TokenService
 import no.nav.tiltakspenger.vedtak.routes.correlationId
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.ikkeTilgang
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond403Forbidden
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond500InternalServerError
 import no.nav.tiltakspenger.vedtak.routes.sak.SAK_PATH
 import no.nav.tiltakspenger.vedtak.routes.withSakId
@@ -28,7 +30,8 @@ fun Route.hentPersonRoute(
         call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
             call.withSakId { sakId ->
                 val correlationId = call.correlationId()
-                sakService.hentEnkelPersonForSakId(sakId).map {
+                sakService.hentEnkelPersonForSakId(sakId, saksbehandler).map {
+                    // TODO pre-mvp jah: @Benedicte: Skal denne settes statisk slik som dette? :sweat:
                     it.toDTO(skjerming = false)
                 }.fold(
                     {
@@ -38,6 +41,7 @@ fun Route.hentPersonRoute(
                                 melding = "Feil ved kall mot PDL",
                                 kode = "feil_ved_kall_mot_pdl",
                             )
+                            is KunneIkkeHenteEnkelPerson.HarIkkeTilgang -> call.respond403Forbidden(ikkeTilgang("Må ha rollen ${it.kreverEnAvRollene} for å hente personopplysninger knyttet til sak"))
                         }
                     },
                     { personopplysninger ->

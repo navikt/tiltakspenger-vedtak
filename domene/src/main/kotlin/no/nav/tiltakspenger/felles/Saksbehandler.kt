@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.felles
 
-import no.nav.tiltakspenger.libs.common.Rolle
 import no.nav.tiltakspenger.libs.common.Roller
 
 data class Saksbehandler(
@@ -10,9 +9,12 @@ data class Saksbehandler(
     val epost: String,
     override val roller: Roller,
 ) : Bruker {
-    fun isSaksbehandler() = roller.harRolle(Rolle.SAKSBEHANDLER)
+    fun erSaksbehandler() = roller.erSaksbehandler()
 
-    fun isBeslutter() = roller.contains(Rolle.BESLUTTER)
+    fun erBeslutter() = roller.erBeslutter()
 
-    override fun toString(): String = "Saksbehandler(navIdent='$navIdent', brukernavn='*****', epost='*****', roller=$roller)"
+    fun erSaksbehandlerEllerBeslutter() = roller.erSaksbehandlerEllerBeslutter()
+
+    override fun toString(): String =
+        "Saksbehandler(navIdent='$navIdent', brukernavn='*****', epost='*****', roller=$roller)"
 }

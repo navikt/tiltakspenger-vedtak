@@ -11,12 +11,14 @@ import io.ktor.server.routing.post
 import mu.KotlinLogging
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.saksbehandling.service.sak.KunneIkkeHenteSakForFnr
+import no.nav.tiltakspenger.saksbehandling.service.sak.KunneIkkeHenteSakForSaksnummer
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.auth2.TokenService
 import no.nav.tiltakspenger.vedtak.routes.correlationId
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.ikkeTilgang
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond400BadRequest
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond403Forbidden
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond404NotFound
@@ -43,12 +45,20 @@ fun Route.sakRoutes(
                     contextMessage = "Henter hele saken til brukeren",
                     correlationId = call.correlationId(),
                 )
-                val sakDTO = sakService.hentForSaksnummer(
+                sakService.hentForSaksnummer(
                     saksnummer = saksnummer,
                     saksbehandler = saksbehandler,
                     correlationId = call.correlationId(),
-                ).toDTO()
-                call.respond(message = sakDTO, status = HttpStatusCode.OK)
+                ).fold(
+                    {
+                        when (it) {
+                            is KunneIkkeHenteSakForSaksnummer.HarIkkeTilgang -> call.respond403Forbidden(ikkeTilgang("Må ha en av rollene ${it.kreverEnAvRollene} for å hente sak for saksnummer."))
+                        }
+                    },
+                    { sak ->
+                        call.respond(message = sak.toDTO(), status = HttpStatusCode.OK)
+                    },
+                )
             }
         }
     }
@@ -69,7 +79,7 @@ fun Route.sakRoutes(
                 ifLeft = {
                     when (it) {
                         is KunneIkkeHenteSakForFnr.FantIkkeSakForFnr -> call.respond404NotFound(Standardfeil.fantIkkeFnr())
-                        is KunneIkkeHenteSakForFnr.HarIkkeTilgang -> call.respond403Forbidden(Standardfeil.ikkeTilgang("Må ha en av rollene SAKSBEHANDLER eller BESLUTTER for å hente sak for fnr."))
+                        is KunneIkkeHenteSakForFnr.HarIkkeTilgang -> call.respond403Forbidden(ikkeTilgang("Må ha en av rollene ${it.kreverEnAvRollene} for å hente sak for fnr."))
                     }
                 },
                 ifRight = {
