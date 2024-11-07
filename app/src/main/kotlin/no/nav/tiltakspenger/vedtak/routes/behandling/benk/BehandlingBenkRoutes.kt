@@ -13,6 +13,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBeha
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling.StøtterIkkeBarnetillegg
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling.StøtterKunInnvilgelse
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
+import no.nav.tiltakspenger.saksbehandling.service.sak.KanIkkeHenteSaksoversikt
 import no.nav.tiltakspenger.saksbehandling.service.sak.KanIkkeStarteFørstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
@@ -23,9 +24,11 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.behandling.toDTO
 import no.nav.tiltakspenger.vedtak.routes.correlationId
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.fantIkkeTiltak
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.ikkeTilgang
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.støtterIkkeBarnetillegg
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.støtterIkkeDelvisEllerAvslag
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond400BadRequest
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond403Forbidden
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond500InternalServerError
 import no.nav.tiltakspenger.vedtak.routes.withBody
 import no.nav.tiltakspenger.vedtak.routes.withSaksbehandler
@@ -41,11 +44,21 @@ fun Route.behandlingBenkRoutes(
     get(BEHANDLINGER_PATH) {
         logger.debug("Mottatt get-request på $BEHANDLINGER_PATH for å hente alle behandlinger på benken")
         call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
-            val behandlinger = sakService.hentSaksoversikt(
+            sakService.hentSaksoversikt(
                 saksbehandler = saksbehandler,
                 correlationId = call.correlationId(),
-            ).fraBehandlingToBehandlingBenkDto()
-            call.respond(status = HttpStatusCode.OK, behandlinger)
+            ).fold(
+                {
+                    when (it) {
+                        is KanIkkeHenteSaksoversikt.HarIkkeTilgang -> call.respond403Forbidden(
+                            ikkeTilgang("Må ha en av rollene SAKSBEHANDLER eller BESLUTTER for å hente behandlinger på benken."),
+                        )
+                    }
+                },
+                {
+                    call.respond(status = HttpStatusCode.OK, it.fraBehandlingToBehandlingBenkDto())
+                },
+            )
         }
     }
 
