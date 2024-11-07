@@ -15,13 +15,6 @@ internal fun hentPersonQuery(fnr: Fnr): GraphqlQuery {
 // Kew: fjernet forelderBarnRelasjon siden vi ikke skal behandle data om dette i første omgang.
 private val query = """
 query(${'$'}ident: ID!){
-    hentGeografiskTilknytning(ident: ${'$'}ident) {
-        gtType,
-        gtKommune,
-        gtBydel,
-        gtLand,
-        regel
-    }
     hentPerson(ident: ${'$'}ident) {
         adressebeskyttelse(historikk: false) {
             gradering

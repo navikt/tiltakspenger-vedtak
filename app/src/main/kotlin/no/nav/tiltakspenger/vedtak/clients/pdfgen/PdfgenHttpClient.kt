@@ -11,12 +11,12 @@ import no.nav.tiltakspenger.felles.PdfA
 import no.nav.tiltakspenger.felles.journalføring.PdfOgJson
 import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.Fnr
-import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.meldekort.ports.GenererMeldekortPdfGateway
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Navn
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import no.nav.tiltakspenger.saksbehandling.ports.GenererVedtaksbrevGateway
 import no.nav.tiltakspenger.saksbehandling.ports.KunneIkkeGenererePdf
+import no.nav.tiltakspenger.utbetaling.domene.Utbetalingsvedtak
 import org.apache.pdfbox.pdfwriter.compress.CompressParameters
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
@@ -81,10 +81,10 @@ internal class PdfgenHttpClient(
     }
 
     override suspend fun genererMeldekortPdf(
-        meldekort: Meldekort.UtfyltMeldekort,
+        utbetalingsvedtak: Utbetalingsvedtak,
         hentSaksbehandlersNavn: suspend (String) -> String,
     ): PdfOgJson {
-        val data = meldekort.toPdf(hentSaksbehandlersNavn)
+        val data = utbetalingsvedtak.toPdf(hentSaksbehandlersNavn)
         return genererPdfFraJson(data)
     }
 

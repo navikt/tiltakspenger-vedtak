@@ -18,15 +18,15 @@ import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.auth2.TokenService
-import no.nav.tiltakspenger.vedtak.routes.Standardfeil.fantIkkeTiltak
-import no.nav.tiltakspenger.vedtak.routes.Standardfeil.støtterIkkeBarnetillegg
-import no.nav.tiltakspenger.vedtak.routes.Standardfeil.støtterIkkeDelvisEllerAvslag
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLINGER_PATH
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.behandling.toDTO
 import no.nav.tiltakspenger.vedtak.routes.correlationId
-import no.nav.tiltakspenger.vedtak.routes.respond400BadRequest
-import no.nav.tiltakspenger.vedtak.routes.respond500InternalServerError
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.fantIkkeTiltak
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.støtterIkkeBarnetillegg
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.støtterIkkeDelvisEllerAvslag
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond400BadRequest
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond500InternalServerError
 import no.nav.tiltakspenger.vedtak.routes.withBody
 import no.nav.tiltakspenger.vedtak.routes.withSaksbehandler
 

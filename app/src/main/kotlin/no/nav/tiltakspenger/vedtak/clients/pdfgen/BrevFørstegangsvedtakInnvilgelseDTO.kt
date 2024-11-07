@@ -3,6 +3,7 @@ package no.nav.tiltakspenger.vedtak.clients.pdfgen
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Navn
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
+import no.nav.tiltakspenger.utbetaling.domene.Satser
 import no.nav.tiltakspenger.vedtak.clients.pdfgen.formattering.norskDatoFormatter
 import no.nav.tiltakspenger.vedtak.db.serialize
 import java.time.LocalDate
@@ -49,8 +50,7 @@ internal suspend fun Rammevedtak.tobrevDTO(
         kontor = "Nav Tiltak Øst-Viken",
         // Dette er vår dato, det brukes typisk når bruker klager på vedtaksbrev på dato ...
         datoForUtsending = LocalDate.now().format(norskDatoFormatter),
-        // TODO pre-mvp jah: Dette må ligge i behandlingen. Men dette vil kunne være en periodisering. Si f.eks. vedtaket går fra slutten av desember.
-        sats = 285,
-        satsBarn = 53,
+        sats = Satser.sats(periode.fraOgMed).sats,
+        satsBarn = Satser.sats(periode.fraOgMed).satsBarnetillegg,
     ).let { serialize(it) }
 }

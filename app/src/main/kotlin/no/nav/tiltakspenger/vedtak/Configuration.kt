@@ -86,6 +86,7 @@ object Configuration {
                 "DB_DATABASE" to "vedtak",
                 "DB_HOST" to "localhost",
                 "DB_PORT" to "5433",
+                "DB_JDBC_URL" to "jdbc:postgresql://localhost:5433/saksbehandling",
                 "MICROSOFT_SCOPE" to "localhost",
                 "MICROSOFT_URL" to "host.docker.internal:8091",
             ),

@@ -1,9 +1,9 @@
 package no.nav.tiltakspenger.vedtak.clients.pdfgen
 
 import com.fasterxml.jackson.databind.JsonNode
-import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldekortdag
 import no.nav.tiltakspenger.meldekort.domene.ReduksjonAvYtelsePåGrunnAvFravær
+import no.nav.tiltakspenger.utbetaling.domene.Utbetalingsvedtak
 import no.nav.tiltakspenger.vedtak.routes.objectMapper
 
 private data class DokumentMeldekortDTO(
@@ -38,7 +38,7 @@ private data class DokumentMeldekortDTO(
     )
 }
 
-suspend fun Meldekort.UtfyltMeldekort.toPdf(
+suspend fun Utbetalingsvedtak.toPdf(
     hentSaksbehandlersNavn: suspend (String) -> String,
 ): JsonNode {
     requireNotNull(beslutter) { "Meldekort som skal journalføres må ha en beslutter. MeldekortId: $id" }
@@ -46,14 +46,14 @@ suspend fun Meldekort.UtfyltMeldekort.toPdf(
     return DokumentMeldekortDTO(
         fødselsnummer = fnr.verdi,
         saksbehandler = tilSaksbehadlerDto(saksbehandler, hentSaksbehandlersNavn),
-        beslutter = tilSaksbehadlerDto(beslutter!!, hentSaksbehandlersNavn),
-        meldekortId = id.toString(),
+        beslutter = tilSaksbehadlerDto(beslutter, hentSaksbehandlersNavn),
+        meldekortId = meldekortId.toString(),
         sakId = sakId.toString(),
         meldekortPeriode = DokumentMeldekortDTO.PeriodeDTO(
             fom = periode.fraOgMed.toString(),
             tom = periode.tilOgMed.toString(),
         ),
-        meldekortDager = this.meldeperiode.verdi.map { dag ->
+        meldekortDager = meldekort.meldeperiode.verdi.map { dag ->
             DokumentMeldekortDTO.MeldekortDagDTO(
                 dato = dag.dato.toString(),
                 tiltakType = dag.tiltakstype.toString(),
@@ -64,8 +64,8 @@ suspend fun Meldekort.UtfyltMeldekort.toPdf(
             )
         },
         // TODO pre-mvp jah: Holder det med tiltakstype? Hva bør vi mappe den til?
-        tiltakstype = tiltakstype.toString(),
-        iverksattTidspunkt = this.iverksattTidspunkt.toString(),
+        tiltakstype = meldekort.tiltakstype.toString(),
+        iverksattTidspunkt = vedtakstidspunkt.toString(),
     ).let { objectMapper.valueToTree(it) }
 }
 

@@ -43,9 +43,8 @@ class ExceptionHandlingTest {
             val expectedBody =
                 """
             {
-              "status": 500,
-              "title": "IllegalStateException",
-              "detail": "Wuzza"
+              "melding": "Noe gikk galt på serversiden",
+              "kode": "server_feil"
             }
                 """.trimIndent()
 

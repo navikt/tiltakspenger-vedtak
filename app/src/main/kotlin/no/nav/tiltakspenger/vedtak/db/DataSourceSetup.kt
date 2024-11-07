@@ -17,6 +17,8 @@ object DataSourceSetup {
 
         return HikariDataSource().apply {
             jdbcUrl = config.url
+            username = config.brukernavn
+            password = config.passord
             initializationFailTimeout = 5000
             maximumPoolSize = MAX_POOLS
         }.also {
