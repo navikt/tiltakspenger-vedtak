@@ -11,7 +11,7 @@ on:
         type: string
 
 jobs:
-  build:
+  deploy:
     name: Deploy to NAIS (${{ inputs.NAIS_ENV }})
     runs-on: ubuntu-latest
     environment: ${{ inputs.NAIS_ENV }}
