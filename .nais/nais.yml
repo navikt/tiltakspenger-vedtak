@@ -55,8 +55,6 @@ spec:
         databases:
           - name: saksbehandling
             envVarPrefix: DB
-            users:
-              - name: tpts_ds
   accessPolicy:
     outbound:
       rules:
