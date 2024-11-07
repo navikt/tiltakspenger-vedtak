@@ -51,7 +51,7 @@ interface SakService {
     suspend fun hentSaksoversikt(
         saksbehandler: Saksbehandler,
         correlationId: CorrelationId,
-    ): Saksoversikt
+    ): Either<KanIkkeHenteSaksoversikt, Saksoversikt>
 
     suspend fun hentEnkelPersonForSakId(sakId: SakId): Either<KunneIkkeHenteEnkelPerson, EnkelPerson>
 }

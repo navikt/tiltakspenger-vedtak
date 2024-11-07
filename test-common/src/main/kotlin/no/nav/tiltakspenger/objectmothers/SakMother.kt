@@ -46,8 +46,8 @@ interface SakMother {
             listOf(
                 ObjectMother.tiltak(
                     eksternId = søknad.tiltak.id,
-                    deltakelseFom = vurderingsperiode.fraOgMed,
-                    deltakelseTom = vurderingsperiode.tilOgMed,
+                    fom = vurderingsperiode.fraOgMed,
+                    tom = vurderingsperiode.tilOgMed,
                 ),
             ),
     ): Sak {

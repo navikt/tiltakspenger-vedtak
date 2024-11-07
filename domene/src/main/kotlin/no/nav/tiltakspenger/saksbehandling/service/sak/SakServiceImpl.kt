@@ -14,6 +14,7 @@ import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.Rolle
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
@@ -166,10 +167,16 @@ class SakServiceImpl(
     override suspend fun hentSaksoversikt(
         saksbehandler: Saksbehandler,
         correlationId: CorrelationId,
-    ): Saksoversikt {
-        require(saksbehandler.isSaksbehandler() || saksbehandler.isBeslutter()) { "Saksbehandler ${saksbehandler.navIdent} må ha rollen SAKSBEHANDLER eller BESLUTTER" }
+    ): Either<KanIkkeHenteSaksoversikt, Saksoversikt> {
+        if (!saksbehandler.isSaksbehandler() && !saksbehandler.isBeslutter()) {
+            logger.warn { "Navident ${saksbehandler.navIdent} med rollene ${saksbehandler.roller} har ikke tilgang til å hente saksoversikt" }
+            return KanIkkeHenteSaksoversikt.HarIkkeTilgang(
+                kreverEnAvRollene = listOf(Rolle.SAKSBEHANDLER, Rolle.BESLUTTER),
+                harRollene = saksbehandler.roller,
+            ).left()
+        }
         val saksoversikt: Saksoversikt = saksoversiktRepo.hentAlle()
-        if (saksoversikt.isEmpty()) return saksoversikt
+        if (saksoversikt.isEmpty()) return saksoversikt.right()
         val tilganger = tilgangsstyringService.harTilgangTilPersoner(
             fnrListe = saksoversikt.map { it.fnr }.toNonEmptyListOrNull()!!,
             roller = saksbehandler.roller,
@@ -186,7 +193,7 @@ class SakServiceImpl(
                 sikkerlogg.debug { "tilgangsstyring: Filtrerte vekk bruker ${it.fnr.verdi} fra benk for saksbehandler $saksbehandler. Saksbehandler har ikke tilgang." }
             }
             harTilgang == true
-        }
+        }.right()
     }
 
     override suspend fun hentEnkelPersonForSakId(sakId: SakId): Either<KunneIkkeHenteEnkelPerson, EnkelPerson> {

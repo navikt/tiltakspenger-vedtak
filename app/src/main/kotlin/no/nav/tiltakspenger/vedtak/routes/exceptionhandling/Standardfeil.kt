@@ -62,8 +62,10 @@ object Standardfeil {
         "ugyldig_request",
     )
 
-    fun ikkeTilgang(): ErrorJson = ErrorJson(
-        "Bruker har ikke tilgang",
+    fun ikkeTilgang(
+        melding: String = "Bruker har ikke tilgang",
+    ): ErrorJson = ErrorJson(
+        melding,
         "ikke_tilgang",
     )
 

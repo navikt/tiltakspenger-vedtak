@@ -17,10 +17,9 @@ import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.DeltakerStatusDTO.SOKT_
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.DeltakerStatusDTO.VENTELISTE
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.DeltakerStatusDTO.VENTER_PA_OPPSTART
 import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.DeltakerStatusDTO.VURDERES
-import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.TiltakDTO
+import no.nav.tiltakspenger.libs.tiltak.TiltakTilSaksbehandlingDTO
 import no.nav.tiltakspenger.libs.tiltak.toTiltakstypeSomGirRett
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
-import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak.Gjennomføring
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.TiltakDeltakerstatus
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.TiltakDeltakerstatus.Avbrutt
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.TiltakDeltakerstatus.Deltar
@@ -34,35 +33,29 @@ import no.nav.tiltakspenger.saksbehandling.domene.tiltak.TiltakDeltakerstatus.Ve
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.TiltakDeltakerstatus.VenterPåOppstart
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.TiltakDeltakerstatus.Vurderes
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltakskilde
-import java.time.LocalDateTime
 
 internal fun mapTiltak(
-    tiltakDTOListe: List<TiltakDTO>,
-    innhentet: LocalDateTime,
+    tiltakDTOListe: List<TiltakTilSaksbehandlingDTO>,
 ): List<Tiltak> =
     tiltakDTOListe
         .filterNot { it.deltakelseFom == null }
+        .filterNot { it.deltakelseTom == null }
         .filterNot { it.deltakelseTom == null }
         .map { tiltakDto ->
             Tiltak(
                 id = TiltakId.random(),
                 eksternId = tiltakDto.id,
-                gjennomføring =
-                Gjennomføring(
-                    id = tiltakDto.gjennomforing.id,
-                    arrangørnavn = tiltakDto.gjennomforing.arrangørnavn,
-                    typeNavn = tiltakDto.gjennomforing.typeNavn,
-                    typeKode =
-                    tiltakDto.gjennomforing.arenaKode.toTiltakstypeSomGirRett().getOrElse {
-                        throw IllegalStateException(
-                            "Inneholder tiltakstype som ikke gir rett (som vi ikke støtter i MVP): ${tiltakDto.gjennomforing.arenaKode}. Tiltaksid: ${tiltakDto.id}",
-                        )
-                    },
-                    rettPåTiltakspenger = tiltakDto.gjennomforing.arenaKode.rettPåTiltakspenger,
-                ),
+                gjennomføringId = tiltakDto.gjennomføringId,
+                typeNavn = tiltakDto.typeNavn,
+                typeKode = tiltakDto.typeKode.toTiltakstypeSomGirRett().getOrElse {
+                    throw IllegalStateException(
+                        "Inneholder tiltakstype som ikke gir rett (som vi ikke støtter i MVP): ${tiltakDto.typeKode}. Tiltaksid: ${tiltakDto.id}",
+                    )
+                },
+                rettPåTiltakspenger = tiltakDto.typeKode.rettPåTiltakspenger,
                 deltakelsesperiode = Periode(tiltakDto.deltakelseFom!!, tiltakDto.deltakelseTom!!),
                 deltakelseStatus = tiltakDto.deltakelseStatus.toDomain(),
-                antallDagerPerUke = tiltakDto.deltakelseDagerUke,
+                antallDagerPerUke = tiltakDto.deltakelsePerUke,
                 deltakelseProsent = tiltakDto.deltakelseProsent,
                 kilde =
                 when {
@@ -72,8 +65,6 @@ internal fun mapTiltak(
                         "Kunne ikke parse tiltak fra tiltakspenger-tiltak. Ukjent kilde: ${tiltakDto.kilde}. Forventet Arena eller Komet. Tiltaksid: ${tiltakDto.id}",
                     )
                 },
-                registrertDato = tiltakDto.registrertDato,
-                innhentetTidspunkt = innhentet,
             )
         }
 

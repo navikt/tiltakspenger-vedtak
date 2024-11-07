@@ -7,8 +7,7 @@ fun Tiltak.tilStønadsdagerRegisterSaksopplysning(): StønadsdagerSaksopplysning
     // B: Hvorfor kan deltagelsen være null fra tiltaksappen? Får vi null-verdier fra Arena eller Komet?
     if (antallDagerPerUke != null) {
         StønadsdagerSaksopplysning.Register(
-            tiltakNavn = gjennomføring.typeNavn,
-            eksternId = eksternId,
+            tiltakNavn = typeNavn,
             // Vi får per nå antall dager per uke, men ønsker å ha antall dager per meldeperiode.
             // Ettersom vi kan få desimaler fra komet gjør vi denne om til en int etter sammenleggingen.
             antallDager = (antallDagerPerUke * 2).toIntPrecise(),
@@ -18,8 +17,7 @@ fun Tiltak.tilStønadsdagerRegisterSaksopplysning(): StønadsdagerSaksopplysning
         )
     } else if (deltakelseProsent != null) {
         StønadsdagerSaksopplysning.Register(
-            tiltakNavn = gjennomføring.typeNavn,
-            eksternId = eksternId,
+            tiltakNavn = typeNavn,
             // B: Så på tidligere kode som gjorde dette, kan deltakelseprosent være noe annet enn 100?
             antallDager = if (deltakelseProsent == 100f) 5 else throw IllegalStateException("Forventet 100% deltakelse. Vi støtter ikke lavere prosenter enn dette i MVP."),
             periode = deltakelsesperiode,

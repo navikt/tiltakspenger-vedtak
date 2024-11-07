@@ -18,7 +18,7 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
-import no.nav.tiltakspenger.libs.tiltak.TiltakResponsDTO.TiltakDTO
+import no.nav.tiltakspenger.libs.tiltak.TiltakTilSaksbehandlingDTO
 import no.nav.tiltakspenger.vedtak.clients.defaultHttpClient
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
 
@@ -40,7 +40,7 @@ class TiltakClientImpl(
         const val NAV_CALL_ID_HEADER = "Nav-Call-Id"
     }
 
-    override suspend fun hentTiltak(fnr: Fnr, correlationId: CorrelationId): List<TiltakDTO> {
+    override suspend fun hentTiltak(fnr: Fnr, correlationId: CorrelationId): List<TiltakTilSaksbehandlingDTO> {
         val token = getToken()
         val httpResponse = httpClient.preparePost("$baseUrl/azure/tiltak") {
             header(NAV_CALL_ID_HEADER, correlationId.value)
