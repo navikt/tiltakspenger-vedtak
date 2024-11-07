@@ -4,7 +4,7 @@ package no.nav.tiltakspenger.objectmothers
 
 import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.felles.januar
-import no.nav.tiltakspenger.felles.januarDateTime
+import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.periodisering.Periode
@@ -16,7 +16,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.tiltak.TiltakDeltakerstatus.De
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltakskilde
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltakskilde.Komet
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 interface PersonMother {
     /** Felles default fødselsdato for testdatatypene */
@@ -69,35 +68,29 @@ interface PersonMother {
         )
 
     fun tiltak(
+        id: TiltakId = TiltakId.random(),
         eksternId: String = "arenaId",
-        tiltakstype: TiltakstypeSomGirRett = TiltakstypeSomGirRett.GRUPPE_AMO,
-        gjennomføring: Tiltak.Gjennomføring =
-            Tiltak.Gjennomføring(
-                id = "123",
-                arrangørnavn = "arrangør",
-                typeNavn = "Arbeidsmarkedsopplæring (AMO)",
-                typeKode = tiltakstype,
-                rettPåTiltakspenger = true,
-            ),
-        deltakelseFom: LocalDate = 1.januar(2022),
-        deltakelseTom: LocalDate = 31.januar(2022),
-        kilde: Tiltakskilde = Komet,
-        deltakelseProsent: Float? = 100F,
+        typeKode: TiltakstypeSomGirRett = TiltakstypeSomGirRett.GRUPPE_AMO,
+        typeNavn: String = "Arbeidsmarkedsoppfølging gruppe",
+        gjennomføringId: String = "gjennomføringId",
+        fom: LocalDate = 1.januar(2023),
+        tom: LocalDate = 31.mars(2023),
         status: TiltakDeltakerstatus = Deltar,
-        antallDagerPerUke: Float? = 5F,
-        registrertDato: LocalDateTime = 1.januarDateTime(2022),
-        innhentet: LocalDateTime = 1.januarDateTime(2022),
-    ): Tiltak =
-        Tiltak(
-            id = TiltakId.random(),
-            eksternId = eksternId,
-            gjennomføring = gjennomføring,
-            deltakelsesperiode = Periode(deltakelseFom, deltakelseTom),
-            deltakelseStatus = status,
-            deltakelseProsent = deltakelseProsent,
-            kilde = kilde,
-            registrertDato = registrertDato,
-            antallDagerPerUke = antallDagerPerUke,
-            innhentetTidspunkt = innhentet,
-        )
+        dagerPrUke: Float? = 5F,
+        prosent: Float? = 100F,
+        rettPåTiltakspenger: Boolean = true,
+        kilde: Tiltakskilde = Komet,
+    ) = Tiltak(
+        id = id,
+        eksternId = eksternId,
+        gjennomføringId = gjennomføringId,
+        typeKode = typeKode,
+        typeNavn = typeNavn,
+        rettPåTiltakspenger = rettPåTiltakspenger,
+        deltakelsesperiode = Periode(fom, tom),
+        deltakelseStatus = status,
+        deltakelseProsent = prosent,
+        kilde = kilde,
+        antallDagerPerUke = dagerPrUke,
+    )
 }
