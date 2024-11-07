@@ -6,18 +6,15 @@ import no.nav.tiltakspenger.common.TestApplicationContext
 import no.nav.tiltakspenger.felles.AttesteringId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.Systembruker
-import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
 import no.nav.tiltakspenger.felles.exceptions.StøtterIkkeUtfallException
 import no.nav.tiltakspenger.felles.januar
-import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.periodisering.Periode
-import no.nav.tiltakspenger.libs.tiltak.TiltakstypeSomGirRett
 import no.nav.tiltakspenger.meldekort.domene.IverksettMeldekortKommando
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
@@ -36,10 +33,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Personopply
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
-import no.nav.tiltakspenger.saksbehandling.domene.tiltak.TiltakDeltakerstatus
-import no.nav.tiltakspenger.saksbehandling.domene.tiltak.TiltakDeltakerstatus.Deltar
-import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltakskilde
-import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltakskilde.Komet
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndring
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.leggTilLivsoppholdSaksopplysning
@@ -65,8 +58,8 @@ interface BehandlingMother {
             listOf(
                 ObjectMother.tiltak(
                     eksternId = søknad.tiltak.id,
-                    deltakelseFom = periode.fraOgMed,
-                    deltakelseTom = periode.tilOgMed,
+                    fom = periode.fraOgMed,
+                    tom = periode.tilOgMed,
                 ),
             ),
         saksbehandler: Saksbehandler = saksbehandler(),
@@ -173,47 +166,6 @@ interface BehandlingMother {
         behandlingTilBeslutterInnvilget(saksbehandler123())
             .copy(beslutter = beslutter().navIdent)
             .iverksett(beslutter(), godkjentAttestering())
-
-    fun tiltak(
-        id: TiltakId = TiltakId.random(),
-        eksternId: String = "arenaId",
-        gjennomføring: Tiltak.Gjennomføring = gruppeAmo(),
-        fom: LocalDate = 1.januar(2023),
-        tom: LocalDate = 31.mars(2023),
-        status: TiltakDeltakerstatus = Deltar,
-        dagerPrUke: Float? = 5F,
-        prosent: Float? = 100F,
-        kilde: Tiltakskilde = Komet,
-    ) = Tiltak(
-        id = id,
-        eksternId = eksternId,
-        gjennomføring = gjennomføring,
-        deltakelsesperiode = Periode(fom, tom),
-        deltakelseStatus = status,
-        deltakelseProsent = prosent,
-        kilde = kilde,
-        registrertDato = 1.januarDateTime(2023),
-        antallDagerPerUke = dagerPrUke,
-        innhentetTidspunkt = 1.januarDateTime(2023),
-    )
-
-    fun gruppeAmo() = gjennomføring(typeNavn = "Gruppe AMO", typeKode = "GRUPPEAMO", rettPåTiltakspenger = true)
-
-    fun gjennomføring(
-        id: String = "id",
-        arrangørnavn: String = "arrangørnavn",
-        typeNavn: String = "Gruppe AMO",
-        typeKode: String = "GRUPPEAMO",
-        rettPåTiltakspenger: Boolean = true,
-        tiltakstype: TiltakstypeSomGirRett = TiltakstypeSomGirRett.ARBEIDSFORBEREDENDE_TRENING,
-    ): Tiltak.Gjennomføring =
-        Tiltak.Gjennomføring(
-            id = id,
-            arrangørnavn = arrangørnavn,
-            typeNavn = typeNavn,
-            typeKode = tiltakstype,
-            rettPåTiltakspenger = rettPåTiltakspenger,
-        )
 }
 
 fun TestApplicationContext.nySøknad(
@@ -242,9 +194,9 @@ fun TestApplicationContext.nySøknad(
                 id = tiltak.eksternId,
                 deltakelseFom = periode.fraOgMed,
                 deltakelseTom = periode.tilOgMed,
-                arrangør = tiltak.gjennomføring.arrangørnavn,
-                typeKode = tiltak.gjennomføring.typeKode.toString(),
-                typeNavn = tiltak.gjennomføring.typeNavn,
+                arrangør = "Arrangør",
+                typeKode = tiltak.typeKode.toString(),
+                typeNavn = tiltak.typeNavn,
             ),
             intro = if (deltarPåIntroduksjonsprogram) Søknad.PeriodeSpm.Ja(periode) else Søknad.PeriodeSpm.Nei,
             kvp = if (deltarPåKvp) Søknad.PeriodeSpm.Ja(periode) else Søknad.PeriodeSpm.Nei,
@@ -288,9 +240,9 @@ suspend fun TestApplicationContext.førstegangsbehandlingUavklart(
                 id = tiltak.eksternId,
                 deltakelseFom = periode.fraOgMed,
                 deltakelseTom = periode.tilOgMed,
-                arrangør = tiltak.gjennomføring.arrangørnavn,
-                typeKode = tiltak.gjennomføring.typeKode.toString(),
-                typeNavn = tiltak.gjennomføring.typeNavn,
+                arrangør = "Arrangør",
+                typeKode = tiltak.typeKode.toString(),
+                typeNavn = tiltak.typeNavn,
             ),
             intro = if (deltarPåIntroduksjonsprogram) Søknad.PeriodeSpm.Ja(periode) else Søknad.PeriodeSpm.Nei,
             kvp = if (deltarPåKvp) Søknad.PeriodeSpm.Ja(periode) else Søknad.PeriodeSpm.Nei,
