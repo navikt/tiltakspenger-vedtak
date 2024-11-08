@@ -77,7 +77,6 @@ class SøknadRoutesTest {
                         id = "123",
                         deltakelseFom = 1.april(2025),
                         deltakelseTom = 10.april(2025),
-                        arrangør = "Testarrangør",
                         typeKode = "Annen utdanning",
                         typeNavn = "Annen utdanning",
                     ),

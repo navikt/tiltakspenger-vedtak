@@ -2,12 +2,14 @@ package no.nav.tiltakspenger.vedtak.routes.alder
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.assertions.withClue
 import io.kotest.matchers.shouldBe
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLProtocol
+import io.ktor.http.contentType
 import io.ktor.http.path
 import io.ktor.server.routing.routing
 import io.ktor.server.testing.testApplication
@@ -15,14 +17,16 @@ import io.ktor.server.util.url
 import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.common.TestApplicationContext
 import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.felles.exceptions.StøtterIkkeUtfallException
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.libs.common.Rolle
 import no.nav.tiltakspenger.libs.common.Roller
 import no.nav.tiltakspenger.libs.periodisering.Periode
+import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.førstegangsbehandlingUavklart
+import no.nav.tiltakspenger.objectmothers.nySøknad
 import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
+import no.nav.tiltakspenger.vedtak.routes.behandling.benk.behandlingBenkRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.SamletUtfallDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.alder.AlderVilkårDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.alder.alderRoutes
@@ -118,8 +122,46 @@ class AlderRoutesTest {
         val vurderingsperiode = Periode(fraOgMed = 1.januar(2018), tilOgMed = 10.januar(2018))
         val fødselsdato = 5.januar(2000)
         with(TestApplicationContext()) {
-            shouldThrow<StøtterIkkeUtfallException> {
-                this.førstegangsbehandlingUavklart(fødselsdato = fødselsdato, periode = vurderingsperiode)
+            val tac = this
+            val søknad = this.nySøknad(
+                periode = vurderingsperiode,
+                personopplysningerForBrukerFraPdl = ObjectMother.personopplysningKjedeligFyr(fødselsdato = fødselsdato),
+            )
+
+            testApplication {
+                application {
+                    jacksonSerialization()
+                    routing {
+                        behandlingBenkRoutes(
+                            tokenService = tac.tokenService,
+                            behandlingService = tac.førstegangsbehandlingContext.behandlingService,
+                            sakService = tac.sakContext.sakService,
+                            auditService = tac.personContext.auditService,
+                        )
+                    }
+                }
+                defaultRequest(
+                    HttpMethod.Post,
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        path("$BEHANDLING_PATH/startbehandling")
+                    },
+                    jwt = tac.jwtGenerator.createJwtForSaksbehandler(),
+                ) {
+                    setBody("""{"id":"${søknad.id}"}""")
+                }.apply {
+                    withClue(
+                        "Response details:\n" +
+                            "Status: ${this.status}\n" +
+                            "Content-Type: ${this.contentType()}\n" +
+                            "Body: ${this.bodyAsText()}\n",
+                    ) {
+                        status shouldBe HttpStatusCode.BadRequest
+                        bodyAsText() shouldBe """
+                            {"melding":"Vi støtter ikke delvis innvilgelse eller avslag.","kode":"støtter_ikke_delvis_innvilgelse_eller_avslag"}
+                        """.trimIndent()
+                    }
+                }
             }
         }
     }

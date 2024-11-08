@@ -87,7 +87,6 @@ object SøknadDTOMapper {
             id = dto.id,
             deltakelseFom = dto.deltakelseFom,
             deltakelseTom = dto.deltakelseTom,
-            arrangør = dto.arrangør,
             typeKode = dto.typeKode,
             typeNavn = dto.typeNavn,
         )

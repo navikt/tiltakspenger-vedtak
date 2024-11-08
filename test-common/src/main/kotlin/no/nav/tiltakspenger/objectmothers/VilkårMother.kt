@@ -32,6 +32,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.Tilta
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.TiltakDeltagelseVilkår
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.UUID
 
 interface VilkårMother {
     fun vilkårsett(
@@ -276,6 +277,8 @@ interface VilkårMother {
         fødselsdato: LocalDate = ObjectMother.fødselsdato(),
         tidsstempel: LocalDateTime = vurderingsperiode.fraOgMed.atStartOfDay(),
         tiltakNavn: String = "Tiltaksnavnet",
+        eksternTiltakId: String = UUID.randomUUID().toString(),
+        gjennomføringId: String = UUID.randomUUID().toString(),
         girRett: Boolean = true,
         status: TiltakDeltakerstatus = Deltar,
         kilde: Tiltakskilde = Komet,
@@ -284,6 +287,8 @@ interface VilkårMother {
         TiltakDeltagelseSaksopplysning.Register(
             tidsstempel = tidsstempel,
             tiltakNavn = tiltakNavn,
+            eksternTiltakId = eksternTiltakId,
+            gjennomføringId = gjennomføringId,
             deltagelsePeriode = vurderingsperiode,
             girRett = girRett,
             status = status,

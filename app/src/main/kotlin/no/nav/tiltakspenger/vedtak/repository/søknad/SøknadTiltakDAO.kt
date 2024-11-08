@@ -47,7 +47,6 @@ internal object SøknadTiltakDAO {
                     "id" to random(ULID_PREFIX_TILTAK).toString(),
                     "soknad_id" to søknadId.toString(),
                     "ekstern_id" to søknadstiltak.id,
-                    "arrangornavn" to søknadstiltak.arrangør,
                     "typekode" to søknadstiltak.typeKode,
                     "typenavn" to søknadstiltak.typeNavn,
                     "deltakelse_fra_og_med" to søknadstiltak.deltakelseFom,
@@ -66,7 +65,6 @@ internal object SøknadTiltakDAO {
 
     private fun Row.toTiltak(): Søknadstiltak {
         val eksternId = string("ekstern_id")
-        val arrangørnavn = string("arrangørnavn")
         val typekode = string("typekode")
         val typenavn = string("typenavn")
         val deltakelseFom = localDate("deltakelse_fra_og_med")
@@ -75,7 +73,6 @@ internal object SøknadTiltakDAO {
             id = eksternId,
             deltakelseFom = deltakelseFom,
             deltakelseTom = deltakelseTom,
-            arrangør = arrangørnavn,
             typeKode = typekode,
             typeNavn = typenavn,
         )
@@ -94,7 +91,6 @@ internal object SøknadTiltakDAO {
             id,
             søknad_id,
             ekstern_id,
-            arrangørnavn, 
             typekode,
             typenavn,
             deltakelse_fra_og_med,
@@ -103,7 +99,6 @@ internal object SøknadTiltakDAO {
             :id,
             :soknad_id,
             :ekstern_id,
-            :arrangornavn, 
             :typekode,
             :typenavn,
             :deltakelse_fra_og_med,

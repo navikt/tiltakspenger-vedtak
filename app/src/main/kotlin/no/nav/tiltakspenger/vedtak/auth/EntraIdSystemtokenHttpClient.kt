@@ -87,7 +87,7 @@ class EntraIdSystemtokenHttpClient(
             val jsonResponse = httpResponse.body()
             val status = httpResponse.statusCode()
             if (status != 200) {
-                sikkerlogg.error("Feil ved henting av systemtoken mot $otherAppId. Status: $status. jsonResponse: $jsonResponse. uri: $uri.  formData: $formData")
+                sikkerlogg.error("Feil ved henting av systemtoken mot $otherAppId. Status: $status. jsonResponse: $jsonResponse. uri: $uri.")
                 throw RuntimeException("Feil ved henting av systemtoken mot $otherAppId. Status: $status. uri: $uri. Se sikkerlogg for detaljer.")
             }
             Either.catch {

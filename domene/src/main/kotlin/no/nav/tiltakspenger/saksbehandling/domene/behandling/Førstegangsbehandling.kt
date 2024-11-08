@@ -96,6 +96,7 @@ data class Førstegangsbehandling(
     val antallDagerPerMeldeperiode: Int = stønadsdager.registerSaksopplysning.antallDager
 
     val tiltakstype: TiltakstypeSomGirRett = vilkårssett.tiltakDeltagelseVilkår.registerSaksopplysning.tiltakstype
+    val tiltaksid: String = vilkårssett.tiltakDeltagelseVilkår.registerSaksopplysning.eksternTiltakId
     val samletUtfall = vilkårssett.samletUtfall
 
     companion object {
@@ -162,7 +163,7 @@ data class Førstegangsbehandling(
     override fun taBehandling(saksbehandler: Saksbehandler): Førstegangsbehandling =
         when (this.status) {
             KLAR_TIL_BEHANDLING, UNDER_BEHANDLING -> {
-                check(saksbehandler.isSaksbehandler()) {
+                check(saksbehandler.erSaksbehandler()) {
                     "Saksbehandler må ha rolle saksbehandler. Utøvende saksbehandler: $saksbehandler"
                 }
                 this.copy(saksbehandler = saksbehandler.navIdent, status = UNDER_BEHANDLING).let {
@@ -175,7 +176,7 @@ data class Førstegangsbehandling(
                 check(saksbehandler.navIdent != this.saksbehandler) {
                     "Beslutter ($saksbehandler) kan ikke være den samme som saksbehandleren (${this.saksbehandler}"
                 }
-                check(saksbehandler.isBeslutter()) {
+                check(saksbehandler.erBeslutter()) {
                     "Saksbehandler må ha beslutterrolle. Utøvende saksbehandler: $saksbehandler"
                 }
                 this.copy(beslutter = saksbehandler.navIdent, status = UNDER_BESLUTNING)
@@ -196,7 +197,7 @@ data class Førstegangsbehandling(
             "Behandlingen må være under behandling, det innebærer også at en saksbehandler må ta saken før den kan sendes til beslutter. Behandlingsstatus: ${this.status}. Utøvende saksbehandler: $saksbehandler. Saksbehandler på behandling: ${this.saksbehandler}"
         }
 
-        check(saksbehandler.isSaksbehandler()) { "Saksbehandler må ha saksbehandlerrolle. Utøvende saksbehandler: $saksbehandler" }
+        check(saksbehandler.erSaksbehandler()) { "Saksbehandler må ha saksbehandlerrolle. Utøvende saksbehandler: $saksbehandler" }
         check(saksbehandler.navIdent == this.saksbehandler) { "Det er ikke lov å sende en annen sin behandling til beslutter" }
         check(samletUtfall != SamletUtfall.UAVKLART) { "Kan ikke sende en UAVKLART behandling til beslutter" }
         return this.copy(status = if (beslutter == null) KLAR_TIL_BESLUTNING else UNDER_BESLUTNING)
@@ -211,7 +212,7 @@ data class Førstegangsbehandling(
         }
         return when (status) {
             UNDER_BESLUTNING -> {
-                check(utøvendeBeslutter.isBeslutter()) { "utøvende saksbehandler må være beslutter" }
+                check(utøvendeBeslutter.erBeslutter()) { "utøvende saksbehandler må være beslutter" }
                 check(this.beslutter == utøvendeBeslutter.navIdent) { "Kan ikke iverksette en behandling man ikke er beslutter på" }
                 check(!this.attesteringer.any { it.isGodkjent() }) {
                     "Behandlingen er allerede godkjent"
@@ -232,7 +233,7 @@ data class Førstegangsbehandling(
         when (status) {
             UNDER_BESLUTNING -> {
                 check(
-                    utøvendeBeslutter.isBeslutter(),
+                    utøvendeBeslutter.erBeslutter(),
                 ) { "utøvende saksbehandler må være beslutter" }
                 check(this.beslutter == utøvendeBeslutter.navIdent) {
                     "Kun beslutter som har saken kan sende tilbake"

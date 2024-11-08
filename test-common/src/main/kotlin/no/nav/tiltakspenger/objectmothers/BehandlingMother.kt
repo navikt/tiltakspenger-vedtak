@@ -1,14 +1,13 @@
 package no.nav.tiltakspenger.objectmothers
 
-import arrow.core.getOrElse
 import kotlinx.coroutines.runBlocking
 import no.nav.tiltakspenger.common.TestApplicationContext
+import no.nav.tiltakspenger.common.getOrFail
 import no.nav.tiltakspenger.felles.AttesteringId
 import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.Systembruker
-import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
-import no.nav.tiltakspenger.felles.exceptions.StøtterIkkeUtfallException
 import no.nav.tiltakspenger.felles.januar
+import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
@@ -25,9 +24,6 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.søknadstiltak
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attesteringsstatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling.FantIkkeTiltak
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling.StøtterIkkeBarnetillegg
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling.StøtterKunInnvilgelse
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
@@ -36,7 +32,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndring
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.leggTilLivsoppholdSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.service.sak.KanIkkeStarteFørstegangsbehandling
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -54,26 +49,23 @@ interface BehandlingMother {
         fnr: Fnr = Fnr.random(),
         søknad: Søknad = ObjectMother.nySøknad(periode = periode),
         personopplysningFødselsdato: LocalDate = 1.januar(2000),
-        registrerteTiltak: List<Tiltak> =
-            listOf(
-                ObjectMother.tiltak(
-                    eksternId = søknad.tiltak.id,
-                    fom = periode.fraOgMed,
-                    tom = periode.tilOgMed,
-                ),
+        registrerteTiltak: List<Tiltak> = listOf(
+            ObjectMother.tiltak(
+                eksternId = søknad.tiltak.id,
+                fom = periode.fraOgMed,
+                tom = periode.tilOgMed,
             ),
+        ),
         saksbehandler: Saksbehandler = saksbehandler(),
-    ): Førstegangsbehandling =
-        Førstegangsbehandling
-            .opprettBehandling(
-                sakId = sakId,
-                saksnummer = saksnummer,
-                fnr = fnr,
-                søknad = søknad,
-                fødselsdato = personopplysningFødselsdato,
-                saksbehandler = saksbehandler,
-                registrerteTiltak = registrerteTiltak,
-            ).getOrNull()!!
+    ): Førstegangsbehandling = Førstegangsbehandling.opprettBehandling(
+        sakId = sakId,
+        saksnummer = saksnummer,
+        fnr = fnr,
+        søknad = søknad,
+        fødselsdato = personopplysningFødselsdato,
+        saksbehandler = saksbehandler,
+        registrerteTiltak = registrerteTiltak,
+    ).getOrNull()!!
 
     fun behandlingUnderBehandlingInnvilget(
         vurderingsperiode: Periode = vurderingsperiode(),
@@ -82,34 +74,30 @@ interface BehandlingMother {
         saksbehandler: Saksbehandler = saksbehandler(),
         årsakTilEndring: ÅrsakTilEndring = ÅrsakTilEndring.ENDRING_ETTER_SØKNADSTIDSPUNKT,
         correlationId: CorrelationId = CorrelationId.generate(),
-        behandling: Førstegangsbehandling =
-            behandlingUnderBehandlingUavklart(
-                periode = vurderingsperiode,
-                sakId = sakId,
-                søknad = søknad,
-                saksbehandler = saksbehandler,
-            ),
-        livsoppholdCommand: LeggTilLivsoppholdSaksopplysningCommand =
-            LeggTilLivsoppholdSaksopplysningCommand(
-                behandlingId = behandling.id,
-                saksbehandler = saksbehandler,
-                harYtelseForPeriode =
-                LeggTilLivsoppholdSaksopplysningCommand.HarYtelseForPeriode(
-                    periode = vurderingsperiode,
-                    harYtelse = false,
-                ),
-                årsakTilEndring = årsakTilEndring,
-                correlationId = correlationId,
-            ),
-    ): Førstegangsbehandling =
-        behandlingUnderBehandlingUavklart(
+        behandling: Førstegangsbehandling = behandlingUnderBehandlingUavklart(
             periode = vurderingsperiode,
             sakId = sakId,
             søknad = søknad,
             saksbehandler = saksbehandler,
-        ).leggTilLivsoppholdSaksopplysning(
-            command = livsoppholdCommand,
-        ).getOrNull()!!
+        ),
+        livsoppholdCommand: LeggTilLivsoppholdSaksopplysningCommand = LeggTilLivsoppholdSaksopplysningCommand(
+            behandlingId = behandling.id,
+            saksbehandler = saksbehandler,
+            harYtelseForPeriode = LeggTilLivsoppholdSaksopplysningCommand.HarYtelseForPeriode(
+                periode = vurderingsperiode,
+                harYtelse = false,
+            ),
+            årsakTilEndring = årsakTilEndring,
+            correlationId = correlationId,
+        ),
+    ): Førstegangsbehandling = behandlingUnderBehandlingUavklart(
+        periode = vurderingsperiode,
+        sakId = sakId,
+        søknad = søknad,
+        saksbehandler = saksbehandler,
+    ).leggTilLivsoppholdSaksopplysning(
+        command = livsoppholdCommand,
+    ).getOrNull()!!
 
     fun behandlingUnderBehandlingAvslag(
         periode: Periode = vurderingsperiode(),
@@ -118,21 +106,19 @@ interface BehandlingMother {
         saksbehandler: Saksbehandler = saksbehandler(),
         correlationId: CorrelationId = CorrelationId.generate(),
     ): Førstegangsbehandling {
-        val behandling =
-            behandlingUnderBehandlingUavklart(
-                periode = periode,
-                sakId = sakId,
-                søknad = søknad,
-                saksbehandler = saksbehandler,
-            )
+        val behandling = behandlingUnderBehandlingUavklart(
+            periode = periode,
+            sakId = sakId,
+            søknad = søknad,
+            saksbehandler = saksbehandler,
+        )
 
         behandling.vilkårssett.oppdaterLivsopphold(
             LeggTilLivsoppholdSaksopplysningCommand(
                 behandlingId = behandling.id,
                 saksbehandler = saksbehandler,
                 årsakTilEndring = null,
-                harYtelseForPeriode =
-                LeggTilLivsoppholdSaksopplysningCommand.HarYtelseForPeriode(
+                harYtelseForPeriode = LeggTilLivsoppholdSaksopplysningCommand.HarYtelseForPeriode(
                     periode = behandling.vurderingsperiode,
                     harYtelse = true,
                 ),
@@ -143,14 +129,13 @@ interface BehandlingMother {
         return behandling
     }
 
-    fun godkjentAttestering(beslutter: Saksbehandler = beslutter()): Attestering =
-        Attestering(
-            id = AttesteringId.random(),
-            status = Attesteringsstatus.GODKJENT,
-            begrunnelse = null,
-            beslutter = beslutter.navIdent,
-            tidspunkt = LocalDateTime.now(),
-        )
+    fun godkjentAttestering(beslutter: Saksbehandler = beslutter()): Attestering = Attestering(
+        id = AttesteringId.random(),
+        status = Attesteringsstatus.GODKJENT,
+        begrunnelse = null,
+        beslutter = beslutter.navIdent,
+        tidspunkt = LocalDateTime.now(),
+    )
 
     fun behandlingTilBeslutterInnvilget(saksbehandler: Saksbehandler = saksbehandler123()): Førstegangsbehandling {
         val behandling = behandlingUnderBehandlingInnvilget(saksbehandler = saksbehandler)
@@ -158,13 +143,11 @@ interface BehandlingMother {
     }
 
     fun behandlingTilBeslutterAvslag(): Førstegangsbehandling =
-        behandlingUnderBehandlingAvslag()
-            .copy(saksbehandler = saksbehandler123().navIdent)
+        behandlingUnderBehandlingAvslag().copy(saksbehandler = saksbehandler123().navIdent)
             .tilBeslutning(saksbehandler123())
 
     fun behandlingInnvilgetIverksatt(): Førstegangsbehandling =
-        behandlingTilBeslutterInnvilget(saksbehandler123())
-            .copy(beslutter = beslutter().navIdent)
+        behandlingTilBeslutterInnvilget(saksbehandler123()).copy(beslutter = beslutter().navIdent)
             .iverksett(beslutter(), godkjentAttestering())
 }
 
@@ -173,34 +156,33 @@ fun TestApplicationContext.nySøknad(
     fnr: Fnr = Fnr.random(),
     fornavn: String = "Fornavn",
     etternavn: String = "Etternavn",
-    personopplysningerFraSøknad: Søknad.Personopplysninger =
-        personSøknad(
-            fnr = fnr,
-            fornavn = fornavn,
-            etternavn = etternavn,
-        ),
-    personopplysningerForBrukerFraPdl: PersonopplysningerSøker =
-        ObjectMother.personopplysningKjedeligFyr(
-            fnr = fnr,
-        ),
+    personopplysningerFraSøknad: Søknad.Personopplysninger = personSøknad(
+        fnr = fnr,
+        fornavn = fornavn,
+        etternavn = etternavn,
+    ),
+    personopplysningerForBrukerFraPdl: PersonopplysningerSøker = ObjectMother.personopplysningKjedeligFyr(
+        fnr = fnr,
+    ),
     deltarPåIntroduksjonsprogram: Boolean = false,
     deltarPåKvp: Boolean = false,
     tiltak: Tiltak = ObjectMother.tiltak(fom = periode.fraOgMed, tom = periode.tilOgMed),
-    søknad: Søknad =
-        ObjectMother.nySøknad(
-            fnr = fnr,
-            personopplysninger = personopplysningerFraSøknad,
-            søknadstiltak = søknadstiltak(
-                id = tiltak.eksternId,
-                deltakelseFom = periode.fraOgMed,
-                deltakelseTom = periode.tilOgMed,
-                arrangør = "Arrangør",
-                typeKode = tiltak.typeKode.toString(),
-                typeNavn = tiltak.typeNavn,
-            ),
-            intro = if (deltarPåIntroduksjonsprogram) Søknad.PeriodeSpm.Ja(periode) else Søknad.PeriodeSpm.Nei,
-            kvp = if (deltarPåKvp) Søknad.PeriodeSpm.Ja(periode) else Søknad.PeriodeSpm.Nei,
+    tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
+    søknad: Søknad = ObjectMother.nySøknad(
+        fnr = fnr,
+        personopplysninger = personopplysningerFraSøknad,
+        tidsstempelHosOss = tidsstempelHosOss,
+        søknadstiltak = søknadstiltak(
+            id = tiltak.eksternId,
+            deltakelseFom = periode.fraOgMed,
+            deltakelseTom = periode.tilOgMed,
+
+            typeKode = tiltak.typeKode.toString(),
+            typeNavn = tiltak.typeNavn,
         ),
+        intro = if (deltarPåIntroduksjonsprogram) Søknad.PeriodeSpm.Ja(periode) else Søknad.PeriodeSpm.Nei,
+        kvp = if (deltarPåKvp) Søknad.PeriodeSpm.Ja(periode) else Søknad.PeriodeSpm.Nei,
+    ),
     systembruker: Systembruker = ObjectMother.systembrukerLageHendelser(),
 ): Søknad {
     this.søknadContext.søknadService.nySøknad(søknad, systembruker)
@@ -216,37 +198,34 @@ suspend fun TestApplicationContext.førstegangsbehandlingUavklart(
     fnr: Fnr = Fnr.random(),
     saksbehandler: Saksbehandler = saksbehandler(),
     fødselsdato: LocalDate = 1.januar(2000),
-    personopplysningerForBrukerFraPdl: PersonopplysningerSøker =
-        ObjectMother.personopplysningKjedeligFyr(
-            fnr = fnr,
-            fødselsdato = fødselsdato,
-        ),
+    personopplysningerForBrukerFraPdl: PersonopplysningerSøker = ObjectMother.personopplysningKjedeligFyr(
+        fnr = fnr,
+        fødselsdato = fødselsdato,
+    ),
     deltarPåIntroduksjonsprogram: Boolean = false,
     deltarPåKvp: Boolean = false,
     tiltak: Tiltak = ObjectMother.tiltak(fom = periode.fraOgMed, tom = periode.tilOgMed),
     fornavn: String = "Fornavn",
     etternavn: String = "Etternavn",
-    personopplysningerFraSøknad: Søknad.Personopplysninger =
-        personSøknad(
-            fnr = fnr,
-            fornavn = fornavn,
-            etternavn = etternavn,
+    personopplysningerFraSøknad: Søknad.Personopplysninger = personSøknad(
+        fnr = fnr,
+        fornavn = fornavn,
+        etternavn = etternavn,
+    ),
+    søknad: Søknad = ObjectMother.nySøknad(
+        fnr = fnr,
+        personopplysninger = personopplysningerFraSøknad,
+        søknadstiltak = søknadstiltak(
+            id = tiltak.eksternId,
+            deltakelseFom = periode.fraOgMed,
+            deltakelseTom = periode.tilOgMed,
+
+            typeKode = tiltak.typeKode.toString(),
+            typeNavn = tiltak.typeNavn,
         ),
-    søknad: Søknad =
-        ObjectMother.nySøknad(
-            fnr = fnr,
-            personopplysninger = personopplysningerFraSøknad,
-            søknadstiltak = søknadstiltak(
-                id = tiltak.eksternId,
-                deltakelseFom = periode.fraOgMed,
-                deltakelseTom = periode.tilOgMed,
-                arrangør = "Arrangør",
-                typeKode = tiltak.typeKode.toString(),
-                typeNavn = tiltak.typeNavn,
-            ),
-            intro = if (deltarPåIntroduksjonsprogram) Søknad.PeriodeSpm.Ja(periode) else Søknad.PeriodeSpm.Nei,
-            kvp = if (deltarPåKvp) Søknad.PeriodeSpm.Ja(periode) else Søknad.PeriodeSpm.Nei,
-        ),
+        intro = if (deltarPåIntroduksjonsprogram) Søknad.PeriodeSpm.Ja(periode) else Søknad.PeriodeSpm.Nei,
+        kvp = if (deltarPåKvp) Søknad.PeriodeSpm.Ja(periode) else Søknad.PeriodeSpm.Nei,
+    ),
 ): Sak {
     this.nySøknad(
         fnr = fnr,
@@ -254,24 +233,11 @@ suspend fun TestApplicationContext.førstegangsbehandlingUavklart(
         personopplysningerForBrukerFraPdl = personopplysningerForBrukerFraPdl,
         tiltak = tiltak,
     )
-    return this.sakContext.sakService
-        .startFørstegangsbehandling(søknad.id, saksbehandler, correlationId = CorrelationId.generate())
-        .getOrElse {
-            when (it) {
-                is KanIkkeStarteFørstegangsbehandling.HarAlleredeStartetBehandlingen -> throw IllegalStateException("Vi har allerede startet en behandling på denne søknaden")
-                is KanIkkeStarteFørstegangsbehandling.OppretteBehandling ->
-                    when (it.underliggende) {
-                        is FantIkkeTiltak ->
-                            throw IllegalStateException("Fant ikke igjen tiltaket det er søkt på i tiltak knyttet til brukeren")
-
-                        StøtterIkkeBarnetillegg ->
-                            throw IkkeImplementertException("Vi støtter ikke at brukeren har barn i PDL eller manuelle barn.")
-
-                        is StøtterKunInnvilgelse -> throw StøtterIkkeUtfallException("Vi støtter ikke å opprette en behandling som vil føre til delvis innvilgelse eller avslag.")
-                        else -> throw IkkeImplementertException("Kunne ikke starte førstegangsbehandling")
-                    }
-            }
-        }
+    return this.sakContext.sakService.startFørstegangsbehandling(
+        søknad.id,
+        saksbehandler,
+        correlationId = CorrelationId.generate(),
+    ).getOrFail()
 }
 
 suspend fun TestApplicationContext.førstegangsbehandlingVilkårsvurdert(
@@ -280,18 +246,16 @@ suspend fun TestApplicationContext.førstegangsbehandlingVilkårsvurdert(
     saksbehandler: Saksbehandler = saksbehandler(),
     correlationId: CorrelationId = CorrelationId.generate(),
 ): Sak {
-    val uavklart =
-        førstegangsbehandlingUavklart(
-            periode = periode,
-            fnr = fnr,
-            saksbehandler = saksbehandler,
-        )
+    val uavklart = førstegangsbehandlingUavklart(
+        periode = periode,
+        fnr = fnr,
+        saksbehandler = saksbehandler,
+    )
     this.førstegangsbehandlingContext.livsoppholdVilkårService.leggTilSaksopplysning(
         LeggTilLivsoppholdSaksopplysningCommand(
             behandlingId = uavklart.førstegangsbehandling.id,
             saksbehandler = saksbehandler,
-            harYtelseForPeriode =
-            LeggTilLivsoppholdSaksopplysningCommand.HarYtelseForPeriode(
+            harYtelseForPeriode = LeggTilLivsoppholdSaksopplysningCommand.HarYtelseForPeriode(
                 periode = periode,
                 harYtelse = false,
             ),
@@ -303,7 +267,7 @@ suspend fun TestApplicationContext.førstegangsbehandlingVilkårsvurdert(
         uavklart.id,
         saksbehandler,
         correlationId = CorrelationId.generate(),
-    )!!
+    ).getOrFail()
 }
 
 suspend fun TestApplicationContext.førstegangsbehandlingTilBeslutter(
@@ -311,12 +275,11 @@ suspend fun TestApplicationContext.førstegangsbehandlingTilBeslutter(
     fnr: Fnr = Fnr.random(),
     saksbehandler: Saksbehandler = saksbehandler(),
 ): Sak {
-    val vilkårsvurdert =
-        førstegangsbehandlingVilkårsvurdert(
-            periode = periode,
-            fnr = fnr,
-            saksbehandler = saksbehandler,
-        )
+    val vilkårsvurdert = førstegangsbehandlingVilkårsvurdert(
+        periode = periode,
+        fnr = fnr,
+        saksbehandler = saksbehandler,
+    )
 
     this.førstegangsbehandlingContext.behandlingService.sendTilBeslutter(
         vilkårsvurdert.førstegangsbehandling.id,
@@ -327,7 +290,7 @@ suspend fun TestApplicationContext.førstegangsbehandlingTilBeslutter(
         vilkårsvurdert.id,
         saksbehandler,
         correlationId = CorrelationId.generate(),
-    )!!
+    ).getOrFail()
 }
 
 suspend fun TestApplicationContext.førstegangsbehandlingUnderBeslutning(
@@ -336,12 +299,11 @@ suspend fun TestApplicationContext.førstegangsbehandlingUnderBeslutning(
     saksbehandler: Saksbehandler = saksbehandler(),
     beslutter: Saksbehandler = beslutter(),
 ): Sak {
-    val vilkårsvurdert =
-        førstegangsbehandlingTilBeslutter(
-            periode = periode,
-            fnr = fnr,
-            saksbehandler = saksbehandler,
-        )
+    val vilkårsvurdert = førstegangsbehandlingTilBeslutter(
+        periode = periode,
+        fnr = fnr,
+        saksbehandler = saksbehandler,
+    )
     this.førstegangsbehandlingContext.behandlingService.taBehandling(
         vilkårsvurdert.førstegangsbehandling.id,
         beslutter,
@@ -351,7 +313,7 @@ suspend fun TestApplicationContext.førstegangsbehandlingUnderBeslutning(
         vilkårsvurdert.id,
         saksbehandler,
         correlationId = CorrelationId.generate(),
-    )!!
+    ).getOrFail()
 }
 
 suspend fun TestApplicationContext.førstegangsbehandlingIverksatt(
@@ -361,13 +323,12 @@ suspend fun TestApplicationContext.førstegangsbehandlingIverksatt(
     beslutter: Saksbehandler = beslutter(),
 ): Sak {
     val tac = this
-    val underBeslutning =
-        førstegangsbehandlingUnderBeslutning(
-            periode = periode,
-            fnr = fnr,
-            saksbehandler = saksbehandler,
-            beslutter = beslutter,
-        )
+    val underBeslutning = førstegangsbehandlingUnderBeslutning(
+        periode = periode,
+        fnr = fnr,
+        saksbehandler = saksbehandler,
+        beslutter = beslutter,
+    )
     runBlocking {
         tac.førstegangsbehandlingContext.behandlingService.iverksett(
             behandlingId = underBeslutning.førstegangsbehandling.id,
@@ -379,7 +340,7 @@ suspend fun TestApplicationContext.førstegangsbehandlingIverksatt(
         underBeslutning.id,
         saksbehandler,
         correlationId = CorrelationId.generate(),
-    )!!
+    ).getOrFail()
 }
 
 suspend fun TestApplicationContext.meldekortTilBeslutter(
@@ -389,17 +350,17 @@ suspend fun TestApplicationContext.meldekortTilBeslutter(
     beslutter: Saksbehandler = beslutter(),
 ): Sak {
     val tac = this
-    val sak =
-        førstegangsbehandlingIverksatt(
-            periode = periode,
-            fnr = fnr,
-            saksbehandler = saksbehandler,
-            beslutter = beslutter,
-        )
+    val sak = førstegangsbehandlingIverksatt(
+        periode = periode,
+        fnr = fnr,
+        saksbehandler = saksbehandler,
+        beslutter = beslutter,
+    )
     tac.meldekortContext.sendMeldekortTilBeslutterService.sendMeldekortTilBeslutter(
         (sak.meldeperioder.first() as Meldekort.IkkeUtfyltMeldekort).tilSendMeldekortTilBeslutterKommando(saksbehandler),
     )
-    return this.sakContext.sakService.hentForSakId(sak.id, saksbehandler, correlationId = CorrelationId.generate())!!
+    return this.sakContext.sakService.hentForSakId(sak.id, saksbehandler, correlationId = CorrelationId.generate())
+        .getOrFail()
 }
 
 /**
@@ -412,13 +373,12 @@ suspend fun TestApplicationContext.meldekortIverksatt(
     beslutter: Saksbehandler = beslutter(),
 ): Sak {
     val tac = this
-    val sak =
-        meldekortTilBeslutter(
-            periode = periode,
-            fnr = fnr,
-            saksbehandler = saksbehandler,
-            beslutter = beslutter,
-        )
+    val sak = meldekortTilBeslutter(
+        periode = periode,
+        fnr = fnr,
+        saksbehandler = saksbehandler,
+        beslutter = beslutter,
+    )
     tac.meldekortContext.iverksettMeldekortService.iverksettMeldekort(
         IverksettMeldekortKommando(
             meldekortId = (sak.meldeperioder.first() as Meldekort.UtfyltMeldekort).id,
@@ -427,5 +387,6 @@ suspend fun TestApplicationContext.meldekortIverksatt(
             correlationId = CorrelationId.generate(),
         ),
     )
-    return this.sakContext.sakService.hentForSakId(sak.id, saksbehandler, correlationId = CorrelationId.generate())!!
+    return this.sakContext.sakService.hentForSakId(sak.id, saksbehandler, correlationId = CorrelationId.generate())
+        .getOrFail()
 }

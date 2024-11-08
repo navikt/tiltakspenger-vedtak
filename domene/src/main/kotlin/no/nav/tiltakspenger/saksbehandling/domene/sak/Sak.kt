@@ -10,7 +10,6 @@ import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
-import no.nav.tiltakspenger.libs.common.Rolle
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
@@ -69,7 +68,7 @@ data class Sak(
             saksbehandler: Saksbehandler,
             registrerteTiltak: List<Tiltak>,
         ): Either<KanIkkeOppretteBehandling, Sak> {
-            if (!saksbehandler.roller.harRolle(Rolle.SAKSBEHANDLER)) {
+            if (!saksbehandler.erSaksbehandler()) {
                 throw TilgangException("Saksbehandler ${saksbehandler.navIdent} må ha rollen SAKSBEHANDLER. søknadId: ${søknad.id} roller: ${saksbehandler.roller}")
             }
             val fnr = søknad.fnr
