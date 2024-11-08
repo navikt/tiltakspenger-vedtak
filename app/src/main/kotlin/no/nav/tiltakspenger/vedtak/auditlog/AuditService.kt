@@ -17,6 +17,16 @@ import java.util.UUID
 
 private val logg = KotlinLogging.logger {}
 
+/**
+ * Kommentar til auditlogging og tilgang:
+ * Per 08.11.24 er det bare krav om en hendelse skal auditlogges når vi vet at personopplysninger er vist frem
+ * (se etterlevelsekrav om auditlogging, suksesskriterium 2 her https://etterlevelse.ansatt.nav.no/krav/253/1)
+ *
+ * Det vil si at vi ikke skal auditlogge om sbh ikke har tilgang til å se saken.
+ * Dette har vi spurt team auditlogging om, her (https://nav-it.slack.com/archives/C014576K5TQ/p1731057051273839).
+ * Spørsmålet er spisset mot søk, man gjelder fortsatt for andre tilfeller hvor sbh ikke har tilgang.
+ */
+
 data class AuditLogEvent(
     val navIdent: String,
     val berørtBrukerId: String,
