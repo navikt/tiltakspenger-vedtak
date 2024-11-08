@@ -109,5 +109,15 @@ dependencies {
     testApi("com.github.navikt.tiltakspenger-libs:test-common:$felleslibVersion")
     testApi("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")
     testApi("com.github.navikt.tiltakspenger-libs:persistering-domene:$felleslibVersion")
+}
 
+tasks.withType<Jar> {
+    dependsOn(configurations.runtimeClasspath)
+
+    manifest {
+        attributes["Main-Class"] = "no.nav.tiltakspenger.vedtak.AppKt"
+        attributes["Class-Path"] = configurations.runtimeClasspath
+            .get()
+            .joinToString(separator = " ") { file -> file.name }
+    }
 }
