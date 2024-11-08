@@ -86,8 +86,8 @@ fun Route.sakRoutes(
                     auditService.logMedBrukerId(
                         brukerId = fnr,
                         navIdent = saksbehandler.navIdent,
-                        action = AuditLogEvent.Action.ACCESS,
-                        contextMessage = "Henter alle saker på brukeren",
+                        action = AuditLogEvent.Action.SEARCH,
+                        contextMessage = "Søker opp alle sakene til brukeren",
                         correlationId = correlationId,
                     )
                     val sakDTO = it.toDTO()
