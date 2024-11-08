@@ -15,6 +15,19 @@ application {
     mainClass.set("no.nav.tiltakspenger.vedtak.AppKt")
 }
 
+tasks {
+    jar {
+        dependsOn(configurations.runtimeClasspath)
+
+        manifest {
+            attributes["Main-Class"] = "no.nav.tiltakspenger.vedtak.AppKt"
+            attributes["Class-Path"] = configurations.runtimeClasspath
+                .get()
+                .joinToString(separator = " ") { file -> file.name }
+        }
+    }
+}
+
 dependencies {
     implementation(project(":domene"))
     // Align versions of all Kotlin components
@@ -109,15 +122,4 @@ dependencies {
     testApi("com.github.navikt.tiltakspenger-libs:test-common:$felleslibVersion")
     testApi("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")
     testApi("com.github.navikt.tiltakspenger-libs:persistering-domene:$felleslibVersion")
-}
-
-tasks.withType<Jar> {
-    dependsOn(configurations.runtimeClasspath)
-
-    manifest {
-        attributes["Main-Class"] = "no.nav.tiltakspenger.vedtak.AppKt"
-        attributes["Class-Path"] = configurations.runtimeClasspath
-            .get()
-            .joinToString(separator = " ") { file -> file.name }
-    }
 }
