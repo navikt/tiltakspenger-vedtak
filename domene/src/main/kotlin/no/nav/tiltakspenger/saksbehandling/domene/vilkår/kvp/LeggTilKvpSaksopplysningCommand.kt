@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp
 
-import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.CorrelationId
+import no.nav.tiltakspenger.libs.common.Saksbehandler
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.Deltagelse
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndring

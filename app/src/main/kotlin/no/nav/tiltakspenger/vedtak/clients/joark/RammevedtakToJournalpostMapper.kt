@@ -1,10 +1,10 @@
 package no.nav.tiltakspenger.vedtak.clients.joark
 
 import no.nav.tiltakspenger.felles.journalføring.PdfOgJson
+import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import no.nav.tiltakspenger.vedtak.clients.joark.JoarkRequest.JournalpostDokument.DokumentVariant.ArkivPDF
 import no.nav.tiltakspenger.vedtak.clients.joark.JoarkRequest.JournalpostDokument.DokumentVariant.OriginalJson
-import no.nav.tiltakspenger.vedtak.routes.objectMapper
 
 internal fun Rammevedtak.toJournalpostRequest(
     pdfOgJson: PdfOgJson,

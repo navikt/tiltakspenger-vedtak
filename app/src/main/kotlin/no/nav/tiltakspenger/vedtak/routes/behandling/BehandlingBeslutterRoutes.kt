@@ -5,14 +5,14 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.libs.auth.core.TokenService
+import no.nav.tiltakspenger.libs.auth.ktor.withSaksbehandler
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
-import no.nav.tiltakspenger.vedtak.auth2.TokenService
 import no.nav.tiltakspenger.vedtak.routes.correlationId
 import no.nav.tiltakspenger.vedtak.routes.withBehandlingId
 import no.nav.tiltakspenger.vedtak.routes.withBody
-import no.nav.tiltakspenger.vedtak.routes.withSaksbehandler
 
 data class BegrunnelseDTO(
     val begrunnelse: String,

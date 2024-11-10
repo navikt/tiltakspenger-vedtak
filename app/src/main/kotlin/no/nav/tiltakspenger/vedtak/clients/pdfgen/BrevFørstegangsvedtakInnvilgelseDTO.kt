@@ -1,11 +1,11 @@
 package no.nav.tiltakspenger.vedtak.clients.pdfgen
 
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.json.serialize
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Navn
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import no.nav.tiltakspenger.utbetaling.domene.Satser
 import no.nav.tiltakspenger.vedtak.clients.pdfgen.formattering.norskDatoFormatter
-import no.nav.tiltakspenger.vedtak.db.serialize
 import java.time.LocalDate
 
 @Suppress("unused")

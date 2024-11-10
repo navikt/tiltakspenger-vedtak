@@ -18,13 +18,13 @@ import io.ktor.server.util.url
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
+import no.nav.tiltakspenger.libs.auth.core.TokenService
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.meldekort.domene.KanIkkeSendeMeldekortTilBeslutter
 import no.nav.tiltakspenger.meldekort.service.SendMeldekortTilBeslutterService
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
-import no.nav.tiltakspenger.vedtak.auth2.TokenService
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import org.junit.jupiter.api.Test

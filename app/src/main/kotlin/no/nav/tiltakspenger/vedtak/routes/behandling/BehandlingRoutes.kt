@@ -6,13 +6,14 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.libs.auth.core.TokenService
+import no.nav.tiltakspenger.libs.auth.ktor.withSaksbehandler
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
-import no.nav.tiltakspenger.vedtak.auth2.TokenService
 import no.nav.tiltakspenger.vedtak.routes.behandling.personopplysninger.hentPersonRoute
 import no.nav.tiltakspenger.vedtak.routes.behandling.stønadsdager.stønadsdagerRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.alder.alderRoutes
@@ -24,7 +25,6 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.livsopphold.livsopp
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.tiltakdeltagelse.tiltakDeltagelseRoutes
 import no.nav.tiltakspenger.vedtak.routes.correlationId
 import no.nav.tiltakspenger.vedtak.routes.withBehandlingId
-import no.nav.tiltakspenger.vedtak.routes.withSaksbehandler
 
 internal const val BEHANDLING_PATH = "/behandling"
 internal const val BEHANDLINGER_PATH = "/behandlinger"

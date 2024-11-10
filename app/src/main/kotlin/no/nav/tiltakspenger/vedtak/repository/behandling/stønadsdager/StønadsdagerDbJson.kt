@@ -1,9 +1,9 @@
 package no.nav.tiltakspenger.vedtak.repository.behandling.stønadsdager
 
+import no.nav.tiltakspenger.libs.json.deserialize
+import no.nav.tiltakspenger.libs.json.serialize
 import no.nav.tiltakspenger.saksbehandling.domene.stønadsdager.Stønadsdager
 import no.nav.tiltakspenger.saksbehandling.domene.stønadsdager.StønadsdagerSaksopplysning
-import no.nav.tiltakspenger.vedtak.db.deserialize
-import no.nav.tiltakspenger.vedtak.db.serialize
 import no.nav.tiltakspenger.vedtak.repository.felles.PeriodeDbJson
 import no.nav.tiltakspenger.vedtak.repository.felles.toDbJson
 import java.security.InvalidParameterException

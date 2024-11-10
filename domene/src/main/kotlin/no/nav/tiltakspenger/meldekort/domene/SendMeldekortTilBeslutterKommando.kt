@@ -1,10 +1,10 @@
 package no.nav.tiltakspenger.meldekort.domene
 
 import no.nav.tiltakspenger.felles.Navkontor
-import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.common.Saksbehandler
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando.Dager.Dag
 import java.time.LocalDate

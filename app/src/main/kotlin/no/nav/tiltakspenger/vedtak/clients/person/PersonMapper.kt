@@ -1,14 +1,9 @@
 package no.nav.tiltakspenger.vedtak.clients.person
 
 import arrow.core.getOrElse
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.MapperFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.personklient.pdl.FellesPersonklientError
 import no.nav.tiltakspenger.libs.personklient.pdl.FellesPersonklientError.AdressebeskyttelseKunneIkkeAvklares
 import no.nav.tiltakspenger.libs.personklient.pdl.FellesPersonklientError.DeserializationException
@@ -51,23 +46,10 @@ internal fun mapPersonopplysninger(
         strengtFortroligUtland = adressebeskyttelse.erStrengtFortroligUtland(),
     )
 }
-
 private data class PdlResponseData(
     val hentGeografiskTilknytning: GeografiskTilknytning?,
     val hentPerson: PdlPerson,
 )
-
-internal val objectMapper: ObjectMapper =
-    JsonMapper
-        .builder()
-        .addModule(JavaTimeModule())
-        .addModule(KotlinModule.Builder().build())
-        .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-        .disable(MapperFeature.ALLOW_FINAL_FIELDS_AS_MUTATORS)
-        .enable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
-        .enable(DeserializationFeature.FAIL_ON_NUMBERS_FOR_ENUMS)
-        .build()
-
 internal fun FellesPersonklientError.mapError(): Nothing {
     when (this) {
         is AdressebeskyttelseKunneIkkeAvklares -> throw RuntimeException(

@@ -9,7 +9,7 @@ sealed interface AlderSaksopplysning {
     val tidsstempel: LocalDateTime
 
     val årsakTilEndring: ÅrsakTilEndring?
-    val saksbehandler: no.nav.tiltakspenger.felles.Saksbehandler?
+    val saksbehandler: no.nav.tiltakspenger.libs.common.Saksbehandler?
 
     data class Register(
         override val fødselsdato: LocalDate,
@@ -32,7 +32,7 @@ sealed interface AlderSaksopplysning {
         override val fødselsdato: LocalDate,
         override val årsakTilEndring: ÅrsakTilEndring,
         override val tidsstempel: LocalDateTime,
-        override val saksbehandler: no.nav.tiltakspenger.felles.Saksbehandler,
+        override val saksbehandler: no.nav.tiltakspenger.libs.common.Saksbehandler,
     ) : AlderSaksopplysning {
         init {
             require(fødselsdato.isBefore(LocalDate.now())) { "Kan ikke ha fødselsdag frem i tid" }

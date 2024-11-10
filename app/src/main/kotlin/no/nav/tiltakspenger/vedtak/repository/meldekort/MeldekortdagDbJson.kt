@@ -3,6 +3,8 @@ package no.nav.tiltakspenger.vedtak.repository.meldekort
 import arrow.core.toNonEmptyListOrNull
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.json.deserializeList
+import no.nav.tiltakspenger.libs.json.serialize
 import no.nav.tiltakspenger.meldekort.domene.Meldekortdag
 import no.nav.tiltakspenger.meldekort.domene.Meldekortdag.IkkeUtfylt
 import no.nav.tiltakspenger.meldekort.domene.Meldekortdag.Utfylt.Deltatt.DeltattMedLønnITiltaket
@@ -15,8 +17,6 @@ import no.nav.tiltakspenger.meldekort.domene.Meldekortdag.Utfylt.IkkeDeltatt
 import no.nav.tiltakspenger.meldekort.domene.Meldekortdag.Utfylt.Sperret
 import no.nav.tiltakspenger.meldekort.domene.Meldeperiode
 import no.nav.tiltakspenger.meldekort.domene.ReduksjonAvYtelsePåGrunnAvFravær
-import no.nav.tiltakspenger.vedtak.db.deserializeList
-import no.nav.tiltakspenger.vedtak.db.serialize
 import no.nav.tiltakspenger.vedtak.repository.meldekort.MeldekortdagDbJson.ReduksjonAvYtelsePåGrunnAvFraværDb
 import no.nav.tiltakspenger.vedtak.repository.meldekort.MeldekortdagDbJson.StatusDb.DELTATT_MED_LØNN_I_TILTAKET
 import no.nav.tiltakspenger.vedtak.repository.meldekort.MeldekortdagDbJson.StatusDb.DELTATT_UTEN_LØNN_I_TILTAKET

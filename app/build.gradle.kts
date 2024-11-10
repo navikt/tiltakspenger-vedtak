@@ -2,7 +2,7 @@ val ktorVersion = "3.0.1"
 val kotestVersion = "5.9.1"
 val mockkVersion = "1.13.13"
 val testContainersVersion = "1.20.3"
-val felleslibVersion = "0.0.261"
+val felleslibVersion = "0.0.268"
 val poaoTilgangVersjon = "2024.10.04_12.38-e183cd9d187f"
 val iverksettVersjon = "1.0_20241029145217_29f9f5d"
 val kotlinxCoroutinesVersion = "1.9.0"
@@ -45,6 +45,11 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:jobber:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:tiltak-dtos:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:json:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:auth-core:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:auth-ktor:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:ktor-common:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:logging:$felleslibVersion")
 
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
     implementation("ch.qos.logback:logback-classic:1.5.12")

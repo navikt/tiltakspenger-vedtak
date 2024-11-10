@@ -7,7 +7,8 @@ import com.natpryce.konfig.Key
 import com.natpryce.konfig.intType
 import com.natpryce.konfig.overriding
 import com.natpryce.konfig.stringType
-import no.nav.tiltakspenger.libs.common.Rolle
+import no.nav.tiltakspenger.libs.auth.core.AdRolle
+import no.nav.tiltakspenger.libs.common.Saksbehandlerrolle
 
 private const val APPLICATION_NAME = "tiltakspenger-saksbehandling-api"
 
@@ -16,11 +17,6 @@ enum class Profile {
     DEV,
     PROD,
 }
-
-data class AdRolle(
-    val name: Rolle,
-    val objectId: String,
-)
 
 object Configuration {
     private val defaultProperties = ConfigurationMap(
@@ -167,15 +163,15 @@ object Configuration {
 
     fun alleAdRoller(): List<AdRolle> =
         listOf(
-            AdRolle(Rolle.SAKSBEHANDLER, config()[Key("ROLE_SAKSBEHANDLER", stringType)]),
-            AdRolle(Rolle.BESLUTTER, config()[Key("ROLE_BESLUTTER", stringType)]),
-            AdRolle(Rolle.FORTROLIG_ADRESSE, config()[Key("ROLE_FORTROLIG", stringType)]),
+            AdRolle(Saksbehandlerrolle.SAKSBEHANDLER, config()[Key("ROLE_SAKSBEHANDLER", stringType)]),
+            AdRolle(Saksbehandlerrolle.BESLUTTER, config()[Key("ROLE_BESLUTTER", stringType)]),
+            AdRolle(Saksbehandlerrolle.FORTROLIG_ADRESSE, config()[Key("ROLE_FORTROLIG", stringType)]),
             AdRolle(
-                Rolle.STRENGT_FORTROLIG_ADRESSE,
+                Saksbehandlerrolle.STRENGT_FORTROLIG_ADRESSE,
                 config()[Key("ROLE_STRENGT_FORTROLIG", stringType)],
             ),
-            AdRolle(Rolle.SKJERMING, config()[Key("ROLE_SKJERMING", stringType)]),
-            AdRolle(Rolle.DRIFT, config()[Key("ROLE_DRIFT", stringType)]),
+            AdRolle(Saksbehandlerrolle.SKJERMING, config()[Key("ROLE_SKJERMING", stringType)]),
+            AdRolle(Saksbehandlerrolle.DRIFT, config()[Key("ROLE_DRIFT", stringType)]),
         )
 
     fun logbackConfigurationFile() = config()[Key("logback.configurationFile", stringType)]
@@ -190,8 +186,6 @@ object Configuration {
 
     val clientId: String by lazy { config()[Key("AZURE_APP_CLIENT_ID", stringType)] }
     val clientSecret: String by lazy { config()[Key("AZURE_APP_CLIENT_SECRET", stringType)] }
-
-    val wellknownUrl: String by lazy { config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)] }
 
     /** Samme som hvis man gjør en get til AZURE_APP_WELL_KNOWN_URL og plukker ut 'token_endpoint' */
     val azureOpenidConfigTokenEndpoint: String by lazy { config()[Key("AZURE_OPENID_CONFIG_TOKEN_ENDPOINT", stringType)] }

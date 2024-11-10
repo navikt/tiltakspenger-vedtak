@@ -1,11 +1,11 @@
 package no.nav.tiltakspenger.objectmothers
 
 import arrow.core.nonEmptyListOf
-import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.common.Saksbehandler
 import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter

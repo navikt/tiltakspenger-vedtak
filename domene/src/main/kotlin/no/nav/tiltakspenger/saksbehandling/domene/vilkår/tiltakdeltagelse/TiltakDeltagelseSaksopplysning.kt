@@ -1,6 +1,6 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse
 
-import no.nav.tiltakspenger.felles.Saksbehandler
+import no.nav.tiltakspenger.libs.common.Saksbehandler
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.tiltak.TiltakstypeSomGirRett
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.TiltakDeltakerstatus

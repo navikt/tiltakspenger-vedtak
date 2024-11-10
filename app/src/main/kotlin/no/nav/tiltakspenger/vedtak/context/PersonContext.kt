@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak.context
 
 import no.nav.tiltakspenger.felles.sikkerlogg
+import no.nav.tiltakspenger.libs.auth.core.EntraIdSystemtokenClient
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.personklient.pdl.TilgangsstyringService
@@ -11,7 +12,6 @@ import no.nav.tiltakspenger.saksbehandling.ports.PoaoTilgangGateway
 import no.nav.tiltakspenger.saksbehandling.service.person.PersonService
 import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
-import no.nav.tiltakspenger.vedtak.auth.EntraIdSystemtokenClient
 import no.nav.tiltakspenger.vedtak.clients.person.MicrosoftGraphApiClient
 import no.nav.tiltakspenger.vedtak.clients.person.PersonHttpklient
 import no.nav.tiltakspenger.vedtak.clients.poaotilgang.PoaoTilgangClient

@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.vedtak.repository.meldekort
 
 import io.kotest.matchers.shouldBe
-import no.nav.tiltakspenger.common.getOrFail
+import no.nav.tiltakspenger.libs.common.getOrFail
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.objectmothers.ObjectMother

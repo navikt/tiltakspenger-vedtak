@@ -7,9 +7,6 @@ import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
 import no.nav.tiltakspenger.felles.sikkerlogg
-import no.nav.tiltakspenger.vedtak.exceptions.ManglendeJWTTokenException
-import no.nav.tiltakspenger.vedtak.exceptions.UgyldigRequestException
-import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.ikkeAutorisert
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.ikkeFunnet
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.ikkeTilgang
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.serverfeil
@@ -27,14 +24,6 @@ object ExceptionHandler {
         when (cause) {
             is IllegalStateException -> {
                 call.respond500InternalServerError(serverfeil())
-            }
-
-            is ManglendeJWTTokenException -> {
-                call.respond401Unauthorized(ikkeAutorisert())
-            }
-
-            is UgyldigRequestException -> {
-                call.respond400BadRequest(ugyldigRequest())
             }
 
             is ContentTransformationException -> {

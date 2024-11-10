@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.vedtak.repository.utbetaling
 
 import com.fasterxml.jackson.databind.node.TextNode
+import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.saksbehandling.ports.SendtUtbetaling
-import no.nav.tiltakspenger.vedtak.db.objectMapper
 
 fun SendtUtbetaling.toJson(): String {
     return """

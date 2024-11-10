@@ -1,10 +1,10 @@
 package no.nav.tiltakspenger.vedtak.clients.pdfgen
 
 import com.fasterxml.jackson.databind.JsonNode
+import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.meldekort.domene.Meldekortdag
 import no.nav.tiltakspenger.meldekort.domene.ReduksjonAvYtelsePåGrunnAvFravær
 import no.nav.tiltakspenger.utbetaling.domene.Utbetalingsvedtak
-import no.nav.tiltakspenger.vedtak.routes.objectMapper
 
 private data class DokumentMeldekortDTO(
     val meldekortId: String,

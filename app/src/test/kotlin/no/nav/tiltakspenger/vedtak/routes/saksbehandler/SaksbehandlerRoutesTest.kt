@@ -14,8 +14,8 @@ import io.ktor.server.routing.routing
 import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import kotlinx.coroutines.test.runTest
+import no.nav.tiltakspenger.libs.auth.core.TokenService
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler
-import no.nav.tiltakspenger.vedtak.auth2.TokenService
 import no.nav.tiltakspenger.vedtak.routes.defaultRequest
 import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import org.junit.jupiter.api.Test

@@ -1,4 +1,4 @@
-val felleslibVersion = "0.0.261"
+val felleslibVersion = "0.0.268"
 val kotestVersion = "5.9.1"
 val kotlinxCoroutinesVersion = "1.9.0"
 
@@ -12,6 +12,14 @@ dependencies {
     api("com.github.navikt.tiltakspenger-libs:person-dtos:$felleslibVersion")
     api("com.github.navikt.tiltakspenger-libs:personklient-infrastruktur:$felleslibVersion")
     api("com.github.navikt.tiltakspenger-libs:test-common:$felleslibVersion")
+    api("com.github.navikt.tiltakspenger-libs:tiltak-dtos:$felleslibVersion")
+    api("com.github.navikt.tiltakspenger-libs:auth-core:$felleslibVersion")
+    api("com.github.navikt.tiltakspenger-libs:auth-test-core:$felleslibVersion")
+    api("com.github.navikt.tiltakspenger-libs:auth-ktor:$felleslibVersion")
+    api("com.github.navikt.tiltakspenger-libs:ktor-common:$felleslibVersion")
+    api("com.github.navikt.tiltakspenger-libs:ktor-test-common:$felleslibVersion")
+    api("com.github.navikt.tiltakspenger-libs:logging:$felleslibVersion")
+    api("com.github.navikt.tiltakspenger-libs:json:$felleslibVersion")
     api("com.github.navikt.tiltakspenger-libs:tiltak-dtos:$felleslibVersion")
     api("io.arrow-kt:arrow-core:1.2.4")
     api("io.kotest:kotest-assertions-core:$kotestVersion")

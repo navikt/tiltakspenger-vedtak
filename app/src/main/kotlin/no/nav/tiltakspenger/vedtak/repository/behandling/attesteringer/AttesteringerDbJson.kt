@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.vedtak.repository.behandling.attesteringer
 
+import no.nav.tiltakspenger.libs.json.deserialize
+import no.nav.tiltakspenger.libs.json.serialize
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attestering
-import no.nav.tiltakspenger.vedtak.db.deserialize
-import no.nav.tiltakspenger.vedtak.db.serialize
 import java.security.InvalidParameterException
 
 /**

@@ -1,9 +1,9 @@
 package no.nav.tiltakspenger.vedtak.repository.behandling.felles
 
+import no.nav.tiltakspenger.libs.json.deserialize
+import no.nav.tiltakspenger.libs.json.serialize
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
-import no.nav.tiltakspenger.vedtak.db.deserialize
-import no.nav.tiltakspenger.vedtak.db.serialize
 import no.nav.tiltakspenger.vedtak.repository.behandling.alder.AlderVilkårDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.alder.toDbJson
 import no.nav.tiltakspenger.vedtak.repository.behandling.institusjonsopphold.InstitusjonsoppholdVilkårDbJson

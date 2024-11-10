@@ -10,11 +10,13 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Navkontor
-import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.UgyldigKontornummer
+import no.nav.tiltakspenger.libs.auth.core.TokenService
+import no.nav.tiltakspenger.libs.auth.ktor.withSaksbehandler
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.common.Saksbehandler
 import no.nav.tiltakspenger.meldekort.domene.KanIkkeSendeMeldekortTilBeslutter
 import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando
 import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando.Dager
@@ -22,7 +24,6 @@ import no.nav.tiltakspenger.meldekort.service.SendMeldekortTilBeslutterService
 import no.nav.tiltakspenger.saksbehandling.service.sak.KunneIkkeHenteSakForSakId
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
-import no.nav.tiltakspenger.vedtak.auth2.TokenService
 import no.nav.tiltakspenger.vedtak.routes.correlationId
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond400BadRequest
@@ -30,7 +31,6 @@ import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond403Forbidden
 import no.nav.tiltakspenger.vedtak.routes.withBody
 import no.nav.tiltakspenger.vedtak.routes.withMeldekortId
 import no.nav.tiltakspenger.vedtak.routes.withSakId
-import no.nav.tiltakspenger.vedtak.routes.withSaksbehandler
 import java.time.LocalDate
 
 private data class Body(

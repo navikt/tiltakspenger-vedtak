@@ -1,12 +1,10 @@
 package no.nav.tiltakspenger.common
 
 import no.nav.tiltakspenger.fakes.clients.DokdistFakeGateway
-import no.nav.tiltakspenger.fakes.clients.EntraIdSystemtokenFakeClient
 import no.nav.tiltakspenger.fakes.clients.GenererFakeMeldekortPdfGateway
 import no.nav.tiltakspenger.fakes.clients.GenererFakeVedtaksbrevGateway
 import no.nav.tiltakspenger.fakes.clients.JournalførFakeMeldekortGateway
 import no.nav.tiltakspenger.fakes.clients.JournalførFakeVedtaksbrevGateway
-import no.nav.tiltakspenger.fakes.clients.JwkFakeProvider
 import no.nav.tiltakspenger.fakes.clients.PersonFakeGateway
 import no.nav.tiltakspenger.fakes.clients.TilgangsstyringFakeGateway
 import no.nav.tiltakspenger.fakes.clients.TiltakFakeGateway
@@ -21,16 +19,20 @@ import no.nav.tiltakspenger.fakes.repos.StatistikkSakFakeRepo
 import no.nav.tiltakspenger.fakes.repos.StatistikkStønadFakeRepo
 import no.nav.tiltakspenger.fakes.repos.SøknadFakeRepo
 import no.nav.tiltakspenger.fakes.repos.UtbetalingsvedtakFakeRepo
+import no.nav.tiltakspenger.libs.auth.core.AdRolle
+import no.nav.tiltakspenger.libs.auth.core.MicrosoftEntraIdTokenService
+import no.nav.tiltakspenger.libs.auth.core.TokenService
+import no.nav.tiltakspenger.libs.auth.test.core.EntraIdSystemtokenFakeClient
+import no.nav.tiltakspenger.libs.auth.test.core.JwkFakeProvider
+import no.nav.tiltakspenger.libs.auth.test.core.JwtGenerator
 import no.nav.tiltakspenger.libs.common.Fnr
-import no.nav.tiltakspenger.libs.common.Rolle
+import no.nav.tiltakspenger.libs.common.Saksbehandlerrolle
 import no.nav.tiltakspenger.libs.common.TestSessionFactory
 import no.nav.tiltakspenger.libs.person.AdressebeskyttelseGradering
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
-import no.nav.tiltakspenger.vedtak.AdRolle
 import no.nav.tiltakspenger.vedtak.Profile
-import no.nav.tiltakspenger.vedtak.auth2.MicrosoftEntraIdTokenService
-import no.nav.tiltakspenger.vedtak.auth2.TokenService
+import no.nav.tiltakspenger.vedtak.auth.systembrukerMapper
 import no.nav.tiltakspenger.vedtak.context.ApplicationContext
 import no.nav.tiltakspenger.vedtak.context.DokumentContext
 import no.nav.tiltakspenger.vedtak.context.FørstegangsbehandlingContext
@@ -74,10 +76,11 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-gi
         url = "unused",
         issuer = "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0",
         clientId = "c7adbfbb-1b1e-41f6-9b7a-af9627c04998",
-        autoriserteBrukerroller = Rolle.entries.map { AdRolle(it, "ROLE_${it.name}") },
+        autoriserteBrukerroller = Saksbehandlerrolle.entries.map { AdRolle(it, "ROLE_${it.name}") },
         acceptIssuedAtLeeway = 0,
         acceptNotBeforeLeeway = 0,
         provider = JwkFakeProvider(jwtGenerator.jwk),
+        systembrukerMapper = ::systembrukerMapper,
     )
 
     fun leggTilPerson(

@@ -5,6 +5,8 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.libs.auth.core.TokenService
+import no.nav.tiltakspenger.libs.auth.ktor.withSaksbehandler
 import no.nav.tiltakspenger.meldekort.domene.IverksettMeldekortKommando
 import no.nav.tiltakspenger.meldekort.domene.KanIkkeIverksetteMeldekort
 import no.nav.tiltakspenger.meldekort.domene.KanIkkeIverksetteMeldekort.MåVæreBeslutter
@@ -13,7 +15,6 @@ import no.nav.tiltakspenger.meldekort.service.IverksettMeldekortService
 import no.nav.tiltakspenger.saksbehandling.service.sak.KunneIkkeHenteSakForSakId
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
-import no.nav.tiltakspenger.vedtak.auth2.TokenService
 import no.nav.tiltakspenger.vedtak.routes.correlationId
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.ikkeTilgang
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.måVæreBeslutter
@@ -22,7 +23,6 @@ import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond400BadRequest
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond403Forbidden
 import no.nav.tiltakspenger.vedtak.routes.withMeldekortId
 import no.nav.tiltakspenger.vedtak.routes.withSakId
-import no.nav.tiltakspenger.vedtak.routes.withSaksbehandler
 
 fun Route.iverksettMeldekortRoute(
     iverksettMeldekortService: IverksettMeldekortService,

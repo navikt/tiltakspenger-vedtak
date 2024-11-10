@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.vedtak.routes.dto
 
-import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.libs.common.Rolle
+import no.nav.tiltakspenger.libs.common.Saksbehandler
+import no.nav.tiltakspenger.libs.common.Saksbehandlerrolle
 
 internal data class SaksbehandlerDTO(
     val navIdent: String,
@@ -31,14 +31,12 @@ internal fun Saksbehandler.toDTO(): SaksbehandlerDTO =
         roller = roller.map { it.toDTO() },
     )
 
-internal fun Rolle.toDTO(): SaksbehandlerDTO.RolleDTO =
+internal fun Saksbehandlerrolle.toDTO(): SaksbehandlerDTO.RolleDTO =
     when (this) {
-        Rolle.SAKSBEHANDLER -> SaksbehandlerDTO.RolleDTO.SAKSBEHANDLER
-        Rolle.FORTROLIG_ADRESSE -> SaksbehandlerDTO.RolleDTO.FORTROLIG_ADRESSE
-        Rolle.STRENGT_FORTROLIG_ADRESSE -> SaksbehandlerDTO.RolleDTO.STRENGT_FORTROLIG_ADRESSE
-        Rolle.SKJERMING -> SaksbehandlerDTO.RolleDTO.SKJERMING
-        Rolle.LAGE_HENDELSER -> SaksbehandlerDTO.RolleDTO.LAGE_HENDELSER
-        Rolle.HENTE_DATA -> SaksbehandlerDTO.RolleDTO.HENTE_DATA
-        Rolle.DRIFT -> SaksbehandlerDTO.RolleDTO.DRIFT
-        Rolle.BESLUTTER -> SaksbehandlerDTO.RolleDTO.BESLUTTER
+        Saksbehandlerrolle.SAKSBEHANDLER -> SaksbehandlerDTO.RolleDTO.SAKSBEHANDLER
+        Saksbehandlerrolle.FORTROLIG_ADRESSE -> SaksbehandlerDTO.RolleDTO.FORTROLIG_ADRESSE
+        Saksbehandlerrolle.STRENGT_FORTROLIG_ADRESSE -> SaksbehandlerDTO.RolleDTO.STRENGT_FORTROLIG_ADRESSE
+        Saksbehandlerrolle.SKJERMING -> SaksbehandlerDTO.RolleDTO.SKJERMING
+        Saksbehandlerrolle.DRIFT -> SaksbehandlerDTO.RolleDTO.DRIFT
+        Saksbehandlerrolle.BESLUTTER -> SaksbehandlerDTO.RolleDTO.BESLUTTER
     }

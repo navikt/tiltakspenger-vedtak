@@ -5,16 +5,17 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.Systembruker
 import no.nav.tiltakspenger.felles.sikkerlogg
+import no.nav.tiltakspenger.libs.auth.core.TokenService
+import no.nav.tiltakspenger.libs.auth.ktor.withSystembruker
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.vedtak.RammevedtakService
 import no.nav.tiltakspenger.utbetaling.domene.Satser
-import no.nav.tiltakspenger.vedtak.auth2.TokenService
 import no.nav.tiltakspenger.vedtak.routes.withBody
-import no.nav.tiltakspenger.vedtak.routes.withSystembruker
 import java.time.LocalDate
 
 internal const val DATADELING_PATH = "/datadeling"
@@ -28,7 +29,7 @@ fun Route.datadelingRoutes(
 
     post("$DATADELING_PATH/behandlinger") {
         logger.debug("Mottatt post-request på '$DATADELING_PATH/behandlinger' - systembruker henter behandlinger under behandling for gitt ident og periode")
-        call.withSystembruker(tokenService = tokenService) { systembruker ->
+        call.withSystembruker(tokenService = tokenService) { systembruker: Systembruker ->
             call.withBody<DatadelingDTO> { body ->
                 body.toRequest().fold(
                     { call.respond(HttpStatusCode.BadRequest, it) },
@@ -47,7 +48,7 @@ fun Route.datadelingRoutes(
 
     post("$DATADELING_PATH/vedtak/perioder") {
         logger.debug("Mottatt post-request på '$DATADELING_PATH/vedtak/perioder' - systembruker henter perioder for vedtak for gitt ident og periode")
-        call.withSystembruker(tokenService = tokenService) { systembruker ->
+        call.withSystembruker(tokenService = tokenService) { systembruker: Systembruker ->
             call.withBody<DatadelingDTO> { body ->
                 body.toRequest()
                     .fold(
@@ -68,7 +69,7 @@ fun Route.datadelingRoutes(
 
     post("$DATADELING_PATH/vedtak/detaljer") {
         logger.debug("Mottatt post-request på '$DATADELING_PATH/vedtak/detaljer' - systembruker henter detaljer for vedtak for gitt ident og periode")
-        call.withSystembruker(tokenService = tokenService) { systembruker ->
+        call.withSystembruker(tokenService = tokenService) { systembruker: Systembruker ->
             call.withBody<DatadelingDTO> { body ->
                 body.toRequest()
                     .fold(

@@ -8,7 +8,7 @@ import arrow.core.left
 import arrow.core.right
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
-import no.nav.tiltakspenger.libs.common.Roller
+import no.nav.tiltakspenger.libs.common.Saksbehandlerroller
 import no.nav.tiltakspenger.libs.person.AdressebeskyttelseGradering
 import no.nav.tiltakspenger.libs.personklient.pdl.KunneIkkeGjøreTilgangskontroll
 import no.nav.tiltakspenger.libs.personklient.pdl.TilgangsstyringService
@@ -29,7 +29,7 @@ class TilgangsstyringFakeGateway : TilgangsstyringService {
 
     override suspend fun harTilgangTilPerson(
         fnr: Fnr,
-        roller: Roller,
+        roller: Saksbehandlerroller,
         correlationId: CorrelationId,
     ): Either<KunneIkkeGjøreTilgangskontroll, Boolean> {
         return data.get()[fnr]!!.all {
@@ -43,7 +43,7 @@ class TilgangsstyringFakeGateway : TilgangsstyringService {
 
     override suspend fun harTilgangTilPersoner(
         fnrListe: NonEmptyList<Fnr>,
-        roller: Roller,
+        roller: Saksbehandlerroller,
         correlationId: CorrelationId,
     ): Either<KunneIkkeGjøreTilgangskontroll, Map<Fnr, Boolean>> {
         return fnrListe.map { fnr ->

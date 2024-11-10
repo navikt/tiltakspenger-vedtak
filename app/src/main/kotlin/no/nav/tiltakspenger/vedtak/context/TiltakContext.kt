@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.vedtak.context
 
+import no.nav.tiltakspenger.libs.auth.core.EntraIdSystemtokenClient
 import no.nav.tiltakspenger.saksbehandling.ports.TiltakGateway
 import no.nav.tiltakspenger.vedtak.Configuration
-import no.nav.tiltakspenger.vedtak.auth.EntraIdSystemtokenClient
 import no.nav.tiltakspenger.vedtak.clients.tiltak.TiltakClientImpl
 import no.nav.tiltakspenger.vedtak.clients.tiltak.TiltakGatewayImpl
 

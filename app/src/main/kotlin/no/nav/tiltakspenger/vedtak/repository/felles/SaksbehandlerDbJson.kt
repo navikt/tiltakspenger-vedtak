@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.vedtak.repository.felles
 
-import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.libs.common.Rolle
-import no.nav.tiltakspenger.libs.common.Roller
+import no.nav.tiltakspenger.libs.common.Saksbehandler
+import no.nav.tiltakspenger.libs.common.Saksbehandlerrolle
+import no.nav.tiltakspenger.libs.common.Saksbehandlerroller
 
 internal data class SaksbehandlerDbJson(
     val navIdent: String,
@@ -12,27 +12,23 @@ internal data class SaksbehandlerDbJson(
 ) {
     enum class RolleDbJson {
         SAKSBEHANDLER,
+        BESLUTTER,
+
         FORTROLIG_ADRESSE,
         STRENGT_FORTROLIG_ADRESSE,
         SKJERMING,
-        LAGE_HENDELSER,
-        HENTE_DATA,
 
-        // Systemadministrator (oss)
         DRIFT,
-        BESLUTTER,
         ;
 
-        fun toDomain(): Rolle =
+        fun toDomain(): Saksbehandlerrolle =
             when (this) {
-                SAKSBEHANDLER -> Rolle.SAKSBEHANDLER
-                FORTROLIG_ADRESSE -> Rolle.FORTROLIG_ADRESSE
-                STRENGT_FORTROLIG_ADRESSE -> Rolle.STRENGT_FORTROLIG_ADRESSE
-                SKJERMING -> Rolle.SKJERMING
-                LAGE_HENDELSER -> Rolle.LAGE_HENDELSER
-                HENTE_DATA -> Rolle.HENTE_DATA
-                DRIFT -> Rolle.DRIFT
-                BESLUTTER -> Rolle.BESLUTTER
+                SAKSBEHANDLER -> Saksbehandlerrolle.SAKSBEHANDLER
+                FORTROLIG_ADRESSE -> Saksbehandlerrolle.FORTROLIG_ADRESSE
+                STRENGT_FORTROLIG_ADRESSE -> Saksbehandlerrolle.STRENGT_FORTROLIG_ADRESSE
+                SKJERMING -> Saksbehandlerrolle.SKJERMING
+                DRIFT -> Saksbehandlerrolle.DRIFT
+                BESLUTTER -> Saksbehandlerrolle.BESLUTTER
             }
     }
 
@@ -41,7 +37,7 @@ internal data class SaksbehandlerDbJson(
             navIdent = navIdent,
             brukernavn = brukernavn,
             epost = epost,
-            roller = Roller(roller.map { it.toDomain() }),
+            roller = Saksbehandlerroller(roller.map { it.toDomain() }),
         )
 }
 
@@ -53,14 +49,12 @@ internal fun Saksbehandler.toDbJson(): SaksbehandlerDbJson =
         roller = roller.map { it.toDbJson() },
     )
 
-internal fun Rolle.toDbJson(): SaksbehandlerDbJson.RolleDbJson =
+internal fun Saksbehandlerrolle.toDbJson(): SaksbehandlerDbJson.RolleDbJson =
     when (this) {
-        Rolle.SAKSBEHANDLER -> SaksbehandlerDbJson.RolleDbJson.SAKSBEHANDLER
-        Rolle.FORTROLIG_ADRESSE -> SaksbehandlerDbJson.RolleDbJson.FORTROLIG_ADRESSE
-        Rolle.STRENGT_FORTROLIG_ADRESSE -> SaksbehandlerDbJson.RolleDbJson.STRENGT_FORTROLIG_ADRESSE
-        Rolle.SKJERMING -> SaksbehandlerDbJson.RolleDbJson.SKJERMING
-        Rolle.LAGE_HENDELSER -> SaksbehandlerDbJson.RolleDbJson.HENTE_DATA
-        Rolle.HENTE_DATA -> SaksbehandlerDbJson.RolleDbJson.LAGE_HENDELSER
-        Rolle.DRIFT -> SaksbehandlerDbJson.RolleDbJson.DRIFT
-        Rolle.BESLUTTER -> SaksbehandlerDbJson.RolleDbJson.BESLUTTER
+        Saksbehandlerrolle.SAKSBEHANDLER -> SaksbehandlerDbJson.RolleDbJson.SAKSBEHANDLER
+        Saksbehandlerrolle.FORTROLIG_ADRESSE -> SaksbehandlerDbJson.RolleDbJson.FORTROLIG_ADRESSE
+        Saksbehandlerrolle.STRENGT_FORTROLIG_ADRESSE -> SaksbehandlerDbJson.RolleDbJson.STRENGT_FORTROLIG_ADRESSE
+        Saksbehandlerrolle.SKJERMING -> SaksbehandlerDbJson.RolleDbJson.SKJERMING
+        Saksbehandlerrolle.DRIFT -> SaksbehandlerDbJson.RolleDbJson.DRIFT
+        Saksbehandlerrolle.BESLUTTER -> SaksbehandlerDbJson.RolleDbJson.BESLUTTER
     }

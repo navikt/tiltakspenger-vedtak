@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.saksbehandling.service.behandling
 
 import arrow.core.getOrElse
 import mu.KotlinLogging
-import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.Systembruker
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
@@ -10,7 +9,7 @@ import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
-import no.nav.tiltakspenger.libs.common.Rolle
+import no.nav.tiltakspenger.libs.common.Saksbehandler
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
@@ -159,7 +158,7 @@ class BehandlingServiceImpl(
         periode: Periode,
         systembruker: Systembruker,
     ): List<Behandling> {
-        require(systembruker.roller.harRolle(Rolle.HENTE_DATA)) { "Systembruker mangler rollen HENTE_DATA. Systembrukers roller: ${systembruker.roller}" }
+        require(systembruker.roller.harHenteData()) { "Systembruker mangler rollen HENTE_DATA. Systembrukers roller: ${systembruker.roller}" }
         return førstegangsbehandlingRepo
             .hentAlleForIdent(fnr)
             .filter { behandling -> !behandling.erIverksatt }

@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.vedtak.clients.dokdist
 
 import no.nav.tiltakspenger.felles.journalføring.JournalpostId
-import no.nav.tiltakspenger.vedtak.routes.serialize
 
 private data class DokdistRequest(
     val journalpostId: String,
@@ -26,6 +25,6 @@ fun JournalpostId.toDokdistRequest(): String {
     return DokdistRequest(
         journalpostId = this.toString(),
     ).let {
-        serialize(it)
+        no.nav.tiltakspenger.libs.json.serialize(it)
     }
 }

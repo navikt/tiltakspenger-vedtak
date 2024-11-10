@@ -1,15 +1,15 @@
 package no.nav.tiltakspenger.objectmothers
 
-import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.libs.common.Rolle
-import no.nav.tiltakspenger.libs.common.Roller
+import no.nav.tiltakspenger.libs.common.Saksbehandler
+import no.nav.tiltakspenger.libs.common.Saksbehandlerrolle
+import no.nav.tiltakspenger.libs.common.Saksbehandlerroller
 
 interface SaksbehandlerMother {
     fun saksbehandler(
         navIdent: String = "Z12345",
         brukernavn: String = "Sak Behandler",
         epost: String = "Sak.Behandler@nav.no",
-        roller: Roller = Roller(listOf(Rolle.SAKSBEHANDLER)),
+        roller: Saksbehandlerroller = Saksbehandlerroller(listOf(Saksbehandlerrolle.SAKSBEHANDLER)),
     ) = Saksbehandler(
         navIdent = navIdent,
         brukernavn = brukernavn,
@@ -22,7 +22,7 @@ interface SaksbehandlerMother {
         brukernavn: String = "Sak Behandler",
         epost: String = "Sak.Behandler@nav.no",
     ) = saksbehandler(
-        roller = Roller(emptyList()),
+        roller = Saksbehandlerroller(emptyList()),
         navIdent = navIdent,
         epost = epost,
         brukernavn = brukernavn,
@@ -33,7 +33,7 @@ interface SaksbehandlerMother {
         brukernavn: String = "Sak Behandler",
         epost: String = "Sak.Behandler@nav.no",
     ) = saksbehandler(
-        roller = Roller(listOf(Rolle.BESLUTTER)),
+        roller = Saksbehandlerroller(listOf(Saksbehandlerrolle.BESLUTTER)),
         navIdent = navIdent,
         epost = epost,
         brukernavn = brukernavn,
@@ -47,7 +47,7 @@ interface SaksbehandlerMother {
         navIdent = navIdent,
         epost = epost,
         brukernavn = brukernavn,
-        roller = Roller(listOf(Rolle.SAKSBEHANDLER, Rolle.STRENGT_FORTROLIG_ADRESSE)),
+        roller = Saksbehandlerroller(listOf(Saksbehandlerrolle.SAKSBEHANDLER, Saksbehandlerrolle.STRENGT_FORTROLIG_ADRESSE)),
     )
 
     fun saksbehandlerMedKode7(
@@ -58,7 +58,7 @@ interface SaksbehandlerMother {
         navIdent = navIdent,
         epost = epost,
         brukernavn = brukernavn,
-        roller = Roller(listOf(Rolle.SAKSBEHANDLER, Rolle.FORTROLIG_ADRESSE)),
+        roller = Saksbehandlerroller(listOf(Saksbehandlerrolle.SAKSBEHANDLER, Saksbehandlerrolle.FORTROLIG_ADRESSE)),
     )
 
     fun saksbehandler123(): Saksbehandler =
@@ -66,6 +66,6 @@ interface SaksbehandlerMother {
             navIdent = "123",
             brukernavn = "Test Testesen",
             epost = "Test.Testesen@nav.no",
-            roller = Roller(listOf(Rolle.SAKSBEHANDLER)),
+            roller = Saksbehandlerroller(listOf(Saksbehandlerrolle.SAKSBEHANDLER)),
         )
 }

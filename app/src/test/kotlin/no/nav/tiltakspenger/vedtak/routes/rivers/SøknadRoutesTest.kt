@@ -52,7 +52,9 @@ class SøknadRoutesTest {
                         protocol = URLProtocol.HTTPS
                         path(SØKNAD_PATH)
                     },
-                    jwt = tac.jwtGenerator.createJwtForSystembruker(),
+                    jwt = tac.jwtGenerator.createJwtForSystembruker(
+                        roles = listOf("lage_hendelser"),
+                    ),
                 ) {
                     setBody(søknadBodyV3(søknadId))
                 }.apply {

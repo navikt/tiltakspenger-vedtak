@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak.context
 
 import no.nav.tiltakspenger.felles.NavIdentClient
+import no.nav.tiltakspenger.libs.auth.core.EntraIdSystemtokenClient
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.meldekort.ports.GenererMeldekortPdfGateway
@@ -10,7 +11,6 @@ import no.nav.tiltakspenger.utbetaling.ports.UtbetalingsvedtakRepo
 import no.nav.tiltakspenger.utbetaling.service.JournalførUtbetalingsvedtakService
 import no.nav.tiltakspenger.utbetaling.service.SendUtbetalingerService
 import no.nav.tiltakspenger.vedtak.Configuration
-import no.nav.tiltakspenger.vedtak.auth.EntraIdSystemtokenClient
 import no.nav.tiltakspenger.vedtak.clients.utbetaling.UtbetalingHttpClient
 import no.nav.tiltakspenger.vedtak.repository.utbetaling.UtbetalingsvedtakPostgresRepo
 

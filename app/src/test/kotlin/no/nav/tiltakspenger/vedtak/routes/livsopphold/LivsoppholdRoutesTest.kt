@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.vedtak.routes.livsopphold
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.kotest.matchers.booleans.shouldBeFalse
 import io.kotest.matchers.nulls.shouldBeNull
@@ -18,6 +17,7 @@ import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.common.TestApplicationContext
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.ObjectMother.fraOgMedDatoJa
 import no.nav.tiltakspenger.objectmothers.ObjectMother.ja
@@ -25,7 +25,6 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.periodeJa
 import no.nav.tiltakspenger.objectmothers.førstegangsbehandlingUavklart
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
-import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.SamletUtfallDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.livsopphold.LivsoppholdVilkårDTO
@@ -38,8 +37,6 @@ import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import org.junit.jupiter.api.Test
 
 class LivsoppholdRoutesTest {
-
-    private val objectMapper: ObjectMapper = defaultObjectMapper()
 
     @Test
     fun `test at endepunkt for henting og lagring av livsopphold fungerer`() = runTest {

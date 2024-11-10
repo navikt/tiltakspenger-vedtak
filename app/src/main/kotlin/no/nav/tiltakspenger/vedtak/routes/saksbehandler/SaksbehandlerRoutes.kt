@@ -5,9 +5,9 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import mu.KotlinLogging
-import no.nav.tiltakspenger.vedtak.auth2.TokenService
+import no.nav.tiltakspenger.libs.auth.core.TokenService
+import no.nav.tiltakspenger.libs.auth.ktor.withSaksbehandler
 import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
-import no.nav.tiltakspenger.vedtak.routes.withSaksbehandler
 
 internal const val SAKSBEHANDLER_PATH = "/saksbehandler"
 

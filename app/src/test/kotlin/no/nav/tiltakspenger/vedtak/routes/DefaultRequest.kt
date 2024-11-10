@@ -9,7 +9,7 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.append
 import io.ktor.server.testing.ApplicationTestBuilder
-import no.nav.tiltakspenger.common.JwtGenerator
+import no.nav.tiltakspenger.libs.auth.test.core.JwtGenerator
 
 suspend fun ApplicationTestBuilder.defaultRequest(
     method: HttpMethod,

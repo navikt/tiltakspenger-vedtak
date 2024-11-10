@@ -4,7 +4,7 @@ import arrow.core.Either
 import mu.KLogger
 import no.nav.tiltakspenger.distribusjon.domene.DistribusjonId
 import no.nav.tiltakspenger.distribusjon.ports.KunneIkkeDistribuereDokument
-import no.nav.tiltakspenger.vedtak.db.deserialize
+import no.nav.tiltakspenger.libs.json.deserialize
 
 private data class DokdistResponse(
     val bestillingsId: String,

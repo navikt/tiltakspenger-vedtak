@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.vedtak.routes.kvp
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
@@ -14,11 +13,11 @@ import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.common.TestApplicationContext
-import no.nav.tiltakspenger.felles.Saksbehandler
-import no.nav.tiltakspenger.libs.common.Rolle
-import no.nav.tiltakspenger.libs.common.Roller
+import no.nav.tiltakspenger.libs.common.Saksbehandler
+import no.nav.tiltakspenger.libs.common.Saksbehandlerrolle
+import no.nav.tiltakspenger.libs.common.Saksbehandlerroller
+import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.objectmothers.førstegangsbehandlingUavklart
-import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.SamletUtfallDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.KVPVilkårDTO
@@ -30,14 +29,19 @@ import org.junit.jupiter.api.Test
 
 class KvpRoutesTest {
 
-    private val objectMapper: ObjectMapper = defaultObjectMapper()
     private val periodeBrukerHarKvpEtterEndring = PeriodeDTO(fraOgMed = "2023-01-01", tilOgMed = "2023-01-03")
     private val saksbehandler =
         Saksbehandler(
             "Q123456",
             "Superman",
             "a@b.c",
-            Roller(listOf(Rolle.SAKSBEHANDLER, Rolle.SKJERMING, Rolle.STRENGT_FORTROLIG_ADRESSE)),
+            Saksbehandlerroller(
+                listOf(
+                    Saksbehandlerrolle.SAKSBEHANDLER,
+                    Saksbehandlerrolle.SKJERMING,
+                    Saksbehandlerrolle.STRENGT_FORTROLIG_ADRESSE,
+                ),
+            ),
         )
 
     @Test

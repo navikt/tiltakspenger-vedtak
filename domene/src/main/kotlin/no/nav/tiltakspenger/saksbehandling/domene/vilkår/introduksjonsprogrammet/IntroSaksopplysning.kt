@@ -12,7 +12,7 @@ sealed interface IntroSaksopplysning {
     val totalePeriode: Periode
 
     val årsakTilEndring: ÅrsakTilEndring?
-    val saksbehandler: no.nav.tiltakspenger.felles.Saksbehandler?
+    val saksbehandler: no.nav.tiltakspenger.libs.common.Saksbehandler?
 
     data class Søknad(
         override val deltar: Periodisering<Deltagelse>,
@@ -32,7 +32,7 @@ sealed interface IntroSaksopplysning {
         override val deltar: Periodisering<Deltagelse>,
         override val årsakTilEndring: ÅrsakTilEndring,
         override val tidsstempel: LocalDateTime,
-        override val saksbehandler: no.nav.tiltakspenger.felles.Saksbehandler,
+        override val saksbehandler: no.nav.tiltakspenger.libs.common.Saksbehandler,
     ) : IntroSaksopplysning {
         init {
             require(deltar.perioder().isNotEmpty()) { "IntroSaksopplysning må ha minst én periode, men var tom." }

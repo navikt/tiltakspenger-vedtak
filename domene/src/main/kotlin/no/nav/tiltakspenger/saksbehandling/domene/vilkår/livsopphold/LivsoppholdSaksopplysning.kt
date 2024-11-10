@@ -11,7 +11,7 @@ sealed interface LivsoppholdSaksopplysning {
     val periode: Periode
 
     val årsakTilEndring: ÅrsakTilEndring?
-    val saksbehandler: no.nav.tiltakspenger.felles.Saksbehandler?
+    val saksbehandler: no.nav.tiltakspenger.libs.common.Saksbehandler?
 
     data class Søknad(
         override val harLivsoppholdYtelser: Boolean,
@@ -26,7 +26,7 @@ sealed interface LivsoppholdSaksopplysning {
         override val harLivsoppholdYtelser: Boolean,
         override val årsakTilEndring: ÅrsakTilEndring?,
         override val tidsstempel: LocalDateTime,
-        override val saksbehandler: no.nav.tiltakspenger.felles.Saksbehandler,
+        override val saksbehandler: no.nav.tiltakspenger.libs.common.Saksbehandler,
         override val periode: Periode,
     ) : LivsoppholdSaksopplysning {
         init {

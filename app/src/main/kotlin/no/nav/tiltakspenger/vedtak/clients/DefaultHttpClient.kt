@@ -1,11 +1,5 @@
 package no.nav.tiltakspenger.vedtak.clients
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.databind.json.JsonMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngine
@@ -20,6 +14,7 @@ import io.ktor.http.ContentType
 import io.ktor.serialization.jackson.JacksonConverter
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.sikkerlogg
+import no.nav.tiltakspenger.libs.json.objectMapper
 import java.time.Duration
 
 private val LOG = KotlinLogging.logger {}
@@ -28,22 +23,21 @@ private const val SIXTY_SECONDS = 60L
 // engine skal brukes primært i test-øyemed, når man sender med MockEngine.
 // Forøvrig kan man la den være null.
 fun defaultHttpClient(
-    objectMapper: ObjectMapper,
     engine: HttpClientEngine? = null,
     configBlock: HttpClientConfig<*>.() -> Unit = {},
     engineConfigBlock: CIOEngineConfig.() -> Unit = {},
 ) = engine?.let {
     HttpClient(engine) {
-        apply(defaultSetup(objectMapper))
+        apply(defaultSetup())
         apply(configBlock)
     }
 } ?: HttpClient(CIO) {
-    apply(defaultSetup(objectMapper))
+    apply(defaultSetup())
     apply(configBlock)
     engine(engineConfigBlock)
 }
 
-private fun defaultSetup(objectMapper: ObjectMapper): HttpClientConfig<*>.() -> Unit =
+private fun defaultSetup(): HttpClientConfig<*>.() -> Unit =
     {
         install(ContentNegotiation) {
             register(ContentType.Application.Json, JacksonConverter(objectMapper))
@@ -66,12 +60,3 @@ private fun defaultSetup(objectMapper: ObjectMapper): HttpClientConfig<*>.() -> 
         }
         this.expectSuccess = true
     }
-
-fun defaultObjectMapper(): ObjectMapper =
-    JsonMapper
-        .builder()
-        .addModule(KotlinModule.Builder().build())
-        .addModule(JavaTimeModule())
-        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-        .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-        .build()

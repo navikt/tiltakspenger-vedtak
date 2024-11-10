@@ -5,11 +5,12 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import mu.KotlinLogging
+import no.nav.tiltakspenger.libs.auth.core.TokenService
+import no.nav.tiltakspenger.libs.auth.ktor.withSaksbehandler
 import no.nav.tiltakspenger.saksbehandling.service.person.KunneIkkeHenteEnkelPerson
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
-import no.nav.tiltakspenger.vedtak.auth2.TokenService
 import no.nav.tiltakspenger.vedtak.routes.correlationId
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.ikkeTilgang
@@ -17,7 +18,6 @@ import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond403Forbidden
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond500InternalServerError
 import no.nav.tiltakspenger.vedtak.routes.sak.SAK_PATH
 import no.nav.tiltakspenger.vedtak.routes.withSakId
-import no.nav.tiltakspenger.vedtak.routes.withSaksbehandler
 
 fun Route.hentPersonRoute(
     tokenService: TokenService,

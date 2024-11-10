@@ -1,11 +1,12 @@
 package no.nav.tiltakspenger.vedtak.context
 
+import no.nav.tiltakspenger.libs.auth.core.EntraIdSystemtokenClient
+import no.nav.tiltakspenger.libs.auth.core.EntraIdSystemtokenHttpClient
+import no.nav.tiltakspenger.libs.auth.core.MicrosoftEntraIdTokenService
+import no.nav.tiltakspenger.libs.auth.core.TokenService
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 import no.nav.tiltakspenger.vedtak.Configuration
-import no.nav.tiltakspenger.vedtak.auth.EntraIdSystemtokenClient
-import no.nav.tiltakspenger.vedtak.auth.EntraIdSystemtokenHttpClient
-import no.nav.tiltakspenger.vedtak.auth2.MicrosoftEntraIdTokenService
-import no.nav.tiltakspenger.vedtak.auth2.TokenService
+import no.nav.tiltakspenger.vedtak.auth.systembrukerMapper
 
 /**
  * Inneholder alle klienter, repoer og servicer.
@@ -23,6 +24,7 @@ open class ApplicationContext(
             issuer = tokenVerificationToken.issuer,
             clientId = tokenVerificationToken.clientId,
             autoriserteBrukerroller = tokenVerificationToken.roles,
+            systembrukerMapper = ::systembrukerMapper,
         )
     }
     open val entraIdSystemtokenClient: EntraIdSystemtokenClient by lazy {

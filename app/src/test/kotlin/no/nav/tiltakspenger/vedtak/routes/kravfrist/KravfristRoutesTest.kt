@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.vedtak.routes.kravfrist
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import io.kotest.assertions.withClue
 import io.kotest.matchers.shouldBe
@@ -18,10 +17,10 @@ import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.common.TestApplicationContext
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
+import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.førstegangsbehandlingUavklart
 import no.nav.tiltakspenger.objectmothers.nySøknad
-import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.behandling.benk.behandlingBenkRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.SamletUtfallDTO
@@ -32,8 +31,6 @@ import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import org.junit.jupiter.api.Test
 
 internal class KravfristRoutesTest {
-
-    private val objectMapper: ObjectMapper = defaultObjectMapper()
 
     @Test
     fun `test at endepunkt for henting av kravfrist fungerer og blir OPPFYLT`() = runTest {

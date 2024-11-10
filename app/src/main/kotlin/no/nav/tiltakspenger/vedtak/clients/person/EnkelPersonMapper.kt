@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.personklient.pdl.dto.AdressebeskyttelseGradering
 import no.nav.tiltakspenger.libs.personklient.pdl.dto.Navn
 import no.nav.tiltakspenger.libs.personklient.pdl.dto.PdlPerson

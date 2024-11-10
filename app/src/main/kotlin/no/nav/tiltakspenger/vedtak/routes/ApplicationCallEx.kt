@@ -11,14 +11,9 @@ import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
-import no.nav.tiltakspenger.vedtak.db.deserialize
-import no.nav.tiltakspenger.vedtak.exceptions.UgyldigRequestException
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond400BadRequest
 
 private val logger = KotlinLogging.logger {}
-
-internal fun ApplicationCall.parameter(parameterNavn: String): String =
-    this.parameters[parameterNavn] ?: throw UgyldigRequestException("$parameterNavn ikke funnet")
 
 internal fun ApplicationCall.correlationId(): CorrelationId {
     return this.callId?.let { CorrelationId(it) } ?: CorrelationId.generate()
@@ -76,7 +71,7 @@ internal suspend inline fun <reified T> ApplicationCall.withBody(
     crossinline ifRight: suspend (T) -> Unit,
 ) {
     Either.catch {
-        deserialize<T>(this.receiveText())
+        no.nav.tiltakspenger.libs.json.deserialize<T>(this.receiveText())
     }.onLeft {
         logger.debug(RuntimeException("Trigger stacktrace for enklere debug")) { "Feil ved deserialisering av request. Se sikkerlogg for mer kontekst." }
         sikkerlogg.error(it) { "Feil ved deserialisering av request" }

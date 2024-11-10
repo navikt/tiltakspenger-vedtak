@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.vedtak.clients.tiltak
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.HttpClientEngine
@@ -20,16 +19,13 @@ import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.tiltak.TiltakTilSaksbehandlingDTO
 import no.nav.tiltakspenger.vedtak.clients.defaultHttpClient
-import no.nav.tiltakspenger.vedtak.clients.defaultObjectMapper
 
 class TiltakClientImpl(
     val baseUrl: String,
-    private val objectMapper: ObjectMapper = defaultObjectMapper(),
     private val getToken: suspend () -> AccessToken,
     engine: HttpClientEngine? = null,
     private val httpClient: HttpClient =
         defaultHttpClient(
-            objectMapper = objectMapper,
             engine = engine,
         ) {},
 ) : TiltakClient {

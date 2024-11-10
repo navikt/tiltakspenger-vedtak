@@ -25,7 +25,7 @@ internal class BehandlingServiceTest {
                     correlationId = CorrelationId.generate(),
                 )
             }.message shouldBe
-                "Saksbehandler må ha beslutterrolle. Utøvende saksbehandler: Saksbehandler(navIdent='U12345', brukernavn='*****', epost='*****', roller=Roller(value=[]))"
+                "Saksbehandler må ha beslutterrolle. Utøvende saksbehandler: Saksbehandler(navIdent='U12345', brukernavn='*****', epost='*****', roller=Saksbehandlerroller(value=[]))"
             shouldNotThrow<IllegalStateException> {
                 this.førstegangsbehandlingContext.behandlingService.taBehandling(
                     behandlingId,

@@ -7,14 +7,14 @@ import arrow.core.right
 import arrow.core.toNonEmptyListOrNull
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
-import no.nav.tiltakspenger.felles.Saksbehandler
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
 import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
-import no.nav.tiltakspenger.libs.common.Rolle
 import no.nav.tiltakspenger.libs.common.SakId
+import no.nav.tiltakspenger.libs.common.Saksbehandler
+import no.nav.tiltakspenger.libs.common.Saksbehandlerrolle
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 import no.nav.tiltakspenger.libs.person.AdressebeskyttelseGradering
@@ -55,7 +55,7 @@ class SakServiceImpl(
         if (!saksbehandler.erSaksbehandler()) {
             logger.warn { "Navident ${saksbehandler.navIdent} med rollene ${saksbehandler.roller} har ikke tilgang til å hente sak for fnr" }
             return KanIkkeStarteFørstegangsbehandling.HarIkkeTilgang(
-                kreverEnAvRollene = listOf(Rolle.SAKSBEHANDLER),
+                kreverEnAvRollene = setOf(Saksbehandlerrolle.SAKSBEHANDLER),
                 harRollene = saksbehandler.roller,
             ).left()
         }
@@ -121,7 +121,7 @@ class SakServiceImpl(
         if (!saksbehandler.erSaksbehandlerEllerBeslutter()) {
             logger.warn { "Navident ${saksbehandler.navIdent} med rollene ${saksbehandler.roller} har ikke tilgang til å hente sak for saksnummer" }
             return KunneIkkeHenteSakForSaksnummer.HarIkkeTilgang(
-                kreverEnAvRollene = listOf(Rolle.SAKSBEHANDLER, Rolle.BESLUTTER),
+                kreverEnAvRollene = setOf(Saksbehandlerrolle.SAKSBEHANDLER, Saksbehandlerrolle.BESLUTTER),
                 harRollene = saksbehandler.roller,
             ).left()
         }
@@ -140,7 +140,7 @@ class SakServiceImpl(
         if (!saksbehandler.erSaksbehandlerEllerBeslutter()) {
             logger.warn { "Navident ${saksbehandler.navIdent} med rollene ${saksbehandler.roller} har ikke tilgang til å hente sak for fnr" }
             return KunneIkkeHenteSakForFnr.HarIkkeTilgang(
-                kreverEnAvRollene = listOf(Rolle.SAKSBEHANDLER, Rolle.BESLUTTER),
+                kreverEnAvRollene = setOf(Saksbehandlerrolle.SAKSBEHANDLER, Saksbehandlerrolle.BESLUTTER),
                 harRollene = saksbehandler.roller,
             ).left()
         }
@@ -162,7 +162,7 @@ class SakServiceImpl(
         if (!saksbehandler.erSaksbehandlerEllerBeslutter()) {
             logger.warn { "Navident ${saksbehandler.navIdent} med rollene ${saksbehandler.roller} har ikke tilgang til å hente sak for fnr" }
             return KunneIkkeHenteSakForSakId.HarIkkeTilgang(
-                kreverEnAvRollene = listOf(Rolle.SAKSBEHANDLER, Rolle.BESLUTTER),
+                kreverEnAvRollene = setOf(Saksbehandlerrolle.SAKSBEHANDLER, Saksbehandlerrolle.BESLUTTER),
                 harRollene = saksbehandler.roller,
             ).left()
         }
@@ -177,7 +177,7 @@ class SakServiceImpl(
         if (!saksbehandler.erSaksbehandlerEllerBeslutter()) {
             logger.warn { "Navident ${saksbehandler.navIdent} med rollene ${saksbehandler.roller} har ikke tilgang til å hente saksoversikt" }
             return KanIkkeHenteSaksoversikt.HarIkkeTilgang(
-                kreverEnAvRollene = listOf(Rolle.SAKSBEHANDLER, Rolle.BESLUTTER),
+                kreverEnAvRollene = setOf(Saksbehandlerrolle.SAKSBEHANDLER, Saksbehandlerrolle.BESLUTTER),
                 harRollene = saksbehandler.roller,
             ).left()
         }
@@ -209,7 +209,7 @@ class SakServiceImpl(
         if (!saksbehandler.erSaksbehandlerEllerBeslutter()) {
             logger.warn { "Navident ${saksbehandler.navIdent} med rollene ${saksbehandler.roller} har ikke tilgang til å hente sak for fnr" }
             return KunneIkkeHenteEnkelPerson.HarIkkeTilgang(
-                kreverEnAvRollene = listOf(Rolle.SAKSBEHANDLER, Rolle.BESLUTTER),
+                kreverEnAvRollene = setOf(Saksbehandlerrolle.SAKSBEHANDLER, Saksbehandlerrolle.BESLUTTER),
                 harRollene = saksbehandler.roller,
             ).left()
         }

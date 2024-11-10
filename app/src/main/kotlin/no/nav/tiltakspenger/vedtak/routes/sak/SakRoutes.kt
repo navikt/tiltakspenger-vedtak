@@ -9,20 +9,20 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import mu.KotlinLogging
+import no.nav.tiltakspenger.libs.auth.core.TokenService
+import no.nav.tiltakspenger.libs.auth.ktor.withSaksbehandler
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.saksbehandling.service.sak.KunneIkkeHenteSakForFnr
 import no.nav.tiltakspenger.saksbehandling.service.sak.KunneIkkeHenteSakForSaksnummer
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
-import no.nav.tiltakspenger.vedtak.auth2.TokenService
 import no.nav.tiltakspenger.vedtak.routes.correlationId
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.ikkeTilgang
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond400BadRequest
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond403Forbidden
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond404NotFound
-import no.nav.tiltakspenger.vedtak.routes.withSaksbehandler
 import no.nav.tiltakspenger.vedtak.routes.withSaksnummer
 
 private val logger = KotlinLogging.logger {}
