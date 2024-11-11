@@ -167,6 +167,7 @@ class BehandlingPostgresRepo(
                             "vilkaarssett" to behandling.vilkårssett.toDbJson(),
                             "attesteringer" to behandling.attesteringer.toDbJson(),
                             "stonadsdager" to behandling.stønadsdager.toDbJson(),
+                            "iverksatt_tidspunkt" to behandling.iverksattTidspunkt,
                         ),
                     ).asUpdate,
                 )
@@ -199,6 +200,7 @@ class BehandlingPostgresRepo(
                         "saksbehandler" to behandling.saksbehandler,
                         "beslutter" to behandling.beslutter,
                         "attesteringer" to behandling.attesteringer.toDbJson(),
+                        "iverksatt_tidspunkt" to behandling.iverksattTidspunkt,
                     ),
                 ).asUpdate,
             )
@@ -246,6 +248,7 @@ class BehandlingPostgresRepo(
                 stønadsdager = stønadsdager,
                 status = status.toBehandlingsstatus(),
                 opprettet = localDateTime("opprettet"),
+                iverksattTidspunkt = localDateTimeOrNull("iverksatt_tidspunkt"),
             )
         }
 
@@ -264,7 +267,8 @@ class BehandlingPostgresRepo(
                 stønadsdager,
                 saksbehandler,
                 beslutter,
-                attesteringer
+                attesteringer,
+                iverksatt_tidspunkt
             ) values (
                 :id,
                 :sak_id,
@@ -277,7 +281,8 @@ class BehandlingPostgresRepo(
                 to_jsonb(:stonadsdager::jsonb),
                 :saksbehandler,
                 :beslutter,
-                to_jsonb(:attesteringer::jsonb)
+                to_jsonb(:attesteringer::jsonb),
+                :iverksatt_tidspunkt
             )
             """.trimIndent()
 
@@ -294,7 +299,8 @@ class BehandlingPostgresRepo(
                 beslutter = :beslutter,
                 vilkårssett = to_jsonb(:vilkaarssett::json),
                 stønadsdager = to_jsonb(:stonadsdager::json),
-                attesteringer = to_jsonb(:attesteringer::json)
+                attesteringer = to_jsonb(:attesteringer::json),
+                iverksatt_tidspunkt = :iverksatt_tidspunkt
             where id = :id
               and sist_endret = :sist_endret_old
             """.trimIndent()

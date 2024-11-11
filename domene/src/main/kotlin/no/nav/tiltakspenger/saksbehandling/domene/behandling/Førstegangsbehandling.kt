@@ -39,6 +39,7 @@ data class Førstegangsbehandling(
     override val status: Behandlingsstatus,
     override val attesteringer: List<Attestering>,
     override val opprettet: LocalDateTime,
+    override val iverksattTidspunkt: LocalDateTime?,
 ) : Behandling {
     init {
         require(vilkårssett.vurderingsperiode == vurderingsperiode) {
@@ -55,12 +56,14 @@ data class Førstegangsbehandling(
                 "Behandlingen kan ikke være tilknyttet en saksbehandler når statusen er KLAR_TIL_BEHANDLING"
             }
             // Selvom beslutter har underkjent, må vi kunne ta hen av behandlingen.
+            require(iverksattTidspunkt == null)
         }
         if (status == UNDER_BEHANDLING) {
             requireNotNull(saksbehandler) {
                 "Behandlingen må være tilknyttet en saksbehandler når status er UNDER_BEHANDLING"
             }
             // Selvom beslutter har underkjent, må vi kunne ta hen av behandlingen.
+            require(iverksattTidspunkt == null)
         }
         if (status == KLAR_TIL_BESLUTNING) {
             // Vi kan ikke ta saksbehandler av behandlingen før den underkjennes.
@@ -71,6 +74,7 @@ data class Førstegangsbehandling(
             require(vilkårssett.samletUtfall != SamletUtfall.UAVKLART) {
                 "Behandlingen kan ikke være KLAR_TIL_BESLUTNING når samlet utfall er UAVKLART"
             }
+            require(iverksattTidspunkt == null)
         }
         if (status == UNDER_BESLUTNING) {
             // Vi kan ikke ta saksbehandler av behandlingen før den underkjennes.
@@ -79,6 +83,7 @@ data class Førstegangsbehandling(
             require(
                 vilkårssett.samletUtfall != SamletUtfall.UAVKLART,
             ) { "Behandlingen kan ikke være UNDER_BESLUTNING når samlet utfall er UAVKLART" }
+            require(iverksattTidspunkt == null)
         }
 
         if (status == INNVILGET) {
@@ -88,6 +93,7 @@ data class Førstegangsbehandling(
             require(
                 vilkårssett.samletUtfall != SamletUtfall.UAVKLART,
             ) { "Behandlingen kan ikke være innvilget når samlet utfall er UAVKLART" }
+            requireNotNull(iverksattTidspunkt)
         }
     }
 
@@ -147,12 +153,16 @@ data class Førstegangsbehandling(
                 søknad = søknad,
                 vurderingsperiode = vurderingsperiode,
                 vilkårssett = vilkårssett,
-                stønadsdager = Stønadsdager(vurderingsperiode = vurderingsperiode, tiltak.tilStønadsdagerRegisterSaksopplysning()),
+                stønadsdager = Stønadsdager(
+                    vurderingsperiode = vurderingsperiode,
+                    tiltak.tilStønadsdagerRegisterSaksopplysning(),
+                ),
                 saksbehandler = saksbehandler.navIdent,
                 beslutter = null,
                 status = UNDER_BEHANDLING,
                 attesteringer = emptyList(),
                 opprettet = LocalDateTime.now(),
+                iverksattTidspunkt = null,
             ).right()
         }
     }
@@ -217,7 +227,7 @@ data class Førstegangsbehandling(
                 check(!this.attesteringer.any { it.isGodkjent() }) {
                     "Behandlingen er allerede godkjent"
                 }
-                this.copy(status = INNVILGET, attesteringer = attesteringer + attestering)
+                this.copy(status = INNVILGET, attesteringer = attesteringer + attestering, iverksattTidspunkt = LocalDateTime.now())
             }
 
             KLAR_TIL_BEHANDLING, UNDER_BEHANDLING, KLAR_TIL_BESLUTNING, INNVILGET -> throw IllegalStateException(

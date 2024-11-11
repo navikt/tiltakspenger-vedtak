@@ -28,6 +28,7 @@ interface Behandling {
     val status: Behandlingsstatus
     val attesteringer: List<Attestering>
     val opprettet: LocalDateTime
+    val iverksattTidspunkt: LocalDateTime?
 
     val utfallsperioder: Periodisering<UtfallForPeriode> get() = vilkårssett.utfallsperioder()
     val avklarteUtfallsperioder: Periodisering<AvklartUtfallForPeriode> get() = utfallsperioder.toAvklartUtfallForPeriode()

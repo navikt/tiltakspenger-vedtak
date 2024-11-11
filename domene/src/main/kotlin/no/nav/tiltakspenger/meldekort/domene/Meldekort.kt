@@ -36,6 +36,7 @@ sealed interface Meldekort {
     val beslutter: String?
     val status: MeldekortStatus
     val navkontor: Navkontor?
+    val iverksattTidspunkt: LocalDateTime?
 
     /** Vil være duplikat av det siste vedtaket som påvirker denne meldeperioden. Vil være et førstegangsvedtak i MVP, men vil på sikt også stamme fra revurderinger. */
     val antallDagerForMeldeperiode: Int
@@ -66,13 +67,20 @@ sealed interface Meldekort {
         override val saksbehandler: String,
         override val beslutter: String?,
         override val status: MeldekortStatus,
-        val iverksattTidspunkt: LocalDateTime?,
+        override val iverksattTidspunkt: LocalDateTime?,
         override val navkontor: Navkontor,
         override val antallDagerForMeldeperiode: Int,
     ) : Meldekort {
 
         init {
             require(status in listOf(MeldekortStatus.GODKJENT, MeldekortStatus.KLAR_TIL_BESLUTNING))
+            if (status == MeldekortStatus.GODKJENT) {
+                requireNotNull(iverksattTidspunkt)
+                requireNotNull(beslutter)
+            } else {
+                require(iverksattTidspunkt == null)
+                require(beslutter == null)
+            }
         }
 
         /**
@@ -108,7 +116,9 @@ sealed interface Meldekort {
             ).right()
         }
 
-        fun iverksettMeldekort(beslutter: Saksbehandler): Either<KanIkkeIverksetteMeldekort, UtfyltMeldekort> {
+        fun iverksettMeldekort(
+            beslutter: Saksbehandler,
+        ): Either<KanIkkeIverksetteMeldekort, UtfyltMeldekort> {
             if (!beslutter.erBeslutter()) {
                 return KanIkkeIverksetteMeldekort.MåVæreBeslutter(beslutter.roller).left()
             }
@@ -140,6 +150,7 @@ sealed interface Meldekort {
         override val navkontor: Navkontor?,
         override val antallDagerForMeldeperiode: Int,
     ) : Meldekort {
+        override val iverksattTidspunkt = null
 
         override val beløpTotal = null
         override val status = MeldekortStatus.IKKE_UTFYLT

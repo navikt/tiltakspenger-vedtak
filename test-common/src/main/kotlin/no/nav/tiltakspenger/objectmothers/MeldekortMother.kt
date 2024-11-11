@@ -48,26 +48,28 @@ interface MeldekortMother {
         forrigeMeldekortId: MeldekortId? = null,
         tiltakstype: TiltakstypeSomGirRett = TiltakstypeSomGirRett.GRUPPE_AMO,
         status: MeldekortStatus = MeldekortStatus.GODKJENT,
-        iverksattTidspunkt: LocalDateTime? = null,
+        iverksattTidspunkt: LocalDateTime = LocalDateTime.now(),
         navkontor: Navkontor = ObjectMother.navkontor(),
         antallDagerForMeldeperiode: Int = 10,
-    ) = Meldekort.UtfyltMeldekort(
-        id = id,
-        meldeperiodeId = meldeperiodeId,
-        sakId = sakId,
-        saksnummer = saksnummer,
-        fnr = fnr,
-        rammevedtakId = rammevedtakId,
-        meldeperiode = meldekortperiode,
-        saksbehandler = saksbehandler,
-        beslutter = beslutter,
-        forrigeMeldekortId = forrigeMeldekortId,
-        tiltakstype = tiltakstype,
-        status = status,
-        iverksattTidspunkt = iverksattTidspunkt,
-        navkontor = navkontor,
-        antallDagerForMeldeperiode = antallDagerForMeldeperiode,
-    )
+    ): Meldekort.UtfyltMeldekort {
+        return Meldekort.UtfyltMeldekort(
+            id = id,
+            meldeperiodeId = meldeperiodeId,
+            sakId = sakId,
+            saksnummer = saksnummer,
+            fnr = fnr,
+            rammevedtakId = rammevedtakId,
+            meldeperiode = meldekortperiode,
+            saksbehandler = saksbehandler,
+            beslutter = beslutter,
+            forrigeMeldekortId = forrigeMeldekortId,
+            tiltakstype = tiltakstype,
+            status = status,
+            iverksattTidspunkt = iverksattTidspunkt,
+            navkontor = navkontor,
+            antallDagerForMeldeperiode = antallDagerForMeldeperiode,
+        )
+    }
 
     /**
      * @param startDato Må starte på en mandag.

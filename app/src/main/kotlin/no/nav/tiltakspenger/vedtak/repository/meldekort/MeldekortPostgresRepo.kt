@@ -44,7 +44,8 @@ class MeldekortPostgresRepo(
                         saksbehandler,
                         beslutter,
                         status,
-                        navkontor
+                        navkontor,
+                        iverksatt_tidspunkt
                     ) values (
                         :id,
                         :forrige_meldekort_id,
@@ -57,7 +58,8 @@ class MeldekortPostgresRepo(
                         :saksbehandler,
                         :beslutter,
                         :status,
-                        :navkontor
+                        :navkontor,
+                        :iverksatt_tidspunkt
                     )
                     """.trimIndent(),
                     mapOf(
@@ -73,6 +75,7 @@ class MeldekortPostgresRepo(
                         "beslutter" to meldekort.beslutter,
                         "status" to meldekort.status.toDb(),
                         "navkontor" to meldekort.navkontor?.kontornummer,
+                        "iverksatt_tidspunkt" to meldekort.iverksattTidspunkt,
                     ),
                 ).asUpdate,
             )
@@ -92,7 +95,8 @@ class MeldekortPostgresRepo(
                         saksbehandler = :saksbehandler,
                         beslutter = :beslutter,
                         status = :status,
-                        navkontor = :navkontor
+                        navkontor = :navkontor,
+                        iverksatt_tidspunkt = :iverksatt_tidspunkt
                     where id = :id
                     """.trimIndent(),
                     mapOf(
@@ -102,6 +106,7 @@ class MeldekortPostgresRepo(
                         "beslutter" to meldekort.beslutter,
                         "status" to meldekort.status.toDb(),
                         "navkontor" to meldekort.navkontor.kontornummer,
+                        "iverksatt_tidspunkt" to meldekort.iverksattTidspunkt,
                     ),
                 ).asUpdate,
             )
