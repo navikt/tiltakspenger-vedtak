@@ -77,12 +77,7 @@ object Configuration {
                 "AZURE_OPENID_CONFIG_TOKEN_ENDPOINT" to "http://host.docker.internal:6969/default/token",
                 "AZURE_OPENID_CONFIG_ISSUER" to "http://host.docker.internal:6969/azure",
                 "AZURE_OPENID_CONFIG_JWKS_URI" to "http://host.docker.internal:6969/azure/jwks",
-                "DB_USERNAME" to "postgres",
-                "DB_PASSWORD" to "test",
-                "DB_DATABASE" to "vedtak",
-                "DB_HOST" to "localhost",
-                "DB_PORT" to "5433",
-                "DB_JDBC_URL" to "jdbc:postgresql://localhost:5433/saksbehandling",
+                "DB_JDBC_URL" to "jdbc:postgresql://host.docker.internal:5433/saksbehandling",
                 "MICROSOFT_SCOPE" to "localhost",
                 "MICROSOFT_URL" to "host.docker.internal:8091",
             ),
@@ -220,20 +215,10 @@ object Configuration {
     fun gitHash(): String = config()[Key("NAIS_APP_IMAGE", stringType)].substringAfterLast(":")
 
     data class DataBaseConf(
-        val database: String,
-        val host: String,
-        val passord: String,
-        val port: Int,
-        val brukernavn: String,
         val url: String,
     )
 
     fun database() = DataBaseConf(
-        database = config()[Key("DB_DATABASE", stringType)],
-        host = config()[Key("DB_HOST", stringType)],
-        passord = config()[Key("DB_PASSWORD", stringType)],
-        brukernavn = config()[Key("DB_USERNAME", stringType)],
-        port = config()[Key("DB_PORT", intType)],
         url = config()[Key("DB_JDBC_URL", stringType)],
     )
 }
