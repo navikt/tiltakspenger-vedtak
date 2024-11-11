@@ -77,7 +77,7 @@ object Configuration {
                 "AZURE_OPENID_CONFIG_TOKEN_ENDPOINT" to "http://host.docker.internal:6969/default/token",
                 "AZURE_OPENID_CONFIG_ISSUER" to "http://host.docker.internal:6969/azure",
                 "AZURE_OPENID_CONFIG_JWKS_URI" to "http://host.docker.internal:6969/azure/jwks",
-                "DB_JDBC_URL" to "jdbc:postgresql://host.docker.internal:5433/saksbehandling",
+                "DB_JDBC_URL" to "jdbc:postgresql://host.docker.internal:5433/saksbehandling?user=postgres&password=test",
                 "MICROSOFT_SCOPE" to "localhost",
                 "MICROSOFT_URL" to "host.docker.internal:8091",
             ),
