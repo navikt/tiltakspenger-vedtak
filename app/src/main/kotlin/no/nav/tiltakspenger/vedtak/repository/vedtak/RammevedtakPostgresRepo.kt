@@ -219,7 +219,8 @@ class RammevedtakPostgresRepo(
                         "til_og_med" to vedtak.periode.tilOgMed,
                         "saksbehandler" to vedtak.saksbehandlerNavIdent,
                         "beslutter" to vedtak.beslutterNavIdent,
-                        "opprettet" to LocalDateTime.now(),
+                        // TODO pre-mvp jah: Hva er forskjellen på vedtaksdato og opprettet? Skal vedtaksdato egentlig representere datoen vi skriver i vedtaksbrevet?
+                        "opprettet" to vedtak.vedtaksdato,
                     ),
                 ).asUpdate,
             )

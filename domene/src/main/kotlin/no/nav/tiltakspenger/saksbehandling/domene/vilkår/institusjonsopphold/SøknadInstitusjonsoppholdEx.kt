@@ -1,10 +1,10 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår.institusjonsopphold
 
+import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
-import java.time.LocalDateTime
 
 fun Søknad.institusjonsoppholdSaksopplysning(vurderingsperiode: Periode): InstitusjonsoppholdSaksopplysning.Søknad =
     when (institusjon) {
@@ -14,7 +14,7 @@ fun Søknad.institusjonsoppholdSaksopplysning(vurderingsperiode: Periode): Insti
                 Periodisering(
                     listOf(PeriodeMedVerdi(Opphold.IKKE_OPPHOLD, vurderingsperiode)),
                 ),
-                tidsstempel = LocalDateTime.now(),
+                tidsstempel = nå(),
             )
 
         is Søknad.PeriodeSpm.Ja -> {
@@ -27,7 +27,7 @@ fun Søknad.institusjonsoppholdSaksopplysning(vurderingsperiode: Periode): Insti
                     Opphold.OPPHOLD,
                     institusjon.periode,
                 ),
-                tidsstempel = LocalDateTime.now(),
+                tidsstempel = nå(),
             )
         }
     }

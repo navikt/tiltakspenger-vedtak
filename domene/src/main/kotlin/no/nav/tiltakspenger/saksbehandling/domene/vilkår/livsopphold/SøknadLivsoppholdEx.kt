@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold
 
+import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
-import java.time.LocalDateTime
 
 /*
 * Denne skal bygges på! Men i første omgang trenger vi kun å vite om
@@ -13,6 +13,6 @@ import java.time.LocalDateTime
 fun Søknad.livsoppholdSaksopplysning(vurderingsperiode: Periode): LivsoppholdSaksopplysning.Søknad =
     LivsoppholdSaksopplysning.Søknad(
         harLivsoppholdYtelser = harLivsoppholdYtelser(),
-        tidsstempel = LocalDateTime.now(),
+        tidsstempel = nå(),
         periode = vurderingsperiode,
     )

@@ -4,13 +4,13 @@ import arrow.core.Either
 import arrow.core.getOrElse
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.NavIdentClient
+import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.saksbehandling.ports.GenererVedtaksbrevGateway
 import no.nav.tiltakspenger.saksbehandling.ports.JournalførVedtaksbrevGateway
 import no.nav.tiltakspenger.saksbehandling.ports.RammevedtakRepo
 import no.nav.tiltakspenger.saksbehandling.service.person.PersonService
-import java.time.LocalDateTime
 
 class JournalførVedtaksbrevService(
     private val journalførVedtaksbrevGateway: JournalførVedtaksbrevGateway,
@@ -38,7 +38,7 @@ class JournalførVedtaksbrevService(
                     val journalpostId =
                         journalførVedtaksbrevGateway.journalførVedtaksbrev(vedtak, pdfOgJson, correlationId)
                     log.info { "Vedtaksbrev journalført for vedtak ${vedtak.id}" }
-                    rammevedtakRepo.markerJournalført(vedtak.id, journalpostId, LocalDateTime.now())
+                    rammevedtakRepo.markerJournalført(vedtak.id, journalpostId, nå())
                     log.info { "Vedtaksbrev markert som journalført for vedtak ${vedtak.id}" }
                 }.onLeft {
                     log.error(it) { "Feil ved journalføring av vedtaksbrev for vedtak ${vedtak.id}" }

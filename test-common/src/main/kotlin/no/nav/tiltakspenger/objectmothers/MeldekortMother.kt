@@ -5,6 +5,7 @@ import arrow.core.nonEmptyListOf
 import arrow.core.toNonEmptyListOrNull
 import no.nav.tiltakspenger.felles.Navkontor
 import no.nav.tiltakspenger.felles.erHelg
+import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
@@ -48,11 +49,11 @@ interface MeldekortMother {
         forrigeMeldekortId: MeldekortId? = null,
         tiltakstype: TiltakstypeSomGirRett = TiltakstypeSomGirRett.GRUPPE_AMO,
         status: MeldekortStatus = MeldekortStatus.GODKJENT,
-        iverksattTidspunkt: LocalDateTime = LocalDateTime.now(),
+        iverksattTidspunkt: LocalDateTime = nå(),
         navkontor: Navkontor = ObjectMother.navkontor(),
         antallDagerForMeldeperiode: Int = 10,
-        opprettet: LocalDateTime = LocalDateTime.now(),
-        sendtTilBeslutning: LocalDateTime = LocalDateTime.now(),
+        opprettet: LocalDateTime = nå(),
+        sendtTilBeslutning: LocalDateTime = nå(),
     ): Meldekort.UtfyltMeldekort {
         return Meldekort.UtfyltMeldekort(
             id = id,
@@ -183,7 +184,7 @@ interface MeldekortMother {
         saksnummer: Saksnummer = Saksnummer.genererSaknummer(løpenr = "1001"),
         fnr: Fnr = Fnr.random(),
         rammevedtakId: VedtakId,
-        opprettet: LocalDateTime = LocalDateTime.now(),
+        opprettet: LocalDateTime = nå(),
         kommando: SendMeldekortTilBeslutterKommando,
         meldeperiodeId: MeldeperiodeId = MeldeperiodeId.fraPeriode(kommando.periode),
         utfallsperioder: Periodisering<AvklartUtfallForPeriode>,
@@ -220,7 +221,7 @@ interface MeldekortMother {
         saksnummer: Saksnummer = Saksnummer.genererSaknummer(løpenr = "1001"),
         meldeperiodeId: MeldeperiodeId = MeldeperiodeId.fraPeriode(kommando.periode),
         navkontor: Navkontor = ObjectMother.navkontor(),
-        opprettet: LocalDateTime = LocalDateTime.now(),
+        opprettet: LocalDateTime = nå(),
     ): Meldeperioder {
         val meldekortId = kommando.meldekortId
         val sakId = kommando.sakId

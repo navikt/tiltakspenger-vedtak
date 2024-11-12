@@ -1,11 +1,11 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår.introduksjonsprogrammet
 
+import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.Deltagelse
-import java.time.LocalDateTime
 
 fun Søknad.introSaksopplysning(vurderingsperiode: Periode): IntroSaksopplysning.Søknad =
     when (intro) {
@@ -15,7 +15,7 @@ fun Søknad.introSaksopplysning(vurderingsperiode: Periode): IntroSaksopplysning
                 Periodisering(
                     listOf(PeriodeMedVerdi(Deltagelse.DELTAR_IKKE, vurderingsperiode)),
                 ),
-                tidsstempel = LocalDateTime.now(),
+                tidsstempel = nå(),
             )
 
         is Søknad.PeriodeSpm.Ja -> {
@@ -28,7 +28,7 @@ fun Søknad.introSaksopplysning(vurderingsperiode: Periode): IntroSaksopplysning
                     Deltagelse.DELTAR,
                     intro.periode,
                 ),
-                tidsstempel = LocalDateTime.now(),
+                tidsstempel = nå(),
             )
         }
     }

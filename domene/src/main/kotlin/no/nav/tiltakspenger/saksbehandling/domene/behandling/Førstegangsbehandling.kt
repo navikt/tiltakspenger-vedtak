@@ -5,6 +5,7 @@ import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
 import no.nav.tiltakspenger.felles.exceptions.StøtterIkkeUtfallException
+import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
@@ -164,7 +165,7 @@ data class Førstegangsbehandling(
                 beslutter = null,
                 status = UNDER_BEHANDLING,
                 attesteringer = emptyList(),
-                opprettet = LocalDateTime.now(),
+                opprettet = nå(),
                 iverksattTidspunkt = null,
             ).right()
         }
@@ -213,7 +214,7 @@ data class Førstegangsbehandling(
         check(saksbehandler.erSaksbehandler()) { "Saksbehandler må ha saksbehandlerrolle. Utøvende saksbehandler: $saksbehandler" }
         check(saksbehandler.navIdent == this.saksbehandler) { "Det er ikke lov å sende en annen sin behandling til beslutter" }
         check(samletUtfall != SamletUtfall.UAVKLART) { "Kan ikke sende en UAVKLART behandling til beslutter" }
-        return this.copy(status = if (beslutter == null) KLAR_TIL_BESLUTNING else UNDER_BESLUTNING, sendtTilBeslutning = LocalDateTime.now())
+        return this.copy(status = if (beslutter == null) KLAR_TIL_BESLUTNING else UNDER_BESLUTNING, sendtTilBeslutning = nå())
     }
 
     override fun iverksett(
@@ -230,7 +231,7 @@ data class Førstegangsbehandling(
                 check(!this.attesteringer.any { it.isGodkjent() }) {
                     "Behandlingen er allerede godkjent"
                 }
-                this.copy(status = INNVILGET, attesteringer = attesteringer + attestering, iverksattTidspunkt = LocalDateTime.now())
+                this.copy(status = INNVILGET, attesteringer = attesteringer + attestering, iverksattTidspunkt = nå())
             }
 
             KLAR_TIL_BEHANDLING, UNDER_BEHANDLING, KLAR_TIL_BESLUTNING, INNVILGET -> throw IllegalStateException(

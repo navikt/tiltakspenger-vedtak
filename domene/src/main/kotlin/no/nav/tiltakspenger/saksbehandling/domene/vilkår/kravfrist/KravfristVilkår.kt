@@ -1,12 +1,12 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravfrist
 
 import no.nav.tiltakspenger.felles.exceptions.StøtterIkkeUtfallException
+import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.UtfallForPeriode
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
-import java.time.LocalDateTime
 
 /**
  * Kravfrist
@@ -44,7 +44,7 @@ data class KravfristVilkår private constructor(
                 kravdato = command.kravdato,
                 årsakTilEndring = command.årsakTilEndring,
                 saksbehandler = command.saksbehandler,
-                tidsstempel = LocalDateTime.now(),
+                tidsstempel = nå(),
             )
         return this.copy(
             saksbehandlerSaksopplysning = kravfristSaksopplysning,

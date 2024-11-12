@@ -4,6 +4,7 @@ import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import no.nav.tiltakspenger.felles.Navkontor
+import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
@@ -108,7 +109,7 @@ sealed interface Meldekort {
                 fnr = this.fnr,
                 rammevedtakId = this.rammevedtakId,
                 forrigeMeldekortId = this.id,
-                opprettet = LocalDateTime.now(),
+                opprettet = nå(),
                 tiltakstype = this.tiltakstype,
                 navkontor = this.navkontor,
                 meldeperiode = Meldeperiode.IkkeUtfyltMeldeperiode.fraPeriode(
@@ -136,7 +137,7 @@ sealed interface Meldekort {
             return this.copy(
                 beslutter = beslutter.navIdent,
                 status = MeldekortStatus.GODKJENT,
-                iverksattTidspunkt = LocalDateTime.now(),
+                iverksattTidspunkt = nå(),
             ).right()
         }
 
@@ -191,7 +192,7 @@ sealed interface Meldekort {
                 meldeperiode = utfyltMeldeperiode,
                 tiltakstype = this.tiltakstype,
                 saksbehandler = saksbehandler.navIdent,
-                sendtTilBeslutning = LocalDateTime.now(),
+                sendtTilBeslutning = nå(),
                 beslutter = this.beslutter,
                 status = MeldekortStatus.KLAR_TIL_BESLUTNING,
                 iverksattTidspunkt = null,
@@ -223,7 +224,7 @@ fun Rammevedtak.opprettFørsteMeldekortForEnSak(): Meldekort.IkkeUtfyltMeldekort
         fnr = this.behandling.fnr,
         rammevedtakId = this.id,
         forrigeMeldekortId = null,
-        opprettet = LocalDateTime.now(),
+        opprettet = nå(),
         tiltakstype = tiltakstype,
         // TODO post-mvp: Her har vi mulighet til å hente verdien fra brukers geografiske tilhørighet + norg2.
         navkontor = null,

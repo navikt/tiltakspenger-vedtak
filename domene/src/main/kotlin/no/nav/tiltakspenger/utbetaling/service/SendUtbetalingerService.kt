@@ -2,11 +2,11 @@ package no.nav.tiltakspenger.utbetaling.service
 
 import arrow.core.Either
 import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.saksbehandling.ports.UtbetalingGateway
 import no.nav.tiltakspenger.utbetaling.ports.UtbetalingsvedtakRepo
-import java.time.LocalDateTime
 
 /**
  * Har ansvar for å sende klare utbetalingsvedtak til helved utsjekk.
@@ -28,7 +28,7 @@ class SendUtbetalingerService(
                         }
                     utbetalingsklient.iverksett(utbetalingsvedtak, forrigeUtbetalingJson, correlationId).onRight {
                         logger.info { "Utbetaling iverksatt for vedtak ${utbetalingsvedtak.id}" }
-                        utbetalingsvedtakRepo.markerSendtTilUtbetaling(utbetalingsvedtak.id, LocalDateTime.now(), it)
+                        utbetalingsvedtakRepo.markerSendtTilUtbetaling(utbetalingsvedtak.id, nå(), it)
                         logger.info { "Utbetaling markert som utbetalt for vedtak ${utbetalingsvedtak.id}" }
                     }.onLeft {
                         logger.error { "Utbetaling kunne ikke iverksettes. Saksnummer: ${utbetalingsvedtak.saksnummer}, sakId: ${utbetalingsvedtak.sakId}, utbetalingsvedtakId: ${utbetalingsvedtak.id}" }

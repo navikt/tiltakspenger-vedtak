@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp
 
 import no.nav.tiltakspenger.felles.exceptions.StøtterIkkeUtfallException
+import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
@@ -8,7 +9,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.UtfallForPeriode
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.Deltagelse
-import java.time.LocalDateTime
 
 /**
  * Kvalifiseringsprogrammet (KVP): https://www.nav.no/kvalifiseringsprogrammet
@@ -55,7 +55,7 @@ data class KVPVilkår private constructor(
                 ).utvid(Deltagelse.DELTAR_IKKE, vurderingsperiode),
                 årsakTilEndring = command.årsakTilEndring,
                 saksbehandler = command.saksbehandler,
-                tidsstempel = LocalDateTime.now(),
+                tidsstempel = nå(),
             )
         return this.copy(
             saksbehandlerSaksopplysning = kvpSaksopplysning,
