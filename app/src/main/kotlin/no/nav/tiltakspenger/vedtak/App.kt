@@ -64,6 +64,7 @@ fun main() {
                 applicationContext.utbetalingContext.journalførUtbetalingsvedtakService.journalfør(correlationId)
                 applicationContext.førstegangsbehandlingContext.journalførVedtaksbrevService.journalfør(correlationId)
                 applicationContext.førstegangsbehandlingContext.distribuerVedtaksbrevService.distribuer(correlationId)
+                applicationContext.sendTilDatadelingService.send(correlationId, Configuration.isNais())
             },
         )
 

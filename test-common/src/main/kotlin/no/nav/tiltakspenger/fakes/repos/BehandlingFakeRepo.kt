@@ -9,6 +9,7 @@ import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
+import java.time.LocalDateTime
 
 class BehandlingFakeRepo : BehandlingRepo {
     private val data = Atomic(mutableMapOf<BehandlingId, Behandling>())
@@ -45,6 +46,16 @@ class BehandlingFakeRepo : BehandlingRepo {
             .values
             .filterIsInstance<Førstegangsbehandling>()
             .find { it.søknad.id == søknadId }
+
+    override fun hentBehandlingerTilDatadeling(limit: Int): List<Førstegangsbehandling> {
+        return data.get().values.filterIsInstance<Førstegangsbehandling>().filter {
+            it.sendtTilDatadeling == null
+        }
+    }
+
+    override fun markerSendtTilDatadeling(id: BehandlingId, tidspunkt: LocalDateTime) {
+        TODO("Not yet implemented")
+    }
 
     fun hentFørstegangsbehandlingForSakId(sakId: SakId): Førstegangsbehandling? =
         data

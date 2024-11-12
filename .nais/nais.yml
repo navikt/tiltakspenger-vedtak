@@ -62,6 +62,7 @@ spec:
       rules:
         - application: tiltakspenger-tiltak
         - application: tiltakspenger-pdfgen
+        - application: tiltakspenger-datadeling
         - application: utsjekk
           namespace: helved
       external:

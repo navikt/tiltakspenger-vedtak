@@ -161,7 +161,7 @@ class BehandlingPostgresRepo(
                             "til_og_med" to behandling.vurderingsperiode.tilOgMed,
                             "status" to behandling.status.toDb(),
                             "sist_endret_old" to sistEndret,
-                            "sist_endret" to nå(),
+                            "sist_endret" to behandling.sistEndret,
                             "saksbehandler" to behandling.saksbehandler,
                             "beslutter" to behandling.beslutter,
                             "vilkaarssett" to behandling.vilkårssett.toDbJson(),
@@ -169,6 +169,7 @@ class BehandlingPostgresRepo(
                             "stonadsdager" to behandling.stønadsdager.toDbJson(),
                             "iverksatt_tidspunkt" to behandling.iverksattTidspunkt,
                             "sendt_til_beslutning" to behandling.sendtTilBeslutning,
+                            "sendt_til_datadeling" to behandling.sendtTilDatadeling,
                         ),
                     ).asUpdate,
                 )
@@ -194,7 +195,6 @@ class BehandlingPostgresRepo(
                         "fra_og_med" to behandling.vurderingsperiode.fraOgMed,
                         "til_og_med" to behandling.vurderingsperiode.tilOgMed,
                         "status" to behandling.status.toDb(),
-                        "sist_endret" to nå,
                         "opprettet" to behandling.opprettet,
                         "vilkaarssett" to behandling.vilkårssett.toDbJson(),
                         "stonadsdager" to behandling.stønadsdager.toDbJson(),
@@ -203,6 +203,8 @@ class BehandlingPostgresRepo(
                         "attesteringer" to behandling.attesteringer.toDbJson(),
                         "iverksatt_tidspunkt" to behandling.iverksattTidspunkt,
                         "sendt_til_beslutning" to behandling.sendtTilBeslutning,
+                        "sendt_til_datadeling" to behandling.sendtTilDatadeling,
+                        "sist_endret" to behandling.sistEndret,
                     ),
                 ).asUpdate,
             )
@@ -228,7 +230,8 @@ class BehandlingPostgresRepo(
             val status = string("status")
             val saksbehandler = stringOrNull("saksbehandler")
             val beslutter = stringOrNull("beslutter")
-            val søknad = SøknadDAO.hentForBehandlingId(id, session) ?: throw IllegalStateException("Forventet å finne tilknyttet søøknad for behandlingId $id")
+            val søknad = SøknadDAO.hentForBehandlingId(id, session)
+                ?: throw IllegalStateException("Forventet å finne tilknyttet søøknad for behandlingId $id")
 
             val stønadsdager = string("stønadsdager").toStønadsdager()
             val attesteringer = string("attesteringer").toAttesteringer()
@@ -239,6 +242,7 @@ class BehandlingPostgresRepo(
             val sendtTilBeslutning = localDateTimeOrNull("sendt_til_beslutning")
             val opprettet = localDateTime("opprettet")
             val iverksattTidspunkt = localDateTimeOrNull("iverksatt_tidspunkt")
+            val sistEndret = localDateTime("sist_endret")
             return Førstegangsbehandling(
                 id = id,
                 sakId = sakId,
@@ -255,6 +259,8 @@ class BehandlingPostgresRepo(
                 status = status.toBehandlingsstatus(),
                 opprettet = opprettet,
                 iverksattTidspunkt = iverksattTidspunkt,
+                sendtTilDatadeling = localDateTimeOrNull("sendt_til_datadeling"),
+                sistEndret = sistEndret,
             )
         }
 
@@ -275,7 +281,8 @@ class BehandlingPostgresRepo(
                 beslutter,
                 attesteringer,
                 iverksatt_tidspunkt,
-                sendt_til_beslutning
+                sendt_til_beslutning,
+                sendt_til_datadeling
             ) values (
                 :id,
                 :sak_id,
@@ -290,7 +297,8 @@ class BehandlingPostgresRepo(
                 :beslutter,
                 to_jsonb(:attesteringer::jsonb),
                 :iverksatt_tidspunkt,
-                :sendt_til_beslutning
+                :sendt_til_beslutning,
+                :sendt_til_datadeling
             )
             """.trimIndent()
 
@@ -309,7 +317,8 @@ class BehandlingPostgresRepo(
                 stønadsdager = to_jsonb(:stonadsdager::json),
                 attesteringer = to_jsonb(:attesteringer::json),
                 iverksatt_tidspunkt = :iverksatt_tidspunkt,
-                sendt_til_beslutning = :sendt_til_beslutning
+                sendt_til_beslutning = :sendt_til_beslutning,
+                sendt_til_datadeling = :sendt_til_datadeling
             where id = :id
               and sist_endret = :sist_endret_old
             """.trimIndent()
@@ -333,5 +342,42 @@ class BehandlingPostgresRepo(
               join sak s on s.id = b.sak_id
                where s.ident = :ident
             """.trimIndent()
+    }
+
+    override fun hentBehandlingerTilDatadeling(limit: Int): List<Førstegangsbehandling> {
+        return sessionFactory.withSession { session ->
+            session.run(
+                queryOf(
+                    """
+                    select b.*,sak.saksnummer,sak.ident
+                      from behandling b
+                      join sak on sak.id = b.sak_id
+                      where b.sendt_til_datadeling is null or b.sendt_til_datadeling < b.sist_endret
+                      limit :limit
+                    """.trimIndent(),
+                    mapOf(
+                        "limit" to limit,
+                    ),
+                ).map { row ->
+                    row.toBehandling(session)
+                }.asList,
+            )
+        }
+    }
+
+    override fun markerSendtTilDatadeling(id: BehandlingId, tidspunkt: LocalDateTime) {
+        sessionFactory.withSession { session ->
+            session.run(
+                queryOf(
+                    """
+                    update behandling set sendt_til_datadeling = :tidspunkt where id = :id
+                    """.trimIndent(),
+                    mapOf(
+                        "id" to id.toString(),
+                        "tidspunkt" to tidspunkt,
+                    ),
+                ).asUpdate,
+            )
+        }
     }
 }

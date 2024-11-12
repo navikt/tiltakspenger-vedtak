@@ -30,6 +30,10 @@ interface Behandling {
     val attesteringer: List<Attestering>
     val opprettet: LocalDateTime
     val iverksattTidspunkt: LocalDateTime?
+    val sistEndret: LocalDateTime
+
+    /** Siste tidspunktet vi sendte behandlingen til datadeling. Sees opp i mot sist endret tidspunkt. */
+    val sendtTilDatadeling: LocalDateTime?
 
     val utfallsperioder: Periodisering<UtfallForPeriode> get() = vilkårssett.utfallsperioder()
     val avklarteUtfallsperioder: Periodisering<AvklartUtfallForPeriode> get() = utfallsperioder.toAvklartUtfallForPeriode()

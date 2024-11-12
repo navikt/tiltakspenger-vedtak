@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.context
 
+import no.nav.tiltakspenger.datadeling.service.SendTilDatadelingService
 import no.nav.tiltakspenger.libs.auth.core.EntraIdSystemtokenClient
 import no.nav.tiltakspenger.libs.auth.core.EntraIdSystemtokenHttpClient
 import no.nav.tiltakspenger.libs.auth.core.MicrosoftEntraIdTokenService
@@ -7,6 +8,7 @@ import no.nav.tiltakspenger.libs.auth.core.TokenService
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.auth.systembrukerMapper
+import no.nav.tiltakspenger.vedtak.clients.datadeling.DatadelingHttpClient
 
 /**
  * Inneholder alle klienter, repoer og servicer.
@@ -84,6 +86,19 @@ open class ApplicationContext(
             dokdistGateway = dokumentContext.dokdistGateway,
             personService = personContext.personService,
             navIdentClient = personContext.navIdentClient,
+        )
+    }
+
+    private val datadelingGateway = DatadelingHttpClient(
+        baseUrl = Configuration.datadelingUrl,
+        getToken = { entraIdSystemtokenClient.getSystemtoken(Configuration.datadelingScope) },
+    )
+
+    val sendTilDatadelingService by lazy {
+        SendTilDatadelingService(
+            rammevedtakRepo = førstegangsbehandlingContext.rammevedtakRepo,
+            behandlingRepo = førstegangsbehandlingContext.behandlingRepo,
+            datadelingGateway = datadelingGateway,
         )
     }
 }
