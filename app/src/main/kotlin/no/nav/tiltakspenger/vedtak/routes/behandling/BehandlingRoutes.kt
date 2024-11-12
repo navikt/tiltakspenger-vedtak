@@ -24,6 +24,9 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.kvp.kvpRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.livsopphold.livsoppholdRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.tiltakdeltagelse.tiltakDeltagelseRoutes
 import no.nav.tiltakspenger.vedtak.routes.correlationId
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.måVæreSaksbehandler
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.måVæreSaksbehandlerEllerBeslutter
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond403Forbidden
 import no.nav.tiltakspenger.vedtak.routes.withBehandlingId
 
 internal const val BEHANDLING_PATH = "/behandling"
@@ -43,17 +46,22 @@ fun Route.behandlingRoutes(
         call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
             call.withBehandlingId { behandlingId ->
                 val correlationId = call.correlationId()
-                val behandling = behandlingService.hentBehandling(behandlingId, saksbehandler, correlationId).toDTO()
+                behandlingService.hentBehandlingForSaksbehandler(behandlingId, saksbehandler, correlationId).fold(
+                    {
+                        call.respond403Forbidden(måVæreSaksbehandlerEllerBeslutter())
+                    },
+                    {
+                        auditService.logMedBehandlingId(
+                            behandlingId = behandlingId,
+                            navIdent = saksbehandler.navIdent,
+                            action = AuditLogEvent.Action.ACCESS,
+                            contextMessage = "Henter hele behandlingen",
+                            correlationId = correlationId,
+                        )
 
-                auditService.logMedBehandlingId(
-                    behandlingId = behandlingId,
-                    navIdent = saksbehandler.navIdent,
-                    action = AuditLogEvent.Action.ACCESS,
-                    contextMessage = "Henter hele behandlingen",
-                    correlationId = correlationId,
+                        call.respond(status = HttpStatusCode.OK, it.toDTO())
+                    },
                 )
-
-                call.respond(status = HttpStatusCode.OK, behandling)
             }
         }
     }
@@ -63,17 +71,20 @@ fun Route.behandlingRoutes(
         call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
             call.withBehandlingId { behandlingId ->
                 val correlationId = call.correlationId()
-                behandlingService.sendTilBeslutter(behandlingId, saksbehandler, correlationId)
+                behandlingService.sendTilBeslutter(behandlingId, saksbehandler, correlationId).fold(
+                    { call.respond403Forbidden(måVæreSaksbehandler()) },
+                    {
+                        auditService.logMedBehandlingId(
+                            behandlingId = behandlingId,
+                            navIdent = saksbehandler.navIdent,
+                            action = AuditLogEvent.Action.UPDATE,
+                            contextMessage = "Sender behandlingen til beslutter",
+                            correlationId = correlationId,
+                        )
 
-                auditService.logMedBehandlingId(
-                    behandlingId = behandlingId,
-                    navIdent = saksbehandler.navIdent,
-                    action = AuditLogEvent.Action.UPDATE,
-                    contextMessage = "Sender behandlingen til beslutter",
-                    correlationId = correlationId,
+                        call.respond(status = HttpStatusCode.OK, message = "{}")
+                    },
                 )
-
-                call.respond(status = HttpStatusCode.OK, message = "{}")
             }
         }
     }

@@ -26,6 +26,7 @@ import no.nav.tiltakspenger.vedtak.routes.behandling.toDTO
 import no.nav.tiltakspenger.vedtak.routes.correlationId
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.fantIkkeTiltak
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.ikkeTilgang
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.måVæreSaksbehandlerEllerBeslutter
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.støtterIkkeBarnetillegg
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.støtterIkkeDelvisEllerAvslag
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond400BadRequest
@@ -115,20 +116,22 @@ fun Route.behandlingBenkRoutes(
         call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
             // TODO post-mvp jah: Kan ikke behandlingId ligge i pathen?
             val behandlingId = BehandlingId.fromString(call.receive<BehandlingIdDTO>().id)
-
             val correlationId = call.correlationId()
-            val behandling =
-                behandlingService.taBehandling(behandlingId, saksbehandler, correlationId = correlationId).toDTO()
 
-            auditService.logMedBehandlingId(
-                behandlingId = behandlingId,
-                navIdent = saksbehandler.navIdent,
-                action = AuditLogEvent.Action.UPDATE,
-                contextMessage = "Saksbehandler tar behandlingen",
-                correlationId = correlationId,
+            behandlingService.taBehandling(behandlingId, saksbehandler, correlationId = correlationId).fold(
+                { call.respond403Forbidden(måVæreSaksbehandlerEllerBeslutter()) },
+                {
+                    auditService.logMedBehandlingId(
+                        behandlingId = behandlingId,
+                        navIdent = saksbehandler.navIdent,
+                        action = AuditLogEvent.Action.UPDATE,
+                        contextMessage = "Saksbehandler tar behandlingen",
+                        correlationId = correlationId,
+                    )
+
+                    call.respond(status = HttpStatusCode.OK, it.toDTO())
+                },
             )
-
-            call.respond(status = HttpStatusCode.OK, behandling)
         }
     }
 }
