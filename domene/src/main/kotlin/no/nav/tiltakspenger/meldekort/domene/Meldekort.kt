@@ -38,6 +38,7 @@ sealed interface Meldekort {
     val status: MeldekortStatus
     val navkontor: Navkontor?
     val iverksattTidspunkt: LocalDateTime?
+    val sendtTilBeslutning: LocalDateTime?
 
     /** Vil være duplikat av det siste vedtaket som påvirker denne meldeperioden. Vil være et førstegangsvedtak i MVP, men vil på sikt også stamme fra revurderinger. */
     val antallDagerForMeldeperiode: Int
@@ -67,6 +68,7 @@ sealed interface Meldekort {
         override val meldeperiode: Meldeperiode.UtfyltMeldeperiode,
         override val tiltakstype: TiltakstypeSomGirRett,
         override val saksbehandler: String,
+        override val sendtTilBeslutning: LocalDateTime?,
         override val beslutter: String?,
         override val status: MeldekortStatus,
         override val iverksattTidspunkt: LocalDateTime?,
@@ -79,6 +81,7 @@ sealed interface Meldekort {
             if (status == MeldekortStatus.GODKJENT) {
                 requireNotNull(iverksattTidspunkt)
                 requireNotNull(beslutter)
+                requireNotNull(sendtTilBeslutning)
             } else {
                 require(iverksattTidspunkt == null)
                 require(beslutter == null)
@@ -155,6 +158,7 @@ sealed interface Meldekort {
         override val antallDagerForMeldeperiode: Int,
     ) : Meldekort {
         override val iverksattTidspunkt = null
+        override val sendtTilBeslutning = null
 
         override val beløpTotal = null
         override val status = MeldekortStatus.IKKE_UTFYLT
@@ -187,6 +191,7 @@ sealed interface Meldekort {
                 meldeperiode = utfyltMeldeperiode,
                 tiltakstype = this.tiltakstype,
                 saksbehandler = saksbehandler.navIdent,
+                sendtTilBeslutning = LocalDateTime.now(),
                 beslutter = this.beslutter,
                 status = MeldekortStatus.KLAR_TIL_BESLUTNING,
                 iverksattTidspunkt = null,

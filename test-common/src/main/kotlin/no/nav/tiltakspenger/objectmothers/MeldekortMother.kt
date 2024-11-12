@@ -52,6 +52,7 @@ interface MeldekortMother {
         navkontor: Navkontor = ObjectMother.navkontor(),
         antallDagerForMeldeperiode: Int = 10,
         opprettet: LocalDateTime = LocalDateTime.now(),
+        sendtTilBeslutning: LocalDateTime = LocalDateTime.now(),
     ): Meldekort.UtfyltMeldekort {
         return Meldekort.UtfyltMeldekort(
             id = id,
@@ -63,6 +64,7 @@ interface MeldekortMother {
             opprettet = opprettet,
             meldeperiode = meldekortperiode,
             saksbehandler = saksbehandler,
+            sendtTilBeslutning = sendtTilBeslutning,
             beslutter = beslutter,
             forrigeMeldekortId = forrigeMeldekortId,
             tiltakstype = tiltakstype,

@@ -168,6 +168,7 @@ class BehandlingPostgresRepo(
                             "attesteringer" to behandling.attesteringer.toDbJson(),
                             "stonadsdager" to behandling.stønadsdager.toDbJson(),
                             "iverksatt_tidspunkt" to behandling.iverksattTidspunkt,
+                            "sendt_til_beslutning" to behandling.sendtTilBeslutning,
                         ),
                     ).asUpdate,
                 )
@@ -201,6 +202,7 @@ class BehandlingPostgresRepo(
                         "beslutter" to behandling.beslutter,
                         "attesteringer" to behandling.attesteringer.toDbJson(),
                         "iverksatt_tidspunkt" to behandling.iverksattTidspunkt,
+                        "sendt_til_beslutning" to behandling.sendtTilBeslutning,
                     ),
                 ).asUpdate,
             )
@@ -234,6 +236,9 @@ class BehandlingPostgresRepo(
             val fnr = Fnr.fromString(string("ident"))
             val saksnummer = Saksnummer(string("saksnummer"))
 
+            val sendtTilBeslutning = localDateTimeOrNull("sendt_til_beslutning")
+            val opprettet = localDateTime("opprettet")
+            val iverksattTidspunkt = localDateTimeOrNull("iverksatt_tidspunkt")
             return Førstegangsbehandling(
                 id = id,
                 sakId = sakId,
@@ -243,12 +248,13 @@ class BehandlingPostgresRepo(
                 vurderingsperiode = vurderingsperiode,
                 vilkårssett = vilkårssett,
                 saksbehandler = saksbehandler,
+                sendtTilBeslutning = sendtTilBeslutning,
                 beslutter = beslutter,
                 attesteringer = attesteringer,
                 stønadsdager = stønadsdager,
                 status = status.toBehandlingsstatus(),
-                opprettet = localDateTime("opprettet"),
-                iverksattTidspunkt = localDateTimeOrNull("iverksatt_tidspunkt"),
+                opprettet = opprettet,
+                iverksattTidspunkt = iverksattTidspunkt,
             )
         }
 
@@ -268,7 +274,8 @@ class BehandlingPostgresRepo(
                 saksbehandler,
                 beslutter,
                 attesteringer,
-                iverksatt_tidspunkt
+                iverksatt_tidspunkt,
+                sendt_til_beslutning
             ) values (
                 :id,
                 :sak_id,
@@ -282,7 +289,8 @@ class BehandlingPostgresRepo(
                 :saksbehandler,
                 :beslutter,
                 to_jsonb(:attesteringer::jsonb),
-                :iverksatt_tidspunkt
+                :iverksatt_tidspunkt,
+                :sendt_til_beslutning
             )
             """.trimIndent()
 
@@ -300,7 +308,8 @@ class BehandlingPostgresRepo(
                 vilkårssett = to_jsonb(:vilkaarssett::json),
                 stønadsdager = to_jsonb(:stonadsdager::json),
                 attesteringer = to_jsonb(:attesteringer::json),
-                iverksatt_tidspunkt = :iverksatt_tidspunkt
+                iverksatt_tidspunkt = :iverksatt_tidspunkt,
+                sendt_til_beslutning = :sendt_til_beslutning
             where id = :id
               and sist_endret = :sist_endret_old
             """.trimIndent()

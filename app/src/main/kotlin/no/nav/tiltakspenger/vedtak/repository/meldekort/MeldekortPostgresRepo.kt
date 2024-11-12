@@ -46,7 +46,8 @@ class MeldekortPostgresRepo(
                         beslutter,
                         status,
                         navkontor,
-                        iverksatt_tidspunkt
+                        iverksatt_tidspunkt,
+                        sendt_til_beslutning
                     ) values (
                         :id,
                         :forrige_meldekort_id,
@@ -61,7 +62,8 @@ class MeldekortPostgresRepo(
                         :beslutter,
                         :status,
                         :navkontor,
-                        :iverksatt_tidspunkt
+                        :iverksatt_tidspunkt,
+                        :sendt_til_beslutning
                     )
                     """.trimIndent(),
                     mapOf(
@@ -79,6 +81,7 @@ class MeldekortPostgresRepo(
                         "status" to meldekort.status.toDb(),
                         "navkontor" to meldekort.navkontor?.kontornummer,
                         "iverksatt_tidspunkt" to meldekort.iverksattTidspunkt,
+                        "sendt_til_beslutning" to meldekort.sendtTilBeslutning,
                     ),
                 ).asUpdate,
             )
@@ -99,7 +102,8 @@ class MeldekortPostgresRepo(
                         beslutter = :beslutter,
                         status = :status,
                         navkontor = :navkontor,
-                        iverksatt_tidspunkt = :iverksatt_tidspunkt
+                        iverksatt_tidspunkt = :iverksatt_tidspunkt,
+                        sendt_til_beslutning = :sendt_til_beslutning
                     where id = :id
                     """.trimIndent(),
                     mapOf(
@@ -110,6 +114,7 @@ class MeldekortPostgresRepo(
                         "status" to meldekort.status.toDb(),
                         "navkontor" to meldekort.navkontor.kontornummer,
                         "iverksatt_tidspunkt" to meldekort.iverksattTidspunkt,
+                        "sendt_til_beslutning" to meldekort.sendtTilBeslutning,
                     ),
                 ).asUpdate,
             )
@@ -203,6 +208,7 @@ class MeldekortPostgresRepo(
                         opprettet = opprettet,
                         meldeperiode = meldekortperiode,
                         saksbehandler = row.string("saksbehandler"),
+                        sendtTilBeslutning = row.localDateTimeOrNull("sendt_til_beslutning"),
                         beslutter = row.stringOrNull("beslutter"),
                         forrigeMeldekortId = forrigeMeldekortId,
                         tiltakstype = meldekortperiode.tiltakstype,

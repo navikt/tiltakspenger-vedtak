@@ -22,6 +22,7 @@ interface Behandling {
     val vurderingsperiode: Periode
     val søknad: Søknad
     val saksbehandler: String?
+    val sendtTilBeslutning: LocalDateTime?
     val beslutter: String?
     val vilkårssett: Vilkårssett
     val stønadsdager: Stønadsdager

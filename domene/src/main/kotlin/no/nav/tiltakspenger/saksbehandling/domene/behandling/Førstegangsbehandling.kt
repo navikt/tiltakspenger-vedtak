@@ -33,6 +33,7 @@ data class Førstegangsbehandling(
     override val vurderingsperiode: Periode,
     override val søknad: Søknad,
     override val saksbehandler: String?,
+    override val sendtTilBeslutning: LocalDateTime?,
     override val beslutter: String?,
     override val vilkårssett: Vilkårssett,
     override val stønadsdager: Stønadsdager,
@@ -94,6 +95,7 @@ data class Førstegangsbehandling(
                 vilkårssett.samletUtfall != SamletUtfall.UAVKLART,
             ) { "Behandlingen kan ikke være innvilget når samlet utfall er UAVKLART" }
             requireNotNull(iverksattTidspunkt)
+            requireNotNull(sendtTilBeslutning)
         }
     }
 
@@ -158,6 +160,7 @@ data class Førstegangsbehandling(
                     tiltak.tilStønadsdagerRegisterSaksopplysning(),
                 ),
                 saksbehandler = saksbehandler.navIdent,
+                sendtTilBeslutning = null,
                 beslutter = null,
                 status = UNDER_BEHANDLING,
                 attesteringer = emptyList(),
@@ -210,7 +213,7 @@ data class Førstegangsbehandling(
         check(saksbehandler.erSaksbehandler()) { "Saksbehandler må ha saksbehandlerrolle. Utøvende saksbehandler: $saksbehandler" }
         check(saksbehandler.navIdent == this.saksbehandler) { "Det er ikke lov å sende en annen sin behandling til beslutter" }
         check(samletUtfall != SamletUtfall.UAVKLART) { "Kan ikke sende en UAVKLART behandling til beslutter" }
-        return this.copy(status = if (beslutter == null) KLAR_TIL_BESLUTNING else UNDER_BESLUTNING)
+        return this.copy(status = if (beslutter == null) KLAR_TIL_BESLUTNING else UNDER_BESLUTNING, sendtTilBeslutning = LocalDateTime.now())
     }
 
     override fun iverksett(
