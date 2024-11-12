@@ -1,0 +1,6 @@
+ALTER TABLE meldekort
+  ADD COLUMN IF NOT EXISTS opprettet timestamptz
+  NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE meldekort
+  ALTER COLUMN opprettet DROP DEFAULT;

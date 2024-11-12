@@ -38,6 +38,7 @@ class MeldekortPostgresRepo(
                         meldeperiode_id,
                         sak_id,
                         rammevedtak_id,
+                        opprettet,
                         fra_og_med,
                         til_og_med,
                         meldekortdager,
@@ -52,6 +53,7 @@ class MeldekortPostgresRepo(
                         :meldeperiode_id,
                         :sak_id,
                         :rammevedtak_id,
+                        :opprettet,
                         :fra_og_med,
                         :til_og_med,
                         to_jsonb(:meldekortdager::jsonb),
@@ -68,6 +70,7 @@ class MeldekortPostgresRepo(
                         "meldeperiode_id" to meldekort.meldeperiodeId.toString(),
                         "sak_id" to meldekort.sakId.toString(),
                         "rammevedtak_id" to meldekort.rammevedtakId.toString(),
+                        "opprettet" to meldekort.opprettet,
                         "fra_og_med" to meldekort.fraOgMed,
                         "til_og_med" to meldekort.periode.tilOgMed,
                         "meldekortdager" to meldekort.meldeperiode.toDbJson(),
@@ -185,6 +188,7 @@ class MeldekortPostgresRepo(
             val fnr = Fnr.fromString(row.string("fnr"))
             val forrigeMeldekortId = row.stringOrNull("forrige_meldekort_id")?.let { MeldekortId.fromString(it) }
             val antallDagerForMeldeperiode = row.int("antall_dager_per_meldeperiode")
+            val opprettet = row.localDateTime("opprettet")
             return when (val status = row.string("status")) {
                 "GODKJENT", "KLAR_TIL_BESLUTNING" -> {
                     val meldekortperiode = row.string("meldekortdager").toUtfyltMeldekortperiode(sakId, id)
@@ -196,6 +200,7 @@ class MeldekortPostgresRepo(
                         saksnummer = saksnummer,
                         fnr = fnr,
                         rammevedtakId = rammevedtakId,
+                        opprettet = opprettet,
                         meldeperiode = meldekortperiode,
                         saksbehandler = row.string("saksbehandler"),
                         beslutter = row.stringOrNull("beslutter"),
@@ -218,6 +223,7 @@ class MeldekortPostgresRepo(
                         saksnummer = saksnummer,
                         fnr = fnr,
                         rammevedtakId = rammevedtakId,
+                        opprettet = opprettet,
                         meldeperiode = meldekortperiode,
                         forrigeMeldekortId = forrigeMeldekortId,
                         tiltakstype = meldekortperiode.tiltakstype,

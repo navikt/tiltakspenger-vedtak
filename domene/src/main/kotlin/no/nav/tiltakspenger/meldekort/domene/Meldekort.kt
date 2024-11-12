@@ -27,6 +27,7 @@ sealed interface Meldekort {
     val fnr: Fnr
     val rammevedtakId: VedtakId
     val forrigeMeldekortId: MeldekortId?
+    val opprettet: LocalDateTime
     val meldeperiode: Meldeperiode
     val tiltakstype: TiltakstypeSomGirRett
     val fraOgMed: LocalDate get() = meldeperiode.fraOgMed
@@ -62,6 +63,7 @@ sealed interface Meldekort {
         override val fnr: Fnr,
         override val rammevedtakId: VedtakId,
         override val forrigeMeldekortId: MeldekortId?,
+        override val opprettet: LocalDateTime,
         override val meldeperiode: Meldeperiode.UtfyltMeldeperiode,
         override val tiltakstype: TiltakstypeSomGirRett,
         override val saksbehandler: String,
@@ -103,6 +105,7 @@ sealed interface Meldekort {
                 fnr = this.fnr,
                 rammevedtakId = this.rammevedtakId,
                 forrigeMeldekortId = this.id,
+                opprettet = LocalDateTime.now(),
                 tiltakstype = this.tiltakstype,
                 navkontor = this.navkontor,
                 meldeperiode = Meldeperiode.IkkeUtfyltMeldeperiode.fraPeriode(
@@ -145,6 +148,7 @@ sealed interface Meldekort {
         override val fnr: Fnr,
         override val rammevedtakId: VedtakId,
         override val forrigeMeldekortId: MeldekortId?,
+        override val opprettet: LocalDateTime,
         override val tiltakstype: TiltakstypeSomGirRett,
         override val meldeperiode: Meldeperiode.IkkeUtfyltMeldeperiode,
         override val navkontor: Navkontor?,
@@ -179,6 +183,7 @@ sealed interface Meldekort {
                 fnr = this.fnr,
                 rammevedtakId = this.rammevedtakId,
                 forrigeMeldekortId = this.forrigeMeldekortId,
+                opprettet = this.opprettet,
                 meldeperiode = utfyltMeldeperiode,
                 tiltakstype = this.tiltakstype,
                 saksbehandler = saksbehandler.navIdent,
@@ -213,6 +218,7 @@ fun Rammevedtak.opprettFørsteMeldekortForEnSak(): Meldekort.IkkeUtfyltMeldekort
         fnr = this.behandling.fnr,
         rammevedtakId = this.id,
         forrigeMeldekortId = null,
+        opprettet = LocalDateTime.now(),
         tiltakstype = tiltakstype,
         // TODO post-mvp: Her har vi mulighet til å hente verdien fra brukers geografiske tilhørighet + norg2.
         navkontor = null,

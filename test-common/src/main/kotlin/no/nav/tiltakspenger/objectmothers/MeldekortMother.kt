@@ -51,6 +51,7 @@ interface MeldekortMother {
         iverksattTidspunkt: LocalDateTime = LocalDateTime.now(),
         navkontor: Navkontor = ObjectMother.navkontor(),
         antallDagerForMeldeperiode: Int = 10,
+        opprettet: LocalDateTime = LocalDateTime.now(),
     ): Meldekort.UtfyltMeldekort {
         return Meldekort.UtfyltMeldekort(
             id = id,
@@ -59,6 +60,7 @@ interface MeldekortMother {
             saksnummer = saksnummer,
             fnr = fnr,
             rammevedtakId = rammevedtakId,
+            opprettet = opprettet,
             meldeperiode = meldekortperiode,
             saksbehandler = saksbehandler,
             beslutter = beslutter,
@@ -179,6 +181,7 @@ interface MeldekortMother {
         saksnummer: Saksnummer = Saksnummer.genererSaknummer(løpenr = "1001"),
         fnr: Fnr = Fnr.random(),
         rammevedtakId: VedtakId,
+        opprettet: LocalDateTime = LocalDateTime.now(),
         kommando: SendMeldekortTilBeslutterKommando,
         meldeperiodeId: MeldeperiodeId = MeldeperiodeId.fraPeriode(kommando.periode),
         utfallsperioder: Periodisering<AvklartUtfallForPeriode>,
@@ -194,6 +197,7 @@ interface MeldekortMother {
                 fnr = fnr,
                 rammevedtakId = rammevedtakId,
                 forrigeMeldekortId = null,
+                opprettet = opprettet,
                 tiltakstype = tiltakstype,
                 navkontor = navkontor,
                 meldeperiode = Meldeperiode.IkkeUtfyltMeldeperiode.fraPeriode(
@@ -214,6 +218,7 @@ interface MeldekortMother {
         saksnummer: Saksnummer = Saksnummer.genererSaknummer(løpenr = "1001"),
         meldeperiodeId: MeldeperiodeId = MeldeperiodeId.fraPeriode(kommando.periode),
         navkontor: Navkontor = ObjectMother.navkontor(),
+        opprettet: LocalDateTime = LocalDateTime.now(),
     ): Meldeperioder {
         val meldekortId = kommando.meldekortId
         val sakId = kommando.sakId
@@ -233,6 +238,7 @@ interface MeldekortMother {
                 fnr = fnr,
                 rammevedtakId = rammevedtakId,
                 forrigeMeldekortId = this.verdi.last().id,
+                opprettet = opprettet,
                 tiltakstype = tiltakstype,
                 navkontor = navkontor,
                 meldeperiode = Meldeperiode.IkkeUtfyltMeldeperiode.fraPeriode(
