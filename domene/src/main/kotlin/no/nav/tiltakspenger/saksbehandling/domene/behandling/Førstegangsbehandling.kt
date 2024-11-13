@@ -243,7 +243,6 @@ data class Førstegangsbehandling(
                     attesteringer = attesteringer + attestering,
                     iverksattTidspunkt = nå(),
                 )
-
             }
 
             KLAR_TIL_BEHANDLING, UNDER_BEHANDLING, KLAR_TIL_BESLUTNING, INNVILGET -> throw IllegalStateException(
