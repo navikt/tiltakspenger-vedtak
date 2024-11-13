@@ -97,8 +97,7 @@ class BehandlingServiceImpl(
             logger.warn { "Navident ${saksbehandler.navIdent} med rollene ${saksbehandler.roller} har ikke tilgang til å sende behandling til beslutter" }
             return KanIkkeSendeTilBeslutter.MåVæreSaksbehandler.left()
         }
-        val behandling = hentBehandling(behandlingId, saksbehandler, correlationId)
-        return behandling.tilBeslutning(saksbehandler).also {
+        return hentBehandling(behandlingId, saksbehandler, correlationId).tilBeslutning(saksbehandler).also {
             førstegangsbehandlingRepo.lagre(it)
         }.right()
     }
@@ -173,14 +172,12 @@ class BehandlingServiceImpl(
         val førsteMeldekort = vedtak.opprettFørsteMeldekortForEnSak()
 
         // journalføring og dokumentdistribusjon skjer i egen jobb
-        iverksattBehandling.also {
-            sessionFactory.withTransactionContext { tx ->
-                førstegangsbehandlingRepo.lagre(iverksattBehandling, tx)
-                rammevedtakRepo.lagre(vedtak, tx)
-                statistikkSakRepo.lagre(sakStatistikk, tx)
-                statistikkStønadRepo.lagre(stønadStatistikk, tx)
-                meldekortRepo.lagre(førsteMeldekort, tx)
-            }
+        sessionFactory.withTransactionContext { tx ->
+            førstegangsbehandlingRepo.lagre(iverksattBehandling, tx)
+            rammevedtakRepo.lagre(vedtak, tx)
+            statistikkSakRepo.lagre(sakStatistikk, tx)
+            statistikkStønadRepo.lagre(stønadStatistikk, tx)
+            meldekortRepo.lagre(førsteMeldekort, tx)
         }
         return iverksattBehandling.right()
     }
