@@ -286,6 +286,7 @@ class RammevedtakPostgresRepo(
                 distribusjonId = stringOrNull("distribusjon_id")?.let { DistribusjonId(it) },
                 distribusjonstidspunkt = localDateTimeOrNull("distribusjonstidspunkt"),
                 sendtTilDatadeling = localDateTimeOrNull("sendt_til_datadeling"),
+                opprettet = localDateTime("opprettet"),
             )
         }
     }

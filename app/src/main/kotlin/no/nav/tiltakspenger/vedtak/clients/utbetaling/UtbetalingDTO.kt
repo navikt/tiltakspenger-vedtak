@@ -38,7 +38,7 @@ fun Utbetalingsvedtak.toDTO(
         personident = Personident(verdi = vedtak.fnr.verdi),
         vedtak =
         VedtaksdetaljerV2Dto(
-            vedtakstidspunkt = vedtak.vedtakstidspunkt,
+            vedtakstidspunkt = vedtak.opprettet,
             saksbehandlerId = vedtak.saksbehandler,
             beslutterId = vedtak.beslutter,
             utbetalinger = (forrigeUtbetaling?.vedtak?.utbetalinger ?: emptyList()) + nyeUtbetalinger,

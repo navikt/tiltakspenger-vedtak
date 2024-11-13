@@ -20,7 +20,6 @@ interface UtbetalingsvedtakMother {
         saksnummer: Saksnummer = Saksnummer.genererSaknummer(LocalDate.now(), "1001"),
         fnr: Fnr = Fnr.random(),
         rammevedtakId: VedtakId = VedtakId.random(),
-        vedtakstidspunkt: LocalDateTime = nå(),
         meldekort: Meldekort.UtfyltMeldekort = ObjectMother.utfyltMeldekort(
             sakId = sakId,
             rammevedtakId = rammevedtakId,
@@ -30,14 +29,15 @@ interface UtbetalingsvedtakMother {
         sendtTilUtbetaling: LocalDateTime? = null,
         journalpostId: JournalpostId? = null,
         journalføringstidspunkt: LocalDateTime? = null,
+        opprettet: LocalDateTime = nå(),
     ): Utbetalingsvedtak {
         return Utbetalingsvedtak(
             id = id,
+            opprettet = opprettet,
             sakId = sakId,
             saksnummer = saksnummer,
             fnr = fnr,
             rammevedtakId = rammevedtakId,
-            vedtakstidspunkt = vedtakstidspunkt,
             meldekort = meldekort,
             forrigeUtbetalingsvedtakId = forrigeUtbetalingsvedtakId,
             sendtTilUtbetaling = sendtTilUtbetaling,

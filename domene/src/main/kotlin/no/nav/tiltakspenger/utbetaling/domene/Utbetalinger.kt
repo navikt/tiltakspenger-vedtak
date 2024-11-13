@@ -26,8 +26,8 @@ data class Utbetalinger(
             }
             require(
                 verdi.zipWithNext()
-                    .all { (a, b) -> a.vedtakstidspunkt < b.vedtakstidspunkt },
-            ) { "Utbetalingsvedtakene må være sortert på vedtakstidspunkt, men var ${verdi.map { it.id to it.vedtakstidspunkt }}" }
+                    .all { (a, b) -> a.opprettet < b.opprettet },
+            ) { "Utbetalingsvedtakene må være sortert på opprettet, men var ${verdi.map { it.id to it.opprettet }}" }
             require(
                 verdi.zipWithNext()
                     .all { (a, b) -> a.id == b.forrigeUtbetalingsvedtakId },

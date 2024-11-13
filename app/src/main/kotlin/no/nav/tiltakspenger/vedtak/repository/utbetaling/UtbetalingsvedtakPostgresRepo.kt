@@ -47,7 +47,7 @@ internal class UtbetalingsvedtakPostgresRepo(
                         "id" to vedtak.id.toString(),
                         "sak_id" to vedtak.sakId.toString(),
                         "rammevedtak_id" to vedtak.rammevedtakId.toString(),
-                        "vedtakstidspunkt" to vedtak.vedtakstidspunkt,
+                        "vedtakstidspunkt" to vedtak.opprettet,
                         "forrige_vedtak_id" to vedtak.forrigeUtbetalingsvedtakId?.toString(),
                         "meldekort_id" to vedtak.meldekortId.toString(),
                     ),
@@ -173,7 +173,6 @@ internal class UtbetalingsvedtakPostgresRepo(
                 saksnummer = Saksnummer(string("saksnummer")),
                 fnr = Fnr.fromString(string("fnr")),
                 rammevedtakId = VedtakId.fromString(string("rammevedtak_id")),
-                vedtakstidspunkt = localDateTime("vedtakstidspunkt"),
                 forrigeUtbetalingsvedtakId = stringOrNull("forrige_vedtak_id")?.let { VedtakId.fromString(it) },
                 meldekort =
                 MeldekortPostgresRepo
@@ -184,6 +183,7 @@ internal class UtbetalingsvedtakPostgresRepo(
                 sendtTilUtbetaling = localDateTimeOrNull("sendt_til_utbetaling_tidspunkt"),
                 journalpostId = stringOrNull("journalpost_id")?.let { JournalpostId(it) },
                 journalføringstidspunkt = localDateTimeOrNull("journalføringstidspunkt"),
+                opprettet = localDateTime("vedtakstidspunkt"),
             )
         }
     }

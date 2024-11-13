@@ -13,8 +13,12 @@ import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.AvklartUtfallForPeriode
 import java.time.LocalDateTime
 
+/**
+ * @param opprettet Tidspunktet vi instansierte og persisterte dette utbetalingsvedtaket første gangen. Dette har ingenting med vedtaksbrevet å gjøre.
+ */
 data class Rammevedtak(
     override val id: VedtakId = VedtakId.random(),
+    override val opprettet: LocalDateTime,
     val sakId: SakId,
     val saksnummer: Saksnummer,
     val behandling: Førstegangsbehandling,
@@ -47,6 +51,7 @@ fun Førstegangsbehandling.opprettVedtak(): Rammevedtak {
     require(this.status == Behandlingsstatus.INNVILGET) { "Kan ikke lage vedtak for behandling som ikke er iverksatt" }
     return Rammevedtak(
         id = VedtakId.random(),
+        opprettet = nå(),
         sakId = this.sakId,
         saksnummer = this.saksnummer,
         behandling = this,

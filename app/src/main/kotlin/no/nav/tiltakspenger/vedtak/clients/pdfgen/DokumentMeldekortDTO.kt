@@ -41,8 +41,6 @@ private data class DokumentMeldekortDTO(
 suspend fun Utbetalingsvedtak.toPdf(
     hentSaksbehandlersNavn: suspend (String) -> String,
 ): JsonNode {
-    requireNotNull(beslutter) { "Meldekort som skal journalføres må ha en beslutter. MeldekortId: $id" }
-
     return DokumentMeldekortDTO(
         fødselsnummer = fnr.verdi,
         saksbehandler = tilSaksbehadlerDto(saksbehandler, hentSaksbehandlersNavn),
@@ -63,9 +61,9 @@ suspend fun Utbetalingsvedtak.toPdf(
                 reduksjon = dag.toReduksjon(),
             )
         },
-        // TODO pre-mvp jah: Holder det med tiltakstype? Hva bør vi mappe den til?
+        // TODO pre-mvp jah: Bytt til tiltakstype navn og eksternTiltaksdeltagelseId (det som vi feilaktig kaller tiltakId)
         tiltakstype = meldekort.tiltakstype.toString(),
-        iverksattTidspunkt = vedtakstidspunkt.toString(),
+        iverksattTidspunkt = opprettet.toString(),
     ).let { objectMapper.valueToTree(it) }
 }
 

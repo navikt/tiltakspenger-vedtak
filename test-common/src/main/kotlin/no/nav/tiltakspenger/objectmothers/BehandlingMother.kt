@@ -372,6 +372,7 @@ suspend fun TestApplicationContext.meldekortIverksatt(
     fnr: Fnr = Fnr.random(),
     saksbehandler: Saksbehandler = saksbehandler(),
     beslutter: Saksbehandler = beslutter(),
+    correlationId: CorrelationId = CorrelationId.generate(),
 ): Sak {
     val tac = this
     val sak = meldekortTilBeslutter(
@@ -388,6 +389,7 @@ suspend fun TestApplicationContext.meldekortIverksatt(
             correlationId = CorrelationId.generate(),
         ),
     )
-    return this.sakContext.sakService.hentForSakId(sak.id, saksbehandler, correlationId = CorrelationId.generate())
-        .getOrFail()
+    // Emulerer at jobben kjører
+    tac.utbetalingContext.sendUtbetalingerService.send(correlationId)
+    return this.sakContext.sakService.hentForSakId(sak.id, saksbehandler, correlationId = correlationId).getOrFail()
 }

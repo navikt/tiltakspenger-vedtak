@@ -11,10 +11,10 @@ import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import no.nav.tiltakspenger.saksbehandling.service.statistikk.stønad.StatistikkUtbetalingDTO
 import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit
 
 /**
  * @property forrigeUtbetalingsvedtakId er null for første utbetalingsvedtak i en sak.
+ * @param opprettet Tidspunktet vi instansierte og persisterte dette utbetalingsvedtaket første gangen. Dette har ingenting med vedtaksbrevet å gjøre.
  */
 data class Utbetalingsvedtak(
     val id: VedtakId,
@@ -22,7 +22,7 @@ data class Utbetalingsvedtak(
     val saksnummer: Saksnummer,
     val fnr: Fnr,
     val rammevedtakId: VedtakId,
-    val vedtakstidspunkt: LocalDateTime,
+    val opprettet: LocalDateTime,
     val meldekort: Meldekort.UtfyltMeldekort,
     val forrigeUtbetalingsvedtakId: VedtakId?,
     val sendtTilUtbetaling: LocalDateTime?,
@@ -36,12 +36,6 @@ data class Utbetalingsvedtak(
     val saksbehandler: String = meldekort.saksbehandler
     val beslutter: String = meldekort.beslutter!!
     val brukerNavkontor: Navkontor = meldekort.navkontor
-
-    init {
-        require(vedtakstidspunkt.truncatedTo(ChronoUnit.MICROS) == vedtakstidspunkt) {
-            "vedtakstidspunkt må være i mikrosekunder, men var: $vedtakstidspunkt"
-        }
-    }
 }
 
 fun Meldekort.UtfyltMeldekort.opprettUtbetalingsvedtak(
@@ -50,11 +44,11 @@ fun Meldekort.UtfyltMeldekort.opprettUtbetalingsvedtak(
 ): Utbetalingsvedtak =
     Utbetalingsvedtak(
         id = VedtakId.random(),
+        opprettet = nå(),
         sakId = this.sakId,
         saksnummer = rammevedtak.saksnummer,
         fnr = rammevedtak.fnr,
         rammevedtakId = this.rammevedtakId,
-        vedtakstidspunkt = nå(),
         meldekort = this,
         forrigeUtbetalingsvedtakId = forrigeUtbetalingsvedtak,
         sendtTilUtbetaling = null,
@@ -71,7 +65,8 @@ fun Utbetalingsvedtak.tilStatistikk(): StatistikkUtbetalingDTO =
         beløp = this.beløpTotal,
         beløpBeskrivelse = "",
         årsak = "",
-        posteringDato = this.vedtakstidspunkt.toLocalDate(),
+        // TODO post-mvp jah: Vi oppretter vedtaket før og statistikken før vi sender til helved/utbetaling. Bør vi opprette statistikken etter vi har sendt til helved/utbetaling?
+        posteringDato = this.opprettet.toLocalDate(),
         gyldigFraDatoPostering = this.periode.fraOgMed,
         gyldigTilDatoPostering = this.periode.tilOgMed,
     )

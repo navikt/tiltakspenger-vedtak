@@ -15,12 +15,12 @@ internal class UtbetalingDTOTest {
         val fnr = Fnr.fromString("09863149336")
         val id = VedtakId.fromString("vedtak_01J94XH6CKY0SZ5FBEE6YZG8S6")
         val saksnummer = Saksnummer("202410011001")
-        val vedtakstidspunkt = LocalDateTime.parse("2024-10-01T22:46:14.614465")
+        val opprettet = LocalDateTime.parse("2024-10-01T22:46:14.614465")
         val utbetalingsvedtak = ObjectMother.utbetalingsvedtak(
             fnr = fnr,
             id = id,
             saksnummer = saksnummer,
-            vedtakstidspunkt = vedtakstidspunkt,
+            opprettet = opprettet,
         )
         utbetalingsvedtak.toDTO(null).shouldEqualJson(
             """
