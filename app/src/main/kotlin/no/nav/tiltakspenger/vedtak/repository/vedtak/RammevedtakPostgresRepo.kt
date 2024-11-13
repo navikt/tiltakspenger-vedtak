@@ -152,6 +152,45 @@ class RammevedtakPostgresRepo(
         }
     }
 
+    override fun markerSendtTilDatadeling(id: VedtakId, tidspunkt: LocalDateTime) {
+        sessionFactory.withSession { session ->
+            session.run(
+                queryOf(
+                    """
+                    update rammevedtak
+                    set sendt_til_datadeling = :tidspunkt
+                    where id = :id
+                    """.trimIndent(),
+                    mapOf(
+                        "id" to id.toString(),
+                        "tidspunkt" to tidspunkt,
+                    ),
+                ).asUpdate,
+            )
+        }
+    }
+
+    override fun hentRammevedtakTilDatadeling(
+        limit: Int,
+    ): List<Rammevedtak> {
+        return sessionFactory.withSession { session ->
+            session.run(
+                queryOf(
+                    """
+                    select v.*, s.saksnummer
+                    from rammevedtak v
+                    join sak s 
+                      on s.id = v.sak_id
+                    where v.sendt_til_datadeling is not null
+                    limit $limit
+                    """.trimIndent(),
+                ).map { row ->
+                    row.toVedtak(session)
+                }.asList,
+            )
+        }
+    }
+
     override fun lagre(
         vedtak: Rammevedtak,
         context: TransactionContext?,
@@ -244,6 +283,9 @@ class RammevedtakPostgresRepo(
                 beslutterNavIdent = string("beslutter"),
                 journalpostId = stringOrNull("journalpost_id")?.let { JournalpostId(it) },
                 journalføringstidstpunkt = localDateTimeOrNull("journalføringstidspunkt"),
+                distribusjonId = stringOrNull("distribusjon_id")?.let { DistribusjonId(it) },
+                distribusjonstidspunkt = localDateTimeOrNull("distribusjonstidspunkt"),
+                sendtTilDatadeling = localDateTimeOrNull("sendt_til_datadeling"),
             )
         }
     }

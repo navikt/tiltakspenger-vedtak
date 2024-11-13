@@ -46,6 +46,14 @@ class RammevedtakFakeRepo : RammevedtakRepo {
         data.get()[id] = data.get()[id]!!.copy(distribusjonId = distribusjonId, distribusjonstidspunkt = tidspunkt)
     }
 
+    override fun hentRammevedtakTilDatadeling(limit: Int): List<Rammevedtak> {
+        return data.get().values.filter { it.sendtTilDatadeling == null }.take(limit)
+    }
+
+    override fun markerSendtTilDatadeling(id: VedtakId, tidspunkt: LocalDateTime) {
+        TODO("Not yet implemented")
+    }
+
     fun hentForSakId(sakId: SakId): Rammevedtak? = data.get().values.find { it.behandling.sakId == sakId }
 
     fun hentForBehandlingId(behandlingId: BehandlingId): Rammevedtak? =

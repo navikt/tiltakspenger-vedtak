@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
+import java.time.LocalDateTime
 
 interface BehandlingRepo {
     fun lagre(
@@ -27,4 +28,8 @@ interface BehandlingRepo {
     fun hentAlleForIdent(fnr: Fnr): List<Førstegangsbehandling>
 
     fun hentForSøknadId(søknadId: SøknadId): Førstegangsbehandling?
+
+    fun hentBehandlingerTilDatadeling(limit: Int = 10): List<Førstegangsbehandling>
+
+    fun markerSendtTilDatadeling(id: BehandlingId, tidspunkt: LocalDateTime)
 }

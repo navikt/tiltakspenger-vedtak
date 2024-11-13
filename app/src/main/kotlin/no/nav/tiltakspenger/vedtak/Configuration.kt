@@ -80,6 +80,8 @@ object Configuration {
                 "DB_JDBC_URL" to "jdbc:postgresql://host.docker.internal:5433/saksbehandling?user=postgres&password=test",
                 "MICROSOFT_SCOPE" to "localhost",
                 "MICROSOFT_URL" to "host.docker.internal:8091",
+                "DATADELING_SCOPE" to "localhost",
+                "DATADELING_URL" to "host.docker.internal:8091",
             ),
         )
 
@@ -107,6 +109,8 @@ object Configuration {
                 "POAO_TILGANG_SCOPE" to "api://dev-gcp.poao.poao-tilgang/.default",
                 "MICROSOFT_SCOPE" to "https://graph.microsoft.com/.default",
                 "MICROSOFT_URL" to "graph.microsoft.com/v1.0",
+                "DATADELING_SCOPE" to "api://dev-gcp.tiltakspenger-datadeling/.default",
+                "DATADELING_URL" to "http://tiltakspenger-datadeling",
             ),
         )
     private val prodProperties =
@@ -133,6 +137,8 @@ object Configuration {
                 "POAO_TILGANG_SCOPE" to "api://prod-gcp.poao.poao-tilgang/.default",
                 "MICROSOFT_SCOPE" to "https://graph.microsoft.com/.default",
                 "MICROSOFT_URL" to "graph.microsoft.com/v1.0",
+                "DATADELING_SCOPE" to "api://prod-gcp.tiltakspenger-datadeling/.default",
+                "DATADELING_URL" to "http://tiltakspenger-datadeling",
             ),
         )
 
@@ -194,6 +200,7 @@ object Configuration {
     val poaoTilgangScope: String by lazy { config()[Key("POAO_TILGANG_SCOPE", stringType)] }
     val utbetalingScope: String by lazy { config()[Key("UTBETALING_SCOPE", stringType)] }
     val microsoftScope: String by lazy { config()[Key("MICROSOFT_SCOPE", stringType)] }
+    val datadelingScope: String by lazy { config()[Key("DATADELING_SCOPE", stringType)] }
 
     val pdlUrl by lazy { config()[Key("PDL_ENDPOINT_URL", stringType)] }
     val pdlPipUrl by lazy { config()[Key("PDL_PIP_ENDPOINT_URL", stringType)] }
@@ -205,6 +212,7 @@ object Configuration {
     val poaoTilgangUrl: String by lazy { config()[Key("POAO_TILGANG_URL", stringType)] }
     val utbetalingUrl: String by lazy { config()[Key("UTBETALING_URL", stringType)] }
     val microsoftUrl: String by lazy { config()[Key("MICROSOFT_URL", stringType)] }
+    val datadelingUrl: String by lazy { config()[Key("DATADELING_URL", stringType)] }
 
     fun httpPort() = config()[Key("application.httpPort", intType)]
 

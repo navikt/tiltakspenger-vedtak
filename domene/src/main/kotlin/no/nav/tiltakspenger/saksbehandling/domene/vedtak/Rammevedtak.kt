@@ -25,8 +25,9 @@ data class Rammevedtak(
     val beslutterNavIdent: String,
     val journalpostId: JournalpostId?,
     val journalføringstidstpunkt: LocalDateTime?,
-    val distribusjonId: DistribusjonId? = null,
-    val distribusjonstidspunkt: LocalDateTime? = null,
+    val distribusjonId: DistribusjonId?,
+    val distribusjonstidspunkt: LocalDateTime?,
+    val sendtTilDatadeling: LocalDateTime?,
 ) : Vedtak {
     val fnr = behandling.fnr
     val utfallsperioder: Periodisering<AvklartUtfallForPeriode> get() = behandling.avklarteUtfallsperioder
@@ -56,5 +57,8 @@ fun Førstegangsbehandling.opprettVedtak(): Rammevedtak {
         beslutterNavIdent = this.beslutter!!,
         journalpostId = null,
         journalføringstidstpunkt = null,
+        distribusjonId = null,
+        distribusjonstidspunkt = null,
+        sendtTilDatadeling = null,
     )
 }
