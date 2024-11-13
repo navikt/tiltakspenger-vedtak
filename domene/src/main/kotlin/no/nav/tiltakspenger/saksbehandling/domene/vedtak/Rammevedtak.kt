@@ -11,6 +11,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.AvklartUtfallForPeriode
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 /**
@@ -22,7 +23,7 @@ data class Rammevedtak(
     val sakId: SakId,
     val saksnummer: Saksnummer,
     val behandling: Førstegangsbehandling,
-    val vedtaksdato: LocalDateTime,
+    val vedtaksdato: LocalDate?,
     val vedtaksType: Vedtakstype,
     val periode: Periode,
     val saksbehandlerNavIdent: String,
@@ -32,6 +33,7 @@ data class Rammevedtak(
     val distribusjonId: DistribusjonId?,
     val distribusjonstidspunkt: LocalDateTime?,
     val sendtTilDatadeling: LocalDateTime?,
+    val brevJson: String?,
 ) : Vedtak {
     val fnr = behandling.fnr
     val utfallsperioder: Periodisering<AvklartUtfallForPeriode> get() = behandling.avklarteUtfallsperioder
@@ -55,7 +57,7 @@ fun Førstegangsbehandling.opprettVedtak(): Rammevedtak {
         sakId = this.sakId,
         saksnummer = this.saksnummer,
         behandling = this,
-        vedtaksdato = nå(),
+        vedtaksdato = null,
         vedtaksType = Vedtakstype.INNVILGELSE,
         periode = this.vurderingsperiode,
         saksbehandlerNavIdent = this.saksbehandler!!,
@@ -65,5 +67,6 @@ fun Førstegangsbehandling.opprettVedtak(): Rammevedtak {
         distribusjonId = null,
         distribusjonstidspunkt = null,
         sendtTilDatadeling = null,
+        brevJson = null,
     )
 }

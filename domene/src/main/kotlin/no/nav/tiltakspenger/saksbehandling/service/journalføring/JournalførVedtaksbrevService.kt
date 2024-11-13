@@ -11,6 +11,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.GenererVedtaksbrevGateway
 import no.nav.tiltakspenger.saksbehandling.ports.JournalførVedtaksbrevGateway
 import no.nav.tiltakspenger.saksbehandling.ports.RammevedtakRepo
 import no.nav.tiltakspenger.saksbehandling.service.person.PersonService
+import java.time.LocalDate
 
 class JournalførVedtaksbrevService(
     private val journalførVedtaksbrevGateway: JournalførVedtaksbrevGateway,
@@ -29,7 +30,9 @@ class JournalførVedtaksbrevService(
             rammevedtakRepo.hentRammevedtakSomSkalJournalføres().forEach { vedtak ->
                 log.info { "Journalfører vedtaksbrev for vedtak ${vedtak.id}" }
                 Either.catch {
+                    val vedtaksdato = LocalDate.now()
                     val pdfOgJson = genererVedtaksbrevGateway.genererVedtaksbrev(
+                        vedtaksdato = vedtaksdato,
                         vedtak = vedtak,
                         hentBrukersNavn = personService::hentNavn,
                         hentSaksbehandlersNavn = navIdentClient::hentNavnForNavIdent,
@@ -38,7 +41,7 @@ class JournalførVedtaksbrevService(
                     val journalpostId =
                         journalførVedtaksbrevGateway.journalførVedtaksbrev(vedtak, pdfOgJson, correlationId)
                     log.info { "Vedtaksbrev journalført for vedtak ${vedtak.id}" }
-                    rammevedtakRepo.markerJournalført(vedtak.id, journalpostId, nå())
+                    rammevedtakRepo.markerJournalført(vedtak.id, vedtaksdato, pdfOgJson.json, journalpostId, nå())
                     log.info { "Vedtaksbrev markert som journalført for vedtak ${vedtak.id}" }
                 }.onLeft {
                     log.error(it) { "Feil ved journalføring av vedtaksbrev for vedtak ${vedtak.id}" }

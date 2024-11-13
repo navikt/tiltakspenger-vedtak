@@ -27,6 +27,7 @@ import java.io.ByteArrayOutputStream
 import java.net.URI
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
+import java.time.LocalDate
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.toJavaDuration
@@ -55,11 +56,12 @@ internal class PdfgenHttpClient(
 
     override suspend fun genererVedtaksbrev(
         vedtak: Rammevedtak,
+        vedtaksdato: LocalDate,
         hentBrukersNavn: suspend (Fnr) -> Navn,
         hentSaksbehandlersNavn: suspend (String) -> String,
     ): Either<KunneIkkeGenererePdf, PdfOgJson> {
         return withContext(Dispatchers.IO) {
-            val jsonPayload = vedtak.tobrevDTO(hentBrukersNavn, hentSaksbehandlersNavn)
+            val jsonPayload = vedtak.tobrevDTO(hentBrukersNavn, hentSaksbehandlersNavn, vedtaksdato)
             Either.catch {
                 val request = createPdfgenRequest(jsonPayload, vedtakInnvilgelseUri)
                 val httpResponse = client.sendAsync(request, HttpResponse.BodyHandlers.ofByteArray()).await()

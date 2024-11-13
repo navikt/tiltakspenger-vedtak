@@ -18,6 +18,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtakstype
 import no.nav.tiltakspenger.saksbehandling.ports.RammevedtakRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingPostgresRepo
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 class RammevedtakPostgresRepo(
@@ -112,18 +113,22 @@ class RammevedtakPostgresRepo(
         }
     }
 
-    override fun markerJournalført(id: VedtakId, journalpostId: JournalpostId, tidspunkt: LocalDateTime) {
+    override fun markerJournalført(id: VedtakId, vedtaksdato: LocalDate, brevJson: String, journalpostId: JournalpostId, tidspunkt: LocalDateTime) {
         sessionFactory.withSession { session ->
             session.run(
                 queryOf(
                     """
                     update rammevedtak
-                    set journalpost_id = :journalpost_id,
+                    set vedtaksdato = :vedtaksdato
+                        brev_json = to_jsonb(:brev_json::jsonb)
+                        journalpost_id = :journalpost_id,
                         journalføringstidspunkt = :tidspunkt
                     where id = :id
                     """.trimIndent(),
                     mapOf(
                         "id" to id.toString(),
+                        "vedtaksdato" to vedtaksdato,
+                        "brev_json" to brevJson,
                         "journalpost_id" to journalpostId.toString(),
                         "tidspunkt" to tidspunkt,
                     ),
@@ -234,7 +239,8 @@ class RammevedtakPostgresRepo(
                         til_og_med, 
                         saksbehandler, 
                         beslutter,
-                        opprettet
+                        opprettet,
+                        brev_json
                     ) values (
                         :id, 
                         :sak_id, 
@@ -245,7 +251,8 @@ class RammevedtakPostgresRepo(
                         :til_og_med, 
                         :saksbehandler, 
                         :beslutter,
-                        :opprettet
+                        :opprettet,
+                        :brev_json
                     )
                     """.trimIndent(),
                     mapOf(
@@ -258,8 +265,7 @@ class RammevedtakPostgresRepo(
                         "til_og_med" to vedtak.periode.tilOgMed,
                         "saksbehandler" to vedtak.saksbehandlerNavIdent,
                         "beslutter" to vedtak.beslutterNavIdent,
-                        // TODO pre-mvp jah: Hva er forskjellen på vedtaksdato og opprettet? Skal vedtaksdato egentlig representere datoen vi skriver i vedtaksbrevet?
-                        "opprettet" to vedtak.vedtaksdato,
+                        "opprettet" to vedtak.opprettet,
                     ),
                 ).asUpdate,
             )
@@ -276,7 +282,7 @@ class RammevedtakPostgresRepo(
                     BehandlingId.fromString(string("behandling_id")),
                     session,
                 )!!,
-                vedtaksdato = localDateTime("vedtaksdato"),
+                vedtaksdato = localDate("vedtaksdato"),
                 vedtaksType = Vedtakstype.valueOf(string("vedtakstype")),
                 periode = Periode(fraOgMed = localDate("fra_og_med"), tilOgMed = localDate("til_og_med")),
                 saksbehandlerNavIdent = string("saksbehandler"),
@@ -286,6 +292,7 @@ class RammevedtakPostgresRepo(
                 distribusjonId = stringOrNull("distribusjon_id")?.let { DistribusjonId(it) },
                 distribusjonstidspunkt = localDateTimeOrNull("distribusjonstidspunkt"),
                 sendtTilDatadeling = localDateTimeOrNull("sendt_til_datadeling"),
+                brevJson = stringOrNull("brev_json"),
                 opprettet = localDateTime("opprettet"),
             )
         }

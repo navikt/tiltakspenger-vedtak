@@ -11,6 +11,7 @@ import no.nav.tiltakspenger.libs.common.VedtakId
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import no.nav.tiltakspenger.saksbehandling.ports.RammevedtakRepo
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 class RammevedtakFakeRepo : RammevedtakRepo {
@@ -32,7 +33,7 @@ class RammevedtakFakeRepo : RammevedtakRepo {
         return data.get().values.filter { it.journalpostId == null }.take(limit)
     }
 
-    override fun markerJournalført(id: VedtakId, journalpostId: JournalpostId, tidspunkt: LocalDateTime) {
+    override fun markerJournalført(id: VedtakId, vedtaksdato: LocalDate, brevJson: String, journalpostId: JournalpostId, tidspunkt: LocalDateTime) {
         data.get()[id] = data.get()[id]!!.copy(journalpostId = journalpostId, journalføringstidstpunkt = tidspunkt)
     }
 

@@ -27,6 +27,7 @@ private class BrevFørstegangsvedtakInnvilgelseDTO(
 internal suspend fun Rammevedtak.tobrevDTO(
     hentBrukersNavn: suspend (Fnr) -> Navn,
     hentSaksbehandlersNavn: suspend (String) -> String,
+    vedtaksdato: LocalDate,
 ): String {
     val brukersNavn = hentBrukersNavn(fnr)
     val saksbehandlersNavn = hentSaksbehandlersNavn(saksbehandlerNavIdent)
@@ -49,7 +50,7 @@ internal suspend fun Rammevedtak.tobrevDTO(
         // TODO post-produksjon: legg inn NORG integrasjon for å hente saksbehandlers kontor.
         kontor = "Nav Tiltak Øst-Viken",
         // Dette er vår dato, det brukes typisk når bruker klager på vedtaksbrev på dato ...
-        datoForUtsending = LocalDate.now().format(norskDatoFormatter),
+        datoForUtsending = vedtaksdato.format(norskDatoFormatter),
         sats = Satser.sats(periode.fraOgMed).sats,
         satsBarn = Satser.sats(periode.fraOgMed).satsBarnetillegg,
     ).let { serialize(it) }

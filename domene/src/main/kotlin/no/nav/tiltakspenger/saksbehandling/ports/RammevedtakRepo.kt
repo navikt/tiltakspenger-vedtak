@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.VedtakId
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 interface RammevedtakRepo {
@@ -23,7 +24,7 @@ interface RammevedtakRepo {
 
     fun hentRammevedtakSomSkalDistribueres(limit: Int = 10): List<VedtakSomSkalDistribueres>
 
-    fun markerJournalført(id: VedtakId, journalpostId: JournalpostId, tidspunkt: LocalDateTime)
+    fun markerJournalført(id: VedtakId, vedtaksdato: LocalDate, brevJson: String, journalpostId: JournalpostId, tidspunkt: LocalDateTime)
 
     fun markerDistribuert(id: VedtakId, distribusjonId: DistribusjonId, tidspunkt: LocalDateTime)
 

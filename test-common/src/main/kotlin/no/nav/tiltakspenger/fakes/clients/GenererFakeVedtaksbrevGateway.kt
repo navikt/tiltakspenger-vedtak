@@ -9,11 +9,13 @@ import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Navn
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import no.nav.tiltakspenger.saksbehandling.ports.GenererVedtaksbrevGateway
 import no.nav.tiltakspenger.saksbehandling.ports.KunneIkkeGenererePdf
+import java.time.LocalDate
 
 class GenererFakeVedtaksbrevGateway : GenererVedtaksbrevGateway {
     private val response by lazy { PdfOgJson(PdfA("pdf".toByteArray()), "json").right() }
     override suspend fun genererVedtaksbrev(
         vedtak: Rammevedtak,
+        vedtaksdato: LocalDate,
         hentBrukersNavn: suspend (Fnr) -> Navn,
         hentSaksbehandlersNavn: suspend (String) -> String,
     ): Either<KunneIkkeGenererePdf, PdfOgJson> {
