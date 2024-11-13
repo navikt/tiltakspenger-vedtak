@@ -285,7 +285,7 @@ suspend fun TestApplicationContext.førstegangsbehandlingTilBeslutter(
         vilkårsvurdert.førstegangsbehandling.id,
         saksbehandler,
         correlationId = CorrelationId.generate(),
-    )
+    ).getOrFail()
     return this.sakContext.sakService.hentForSakId(
         vilkårsvurdert.id,
         saksbehandler,

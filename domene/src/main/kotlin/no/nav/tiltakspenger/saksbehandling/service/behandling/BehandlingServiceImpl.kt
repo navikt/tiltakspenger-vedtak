@@ -99,7 +99,7 @@ class BehandlingServiceImpl(
         }
         val behandling = hentBehandling(behandlingId, saksbehandler, correlationId)
         return behandling.tilBeslutning(saksbehandler).also {
-            førstegangsbehandlingRepo.lagre(behandling)
+            førstegangsbehandlingRepo.lagre(it)
         }.right()
     }
 
@@ -120,12 +120,12 @@ class BehandlingServiceImpl(
                 beslutter = beslutter.navIdent,
             )
 
-        val behandling = hentBehandling(behandlingId, beslutter, correlationId)
-        return behandling.sendTilbake(beslutter, attestering).also {
+        val behandling = hentBehandling(behandlingId, beslutter, correlationId).sendTilbake(beslutter, attestering).also {
             sessionFactory.withTransactionContext { tx ->
-                førstegangsbehandlingRepo.lagre(behandling, tx)
+                førstegangsbehandlingRepo.lagre(it, tx)
             }
-        }.right()
+        }
+        return behandling.right()
     }
 
     override suspend fun iverksett(
@@ -173,7 +173,7 @@ class BehandlingServiceImpl(
         val førsteMeldekort = vedtak.opprettFørsteMeldekortForEnSak()
 
         // journalføring og dokumentdistribusjon skjer i egen jobb
-        return iverksattBehandling.also {
+        iverksattBehandling.also {
             sessionFactory.withTransactionContext { tx ->
                 førstegangsbehandlingRepo.lagre(iverksattBehandling, tx)
                 rammevedtakRepo.lagre(vedtak, tx)
@@ -181,7 +181,8 @@ class BehandlingServiceImpl(
                 statistikkStønadRepo.lagre(stønadStatistikk, tx)
                 meldekortRepo.lagre(førsteMeldekort, tx)
             }
-        }.right()
+        }
+        return iverksattBehandling.right()
     }
 
     override suspend fun taBehandling(
@@ -194,9 +195,10 @@ class BehandlingServiceImpl(
             return KanIkkeTaBehandling.MåVæreSaksbehandlerEllerBeslutter.left()
         }
         val behandling = hentBehandling(behandlingId, saksbehandler, correlationId)
-        return behandling.taBehandling(saksbehandler).also {
+        behandling.taBehandling(saksbehandler).also {
             førstegangsbehandlingRepo.lagre(it)
-        }.right()
+        }
+        return behandling.right()
     }
 
     // er tenkt brukt fra datadeling og henter alle behandlinger som ikke er iverksatt for en ident

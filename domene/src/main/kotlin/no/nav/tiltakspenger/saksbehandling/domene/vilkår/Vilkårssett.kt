@@ -22,7 +22,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.LeggTilKvpSaksoppl
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.kvpSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LivsoppholdVilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LivsoppholdVilkår.PeriodenMåVæreLikVurderingsperioden
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.livsoppholdSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.TiltakDeltagelseVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.tilRegisterSaksopplysning
@@ -111,7 +110,7 @@ data class Vilkårssett(
             kravfristVilkår = kravfristVilkår.leggTilSaksbehandlerSaksopplysning(command),
         )
 
-    fun oppdaterLivsopphold(command: LeggTilLivsoppholdSaksopplysningCommand): Either<PeriodenMåVæreLikVurderingsperioden, Vilkårssett> =
+    fun oppdaterLivsopphold(command: LeggTilLivsoppholdSaksopplysningCommand): Either<KanIkkeLeggeTilSaksopplysning, Vilkårssett> =
         livsoppholdVilkår.leggTilSaksbehandlerSaksopplysning(command).map {
             this.copy(livsoppholdVilkår = it)
         }
