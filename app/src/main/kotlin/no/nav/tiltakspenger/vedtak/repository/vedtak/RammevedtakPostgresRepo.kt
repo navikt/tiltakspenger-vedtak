@@ -118,9 +118,9 @@ class RammevedtakPostgresRepo(
             session.run(
                 queryOf(
                     """
-                    update rammevedtak
-                    set vedtaksdato = :vedtaksdato
-                        brev_json = to_jsonb(:brev_json::jsonb)
+                    update rammevedtak set 
+                        vedtaksdato = :vedtaksdato,
+                        brev_json = to_jsonb(:brev_json::jsonb),
                         journalpost_id = :journalpost_id,
                         journalføringstidspunkt = :tidspunkt
                     where id = :id
@@ -282,7 +282,7 @@ class RammevedtakPostgresRepo(
                     BehandlingId.fromString(string("behandling_id")),
                     session,
                 )!!,
-                vedtaksdato = localDate("vedtaksdato"),
+                vedtaksdato = localDateOrNull("vedtaksdato"),
                 vedtaksType = Vedtakstype.valueOf(string("vedtakstype")),
                 periode = Periode(fraOgMed = localDate("fra_og_med"), tilOgMed = localDate("til_og_med")),
                 saksbehandlerNavIdent = string("saksbehandler"),
