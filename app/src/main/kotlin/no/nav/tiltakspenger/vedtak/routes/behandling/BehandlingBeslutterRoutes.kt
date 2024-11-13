@@ -11,6 +11,8 @@ import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.routes.correlationId
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.måVæreBeslutter
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond403Forbidden
 import no.nav.tiltakspenger.vedtak.routes.withBehandlingId
 import no.nav.tiltakspenger.vedtak.routes.withBody
 
@@ -36,15 +38,19 @@ fun Route.behandlingBeslutterRoutes(
                         beslutter = saksbehandler,
                         begrunnelse = begrunnelse,
                         correlationId = correlationId,
+                    ).fold(
+                        { call.respond403Forbidden(måVæreBeslutter()) },
+                        {
+                            auditService.logMedBehandlingId(
+                                behandlingId = behandlingId,
+                                navIdent = saksbehandler.navIdent,
+                                action = AuditLogEvent.Action.UPDATE,
+                                contextMessage = "Beslutter underkjenner behandling",
+                                correlationId = correlationId,
+                            )
+                            call.respond(status = HttpStatusCode.OK, message = "{}")
+                        },
                     )
-                    auditService.logMedBehandlingId(
-                        behandlingId = behandlingId,
-                        navIdent = saksbehandler.navIdent,
-                        action = AuditLogEvent.Action.UPDATE,
-                        contextMessage = "Beslutter underkjenner behandling",
-                        correlationId = correlationId,
-                    )
-                    call.respond(status = HttpStatusCode.OK, message = "{}")
                 }
             }
         }
@@ -55,16 +61,19 @@ fun Route.behandlingBeslutterRoutes(
         call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
             call.withBehandlingId { behandlingId ->
                 val correlationId = call.correlationId()
-                behandlingService.iverksett(behandlingId, saksbehandler, correlationId)
-
-                auditService.logMedBehandlingId(
-                    behandlingId = behandlingId,
-                    navIdent = saksbehandler.navIdent,
-                    action = AuditLogEvent.Action.UPDATE,
-                    contextMessage = "Beslutter godkjenner behandlingen",
-                    correlationId = correlationId,
+                behandlingService.iverksett(behandlingId, saksbehandler, correlationId).fold(
+                    { call.respond403Forbidden(måVæreBeslutter()) },
+                    {
+                        auditService.logMedBehandlingId(
+                            behandlingId = behandlingId,
+                            navIdent = saksbehandler.navIdent,
+                            action = AuditLogEvent.Action.UPDATE,
+                            contextMessage = "Beslutter godkjenner behandlingen",
+                            correlationId = correlationId,
+                        )
+                        call.respond(message = "{}", status = HttpStatusCode.OK)
+                    },
                 )
-                call.respond(message = "{}", status = HttpStatusCode.OK)
             }
         }
     }

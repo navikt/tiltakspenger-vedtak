@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.saksbehandling.domene.stønadsdager
 
+import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
-import java.time.LocalDateTime
 
 fun Tiltak.tilStønadsdagerRegisterSaksopplysning(): StønadsdagerSaksopplysning.Register =
     // B: Hvorfor kan deltagelsen være null fra tiltaksappen? Får vi null-verdier fra Arena eller Komet?
@@ -15,7 +15,7 @@ fun Tiltak.tilStønadsdagerRegisterSaksopplysning(): StønadsdagerSaksopplysning
             antallDager = (antallDagerPerUke * 2).toIntPrecise(),
             periode = deltakelsesperiode,
             kilde = kilde,
-            tidsstempel = LocalDateTime.now(),
+            tidsstempel = nå(),
         )
     } else if (deltakelseProsent != null) {
         StønadsdagerSaksopplysning.Register(
@@ -26,7 +26,7 @@ fun Tiltak.tilStønadsdagerRegisterSaksopplysning(): StønadsdagerSaksopplysning
             antallDager = if (deltakelseProsent == 100f) 5 else throw IllegalStateException("Forventet 100% deltakelse. Vi støtter ikke lavere prosenter enn dette i MVP."),
             periode = deltakelsesperiode,
             kilde = kilde,
-            tidsstempel = LocalDateTime.now(),
+            tidsstempel = nå(),
         )
     } else {
         throw IllegalStateException("Antall dager per uke og deltakelseprosent bør ikke være null samtidig. Da må vi i så fall legge til støtte for det etter MVP.")

@@ -4,13 +4,14 @@ import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import no.nav.tiltakspenger.felles.exceptions.StøtterIkkeUtfallException
+import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.KanIkkeLeggeTilSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SamletUtfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.UtfallForPeriode
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
-import java.time.LocalDateTime
 
 /**
  * Livsoppholdytelser skal ha minimal med støtte ved lansering for én bruker.
@@ -38,12 +39,14 @@ data class LivsoppholdVilkår private constructor(
                     vurderingsperiode,
                 )
             }
+
             !avklartSaksopplysning.harLivsoppholdYtelser -> {
                 Periodisering(
                     UtfallForPeriode.OPPFYLT,
                     vurderingsperiode,
                 )
             }
+
             avklartSaksopplysning.harLivsoppholdYtelser -> throw StøtterIkkeUtfallException("Andre ytelser til livsopphold fører til avslag eller delvis innvilgelse.")
             else -> throw IllegalStateException("Andre ytelser til livsopphold har ugyldig utfall")
         }
@@ -82,19 +85,17 @@ data class LivsoppholdVilkår private constructor(
             )
         }
 
-    data object PeriodenMåVæreLikVurderingsperioden
-
     fun leggTilSaksbehandlerSaksopplysning(
         command: LeggTilLivsoppholdSaksopplysningCommand,
-    ): Either<PeriodenMåVæreLikVurderingsperioden, LivsoppholdVilkår> {
+    ): Either<KanIkkeLeggeTilSaksopplysning, LivsoppholdVilkår> {
         if (!vurderingsperiode.inneholderHele(command.harYtelseForPeriode.periode)) {
-            return PeriodenMåVæreLikVurderingsperioden.left()
+            return KanIkkeLeggeTilSaksopplysning.PeriodenMåVæreLikVurderingsperioden.left()
         }
         val livsoppholdSaksopplysning =
             LivsoppholdSaksopplysning.Saksbehandler(
                 harLivsoppholdYtelser = command.harYtelseForPeriode.harYtelse,
                 årsakTilEndring = command.årsakTilEndring,
-                tidsstempel = LocalDateTime.now(),
+                tidsstempel = nå(),
                 saksbehandler = command.saksbehandler,
                 periode = vurderingsperiode,
             )

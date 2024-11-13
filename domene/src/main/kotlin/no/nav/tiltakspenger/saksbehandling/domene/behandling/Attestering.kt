@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.saksbehandling.domene.behandling
 
 import no.nav.tiltakspenger.felles.AttesteringId
+import no.nav.tiltakspenger.felles.nå
 import java.time.LocalDateTime
 
 data class Attestering(
@@ -8,7 +9,7 @@ data class Attestering(
     val status: Attesteringsstatus,
     val begrunnelse: String?,
     val beslutter: String,
-    val tidspunkt: LocalDateTime = LocalDateTime.now(),
+    val tidspunkt: LocalDateTime = nå(),
 ) {
     fun isGodkjent() = status == Attesteringsstatus.GODKJENT
 

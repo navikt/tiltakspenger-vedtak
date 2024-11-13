@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.felles.Systembruker
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
@@ -134,7 +135,7 @@ interface BehandlingMother {
         status = Attesteringsstatus.GODKJENT,
         begrunnelse = null,
         beslutter = beslutter.navIdent,
-        tidspunkt = LocalDateTime.now(),
+        tidspunkt = nå(),
     )
 
     fun behandlingTilBeslutterInnvilget(saksbehandler: Saksbehandler = saksbehandler123()): Førstegangsbehandling {
@@ -285,7 +286,7 @@ suspend fun TestApplicationContext.førstegangsbehandlingTilBeslutter(
         vilkårsvurdert.førstegangsbehandling.id,
         saksbehandler,
         correlationId = CorrelationId.generate(),
-    )
+    ).getOrFail()
     return this.sakContext.sakService.hentForSakId(
         vilkårsvurdert.id,
         saksbehandler,

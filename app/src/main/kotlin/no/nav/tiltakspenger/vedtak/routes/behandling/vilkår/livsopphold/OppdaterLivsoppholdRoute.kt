@@ -10,6 +10,7 @@ import no.nav.tiltakspenger.libs.auth.ktor.withSaksbehandler
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Saksbehandler
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.KanIkkeLeggeTilSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
@@ -17,6 +18,10 @@ import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.correlationId
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.måVæreSaksbehandler
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.saksopplysningsperiodeMåVæreLik
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond400BadRequest
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond403Forbidden
 import no.nav.tiltakspenger.vedtak.routes.withBehandlingId
 import no.nav.tiltakspenger.vedtak.routes.withBody
 
@@ -64,17 +69,19 @@ fun Route.oppdaterLivsoppholdRoute(
                             body.toCommand(behandlingId, saksbehandler, correlationId),
                         ).fold(
                             {
-                                call.respond(
-                                    status = HttpStatusCode.BadRequest,
-                                    message = """feilmelding": "Perioden til saksopplysningen er forskjellig fra vurderingsperioden""",
-                                )
+                                when (it) {
+                                    KanIkkeLeggeTilSaksopplysning.MåVæreSaksbehandler -> call.respond403Forbidden(måVæreSaksbehandler())
+                                    KanIkkeLeggeTilSaksopplysning.PeriodenMåVæreLikVurderingsperioden -> call.respond400BadRequest(
+                                        saksopplysningsperiodeMåVæreLik(),
+                                    )
+                                }
                             },
                             {
                                 auditService.logMedBehandlingId(
                                     behandlingId = behandlingId,
                                     navIdent = saksbehandler.navIdent,
                                     action = AuditLogEvent.Action.UPDATE,
-                                    contextMessage = "Oppdaterer data om vilkåret livsoppholdytekser",
+                                    contextMessage = "Oppdaterer data om vilkåret livsoppholdytelser",
                                     correlationId = correlationId,
                                 )
 

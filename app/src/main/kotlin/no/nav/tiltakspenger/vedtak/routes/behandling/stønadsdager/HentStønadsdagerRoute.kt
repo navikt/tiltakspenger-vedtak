@@ -12,6 +12,8 @@ import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.correlationId
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.måVæreSaksbehandlerEllerBeslutter
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond403Forbidden
 import no.nav.tiltakspenger.vedtak.routes.withBehandlingId
 
 fun Route.hentStønadsdagerRoute(
@@ -25,19 +27,24 @@ fun Route.hentStønadsdagerRoute(
         call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
             call.withBehandlingId { behandlingId ->
                 val correlationId = call.correlationId()
-                behandlingService.hentBehandling(behandlingId, saksbehandler, correlationId = correlationId).let {
-                    auditService.logMedBehandlingId(
-                        behandlingId = behandlingId,
-                        navIdent = saksbehandler.navIdent,
-                        action = AuditLogEvent.Action.ACCESS,
-                        contextMessage = "Henter vilkår om stønadsdager",
-                        correlationId = correlationId,
-                    )
-                    call.respond(
-                        status = HttpStatusCode.OK,
-                        message = it.stønadsdager.toDTO(),
-                    )
-                }
+                behandlingService.hentBehandlingForSaksbehandler(behandlingId, saksbehandler, correlationId = correlationId).fold(
+                    {
+                        call.respond403Forbidden(måVæreSaksbehandlerEllerBeslutter())
+                    },
+                    {
+                        auditService.logMedBehandlingId(
+                            behandlingId = behandlingId,
+                            navIdent = saksbehandler.navIdent,
+                            action = AuditLogEvent.Action.ACCESS,
+                            contextMessage = "Henter vilkår om stønadsdager",
+                            correlationId = correlationId,
+                        )
+                        call.respond(
+                            status = HttpStatusCode.OK,
+                            message = it.stønadsdager.toDTO(),
+                        )
+                    },
+                )
             }
         }
     }

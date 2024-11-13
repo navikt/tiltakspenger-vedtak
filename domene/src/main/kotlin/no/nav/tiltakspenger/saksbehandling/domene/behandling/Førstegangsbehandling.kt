@@ -5,6 +5,7 @@ import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
 import no.nav.tiltakspenger.felles.exceptions.StøtterIkkeUtfallException
+import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
@@ -167,7 +168,7 @@ data class Førstegangsbehandling(
                 beslutter = null,
                 status = UNDER_BEHANDLING,
                 attesteringer = emptyList(),
-                opprettet = opprettet,
+                opprettet = nå(),
                 iverksattTidspunkt = null,
                 sendtTilDatadeling = null,
                 sistEndret = opprettet,
@@ -215,12 +216,11 @@ data class Førstegangsbehandling(
             "Behandlingen må være under behandling, det innebærer også at en saksbehandler må ta saken før den kan sendes til beslutter. Behandlingsstatus: ${this.status}. Utøvende saksbehandler: $saksbehandler. Saksbehandler på behandling: ${this.saksbehandler}"
         }
 
-        check(saksbehandler.erSaksbehandler()) { "Saksbehandler må ha saksbehandlerrolle. Utøvende saksbehandler: $saksbehandler" }
         check(saksbehandler.navIdent == this.saksbehandler) { "Det er ikke lov å sende en annen sin behandling til beslutter" }
         check(samletUtfall != SamletUtfall.UAVKLART) { "Kan ikke sende en UAVKLART behandling til beslutter" }
         return this.copy(
             status = if (beslutter == null) KLAR_TIL_BESLUTNING else UNDER_BESLUTNING,
-            sendtTilBeslutning = LocalDateTime.now(),
+            sendtTilBeslutning = nå(),
         )
     }
 
@@ -241,8 +241,9 @@ data class Førstegangsbehandling(
                 this.copy(
                     status = INNVILGET,
                     attesteringer = attesteringer + attestering,
-                    iverksattTidspunkt = LocalDateTime.now(),
+                    iverksattTidspunkt = nå(),
                 )
+
             }
 
             KLAR_TIL_BEHANDLING, UNDER_BEHANDLING, KLAR_TIL_BESLUTNING, INNVILGET -> throw IllegalStateException(

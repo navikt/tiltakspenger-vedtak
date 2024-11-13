@@ -4,10 +4,10 @@ import arrow.core.Either
 import arrow.core.getOrElse
 import mu.KotlinLogging
 import no.nav.tiltakspenger.distribusjon.ports.DokdistGateway
+import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.saksbehandling.ports.RammevedtakRepo
-import java.time.LocalDateTime
 
 class DistribuerVedtaksbrevService(
     private val dokdistGateway: DokdistGateway,
@@ -30,7 +30,7 @@ class DistribuerVedtaksbrevService(
                                 return@forEach
                             }
                     log.info { "Vedtaksbrev distribuert. $vedtakSomSkalDistribueres" }
-                    rammevedtakRepo.markerDistribuert(vedtakSomSkalDistribueres.id, distribusjonId, LocalDateTime.now())
+                    rammevedtakRepo.markerDistribuert(vedtakSomSkalDistribueres.id, distribusjonId, nå())
                     log.info { "Vedtaksbrev markert som distribuert. distribusjonId: $distribusjonId, $vedtakSomSkalDistribueres" }
                 }.onLeft {
                     log.error(it) { "Feil ved journalføring av vedtaksbrev. $vedtakSomSkalDistribueres" }

@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder
 
+import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndring
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -20,7 +21,7 @@ sealed interface AlderSaksopplysning {
 
         companion object {
             fun opprett(fødselsdato: LocalDate): AlderSaksopplysning.Register =
-                Register(fødselsdato = fødselsdato, tidsstempel = LocalDateTime.now())
+                Register(fødselsdato = fødselsdato, tidsstempel = nå())
         }
 
         init {

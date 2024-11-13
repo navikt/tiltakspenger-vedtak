@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.saksbehandling.domene.vedtak
 
 import no.nav.tiltakspenger.distribusjon.domene.DistribusjonId
 import no.nav.tiltakspenger.felles.journalføring.JournalpostId
+import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.VedtakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
@@ -49,7 +50,7 @@ fun Førstegangsbehandling.opprettVedtak(): Rammevedtak {
         sakId = this.sakId,
         saksnummer = this.saksnummer,
         behandling = this,
-        vedtaksdato = LocalDateTime.now(),
+        vedtaksdato = nå(),
         vedtaksType = Vedtakstype.INNVILGELSE,
         periode = this.vurderingsperiode,
         saksbehandlerNavIdent = this.saksbehandler!!,

@@ -17,6 +17,8 @@ import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.correlationId
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.måVæreSaksbehandler
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond403Forbidden
 import no.nav.tiltakspenger.vedtak.routes.withBehandlingId
 import no.nav.tiltakspenger.vedtak.routes.withBody
 
@@ -70,19 +72,24 @@ fun Route.oppdaterKvpRoute(
                     val correlationId = call.correlationId()
                     kvpVilkårService.leggTilSaksopplysning(
                         body.toCommand(behandlingId, saksbehandler, correlationId),
-                    ).let {
-                        auditService.logMedBehandlingId(
-                            behandlingId = behandlingId,
-                            navIdent = saksbehandler.navIdent,
-                            action = AuditLogEvent.Action.UPDATE,
-                            contextMessage = "Oppdaterer data om vilkåret kvalifikasjonsprogrammet",
-                            correlationId = correlationId,
-                        )
-                        call.respond(
-                            status = HttpStatusCode.Created,
-                            message = it.vilkårssett.kvpVilkår.toDTO(),
-                        )
-                    }
+                    ).fold(
+                        {
+                            call.respond403Forbidden(måVæreSaksbehandler())
+                        },
+                        {
+                            auditService.logMedBehandlingId(
+                                behandlingId = behandlingId,
+                                navIdent = saksbehandler.navIdent,
+                                action = AuditLogEvent.Action.UPDATE,
+                                contextMessage = "Oppdaterer data om vilkåret kvalifikasjonsprogrammet",
+                                correlationId = correlationId,
+                            )
+                            call.respond(
+                                status = HttpStatusCode.Created,
+                                message = it.vilkårssett.kvpVilkår.toDTO(),
+                            )
+                        },
+                    )
                 }
             }
         }

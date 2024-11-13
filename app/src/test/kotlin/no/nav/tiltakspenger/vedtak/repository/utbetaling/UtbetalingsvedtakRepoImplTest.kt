@@ -2,17 +2,18 @@ package no.nav.tiltakspenger.vedtak.repository.utbetaling
 
 import io.kotest.matchers.shouldBe
 import no.nav.tiltakspenger.felles.journalføring.JournalpostId
+import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.saksbehandling.ports.SendtUtbetaling
 import no.nav.tiltakspenger.utbetaling.domene.opprettUtbetalingsvedtak
 import no.nav.tiltakspenger.vedtak.db.persisterRammevedtakMedUtfyltMeldekort
 import no.nav.tiltakspenger.vedtak.db.withMigratedDb
 import org.junit.jupiter.api.Test
-import java.time.LocalDateTime
 
 class UtbetalingsvedtakRepoImplTest {
 
     @Test
     fun `kan lagre og hente`() {
+        val tidspunkt = nå()
         withMigratedDb(runIsolated = true) { testDataHelper ->
 
             val (sak, meldekort) = testDataHelper.persisterRammevedtakMedUtfyltMeldekort()
@@ -23,7 +24,7 @@ class UtbetalingsvedtakRepoImplTest {
             utbetalingsvedtakRepo.hentUtbetalingsvedtakForUtsjekk() shouldBe listOf(utbetalingsvedtak)
             utbetalingsvedtakRepo.markerSendtTilUtbetaling(
                 vedtakId = utbetalingsvedtak.id,
-                tidspunkt = LocalDateTime.now(),
+                tidspunkt = tidspunkt,
                 utbetalingsrespons = SendtUtbetaling("myReq", "myRes", 202),
             )
             utbetalingsvedtakRepo.hentUtbetalingJsonForVedtakId(utbetalingsvedtak.id) shouldBe "myReq"
@@ -36,7 +37,7 @@ class UtbetalingsvedtakRepoImplTest {
             utbetalingsvedtakRepo.markerJournalført(
                 vedtakId = utbetalingsvedtak.id,
                 journalpostId = JournalpostId("123"),
-                tidspunkt = LocalDateTime.now(),
+                tidspunkt = tidspunkt,
             )
             utbetalingsvedtakRepo.hentDeSomSkalJournalføres() shouldBe emptyList()
         }

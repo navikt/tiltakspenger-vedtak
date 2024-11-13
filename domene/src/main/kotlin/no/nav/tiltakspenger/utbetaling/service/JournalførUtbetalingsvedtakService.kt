@@ -3,12 +3,12 @@ package no.nav.tiltakspenger.utbetaling.service
 import arrow.core.Either
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.NavIdentClient
+import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.meldekort.ports.GenererMeldekortPdfGateway
 import no.nav.tiltakspenger.meldekort.ports.JournalførMeldekortGateway
 import no.nav.tiltakspenger.utbetaling.ports.UtbetalingsvedtakRepo
-import java.time.LocalDateTime
 
 /**
  * Har ansvar for å generere pdf og sende utbetalingsvedtak til journalføring.
@@ -39,7 +39,7 @@ class JournalførUtbetalingsvedtakService(
                         correlationId = correlationId,
                     )
                     log.info { "utbetalingsvedtak journalført. Saksnummer: ${utbetalingsvedtak.saksnummer}, sakId: ${utbetalingsvedtak.sakId}, utbetalingsvedtakId: ${utbetalingsvedtak.id}. JournalpostId: $journalpostId" }
-                    utbetalingsvedtakRepo.markerJournalført(utbetalingsvedtak.id, journalpostId, LocalDateTime.now())
+                    utbetalingsvedtakRepo.markerJournalført(utbetalingsvedtak.id, journalpostId, nå())
                     log.info { "Utbetalingsvedtak markert som journalført. Saksnummer: ${utbetalingsvedtak.saksnummer}, sakId: ${utbetalingsvedtak.sakId}, utbetalingsvedtakId: ${utbetalingsvedtak.id}. JournalpostId: $journalpostId" }
                 }.onLeft {
                     log.error(it) { "Ukjent feil skjedde under generering av brev og journalføring av utbetalingsvedtak. Saksnummer: ${utbetalingsvedtak.saksnummer}, sakId: ${utbetalingsvedtak.sakId}, utbetalingsvedtakId: ${utbetalingsvedtak.id}" }

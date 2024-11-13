@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår.introduksjonsprogrammet
 
 import no.nav.tiltakspenger.felles.exceptions.StøtterIkkeUtfallException
+import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.PeriodeMedVerdi
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
@@ -9,7 +10,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.UtfallForPeriode
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.Deltagelse.DELTAR
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.Deltagelse.DELTAR_IKKE
-import java.time.LocalDateTime
 
 /**
  * Introduksjonsprogrammet: https://www.regjeringen.no/no/tema/innvandring-og-integrering/asd/Verkemiddel-i-integreringsarbeidet/introduksjonsprogram/id2343472/
@@ -42,7 +42,7 @@ data class IntroVilkår private constructor(
                 ).utvid(DELTAR_IKKE, vurderingsperiode),
                 årsakTilEndring = command.årsakTilEndring,
                 saksbehandler = command.saksbehandler,
-                tidsstempel = LocalDateTime.now(),
+                tidsstempel = nå(),
             )
         return this.copy(
             saksbehandlerSaksopplysning = introSaksopplysning,
