@@ -1,8 +1,7 @@
 package no.nav.tiltakspenger.saksbehandling.service
 
-import io.kotest.assertions.throwables.shouldNotThrow
-import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.matchers.shouldBe
+import io.kotest.assertions.arrow.core.shouldBeLeft
+import io.kotest.assertions.arrow.core.shouldBeRight
 import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.common.TestApplicationContext
 import no.nav.tiltakspenger.libs.common.CorrelationId
@@ -18,21 +17,20 @@ internal class BehandlingServiceTest {
             val sak = this.førstegangsbehandlingTilBeslutter()
             val behandlingId = sak.førstegangsbehandling.id
 
-            shouldThrow<IllegalStateException> {
-                this.førstegangsbehandlingContext.behandlingService.taBehandling(
-                    behandlingId,
-                    saksbehandlerUtenTilgang(),
-                    correlationId = CorrelationId.generate(),
-                )
-            }.message shouldBe
-                "Saksbehandler må ha beslutterrolle. Utøvende saksbehandler: Saksbehandler(navIdent='U12345', brukernavn='*****', epost='*****', roller=Saksbehandlerroller(value=[]))"
-            shouldNotThrow<IllegalStateException> {
-                this.førstegangsbehandlingContext.behandlingService.taBehandling(
-                    behandlingId,
-                    beslutter(),
-                    correlationId = CorrelationId.generate(),
-                )
-            }
+            this.førstegangsbehandlingContext.behandlingService.taBehandling(
+                behandlingId,
+                saksbehandlerUtenTilgang(),
+                correlationId = CorrelationId.generate(),
+            ).shouldBeLeft()
+
+            val sakEksempel2Test = this.sakContext.sakRepo.hentForSakId(sak.id)!!
+            println(sakEksempel2Test.førstegangsbehandling)
+
+            this.førstegangsbehandlingContext.behandlingService.taBehandling(
+                behandlingId,
+                beslutter(),
+                correlationId = CorrelationId.generate(),
+            ).shouldBeRight()
         }
     }
 
@@ -44,13 +42,9 @@ internal class BehandlingServiceTest {
             val beslutter = beslutter()
             this.førstegangsbehandlingContext.behandlingService.taBehandling(behandlingId, beslutter, correlationId = CorrelationId.generate())
 
-            shouldThrow<IllegalStateException> {
-                this.førstegangsbehandlingContext.behandlingService.sendTilbakeTilSaksbehandler(behandlingId, saksbehandlerUtenTilgang(), "begrunnelse", correlationId = CorrelationId.generate())
-            }.message shouldBe "utøvende saksbehandler må være beslutter"
+            this.førstegangsbehandlingContext.behandlingService.sendTilbakeTilSaksbehandler(behandlingId, saksbehandlerUtenTilgang(), "begrunnelse", correlationId = CorrelationId.generate()).shouldBeLeft()
 
-            shouldNotThrow<IllegalStateException> {
-                this.førstegangsbehandlingContext.behandlingService.sendTilbakeTilSaksbehandler(behandlingId, beslutter, "begrunnelse", correlationId = CorrelationId.generate())
-            }
+            this.førstegangsbehandlingContext.behandlingService.sendTilbakeTilSaksbehandler(behandlingId, beslutter, "begrunnelse", correlationId = CorrelationId.generate()).shouldBeRight()
         }
     }
 }

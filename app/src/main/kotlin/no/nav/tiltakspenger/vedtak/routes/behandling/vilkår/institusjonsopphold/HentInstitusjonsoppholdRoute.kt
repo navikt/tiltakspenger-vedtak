@@ -12,6 +12,8 @@ import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.correlationId
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.måVæreSaksbehandlerEllerBeslutter
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond403Forbidden
 import no.nav.tiltakspenger.vedtak.routes.withBehandlingId
 
 fun Route.hentInstitusjonsoppholdRoute(
@@ -25,21 +27,26 @@ fun Route.hentInstitusjonsoppholdRoute(
         call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
             call.withBehandlingId { behandlingId ->
 
-                behandlingService.hentBehandling(behandlingId, saksbehandler, correlationId = call.correlationId())
-                    .let {
-                        auditService.logMedBehandlingId(
-                            behandlingId = behandlingId,
-                            navIdent = saksbehandler.navIdent,
-                            action = AuditLogEvent.Action.ACCESS,
-                            contextMessage = "Henter vilkår om institusjonsopphold",
-                            correlationId = call.correlationId(),
-                        )
+                behandlingService.hentBehandlingForSaksbehandler(behandlingId, saksbehandler, correlationId = call.correlationId())
+                    .fold(
+                        {
+                            call.respond403Forbidden(måVæreSaksbehandlerEllerBeslutter())
+                        },
+                        {
+                            auditService.logMedBehandlingId(
+                                behandlingId = behandlingId,
+                                navIdent = saksbehandler.navIdent,
+                                action = AuditLogEvent.Action.ACCESS,
+                                contextMessage = "Henter vilkår om institusjonsopphold",
+                                correlationId = call.correlationId(),
+                            )
 
-                        call.respond(
-                            status = HttpStatusCode.OK,
-                            message = it.vilkårssett.institusjonsoppholdVilkår.toDTO(),
-                        )
-                    }
+                            call.respond(
+                                status = HttpStatusCode.OK,
+                                message = it.vilkårssett.institusjonsoppholdVilkår.toDTO(),
+                            )
+                        },
+                    )
             }
         }
     }

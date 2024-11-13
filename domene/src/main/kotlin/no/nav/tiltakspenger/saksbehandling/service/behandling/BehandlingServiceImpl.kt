@@ -1,6 +1,9 @@
 package no.nav.tiltakspenger.saksbehandling.service.behandling
 
+import arrow.core.Either
 import arrow.core.getOrElse
+import arrow.core.left
+import arrow.core.right
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.Systembruker
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
@@ -22,6 +25,11 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attesteringsstatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeHenteBehandling
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeIverksetteBehandling
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeSendeTilBeslutter
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeTaBehandling
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeUnderkjenne
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.opprettVedtak
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.RammevedtakRepo
@@ -46,7 +54,7 @@ class BehandlingServiceImpl(
 ) : BehandlingService {
     val logger = KotlinLogging.logger { }
 
-    override fun hentBehandling(
+    override fun hentBehandlingForSystem(
         behandlingId: BehandlingId,
         sessionContext: SessionContext?,
     ): Behandling = førstegangsbehandlingRepo.hent(behandlingId, sessionContext)
@@ -57,19 +65,42 @@ class BehandlingServiceImpl(
         correlationId: CorrelationId,
         sessionContext: SessionContext?,
     ): Behandling {
+        require(saksbehandler.erSaksbehandlerEllerBeslutter()) { "Saksbehandler må ha rollen SAKSBEHANDLER eller BESLUTTER" }
         sjekkTilgang(behandlingId, saksbehandler, correlationId)
 
-        val behandling = hentBehandling(behandlingId, sessionContext)
+        val behandling = hentBehandlingForSystem(behandlingId, sessionContext)
         return behandling
+    }
+
+    override suspend fun hentBehandlingForSaksbehandler(
+        behandlingId: BehandlingId,
+        saksbehandler: Saksbehandler,
+        correlationId: CorrelationId,
+        sessionContext: SessionContext?,
+    ): Either<KanIkkeHenteBehandling, Behandling> {
+        if (!saksbehandler.erSaksbehandler()) {
+            logger.warn { "Navident ${saksbehandler.navIdent} med rollene ${saksbehandler.roller} har ikke tilgang til å hente behandling" }
+            return KanIkkeHenteBehandling.MåVæreSaksbehandlerEllerBeslutter.left()
+        }
+        sjekkTilgang(behandlingId, saksbehandler, correlationId)
+
+        val behandling = hentBehandlingForSystem(behandlingId, sessionContext)
+        return behandling.right()
     }
 
     override suspend fun sendTilBeslutter(
         behandlingId: BehandlingId,
         saksbehandler: Saksbehandler,
         correlationId: CorrelationId,
-    ) {
-        val behandling = hentBehandling(behandlingId, saksbehandler, correlationId).tilBeslutning(saksbehandler)
-        førstegangsbehandlingRepo.lagre(behandling)
+    ): Either<KanIkkeSendeTilBeslutter, Behandling> {
+        if (!saksbehandler.erSaksbehandler()) {
+            logger.warn { "Navident ${saksbehandler.navIdent} med rollene ${saksbehandler.roller} har ikke tilgang til å sende behandling til beslutter" }
+            return KanIkkeSendeTilBeslutter.MåVæreSaksbehandler.left()
+        }
+        val behandling = hentBehandling(behandlingId, saksbehandler, correlationId)
+        return behandling.tilBeslutning(saksbehandler).also {
+            førstegangsbehandlingRepo.lagre(it)
+        }.right()
     }
 
     override suspend fun sendTilbakeTilSaksbehandler(
@@ -77,7 +108,11 @@ class BehandlingServiceImpl(
         beslutter: Saksbehandler,
         begrunnelse: String,
         correlationId: CorrelationId,
-    ) {
+    ): Either<KanIkkeUnderkjenne, Behandling> {
+        if (!beslutter.erBeslutter()) {
+            logger.warn { "Navident ${beslutter.navIdent} med rollene ${beslutter.roller} har ikke tilgang til å underkjenne behandlingen" }
+            return KanIkkeUnderkjenne.MåVæreBeslutter.left()
+        }
         val attestering =
             Attestering(
                 status = Attesteringsstatus.SENDT_TILBAKE,
@@ -85,22 +120,27 @@ class BehandlingServiceImpl(
                 beslutter = beslutter.navIdent,
             )
 
-        val behandling = hentBehandling(behandlingId, beslutter, correlationId).sendTilbake(beslutter, attestering)
-
-        sessionFactory.withTransactionContext { tx ->
-            førstegangsbehandlingRepo.lagre(behandling, tx)
+        val behandling = hentBehandling(behandlingId, beslutter, correlationId).sendTilbake(beslutter, attestering).also {
+            sessionFactory.withTransactionContext { tx ->
+                førstegangsbehandlingRepo.lagre(it, tx)
+            }
         }
+        return behandling.right()
     }
 
     override suspend fun iverksett(
         behandlingId: BehandlingId,
         beslutter: Saksbehandler,
         correlationId: CorrelationId,
-    ) {
+    ): Either<KanIkkeIverksetteBehandling, Behandling> {
+        if (!beslutter.erBeslutter()) {
+            logger.warn { "Navident ${beslutter.navIdent} med rollene ${beslutter.roller} har ikke tilgang til å iverksette behandlingen" }
+            return KanIkkeIverksetteBehandling.MåVæreBeslutter.left()
+        }
         val behandling = hentBehandling(behandlingId, beslutter, correlationId) as Førstegangsbehandling
         val sak =
             sakRepo.hentDetaljerForSakId(behandling.sakId)
-                ?: throw IllegalStateException("Iverksett finner ikke sak ${behandling.sakId}")
+                ?: throw IllegalStateException("Fant ikke sak ${behandling.sakId} under iverksetting")
         val attestering =
             Attestering(
                 status = Attesteringsstatus.GODKJENT,
@@ -131,25 +171,34 @@ class BehandlingServiceImpl(
         )
         val stønadStatistikk = stønadStatistikkMapper(sak, vedtak)
         val førsteMeldekort = vedtak.opprettFørsteMeldekortForEnSak()
-        sessionFactory.withTransactionContext { tx ->
-            førstegangsbehandlingRepo.lagre(iverksattBehandling, tx)
-            rammevedtakRepo.lagre(vedtak, tx)
-            statistikkSakRepo.lagre(sakStatistikk, tx)
-            statistikkStønadRepo.lagre(stønadStatistikk, tx)
-            meldekortRepo.lagre(førsteMeldekort, tx)
-        }
+
         // journalføring og dokumentdistribusjon skjer i egen jobb
+        iverksattBehandling.also {
+            sessionFactory.withTransactionContext { tx ->
+                førstegangsbehandlingRepo.lagre(iverksattBehandling, tx)
+                rammevedtakRepo.lagre(vedtak, tx)
+                statistikkSakRepo.lagre(sakStatistikk, tx)
+                statistikkStønadRepo.lagre(stønadStatistikk, tx)
+                meldekortRepo.lagre(førsteMeldekort, tx)
+            }
+        }
+        return iverksattBehandling.right()
     }
 
     override suspend fun taBehandling(
         behandlingId: BehandlingId,
         saksbehandler: Saksbehandler,
         correlationId: CorrelationId,
-    ): Behandling {
+    ): Either<KanIkkeTaBehandling, Behandling> {
+        if (!saksbehandler.erSaksbehandlerEllerBeslutter()) {
+            logger.warn { "Navident ${saksbehandler.navIdent} med rollene ${saksbehandler.roller} har ikke tilgang til å ta behandling" }
+            return KanIkkeTaBehandling.MåVæreSaksbehandlerEllerBeslutter.left()
+        }
         val behandling = hentBehandling(behandlingId, saksbehandler, correlationId)
-        return behandling.taBehandling(saksbehandler).also {
+        behandling.taBehandling(saksbehandler).also {
             førstegangsbehandlingRepo.lagre(it)
         }
+        return behandling.right()
     }
 
     // er tenkt brukt fra datadeling og henter alle behandlinger som ikke er iverksatt for en ident

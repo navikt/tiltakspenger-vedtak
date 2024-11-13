@@ -27,6 +27,21 @@ object Standardfeil {
         "må_ha_beslutter_rolle",
     )
 
+    fun måVæreSaksbehandlerEllerBeslutter(): ErrorJson = ErrorJson(
+        "Må være eller saksbehandler eller beslutter",
+        "må_være_beslutter_eller_saksbehandler",
+    )
+
+    fun saksopplysningsperiodeMåVæreLik(): ErrorJson = ErrorJson(
+        "Perioden til saksopplysningen er forskjellig fra vurderingsperioden",
+        "saksopplysningsperiode_må_være_lik",
+    )
+
+    fun måVæreSaksbehandler(): ErrorJson = ErrorJson(
+        "Må ha saksbehandler-rolle.",
+        "må_ha_saksbehandler_rolle",
+    )
+
     fun støtterIkkeBarnetillegg(): ErrorJson = ErrorJson(
         "Vi støtter ikke barnetillegg.",
         "støtter_ikke_barnetillegg",

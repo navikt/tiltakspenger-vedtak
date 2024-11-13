@@ -7,6 +7,7 @@ import no.nav.tiltakspenger.felles.exceptions.StøtterIkkeUtfallException
 import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.KanIkkeLeggeTilSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Lovreferanse
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.SamletUtfall
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.UtfallForPeriode
@@ -84,13 +85,11 @@ data class LivsoppholdVilkår private constructor(
             )
         }
 
-    data object PeriodenMåVæreLikVurderingsperioden
-
     fun leggTilSaksbehandlerSaksopplysning(
         command: LeggTilLivsoppholdSaksopplysningCommand,
-    ): Either<PeriodenMåVæreLikVurderingsperioden, LivsoppholdVilkår> {
+    ): Either<KanIkkeLeggeTilSaksopplysning, LivsoppholdVilkår> {
         if (!vurderingsperiode.inneholderHele(command.harYtelseForPeriode.periode)) {
-            return PeriodenMåVæreLikVurderingsperioden.left()
+            return KanIkkeLeggeTilSaksopplysning.PeriodenMåVæreLikVurderingsperioden.left()
         }
         val livsoppholdSaksopplysning =
             LivsoppholdSaksopplysning.Saksbehandler(
