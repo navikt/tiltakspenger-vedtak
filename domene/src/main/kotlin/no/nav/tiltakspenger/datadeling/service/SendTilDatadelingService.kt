@@ -3,11 +3,11 @@ package no.nav.tiltakspenger.datadeling.service
 import arrow.core.Either
 import mu.KotlinLogging
 import no.nav.tiltakspenger.datadeling.ports.DatadelingGateway
+import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.RammevedtakRepo
-import java.time.LocalDateTime
 
 class SendTilDatadelingService(
     private val rammevedtakRepo: RammevedtakRepo,
@@ -35,7 +35,7 @@ class SendTilDatadelingService(
                 Either.catch {
                     datadelingGateway.send(rammevedtak, correlationId).onRight {
                         logger.info { "Vedtak sendt til datadeling. VedtakId: ${rammevedtak.id}" }
-                        rammevedtakRepo.markerSendtTilDatadeling(rammevedtak.id, LocalDateTime.now())
+                        rammevedtakRepo.markerSendtTilDatadeling(rammevedtak.id, nå())
                         logger.info { "Vedtak markert som sendt til datadeling. VedtakId: ${rammevedtak.id}" }
                     }.onLeft {
                         logger.error { "Vedtak kunne ikke sendes til datadeling. Saksnummer: ${rammevedtak.saksnummer}, sakId: ${rammevedtak.sakId}, vedtakId: ${rammevedtak.id}" }
@@ -56,7 +56,7 @@ class SendTilDatadelingService(
                 Either.catch {
                     datadelingGateway.send(behandling, correlationId).onRight {
                         logger.info { "Behandling sendt til datadeling. Saksnummer: ${behandling.saksnummer}, sakId: ${behandling.sakId}, behandlingId: ${behandling.id}" }
-                        behandlingRepo.markerSendtTilDatadeling(behandling.id, LocalDateTime.now())
+                        behandlingRepo.markerSendtTilDatadeling(behandling.id, nå())
                         logger.info { "Behandling markert som sendt til datadeling. Saksnummer: ${behandling.saksnummer}, sakId: ${behandling.sakId}, behandlingId: ${behandling.id}" }
                     }.onLeft {
                         logger.error { "Behandling kunne ikke sendes til datadeling. Saksnummer: ${behandling.saksnummer}, sakId: ${behandling.sakId}, behandlingId: ${behandling.id}" }

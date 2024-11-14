@@ -151,7 +151,7 @@ data class Førstegangsbehandling(
                 }
             }
 
-            val opprettet = LocalDateTime.now()
+            val opprettet = nå()
             return Førstegangsbehandling(
                 id = BehandlingId.random(),
                 saksnummer = saksnummer,
@@ -169,7 +169,7 @@ data class Førstegangsbehandling(
                 beslutter = null,
                 status = UNDER_BEHANDLING,
                 attesteringer = emptyList(),
-                opprettet = nå(),
+                opprettet = opprettet,
                 iverksattTidspunkt = null,
                 sendtTilDatadeling = null,
                 sistEndret = opprettet,
