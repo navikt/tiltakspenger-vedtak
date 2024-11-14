@@ -94,10 +94,9 @@ internal class JoarkHttpClient(
                         response.journalpostId
                     }
 
-                    // if ((response.journalpostferdigstilt == null) || (response.journalpostferdigstilt == false)) {
-                    //     log.error("Kunne ikke ferdigstille journalføring for journalpostId: $journalpostId. response=$response")
-                    //     throw IllegalStateException("Kunne ikke ferdigstille journalføring for journalpostId: $journalpostId. response=$response")
-                    // }
+                    if ((response.journalpostferdigstilt == null) || (response.journalpostferdigstilt == false)) {
+                        log.error("Kunne ikke ferdigstille journalføring for journalpostId: $journalpostId. response=$response")
+                    }
 
                     log.info("Vi har opprettet journalpost med id : $journalpostId")
                     return JournalpostId(journalpostId)
