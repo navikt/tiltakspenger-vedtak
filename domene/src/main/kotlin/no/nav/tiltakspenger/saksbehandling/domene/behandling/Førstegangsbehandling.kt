@@ -103,9 +103,9 @@ data class Førstegangsbehandling(
     }
 
     val erIverksatt: Boolean = status == INNVILGET
-    val relatertTiltak: String = vilkårssett.tiltakDeltagelseVilkår.registerSaksopplysning.tiltakNavn
     val antallDagerPerMeldeperiode: Int = stønadsdager.registerSaksopplysning.antallDager
 
+    val tiltaksnavn = vilkårssett.tiltakDeltagelseVilkår.registerSaksopplysning.tiltaksnavn
     val tiltakstype: TiltakstypeSomGirRett = vilkårssett.tiltakDeltagelseVilkår.registerSaksopplysning.tiltakstype
     val tiltaksid: String = vilkårssett.tiltakDeltagelseVilkår.registerSaksopplysning.eksternTiltakId
     val gjennomføringId: String? = vilkårssett.tiltakDeltagelseVilkår.registerSaksopplysning.gjennomføringId

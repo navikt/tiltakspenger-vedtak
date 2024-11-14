@@ -19,7 +19,6 @@ import no.nav.tiltakspenger.vedtak.context.ApplicationContext
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBeslutterRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.benk.behandlingBenkRoutes
-import no.nav.tiltakspenger.vedtak.routes.datadeling.datadelingRoutes
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.ExceptionHandler
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.ikkeImplementert
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond501NotImplemented
@@ -80,11 +79,6 @@ internal fun Application.vedtakApi(
             tokenService = applicationContext.tokenService,
         )
         søknadRoutes(applicationContext.søknadContext.søknadService, tokenService = applicationContext.tokenService)
-        datadelingRoutes(
-            behandlingService = applicationContext.førstegangsbehandlingContext.behandlingService,
-            rammevedtakService = applicationContext.førstegangsbehandlingContext.rammevedtakService,
-            tokenService = applicationContext.tokenService,
-        )
         staticResources(
             remotePath = "/",
             basePackage = "static",

@@ -18,7 +18,7 @@ fun Førstegangsbehandling.toBehandlingJson(): String {
         beslutter = beslutter,
         iverksattTidspunkt = iverksattTidspunkt,
         tiltak = DatadelingTiltakDTO(
-            tiltakNavn = tiltaksid,
+            tiltakNavn = tiltaksnavn,
             eksternTiltakdeltakerId = tiltaksid,
             gjennomføringId = gjennomføringId,
         ),

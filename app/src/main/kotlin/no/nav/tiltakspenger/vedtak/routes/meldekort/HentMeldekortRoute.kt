@@ -71,10 +71,10 @@ fun Route.hentMeldekortRoute(
                     call.respond(
                         status = HttpStatusCode.OK,
                         message = meldekort.toDTO(
-                            sak.vedtaksperiode!!,
-                            sak.hentRelatertTiltak()!!,
-                            sak.hentAntallDager()!!,
-                            forrigeNavkontor,
+                            vedtaksPeriode = sak.vedtaksperiode!!,
+                            tiltaksnavn = sak.hentTiltaksnavn()!!,
+                            antallDager = sak.hentAntallDager()!!,
+                            forrigeNavkontor = forrigeNavkontor,
                         ),
                     )
                 }

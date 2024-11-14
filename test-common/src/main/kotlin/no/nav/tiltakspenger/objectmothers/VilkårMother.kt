@@ -286,7 +286,7 @@ interface VilkårMother {
     ): TiltakDeltagelseSaksopplysning.Register =
         TiltakDeltagelseSaksopplysning.Register(
             tidsstempel = tidsstempel,
-            tiltakNavn = tiltakNavn,
+            tiltaksnavn = tiltakNavn,
             eksternTiltakId = eksternTiltakId,
             gjennomføringId = gjennomføringId,
             deltagelsePeriode = vurderingsperiode,

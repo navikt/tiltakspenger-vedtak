@@ -55,9 +55,13 @@ data class Sak(
     }
 
     fun hentIkkeUtfyltMeldekort(): Meldekort? = meldeperioder.ikkeUtfyltMeldekort
+
+    /** Den er kun trygg inntil vi revurderer antall dager. */
     fun hentAntallDager(): Int? = rammevedtak?.behandling?.antallDagerPerMeldeperiode
     fun hentTynnSak(): TynnSak = TynnSak(this.id, this.fnr, this.saksnummer)
-    fun hentRelatertTiltak(): String? = rammevedtak?.behandling?.relatertTiltak
+
+    /** Den er kun trygg inntil vi støtter mer enn ett tiltak på én sak. */
+    fun hentTiltaksnavn(): String? = rammevedtak?.behandling?.tiltaksnavn
 
     companion object {
         fun lagSak(

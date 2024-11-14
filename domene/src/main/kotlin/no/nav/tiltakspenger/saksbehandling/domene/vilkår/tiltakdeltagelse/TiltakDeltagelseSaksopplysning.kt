@@ -9,7 +9,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndrin
 import java.time.LocalDateTime
 
 sealed interface TiltakDeltagelseSaksopplysning {
-    val tiltakNavn: String
+    val tiltaksnavn: String
     val eksternTiltakId: String
     val gjennomføringId: String?
     val kilde: Tiltakskilde
@@ -22,7 +22,7 @@ sealed interface TiltakDeltagelseSaksopplysning {
     val saksbehandler: Saksbehandler?
 
     data class Register(
-        override val tiltakNavn: String,
+        override val tiltaksnavn: String,
         override val eksternTiltakId: String,
         override val gjennomføringId: String?,
         override val tidsstempel: LocalDateTime,

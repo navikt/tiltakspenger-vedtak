@@ -15,7 +15,7 @@ internal data class TiltakDeltagelseSaksopplysningDTO(
 
 internal fun TiltakDeltagelseSaksopplysning.toDTO(): TiltakDeltagelseSaksopplysningDTO =
     TiltakDeltagelseSaksopplysningDTO(
-        tiltakNavn = tiltakNavn,
+        tiltakNavn = tiltaksnavn,
         kilde =
         when (kilde) {
             Arena -> TiltakKildeDTO.ARENA

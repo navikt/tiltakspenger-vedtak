@@ -40,7 +40,7 @@ internal suspend fun Rammevedtak.tobrevDTO(
             etternavn = brukersNavn.mellomnavnOgEtternavn,
             antallBarn = 0,
         ),
-        tiltaksnavn = this.behandling.relatertTiltak,
+        tiltaksnavn = this.behandling.tiltaksnavn,
         rammevedtakFraDato = periode.fraOgMed.format(norskDatoFormatter),
         rammevedtakTilDato = periode.tilOgMed.format(norskDatoFormatter),
         saksnummer = saksnummer.verdi,
