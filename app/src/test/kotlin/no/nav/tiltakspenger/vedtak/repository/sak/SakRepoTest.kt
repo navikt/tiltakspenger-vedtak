@@ -8,12 +8,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.sak.TynnSak
 import no.nav.tiltakspenger.vedtak.db.persisterOpprettetFørstegangsbehandling
 import no.nav.tiltakspenger.vedtak.db.withMigratedDb
 import org.junit.jupiter.api.Test
-import java.util.Random
 
 internal class SakRepoTest {
-    companion object {
-        val random = Random()
-    }
 
     @Test
     fun `lagre og hente en sak med en søknad`() {

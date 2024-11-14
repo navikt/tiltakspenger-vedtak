@@ -16,7 +16,7 @@ import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando.S
 import org.junit.jupiter.api.Test
 
 /**
- * https://confluence.adeo.no/pages/viewpage.action?pageId=597363679
+ * https://confluence.adeo.no/pages/viewpage.action?pageId=597368022
  * Eksempel 2
  */
 internal class Meldekortberegning5DagerIUkaEksempel5ArenaTest {
@@ -75,7 +75,6 @@ internal class Meldekortberegning5DagerIUkaEksempel5ArenaTest {
     private val meldekort4 = nonEmptyListOf(
         DagMedForventning(11.mars(2024), DELTATT_UTEN_LØNN_I_TILTAKET, IngenReduksjon),
         DagMedForventning(12.mars(2024), DELTATT_UTEN_LØNN_I_TILTAKET, IngenReduksjon),
-        // TODO jah: 13.mars fra confluence, så er vi usikre på om denne skal være 75% eller 100%.
         DagMedForventning(13.mars(2024), FRAVÆR_SYK, Reduksjon),
         DagMedForventning(14.mars(2024), FRAVÆR_SYK, YtelsenFallerBort),
         DagMedForventning(15.mars(2024), DELTATT_UTEN_LØNN_I_TILTAKET, IngenReduksjon),

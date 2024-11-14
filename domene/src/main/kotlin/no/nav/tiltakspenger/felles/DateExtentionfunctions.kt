@@ -30,6 +30,7 @@ fun Int.november(year: Int): LocalDate = LocalDate.of(year, Month.NOVEMBER, this
 
 fun Int.desember(year: Int): LocalDate = LocalDate.of(year, Month.DECEMBER, this)
 
+// TODO jah: Flytt disse 3 til test-scope
 fun Int.januarDateTime(year: Int): LocalDateTime =
     LocalDateTime
         .of(

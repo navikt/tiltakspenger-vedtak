@@ -13,7 +13,7 @@ import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando.S
 import org.junit.jupiter.api.Test
 
 /**
- * https://confluence.adeo.no/pages/viewpage.action?pageId=597363679
+ * https://confluence.adeo.no/pages/viewpage.action?pageId=597368022
  * Eksempel 2
  */
 internal class Meldekortberegning5DagerIUkaEksempel2Test {
