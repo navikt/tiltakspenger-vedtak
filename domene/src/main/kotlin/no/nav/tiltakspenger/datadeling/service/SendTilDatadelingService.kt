@@ -25,7 +25,7 @@ class SendTilDatadelingService(
         if (erDev) {
             // TODO pre-mvp jah: Enable dette når vi har ferdig klient mot datadeling og routes i datadeling.
             sendBehandlinger(correlationId)
-            // sendVedtak(correlationId)
+            sendVedtak(correlationId)
         }
     }
 
