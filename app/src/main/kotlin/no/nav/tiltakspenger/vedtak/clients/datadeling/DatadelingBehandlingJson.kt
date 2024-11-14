@@ -22,7 +22,7 @@ fun Førstegangsbehandling.toBehandlingJson(): String {
             eksternTiltakdeltakerId = tiltaksid,
             gjennomføringId = gjennomføringId,
         ),
-        fnr = fnr.toString(),
+        fnr = fnr.verdi,
         søknadJournalpostId = søknad.journalpostId,
         opprettetTidspunktSaksbehandlingApi = opprettet,
 
