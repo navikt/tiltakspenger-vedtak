@@ -19,7 +19,7 @@ fun systembrukerMapper(
                     "hente_data" -> Systembrukerrolle.HENTE_DATA
                     "lage_hendelser" -> Systembrukerrolle.LAGE_HENDELSER
                     else -> null.also {
-                        logger.debug { "Filtrerer bort ukjent systembruker: $rolle" }
+                        logger.debug { "Filtrerer bort ukjent systembrukerrolle: $rolle" }
                     }
                 }
             }.toSet(),
