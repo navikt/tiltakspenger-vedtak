@@ -186,7 +186,7 @@ class RammevedtakPostgresRepo(
                     from rammevedtak v
                     join sak s 
                       on s.id = v.sak_id
-                    where v.sendt_til_datadeling is not null
+                    where v.sendt_til_datadeling is null
                     limit $limit
                     """.trimIndent(),
                 ).map { row ->
