@@ -31,14 +31,14 @@ internal class UtbetalingsvedtakPostgresRepo(
                         id,
                         sak_id,
                         rammevedtak_id,
-                        vedtakstidspunkt,
+                        opprettet,
                         forrige_vedtak_id,
                         meldekort_id
                     ) values (
                         :id,
                         :sak_id,
                         :rammevedtak_id,
-                        :vedtakstidspunkt,
+                        :opprettet,
                         :forrige_vedtak_id,
                         :meldekort_id
                     )
@@ -47,7 +47,7 @@ internal class UtbetalingsvedtakPostgresRepo(
                         "id" to vedtak.id.toString(),
                         "sak_id" to vedtak.sakId.toString(),
                         "rammevedtak_id" to vedtak.rammevedtakId.toString(),
-                        "vedtakstidspunkt" to vedtak.opprettet,
+                        "opprettet" to vedtak.opprettet,
                         "forrige_vedtak_id" to vedtak.forrigeUtbetalingsvedtakId?.toString(),
                         "meldekort_id" to vedtak.meldekortId.toString(),
                     ),
@@ -157,7 +157,7 @@ internal class UtbetalingsvedtakPostgresRepo(
         fun hentForSakId(sakId: SakId, session: Session): Utbetalinger {
             return session.run(
                 queryOf(
-                    "select u.*, s.saksnummer, s.ident as fnr from utbetalingsvedtak u join sak s on s.id = u.sak_id where u.sak_id = :sak_id order by u.vedtakstidspunkt",
+                    "select u.*, s.saksnummer, s.ident as fnr from utbetalingsvedtak u join sak s on s.id = u.sak_id where u.sak_id = :sak_id order by u.opprettet",
                     mapOf("sak_id" to sakId.toString()),
                 ).map { row ->
                     row.toVedtak(session)
@@ -183,7 +183,7 @@ internal class UtbetalingsvedtakPostgresRepo(
                 sendtTilUtbetaling = localDateTimeOrNull("sendt_til_utbetaling_tidspunkt"),
                 journalpostId = stringOrNull("journalpost_id")?.let { JournalpostId(it) },
                 journalføringstidspunkt = localDateTimeOrNull("journalføringstidspunkt"),
-                opprettet = localDateTime("vedtakstidspunkt"),
+                opprettet = localDateTime("opprettet"),
             )
         }
     }
