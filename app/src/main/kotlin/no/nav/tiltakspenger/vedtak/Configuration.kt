@@ -109,7 +109,7 @@ object Configuration {
                 "POAO_TILGANG_SCOPE" to "api://dev-gcp.poao.poao-tilgang/.default",
                 "MICROSOFT_SCOPE" to "https://graph.microsoft.com/.default",
                 "MICROSOFT_URL" to "graph.microsoft.com/v1.0",
-                "DATADELING_SCOPE" to "api://dev-gcp.tiltakspenger-datadeling/.default",
+                "DATADELING_SCOPE" to "api://dev-gcp.tpts.tiltakspenger-datadeling/.default",
                 "DATADELING_URL" to "http://tiltakspenger-datadeling",
             ),
         )
@@ -137,7 +137,7 @@ object Configuration {
                 "POAO_TILGANG_SCOPE" to "api://prod-gcp.poao.poao-tilgang/.default",
                 "MICROSOFT_SCOPE" to "https://graph.microsoft.com/.default",
                 "MICROSOFT_URL" to "graph.microsoft.com/v1.0",
-                "DATADELING_SCOPE" to "api://prod-gcp.tiltakspenger-datadeling/.default",
+                "DATADELING_SCOPE" to "api://prod-gcp.tpts.tiltakspenger-datadeling/.default",
                 "DATADELING_URL" to "http://tiltakspenger-datadeling",
             ),
         )
