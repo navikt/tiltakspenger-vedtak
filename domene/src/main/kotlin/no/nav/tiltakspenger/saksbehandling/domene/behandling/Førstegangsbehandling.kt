@@ -108,6 +108,7 @@ data class Førstegangsbehandling(
 
     val tiltakstype: TiltakstypeSomGirRett = vilkårssett.tiltakDeltagelseVilkår.registerSaksopplysning.tiltakstype
     val tiltaksid: String = vilkårssett.tiltakDeltagelseVilkår.registerSaksopplysning.eksternTiltakId
+    val gjennomføringId: String? = vilkårssett.tiltakDeltagelseVilkår.registerSaksopplysning.gjennomføringId
     val samletUtfall = vilkårssett.samletUtfall
 
     companion object {

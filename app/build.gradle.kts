@@ -2,7 +2,7 @@ val ktorVersion = "3.0.1"
 val kotestVersion = "5.9.1"
 val mockkVersion = "1.13.13"
 val testContainersVersion = "1.20.3"
-val felleslibVersion = "0.0.271"
+val felleslibVersion = "0.0.277"
 val poaoTilgangVersjon = "2024.10.04_12.38-e183cd9d187f"
 val iverksettVersjon = "1.0_20241029145217_29f9f5d"
 val kotlinxCoroutinesVersion = "1.9.0"
@@ -37,6 +37,7 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:soknad-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:tiltak-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:person-dtos:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:datadeling-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:periodisering:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:personklient-domene:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:personklient-infrastruktur:$felleslibVersion")

@@ -19,12 +19,13 @@ class SendTilDatadelingService(
     suspend fun send(
         correlationId: CorrelationId,
         erNais: Boolean,
+        erDev: Boolean,
     ) {
         // Vi dropper og sende disse lokalt. Legg på senere dersom det er behov for det.
-        if (erNais) {
+        if (erDev) {
             // TODO pre-mvp jah: Enable dette når vi har ferdig klient mot datadeling og routes i datadeling.
+            sendBehandlinger(correlationId)
             // sendVedtak(correlationId)
-            // sendBehandlinger(correlationId)
         }
     }
 

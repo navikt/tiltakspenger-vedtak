@@ -81,7 +81,7 @@ object Configuration {
                 "MICROSOFT_SCOPE" to "localhost",
                 "MICROSOFT_URL" to "host.docker.internal:8091",
                 "DATADELING_SCOPE" to "localhost",
-                "DATADELING_URL" to "host.docker.internal:8091",
+                "DATADELING_URL" to "http://host.docker.internal:8082",
             ),
         )
 
@@ -217,6 +217,9 @@ object Configuration {
     fun httpPort() = config()[Key("application.httpPort", intType)]
 
     fun isNais() = applicationProfile() != Profile.LOCAL
+
+    fun isProd() = applicationProfile() == Profile.PROD
+    fun isDev() = applicationProfile() == Profile.DEV
 
     fun electorPath(): String = config()[Key("ELECTOR_PATH", stringType)]
 
