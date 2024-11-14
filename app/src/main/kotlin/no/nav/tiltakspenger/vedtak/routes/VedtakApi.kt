@@ -44,6 +44,7 @@ internal fun Application.vedtakApi(
         }
     }
     jacksonSerialization()
+    configureExceptions()
     routing {
         healthRoutes()
         saksbehandlerRoutes(applicationContext.tokenService)
