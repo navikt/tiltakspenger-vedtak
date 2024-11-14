@@ -17,8 +17,6 @@ private fun localFlyway(dataSource: javax.sql.DataSource) =
         .encoding("UTF-8")
         .locations("db/migration", "db/local-migration")
         .dataSource(dataSource)
-        .cleanDisabled(false)
-        .cleanOnValidationError(true)
         .load()
 
 private fun gcpFlyway(dataSource: javax.sql.DataSource) =
