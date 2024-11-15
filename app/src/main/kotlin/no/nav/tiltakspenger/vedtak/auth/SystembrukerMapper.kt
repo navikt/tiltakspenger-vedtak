@@ -18,6 +18,7 @@ fun systembrukerMapper(
                 when (rolle) {
                     "hente_data" -> Systembrukerrolle.HENTE_DATA
                     "lage_hendelser" -> Systembrukerrolle.LAGE_HENDELSER
+                    "access_as_application" -> null
                     else -> null.also {
                         logger.debug { "Filtrerer bort ukjent systembrukerrolle: $rolle" }
                     }

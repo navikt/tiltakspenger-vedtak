@@ -24,7 +24,7 @@ fun Rammevedtak.toDatadelingJson(): String {
         fom = periode.fraOgMed,
         tom = periode.tilOgMed,
         antallDagerPerMeldeperiode = antallDagerPerMeldeperiode,
-        // TODO B og J Når vi behandler med flere rettigheter må vi sette denne dynamisk
+        // TODO post-mvp B og J Når vi behandler med flere rettigheter må vi sette denne dynamisk
         rettighet = "TILTAKSPENGER",
         fnr = fnr.verdi,
         opprettet = opprettet.toString(),

@@ -47,7 +47,7 @@ internal suspend fun Rammevedtak.tobrevDTO(
         barnetillegg = false,
         saksbehandlerNavn = saksbehandlersNavn,
         beslutterNavn = besluttersNavn,
-        // TODO post-produksjon: legg inn NORG integrasjon for å hente saksbehandlers kontor.
+        // TODO post-mvp: legg inn NORG integrasjon for å hente saksbehandlers kontor.
         kontor = "Nav Tiltak Øst-Viken",
         // Dette er vår dato, det brukes typisk når bruker klager på vedtaksbrev på dato ...
         datoForUtsending = vedtaksdato.format(norskDatoFormatter),
