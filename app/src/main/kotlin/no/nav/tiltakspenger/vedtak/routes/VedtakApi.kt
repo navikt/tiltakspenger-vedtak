@@ -14,14 +14,11 @@ import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.request.path
 import io.ktor.server.routing.routing
-import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
 import no.nav.tiltakspenger.vedtak.context.ApplicationContext
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBeslutterRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.benk.behandlingBenkRoutes
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.ExceptionHandler
-import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.ikkeImplementert
-import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond501NotImplemented
 import no.nav.tiltakspenger.vedtak.routes.meldekort.meldekortRoutes
 import no.nav.tiltakspenger.vedtak.routes.sak.sakRoutes
 import no.nav.tiltakspenger.vedtak.routes.saksbehandler.saksbehandlerRoutes
@@ -103,11 +100,7 @@ fun Application.jacksonSerialization() {
 fun Application.configureExceptions() {
     install(StatusPages) {
         exception<Throwable> { call, cause ->
-            if (cause is IkkeImplementertException) {
-                call.respond501NotImplemented(ikkeImplementert())
-            } else {
-                ExceptionHandler.handle(call, cause)
-            }
+            ExceptionHandler.handle(call, cause)
         }
     }
 }

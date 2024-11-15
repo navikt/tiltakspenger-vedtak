@@ -5,9 +5,11 @@ import io.ktor.server.request.ContentTransformationException
 import io.ktor.server.request.uri
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
+import no.nav.tiltakspenger.felles.exceptions.IkkeImplementertException
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
 import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.ikkeFunnet
+import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.ikkeImplementert
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.ikkeTilgang
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.serverfeil
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.ugyldigRequest
@@ -36,6 +38,10 @@ object ExceptionHandler {
 
             is IkkeFunnetException -> {
                 call.respond404NotFound(ikkeFunnet())
+            }
+
+            is IkkeImplementertException -> {
+                call.respond501NotImplemented(ikkeImplementert())
             }
 
             // Catch all
