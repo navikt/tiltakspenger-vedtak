@@ -33,7 +33,13 @@ class RammevedtakFakeRepo : RammevedtakRepo {
         return data.get().values.filter { it.journalpostId == null }.take(limit)
     }
 
-    override fun markerJournalført(id: VedtakId, vedtaksdato: LocalDate, brevJson: String, journalpostId: JournalpostId, tidspunkt: LocalDateTime) {
+    override fun markerJournalført(
+        id: VedtakId,
+        vedtaksdato: LocalDate,
+        brevJson: String,
+        journalpostId: JournalpostId,
+        tidspunkt: LocalDateTime,
+    ) {
         data.get()[id] = data.get()[id]!!.copy(journalpostId = journalpostId, journalføringstidstpunkt = tidspunkt)
     }
 
@@ -52,7 +58,7 @@ class RammevedtakFakeRepo : RammevedtakRepo {
     }
 
     override fun markerSendtTilDatadeling(id: VedtakId, tidspunkt: LocalDateTime) {
-        TODO("Not yet implemented")
+        data.get()[id] = data.get()[id]!!.copy(sendtTilDatadeling = tidspunkt)
     }
 
     fun hentForSakId(sakId: SakId): Rammevedtak? = data.get().values.find { it.behandling.sakId == sakId }

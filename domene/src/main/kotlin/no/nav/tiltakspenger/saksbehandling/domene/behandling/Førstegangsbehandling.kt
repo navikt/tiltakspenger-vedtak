@@ -135,7 +135,7 @@ data class Førstegangsbehandling(
                 return KanIkkeOppretteBehandling.FantIkkeTiltak.left()
             }
 
-            // TODO() B og H: Fjern denne når vi begynner å implementere delvis innvilgelse og/eller avslag
+            // TODO B og H: Fjern denne når vi begynner å implementere delvis innvilgelse og/eller avslag
             val vilkårssett = Either.catch {
                 Vilkårssett.opprett(
                     søknad = søknad,

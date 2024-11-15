@@ -12,7 +12,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import java.time.LocalDateTime
 
 class BehandlingFakeRepo : BehandlingRepo {
-    private val data = Atomic(mutableMapOf<BehandlingId, Behandling>())
+    private val data = Atomic(mutableMapOf<BehandlingId, Førstegangsbehandling>())
 
     val alle get() = data.get().values.toList()
 
@@ -20,7 +20,7 @@ class BehandlingFakeRepo : BehandlingRepo {
         behandling: Behandling,
         transactionContext: TransactionContext?,
     ) {
-        data.get()[behandling.id] = behandling
+        data.get()[behandling.id] = behandling as Førstegangsbehandling
     }
 
     override fun hentOrNull(
@@ -37,30 +37,29 @@ class BehandlingFakeRepo : BehandlingRepo {
         data
             .get()
             .values
-            .filterIsInstance<Førstegangsbehandling>()
             .filter { it.fnr == fnr }
 
     override fun hentForSøknadId(søknadId: SøknadId): Førstegangsbehandling? =
         data
             .get()
             .values
-            .filterIsInstance<Førstegangsbehandling>()
             .find { it.søknad.id == søknadId }
 
     override fun hentBehandlingerTilDatadeling(limit: Int): List<Førstegangsbehandling> {
-        return data.get().values.filterIsInstance<Førstegangsbehandling>().filter {
+        return data.get().values.filter {
             it.sendtTilDatadeling == null
         }
     }
 
     override fun markerSendtTilDatadeling(id: BehandlingId, tidspunkt: LocalDateTime) {
-        TODO("Not yet implemented")
+        data.get()[id] = data.get()[id]!!.copy(
+            sendtTilDatadeling = tidspunkt,
+        )
     }
 
     fun hentFørstegangsbehandlingForSakId(sakId: SakId): Førstegangsbehandling? =
         data
             .get()
             .values
-            .filterIsInstance<Førstegangsbehandling>()
             .find { it.sakId == sakId }
 }
