@@ -65,6 +65,8 @@ spec:
         - application: tiltakspenger-datadeling
         - application: utsjekk
           namespace: helved
+        - application: poao-tilgang
+          namespace: poao
       external:
         - host: {{ urlPdl }}
         - host: {{ urlPdlPip }}
