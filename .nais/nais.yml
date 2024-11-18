@@ -94,3 +94,7 @@ spec:
     - name: {{this.name}}
       value: {{this.id}}
   {{/each}}
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: java
