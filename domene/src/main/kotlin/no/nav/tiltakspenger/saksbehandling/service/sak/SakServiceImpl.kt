@@ -22,9 +22,11 @@ import no.nav.tiltakspenger.libs.person.harStrengtFortroligAdresse
 import no.nav.tiltakspenger.libs.personklient.pdl.TilgangsstyringService
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling
 import no.nav.tiltakspenger.saksbehandling.domene.benk.Saksoversikt
-import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.EnkelPerson
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.EnkelPersonMedSkjerming
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.toEnkelPersonMedSkjerming
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
+import no.nav.tiltakspenger.saksbehandling.ports.PoaoTilgangGateway
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SaksoversiktRepo
 import no.nav.tiltakspenger.saksbehandling.ports.StatistikkSakRepo
@@ -43,6 +45,7 @@ class SakServiceImpl(
     private val tiltakGateway: TiltakGateway,
     private val statistikkSakRepo: StatistikkSakRepo,
     private val tilgangsstyringService: TilgangsstyringService,
+    private val poaoTilgangGateway: PoaoTilgangGateway,
     private val gitHash: String,
 ) : SakService {
     val logger = KotlinLogging.logger { }
@@ -205,7 +208,8 @@ class SakServiceImpl(
     override suspend fun hentEnkelPersonForSakId(
         sakId: SakId,
         saksbehandler: Saksbehandler,
-    ): Either<KunneIkkeHenteEnkelPerson, EnkelPerson> {
+        correlationId: CorrelationId,
+    ): Either<KunneIkkeHenteEnkelPerson, EnkelPersonMedSkjerming> {
         if (!saksbehandler.erSaksbehandlerEllerBeslutter()) {
             logger.warn { "Navident ${saksbehandler.navIdent} med rollene ${saksbehandler.roller} har ikke tilgang til å hente sak for fnr" }
             return KunneIkkeHenteEnkelPerson.HarIkkeTilgang(
@@ -214,7 +218,10 @@ class SakServiceImpl(
             ).left()
         }
         val fnr = sakRepo.hentFnrForSakId(sakId) ?: return KunneIkkeHenteEnkelPerson.FantIkkeSakId.left()
-        return personService.hentEnkelPersonFnr(fnr)
+        val erSkjermet = poaoTilgangGateway.erSkjermet(fnr, correlationId)
+        val person = personService.hentEnkelPersonFnr(fnr).getOrElse { return KunneIkkeHenteEnkelPerson.FeilVedKallMotPdl.left() }
+        val personMedSkjerming = person.toEnkelPersonMedSkjerming(erSkjermet)
+        return personMedSkjerming.right()
     }
 
     private suspend fun sjekkTilgangTilSak(sakId: SakId, saksbehandler: Saksbehandler, correlationId: CorrelationId) {

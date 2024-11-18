@@ -10,7 +10,7 @@ import no.nav.tiltakspenger.libs.common.Saksbehandlerrolle
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling
 import no.nav.tiltakspenger.saksbehandling.domene.benk.Saksoversikt
-import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.EnkelPerson
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.EnkelPersonMedSkjerming
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.service.person.KunneIkkeHenteEnkelPerson
@@ -48,7 +48,8 @@ interface SakService {
     suspend fun hentEnkelPersonForSakId(
         sakId: SakId,
         saksbehandler: Saksbehandler,
-    ): Either<KunneIkkeHenteEnkelPerson, EnkelPerson>
+        correlationId: CorrelationId,
+    ): Either<KunneIkkeHenteEnkelPerson, EnkelPersonMedSkjerming>
 }
 
 sealed interface KanIkkeStarteFørstegangsbehandling {

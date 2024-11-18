@@ -4,6 +4,7 @@ import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.libs.personklient.pdl.TilgangsstyringService
 import no.nav.tiltakspenger.saksbehandling.domene.sak.SaksnummerGenerator
+import no.nav.tiltakspenger.saksbehandling.ports.PoaoTilgangGateway
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.SaksoversiktRepo
 import no.nav.tiltakspenger.saksbehandling.ports.StatistikkSakRepo
@@ -22,6 +23,7 @@ open class SakContext(
     statistikkSakRepo: StatistikkSakRepo,
     tiltakGateway: TiltakGateway,
     tilgangsstyringService: TilgangsstyringService,
+    poaoTilgangGateway: PoaoTilgangGateway,
     personService: PersonService,
     gitHash: String,
     profile: Profile,
@@ -35,6 +37,7 @@ open class SakContext(
             statistikkSakRepo = statistikkSakRepo,
             saksoversiktRepo = saksoversiktRepo,
             tilgangsstyringService = tilgangsstyringService,
+            poaoTilgangGateway = poaoTilgangGateway,
             personService = personService,
             gitHash = gitHash,
         )
