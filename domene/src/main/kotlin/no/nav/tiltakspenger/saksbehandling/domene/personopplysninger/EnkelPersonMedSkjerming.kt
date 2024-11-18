@@ -2,27 +2,13 @@ package no.nav.tiltakspenger.saksbehandling.domene.personopplysninger
 
 import no.nav.tiltakspenger.libs.common.Fnr
 
-data class EnkelPersonMedSkjerming(
-    val fnr: Fnr,
-    val fornavn: String,
-    val mellomnavn: String?,
-    val etternavn: String,
-    val fortrolig: Boolean,
-    val strengtFortrolig: Boolean,
-    val strengtFortroligUtland: Boolean,
-    val skjermet: Boolean,
-)
-
-fun EnkelPerson.toEnkelPersonMedSkjerming(skjermet: Boolean): EnkelPersonMedSkjerming {
-    return EnkelPersonMedSkjerming(
-        fnr = fnr,
-        fornavn = fornavn,
-        mellomnavn = mellomnavn,
-        etternavn = etternavn,
-        fortrolig = fortrolig,
-        strengtFortrolig = strengtFortrolig,
-        strengtFortroligUtland = strengtFortroligUtland,
-        skjermet = skjermet,
-
-    )
+data class EnkelPersonMedSkjerming(val enkelPerson: EnkelPerson, val erSkjermet: Boolean) {
+    val fnr: Fnr = enkelPerson.fnr
+    val fornavn: String = enkelPerson.fornavn
+    val mellomnavn: String? = enkelPerson.mellomnavn
+    val etternavn: String = enkelPerson.etternavn
+    val fortrolig: Boolean = enkelPerson.fortrolig
+    val strengtFortrolig: Boolean = enkelPerson.strengtFortrolig
+    val strengtFortroligUtland = enkelPerson.strengtFortroligUtland
+    val skjermet: Boolean = erSkjermet
 }

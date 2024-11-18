@@ -23,7 +23,6 @@ import no.nav.tiltakspenger.libs.personklient.pdl.TilgangsstyringService
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling
 import no.nav.tiltakspenger.saksbehandling.domene.benk.Saksoversikt
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.EnkelPersonMedSkjerming
-import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.toEnkelPersonMedSkjerming
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.ports.PoaoTilgangGateway
@@ -220,7 +219,7 @@ class SakServiceImpl(
         val fnr = sakRepo.hentFnrForSakId(sakId) ?: return KunneIkkeHenteEnkelPerson.FantIkkeSakId.left()
         val erSkjermet = poaoTilgangGateway.erSkjermet(fnr, correlationId)
         val person = personService.hentEnkelPersonFnr(fnr).getOrElse { return KunneIkkeHenteEnkelPerson.FeilVedKallMotPdl.left() }
-        val personMedSkjerming = person.toEnkelPersonMedSkjerming(erSkjermet)
+        val personMedSkjerming = EnkelPersonMedSkjerming(person, erSkjermet)
         return personMedSkjerming.right()
     }
 
