@@ -32,7 +32,7 @@ fun Route.hentMeldekortRoute(
 
     get("/sak/{sakId}/meldekort/{meldekortId}") {
         logger.debug { "Motatt get-request på /sak/{sakId}/meldekort/{meldekortId}" }
-        call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
+        call.withSaksbehandler(tokenService = tokenService, svarMed403HvisIngenScopes = false) { saksbehandler ->
             call.withSakId { sakId ->
                 call.withMeldekortId { meldekortId ->
                     val correlationId = call.correlationId()

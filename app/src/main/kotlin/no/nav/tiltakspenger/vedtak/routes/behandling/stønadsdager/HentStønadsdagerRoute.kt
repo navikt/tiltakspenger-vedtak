@@ -24,7 +24,7 @@ fun Route.hentStønadsdagerRoute(
     val logger = KotlinLogging.logger {}
     get("$BEHANDLING_PATH/{behandlingId}/stonadsdager") {
         logger.debug("Mottatt get-request på '$BEHANDLING_PATH/{behandlingId}/stonadsdager' - henter vilkår om stønadsdager")
-        call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
+        call.withSaksbehandler(tokenService = tokenService, svarMed403HvisIngenScopes = false) { saksbehandler ->
             call.withBehandlingId { behandlingId ->
                 val correlationId = call.correlationId()
                 behandlingService.hentBehandlingForSaksbehandler(behandlingId, saksbehandler, correlationId = correlationId).fold(

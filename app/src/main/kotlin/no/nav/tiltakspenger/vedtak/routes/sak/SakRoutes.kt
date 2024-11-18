@@ -36,7 +36,7 @@ fun Route.sakRoutes(
 ) {
     get("$SAK_PATH/{saksnummer}") {
         logger.debug { "Mottatt get-request på $SAK_PATH/{saksnummer}" }
-        call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
+        call.withSaksbehandler(tokenService = tokenService, svarMed403HvisIngenScopes = false) { saksbehandler ->
             call.withSaksnummer { saksnummer ->
                 auditService.logMedSaksnummer(
                     saksnummer = saksnummer,
@@ -65,7 +65,7 @@ fun Route.sakRoutes(
 
     post(SAK_PATH) {
         logger.debug { "Mottatt post-request på $SAK_PATH" }
-        call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
+        call.withSaksbehandler(tokenService = tokenService, svarMed403HvisIngenScopes = false) { saksbehandler ->
             val fnr = Either.catch { Fnr.fromString(call.receive<FnrDTO>().fnr) }.getOrElse {
                 call.respond400BadRequest(
                     melding = "Forventer at fødselsnummeret er 11 siffer",

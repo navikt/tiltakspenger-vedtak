@@ -28,7 +28,7 @@ fun Route.behandlingBeslutterRoutes(
     val logger = KotlinLogging.logger {}
     post("$BEHANDLING_PATH/sendtilbake/{behandlingId}") {
         logger.debug("Mottatt post-request på '$BEHANDLING_PATH/sendtilbake/{behandlingId}' - sender behandling tilbake til saksbehandler")
-        call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
+        call.withSaksbehandler(tokenService = tokenService, svarMed403HvisIngenScopes = false) { saksbehandler ->
             call.withBehandlingId { behandlingId ->
                 call.withBody<BegrunnelseDTO> { body ->
                     val begrunnelse = body.begrunnelse
@@ -58,7 +58,7 @@ fun Route.behandlingBeslutterRoutes(
 
     post("$BEHANDLING_PATH/godkjenn/{behandlingId}") {
         logger.debug { "Mottatt post-request på '$BEHANDLING_PATH/godkjenn/{behandlingId}' - godkjenner behandlingen, oppretter vedtak, evt. genererer meldekort og asynkront sender brev." }
-        call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
+        call.withSaksbehandler(tokenService = tokenService, svarMed403HvisIngenScopes = false) { saksbehandler ->
             call.withBehandlingId { behandlingId ->
                 val correlationId = call.correlationId()
                 behandlingService.iverksett(behandlingId, saksbehandler, correlationId).fold(

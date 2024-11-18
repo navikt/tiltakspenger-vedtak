@@ -24,7 +24,7 @@ fun Route.hentLivsoppholdRoute(
     val logger = KotlinLogging.logger {}
     get("$BEHANDLING_PATH/{behandlingId}/vilkar/livsopphold") {
         logger.debug("Mottatt get-request på '$BEHANDLING_PATH/{behandlingId}/vilkar/livsopphold' - henter vilkår om livsoppholdytelser")
-        call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
+        call.withSaksbehandler(tokenService = tokenService, svarMed403HvisIngenScopes = false) { saksbehandler ->
             call.withBehandlingId { behandlingId ->
                 val correlationId = call.correlationId()
                 behandlingService.hentBehandlingForSaksbehandler(behandlingId, saksbehandler, correlationId).fold(

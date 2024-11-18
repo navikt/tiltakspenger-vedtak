@@ -26,6 +26,9 @@ import no.nav.tiltakspenger.libs.auth.test.core.EntraIdSystemtokenFakeClient
 import no.nav.tiltakspenger.libs.auth.test.core.JwkFakeProvider
 import no.nav.tiltakspenger.libs.auth.test.core.JwtGenerator
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.GenerellSystembruker
+import no.nav.tiltakspenger.libs.common.GenerellSystembrukerrolle
+import no.nav.tiltakspenger.libs.common.GenerellSystembrukerroller
 import no.nav.tiltakspenger.libs.common.Saksbehandlerrolle
 import no.nav.tiltakspenger.libs.common.TestSessionFactory
 import no.nav.tiltakspenger.libs.person.AdressebeskyttelseGradering
@@ -49,6 +52,7 @@ import no.nav.tiltakspenger.vedtak.context.UtbetalingContext
  * Dette vil tilsvare en tom intern database og tomme fakes for eksterne tjenester.
  * Bruk service-funksjoner og hjelpemetoder for å legge til data.
  */
+@Suppress("UNCHECKED_CAST")
 class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-git-hash") {
     val journalpostIdGenerator = JournalpostIdGenerator()
     val distribusjonIdGenerator = DistribusjonIdGenerator()
@@ -80,7 +84,10 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-gi
         acceptIssuedAtLeeway = 0,
         acceptNotBeforeLeeway = 0,
         provider = JwkFakeProvider(jwtGenerator.jwk),
-        systembrukerMapper = ::systembrukerMapper,
+        systembrukerMapper = ::systembrukerMapper as (String, String, Set<String>) -> GenerellSystembruker<
+            GenerellSystembrukerrolle,
+            GenerellSystembrukerroller<GenerellSystembrukerrolle>,
+            >,
     )
 
     fun leggTilPerson(

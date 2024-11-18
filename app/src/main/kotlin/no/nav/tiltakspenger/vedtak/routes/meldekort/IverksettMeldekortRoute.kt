@@ -33,7 +33,7 @@ fun Route.iverksettMeldekortRoute(
 
     post("sak/{sakId}/meldekort/{meldekortId}/iverksett") {
         logger.debug { "Mottatt post-request på sak/{sakId}/meldekort/{meldekortId}/iverksett - iverksetter meldekort" }
-        call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
+        call.withSaksbehandler(tokenService = tokenService, svarMed403HvisIngenScopes = false) { saksbehandler ->
             call.withSakId { sakId ->
                 call.withMeldekortId { meldekortId ->
                     val correlationId = call.correlationId()

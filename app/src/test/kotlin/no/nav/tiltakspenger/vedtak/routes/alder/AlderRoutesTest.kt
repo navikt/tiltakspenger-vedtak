@@ -16,9 +16,6 @@ import io.ktor.server.util.url
 import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.common.TestApplicationContext
 import no.nav.tiltakspenger.felles.januar
-import no.nav.tiltakspenger.libs.common.Saksbehandler
-import no.nav.tiltakspenger.libs.common.Saksbehandlerrolle
-import no.nav.tiltakspenger.libs.common.Saksbehandlerroller
 import no.nav.tiltakspenger.libs.json.objectMapper
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother
@@ -34,20 +31,6 @@ import no.nav.tiltakspenger.vedtak.routes.jacksonSerialization
 import org.junit.jupiter.api.Test
 
 class AlderRoutesTest {
-
-    private val saksbehandler =
-        Saksbehandler(
-            "Q123456",
-            "Superman",
-            "a@b.c",
-            Saksbehandlerroller(
-                listOf(
-                    Saksbehandlerrolle.SAKSBEHANDLER,
-                    Saksbehandlerrolle.SKJERMING,
-                    Saksbehandlerrolle.STRENGT_FORTROLIG_ADRESSE,
-                ),
-            ),
-        )
 
     @Test
     fun `test at endepunkt for henting og lagring av alder fungerer`() = runTest {

@@ -61,7 +61,7 @@ fun Route.oppdaterKvpRoute(
     }
     post("$BEHANDLING_PATH/{behandlingId}/vilkar/kvp") {
         logger.debug("Mottatt post-request på '$BEHANDLING_PATH/{behandlingId}/vilkar/kvp' - oppdaterer vilkår om kvalifikasjonsprogrammet")
-        call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
+        call.withSaksbehandler(tokenService = tokenService, svarMed403HvisIngenScopes = false) { saksbehandler ->
             call.withBehandlingId { behandlingId ->
                 call.withBody<Body> { body ->
                     if (body.ytelseForPeriode.isEmpty()) {

@@ -24,7 +24,7 @@ fun Route.hentTiltakDeltagelseRoute(
     val logger = KotlinLogging.logger {}
     get("$BEHANDLING_PATH/{behandlingId}/vilkar/tiltakdeltagelse") {
         logger.debug("Mottatt request på '$BEHANDLING_PATH/{behandlingId}/vilkar/tiltakdeltagelse' - henter vilkår om tiltaksdeltagelse")
-        call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
+        call.withSaksbehandler(tokenService = tokenService, svarMed403HvisIngenScopes = false) { saksbehandler ->
             call.withBehandlingId { behandlingId ->
                 val correlationId = call.correlationId()
                 behandlingService.hentBehandlingForSaksbehandler(behandlingId, saksbehandler, correlationId).fold(

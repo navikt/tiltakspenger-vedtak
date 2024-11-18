@@ -85,7 +85,7 @@ fun Route.sendMeldekortTilBeslutterRoute(
     val logger = KotlinLogging.logger { }
     post("/sak/{sakId}/meldekort/{meldekortId}") {
         logger.debug { "Mottatt post-request på /sak/{sakId}/meldekort/{meldekortId} - saksbehandler har fylt ut meldekortet og sendt til beslutter" }
-        call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
+        call.withSaksbehandler(tokenService = tokenService, svarMed403HvisIngenScopes = false) { saksbehandler ->
             call.withSakId { sakId ->
                 call.withMeldekortId { meldekortId ->
                     call.withBody<Body> { body ->

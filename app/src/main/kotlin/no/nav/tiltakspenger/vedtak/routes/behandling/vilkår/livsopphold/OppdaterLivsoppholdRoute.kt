@@ -60,7 +60,7 @@ fun Route.oppdaterLivsoppholdRoute(
 
     post("$BEHANDLING_PATH/{behandlingId}/vilkar/livsopphold") {
         logger.debug("Mottatt post-request på '$BEHANDLING_PATH/{behandlingId}/vilkar/livsopphold' - oppdaterer vilkår om livsoppholdytelser")
-        call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
+        call.withSaksbehandler(tokenService = tokenService, svarMed403HvisIngenScopes = false) { saksbehandler ->
             call.withBehandlingId { behandlingId ->
                 call.withBody<Body> { body ->
                     val correlationId = call.correlationId()
