@@ -5,6 +5,9 @@ import no.nav.tiltakspenger.libs.auth.core.EntraIdSystemtokenClient
 import no.nav.tiltakspenger.libs.auth.core.EntraIdSystemtokenHttpClient
 import no.nav.tiltakspenger.libs.auth.core.MicrosoftEntraIdTokenService
 import no.nav.tiltakspenger.libs.auth.core.TokenService
+import no.nav.tiltakspenger.libs.common.GenerellSystembruker
+import no.nav.tiltakspenger.libs.common.GenerellSystembrukerrolle
+import no.nav.tiltakspenger.libs.common.GenerellSystembrukerroller
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.auth.systembrukerMapper
@@ -19,6 +22,7 @@ open class ApplicationContext(
     val sessionFactory: SessionFactory,
     private val gitHash: String,
 ) {
+    @Suppress("UNCHECKED_CAST")
     open val tokenService: TokenService by lazy {
         val tokenVerificationToken = Configuration.TokenVerificationConfig()
         MicrosoftEntraIdTokenService(
@@ -26,7 +30,11 @@ open class ApplicationContext(
             issuer = tokenVerificationToken.issuer,
             clientId = tokenVerificationToken.clientId,
             autoriserteBrukerroller = tokenVerificationToken.roles,
-            systembrukerMapper = ::systembrukerMapper,
+            systembrukerMapper = ::systembrukerMapper as (String, String, Set<String>) -> GenerellSystembruker<
+                GenerellSystembrukerrolle,
+                GenerellSystembrukerroller<GenerellSystembrukerrolle>,
+                >,
+            inkluderScopes = false,
         )
     }
     open val entraIdSystemtokenClient: EntraIdSystemtokenClient by lazy {

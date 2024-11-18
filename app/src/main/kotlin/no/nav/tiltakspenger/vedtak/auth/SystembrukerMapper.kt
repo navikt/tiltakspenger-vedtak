@@ -8,11 +8,11 @@ import no.nav.tiltakspenger.felles.Systembrukerroller
 private val logger = KotlinLogging.logger { }
 
 fun systembrukerMapper(
-    brukernavn: String,
+    klientId: String,
+    klientnavn: String,
     roller: Set<String>,
 ): Systembruker {
     return Systembruker(
-        brukernavn = brukernavn,
         roller = Systembrukerroller(
             roller.mapNotNull { rolle ->
                 when (rolle) {
@@ -25,5 +25,7 @@ fun systembrukerMapper(
                 }
             }.toSet(),
         ),
+        klientId = klientId,
+        klientnavn = klientnavn,
     )
 }

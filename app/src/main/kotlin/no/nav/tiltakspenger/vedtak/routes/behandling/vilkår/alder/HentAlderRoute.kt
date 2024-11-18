@@ -24,7 +24,7 @@ fun Route.hentAlderRoute(
     val logger = KotlinLogging.logger {}
     get("$BEHANDLING_PATH/{behandlingId}/vilkar/alder") {
         logger.debug("Mottatt request på '$BEHANDLING_PATH/{behandlingId}/vilkar/alder' - henter vilkår om alder")
-        call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
+        call.withSaksbehandler(tokenService = tokenService, svarMed403HvisIngenScopes = false) { saksbehandler ->
             call.withBehandlingId { behandlingId ->
                 val correlationId = call.correlationId()
                 behandlingService.hentBehandlingForSaksbehandler(behandlingId, saksbehandler, correlationId = correlationId)

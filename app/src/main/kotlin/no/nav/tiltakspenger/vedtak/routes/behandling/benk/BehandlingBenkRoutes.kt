@@ -44,7 +44,7 @@ fun Route.behandlingBenkRoutes(
 
     get(BEHANDLINGER_PATH) {
         logger.debug("Mottatt get-request på $BEHANDLINGER_PATH for å hente alle behandlinger på benken")
-        call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
+        call.withSaksbehandler(tokenService = tokenService, svarMed403HvisIngenScopes = false) { saksbehandler ->
             sakService.hentSaksoversikt(
                 saksbehandler = saksbehandler,
                 correlationId = call.correlationId(),
@@ -65,7 +65,7 @@ fun Route.behandlingBenkRoutes(
 
     post("$BEHANDLING_PATH/startbehandling") {
         logger.debug { "Mottatt post-request på '$BEHANDLING_PATH/startbehandling' - Starter behandlingen og knytter til sak. Knytter også saksbehandleren til behandlingen." }
-        call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
+        call.withSaksbehandler(tokenService = tokenService, svarMed403HvisIngenScopes = false) { saksbehandler ->
             // TODO post-mvp jah: Kan ikke søknadId ligge i pathen?
             call.withBody<BehandlingIdDTO> { body ->
                 val søknadId = SøknadId.fromString(body.id)
@@ -113,7 +113,7 @@ fun Route.behandlingBenkRoutes(
 
     post("$BEHANDLING_PATH/tabehandling") {
         logger.debug { "Mottatt post-request på '$BEHANDLING_PATH/tabehandling' - Knytter saksbehandler/beslutter til behandlingen." }
-        call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
+        call.withSaksbehandler(tokenService = tokenService, svarMed403HvisIngenScopes = false) { saksbehandler ->
             // TODO post-mvp jah: Kan ikke behandlingId ligge i pathen?
             val behandlingId = BehandlingId.fromString(call.receive<BehandlingIdDTO>().id)
             val correlationId = call.correlationId()

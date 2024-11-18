@@ -43,7 +43,7 @@ fun Route.behandlingRoutes(
     val logger = KotlinLogging.logger {}
     get("$BEHANDLING_PATH/{behandlingId}") {
         logger.debug("Mottatt get-request på '$BEHANDLING_PATH/{behandlingId}' - henter hele behandlingen")
-        call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
+        call.withSaksbehandler(tokenService = tokenService, svarMed403HvisIngenScopes = false) { saksbehandler ->
             call.withBehandlingId { behandlingId ->
                 val correlationId = call.correlationId()
                 behandlingService.hentBehandlingForSaksbehandler(behandlingId, saksbehandler, correlationId).fold(
@@ -68,7 +68,7 @@ fun Route.behandlingRoutes(
 
     post("$BEHANDLING_PATH/beslutter/{behandlingId}") {
         logger.debug("Mottatt post-request på '$BEHANDLING_PATH/beslutter/{behandlingId}' - sender behandling til beslutter")
-        call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
+        call.withSaksbehandler(tokenService = tokenService, svarMed403HvisIngenScopes = false) { saksbehandler ->
             call.withBehandlingId { behandlingId ->
                 val correlationId = call.correlationId()
                 behandlingService.sendTilBeslutter(behandlingId, saksbehandler, correlationId).fold(

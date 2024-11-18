@@ -24,7 +24,7 @@ fun Route.hentInstitusjonsoppholdRoute(
     val logger = KotlinLogging.logger {}
     get("$BEHANDLING_PATH/{behandlingId}/vilkar/institusjonsopphold") {
         logger.debug("Mottatt get-request på '$BEHANDLING_PATH/{behandlingId}/vilkar/institusjonsopphold' - henter vilkår om institusjonsopphold")
-        call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
+        call.withSaksbehandler(tokenService = tokenService, svarMed403HvisIngenScopes = false) { saksbehandler ->
             call.withBehandlingId { behandlingId ->
 
                 behandlingService.hentBehandlingForSaksbehandler(behandlingId, saksbehandler, correlationId = call.correlationId())

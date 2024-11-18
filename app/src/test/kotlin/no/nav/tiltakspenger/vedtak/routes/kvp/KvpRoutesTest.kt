@@ -13,10 +13,10 @@ import io.ktor.server.testing.testApplication
 import io.ktor.server.util.url
 import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.common.TestApplicationContext
-import no.nav.tiltakspenger.libs.common.Saksbehandler
 import no.nav.tiltakspenger.libs.common.Saksbehandlerrolle
 import no.nav.tiltakspenger.libs.common.Saksbehandlerroller
 import no.nav.tiltakspenger.libs.json.objectMapper
+import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.objectmothers.førstegangsbehandlingUavklart
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.SamletUtfallDTO
@@ -30,19 +30,18 @@ import org.junit.jupiter.api.Test
 class KvpRoutesTest {
 
     private val periodeBrukerHarKvpEtterEndring = PeriodeDTO(fraOgMed = "2023-01-01", tilOgMed = "2023-01-03")
-    private val saksbehandler =
-        Saksbehandler(
-            "Q123456",
-            "Superman",
-            "a@b.c",
-            Saksbehandlerroller(
-                listOf(
-                    Saksbehandlerrolle.SAKSBEHANDLER,
-                    Saksbehandlerrolle.SKJERMING,
-                    Saksbehandlerrolle.STRENGT_FORTROLIG_ADRESSE,
-                ),
+    private val saksbehandler = ObjectMother.saksbehandler(
+        "Q123456",
+        "Superman",
+        "a@b.c",
+        Saksbehandlerroller(
+            listOf(
+                Saksbehandlerrolle.SAKSBEHANDLER,
+                Saksbehandlerrolle.SKJERMING,
+                Saksbehandlerrolle.STRENGT_FORTROLIG_ADRESSE,
             ),
-        )
+        ),
+    )
 
     @Test
     fun `test at endepunkt for henting og lagring av kvp fungerer`() = runTest {

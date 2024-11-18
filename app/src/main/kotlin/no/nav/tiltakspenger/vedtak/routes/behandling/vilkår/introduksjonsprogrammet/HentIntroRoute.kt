@@ -25,7 +25,7 @@ fun Route.hentIntroRoute(
     get("$BEHANDLING_PATH/{behandlingId}/vilkar/introduksjonsprogrammet") {
         logger.debug("Mottatt get-request på '$BEHANDLING_PATH/{behandlingId}/vilkar/introduksjonsprogrammet' - henter vilkår om introduksjonsprogrammet")
 
-        call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
+        call.withSaksbehandler(tokenService = tokenService, svarMed403HvisIngenScopes = false) { saksbehandler ->
             call.withBehandlingId { behandlingId ->
                 val correlationId = call.correlationId()
                 behandlingService.hentBehandlingForSaksbehandler(behandlingId, saksbehandler, correlationId = correlationId)

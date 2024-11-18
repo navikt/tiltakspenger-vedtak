@@ -27,7 +27,7 @@ fun Route.hentPersonRoute(
     val logger = KotlinLogging.logger {}
     get("$SAK_PATH/{sakId}/personopplysninger") {
         logger.debug("Mottatt get-request på '$SAK_PATH/{sakId}/personopplysninger' - henter personopplysninger for en sak")
-        call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
+        call.withSaksbehandler(tokenService = tokenService, svarMed403HvisIngenScopes = false) { saksbehandler ->
             call.withSakId { sakId ->
                 val correlationId = call.correlationId()
                 sakService.hentEnkelPersonForSakId(sakId, saksbehandler, correlationId).map {
