@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse
 
-import no.nav.tiltakspenger.libs.common.Saksbehandler
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.tiltak.TiltakstypeSomGirRett
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.TiltakDeltakerstatus
@@ -19,7 +18,7 @@ sealed interface TiltakDeltagelseSaksopplysning {
     val tidsstempel: LocalDateTime
     val tiltakstype: TiltakstypeSomGirRett
     val årsakTilEndring: ÅrsakTilEndring?
-    val saksbehandler: Saksbehandler?
+    val navIdent: String?
 
     data class Register(
         override val tiltaksnavn: String,
@@ -33,6 +32,6 @@ sealed interface TiltakDeltagelseSaksopplysning {
         override val tiltakstype: TiltakstypeSomGirRett,
     ) : TiltakDeltagelseSaksopplysning {
         override val årsakTilEndring = null
-        override val saksbehandler = null
+        override val navIdent = null
     }
 }

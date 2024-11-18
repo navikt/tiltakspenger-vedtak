@@ -8,20 +8,20 @@ sealed interface KravfristSaksopplysning {
     val tidsstempel: LocalDateTime
 
     val årsakTilEndring: ÅrsakTilEndring?
-    val saksbehandler: no.nav.tiltakspenger.libs.common.Saksbehandler?
+    val navIdent: String?
 
     data class Søknad(
         override val kravdato: LocalDateTime,
         override val tidsstempel: LocalDateTime,
     ) : KravfristSaksopplysning {
         override val årsakTilEndring = null
-        override val saksbehandler = null
+        override val navIdent = null
     }
 
     data class Saksbehandler(
         override val kravdato: LocalDateTime,
         override val årsakTilEndring: ÅrsakTilEndring,
         override val tidsstempel: LocalDateTime,
-        override val saksbehandler: no.nav.tiltakspenger.libs.common.Saksbehandler,
+        override val navIdent: String,
     ) : KravfristSaksopplysning
 }

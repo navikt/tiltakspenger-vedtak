@@ -41,7 +41,7 @@ data class IntroVilkår private constructor(
                     command.deltakelseForPeriode.map { PeriodeMedVerdi(it.tilDeltagelse(), it.periode) },
                 ).utvid(DELTAR_IKKE, vurderingsperiode),
                 årsakTilEndring = command.årsakTilEndring,
-                saksbehandler = command.saksbehandler,
+                navIdent = command.saksbehandler.navIdent,
                 tidsstempel = nå(),
             )
         return this.copy(

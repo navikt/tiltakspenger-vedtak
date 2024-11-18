@@ -11,14 +11,14 @@ sealed interface InstitusjonsoppholdSaksopplysning {
     val totalePeriode: Periode
 
     val årsakTilEndring: ÅrsakTilEndring?
-    val saksbehandler: no.nav.tiltakspenger.libs.common.Saksbehandler?
+    val navIdent: String?
 
     data class Søknad(
         override val opphold: Periodisering<Opphold>,
         override val tidsstempel: LocalDateTime,
     ) : InstitusjonsoppholdSaksopplysning {
         override val årsakTilEndring = null
-        override val saksbehandler = null
+        override val navIdent = null
 
         init {
             require(opphold.perioder().isNotEmpty()) { "InstitusjonsoppholdSaksopplysning må ha minst én periode, men var tom." }
@@ -31,7 +31,7 @@ sealed interface InstitusjonsoppholdSaksopplysning {
         override val opphold: Periodisering<Opphold>,
         override val årsakTilEndring: ÅrsakTilEndring,
         override val tidsstempel: LocalDateTime,
-        override val saksbehandler: no.nav.tiltakspenger.libs.common.Saksbehandler,
+        override val navIdent: String,
     ) : InstitusjonsoppholdSaksopplysning {
         init {
             require(opphold.perioder().isNotEmpty()) { "InstitusjonsoppholdSaksopplysning må ha minst én periode, men var tom." }

@@ -96,7 +96,7 @@ data class LivsoppholdVilkår private constructor(
                 harLivsoppholdYtelser = command.harYtelseForPeriode.harYtelse,
                 årsakTilEndring = command.årsakTilEndring,
                 tidsstempel = nå(),
-                saksbehandler = command.saksbehandler,
+                navIdent = command.saksbehandler.navIdent,
                 periode = vurderingsperiode,
             )
         return this

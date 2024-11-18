@@ -33,7 +33,7 @@ internal data class KvpSaksopplysningDbJson(
                         },
                     ),
                     årsakTilEndring = årsakTilEndring.toDomain(),
-                    saksbehandler = saksbehandler.toDomain(),
+                    navIdent = saksbehandler.navIdent,
                     tidsstempel = LocalDateTime.parse(tidsstempel),
                 )
             }
@@ -104,6 +104,6 @@ internal fun KvpSaksopplysning.toDbJson(): KvpSaksopplysningDbJson =
             ÅrsakTilEndring.ENDRING_ETTER_SØKNADSTIDSPUNKT -> ÅrsakTilEndringDbJson.ENDRING_ETTER_SØKNADSTIDSPUNKT
             null -> null
         },
-        saksbehandler = saksbehandler?.toDbJson(),
+        saksbehandler = navIdent?.let { SaksbehandlerDbJson(it) },
         tidsstempel = tidsstempel.toString(),
     )

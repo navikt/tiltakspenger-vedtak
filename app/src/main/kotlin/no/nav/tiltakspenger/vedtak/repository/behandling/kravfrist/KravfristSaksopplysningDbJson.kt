@@ -4,7 +4,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndrin
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kravfrist.KravfristSaksopplysning
 import no.nav.tiltakspenger.vedtak.repository.behandling.kravfrist.KravfristSaksopplysningDbJson.ÅrsakTilEndringDbJson
 import no.nav.tiltakspenger.vedtak.repository.felles.SaksbehandlerDbJson
-import no.nav.tiltakspenger.vedtak.repository.felles.toDbJson
 import java.time.LocalDateTime
 
 internal data class KravfristSaksopplysningDbJson(
@@ -21,7 +20,7 @@ internal data class KravfristSaksopplysningDbJson(
                 KravfristSaksopplysning.Saksbehandler(
                     kravdato = kravdato,
                     årsakTilEndring = årsakTilEndring.toDomain(),
-                    saksbehandler = saksbehandler.toDomain(),
+                    navIdent = saksbehandler.navIdent,
                     tidsstempel = LocalDateTime.parse(tidsstempel),
                 )
             }
@@ -57,6 +56,6 @@ internal fun KravfristSaksopplysning.toDbJson(): KravfristSaksopplysningDbJson =
             ÅrsakTilEndring.ENDRING_ETTER_SØKNADSTIDSPUNKT -> ÅrsakTilEndringDbJson.ENDRING_ETTER_SØKNADSTIDSPUNKT
             null -> null
         },
-        saksbehandler = saksbehandler?.toDbJson(),
+        saksbehandler = navIdent?.let { SaksbehandlerDbJson(it) },
         tidsstempel = tidsstempel.toString(),
     )

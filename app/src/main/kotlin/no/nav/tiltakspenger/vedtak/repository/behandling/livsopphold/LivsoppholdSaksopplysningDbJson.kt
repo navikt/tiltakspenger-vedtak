@@ -22,7 +22,7 @@ internal data class LivsoppholdSaksopplysningDbJson(
                     harLivsoppholdYtelser = harLivsoppholdYtelser,
                     årsakTilEndring = årsakTilEndring?.toDomain(),
                     tidsstempel = LocalDateTime.parse(tidsstempel),
-                    saksbehandler = saksbehandler.toDomain(),
+                    navIdent = saksbehandler.navIdent,
                     periode = periode.toDomain(),
                 )
             }
@@ -63,7 +63,7 @@ internal fun LivsoppholdSaksopplysning.toDbJson(): LivsoppholdSaksopplysningDbJs
 
             null -> null
         },
-        saksbehandler = saksbehandler?.toDbJson(),
+        saksbehandler = navIdent?.let { SaksbehandlerDbJson(it) },
         periode = periode.toDbJson(),
         tidsstempel = tidsstempel.toString(),
     )

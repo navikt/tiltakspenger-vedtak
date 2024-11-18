@@ -43,7 +43,7 @@ data class KravfristVilkår private constructor(
             KravfristSaksopplysning.Saksbehandler(
                 kravdato = command.kravdato,
                 årsakTilEndring = command.årsakTilEndring,
-                saksbehandler = command.saksbehandler,
+                navIdent = command.saksbehandler.navIdent,
                 tidsstempel = nå(),
             )
         return this.copy(

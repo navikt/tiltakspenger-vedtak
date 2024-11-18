@@ -4,7 +4,6 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder.AlderSaksopplysn
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndring
 import no.nav.tiltakspenger.vedtak.repository.behandling.alder.AlderSaksopplysningDbJson.ÅrsakTilEndringDbJson
 import no.nav.tiltakspenger.vedtak.repository.felles.SaksbehandlerDbJson
-import no.nav.tiltakspenger.vedtak.repository.felles.toDbJson
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -21,7 +20,7 @@ internal data class AlderSaksopplysningDbJson(
                 AlderSaksopplysning.Saksbehandler(
                     fødselsdato = fødselsdato,
                     årsakTilEndring = årsakTilEndring.toDomain(),
-                    saksbehandler = saksbehandler.toDomain(),
+                    navIdent = saksbehandler.navIdent,
                     tidsstempel = LocalDateTime.parse(tidsstempel),
                 )
             }
@@ -57,6 +56,6 @@ internal fun AlderSaksopplysning.toDbJson(): AlderSaksopplysningDbJson =
             ÅrsakTilEndring.ENDRING_ETTER_SØKNADSTIDSPUNKT -> ÅrsakTilEndringDbJson.ENDRING_ETTER_SØKNADSTIDSPUNKT
             null -> null
         },
-        saksbehandler = saksbehandler?.toDbJson(),
+        saksbehandler = navIdent?.let { SaksbehandlerDbJson(navIdent = it) },
         tidsstempel = tidsstempel.toString(),
     )

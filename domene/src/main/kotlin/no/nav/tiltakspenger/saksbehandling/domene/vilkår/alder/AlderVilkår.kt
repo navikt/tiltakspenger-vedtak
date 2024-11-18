@@ -37,7 +37,7 @@ data class AlderVilkår private constructor(
             AlderSaksopplysning.Saksbehandler(
                 fødselsdato = command.fødselsdato,
                 årsakTilEndring = command.årsakTilEndring,
-                saksbehandler = command.saksbehandler,
+                navIdent = command.saksbehandler.navIdent,
                 tidsstempel = nå(),
             )
         return this.copy(

@@ -135,13 +135,13 @@ interface VilkårMother {
             ),
         årsakTilEndring: ÅrsakTilEndring = ÅrsakTilEndring.FEIL_I_INNHENTET_DATA,
         tidsstempel: LocalDateTime = vurderingsperiode.fraOgMed.atStartOfDay(),
-        saksbehandler: Saksbehandler = ObjectMother.saksbehandler(),
+        navIdent: String = ObjectMother.saksbehandler().navIdent,
     ): InstitusjonsoppholdSaksopplysning.Saksbehandler =
         InstitusjonsoppholdSaksopplysning.Saksbehandler(
             opphold = opphold,
             årsakTilEndring = årsakTilEndring,
             tidsstempel = tidsstempel,
-            saksbehandler = saksbehandler,
+            navIdent = navIdent,
         )
 
     /**
@@ -358,14 +358,14 @@ interface VilkårMother {
         tidsstempel: LocalDateTime = vurderingsperiode.fraOgMed.atStartOfDay(),
         harLivsoppholdYtelser: Boolean = false,
         årsakTilEndring: ÅrsakTilEndring = ÅrsakTilEndring.FEIL_I_INNHENTET_DATA,
-        saksbehandler: Saksbehandler = ObjectMother.saksbehandler(),
+        navIdent: String = ObjectMother.saksbehandler().navIdent,
     ): LivsoppholdSaksopplysning.Saksbehandler =
         LivsoppholdSaksopplysning.Saksbehandler(
             tidsstempel = tidsstempel,
             harLivsoppholdYtelser = harLivsoppholdYtelser,
             årsakTilEndring = årsakTilEndring,
             periode = vurderingsperiode,
-            saksbehandler = saksbehandler,
+            navIdent = navIdent,
         )
 
     /**

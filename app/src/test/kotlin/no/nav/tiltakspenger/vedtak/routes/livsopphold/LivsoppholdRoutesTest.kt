@@ -98,7 +98,6 @@ class LivsoppholdRoutesTest {
                     status shouldBe HttpStatusCode.OK
                     val livsoppholdVilkår = objectMapper.readValue<LivsoppholdVilkårDTO>(bodyAsText())
                     livsoppholdVilkår.avklartSaksopplysning!!.harLivsoppholdYtelser.shouldBeFalse()
-                    livsoppholdVilkår.avklartSaksopplysning.saksbehandler shouldBe saksbehandler.toDTO()
                 }
             }
         }
@@ -204,7 +203,6 @@ class LivsoppholdRoutesTest {
                     status shouldBe HttpStatusCode.OK
                     val livsoppholdVilkår = objectMapper.readValue<LivsoppholdVilkårDTO>(bodyAsText())
                     livsoppholdVilkår.avklartSaksopplysning!!.harLivsoppholdYtelser.shouldBeFalse()
-                    livsoppholdVilkår.avklartSaksopplysning.saksbehandler shouldBe saksbehandler.toDTO()
                 }
             }
         }

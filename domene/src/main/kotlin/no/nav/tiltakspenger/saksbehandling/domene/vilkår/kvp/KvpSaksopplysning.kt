@@ -12,14 +12,14 @@ sealed interface KvpSaksopplysning {
     val totalePeriode: Periode
 
     val årsakTilEndring: ÅrsakTilEndring?
-    val saksbehandler: no.nav.tiltakspenger.libs.common.Saksbehandler?
+    val navIdent: String?
 
     data class Søknad(
         override val deltar: Periodisering<Deltagelse>,
         override val tidsstempel: LocalDateTime,
     ) : KvpSaksopplysning {
         override val årsakTilEndring = null
-        override val saksbehandler = null
+        override val navIdent = null
 
         init {
             require(deltar.perioder().isNotEmpty()) { "KvpSaksopplysning må ha minst én periode, men var tom." }
@@ -32,7 +32,7 @@ sealed interface KvpSaksopplysning {
         override val deltar: Periodisering<Deltagelse>,
         override val årsakTilEndring: ÅrsakTilEndring,
         override val tidsstempel: LocalDateTime,
-        override val saksbehandler: no.nav.tiltakspenger.libs.common.Saksbehandler,
+        override val navIdent: String,
     ) : KvpSaksopplysning {
         init {
             require(deltar.perioder().isNotEmpty()) { "KvpSaksopplysning må ha minst én periode, men var tom." }

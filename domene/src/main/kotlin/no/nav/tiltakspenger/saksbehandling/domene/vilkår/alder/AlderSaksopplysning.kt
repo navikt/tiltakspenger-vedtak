@@ -10,14 +10,14 @@ sealed interface AlderSaksopplysning {
     val tidsstempel: LocalDateTime
 
     val årsakTilEndring: ÅrsakTilEndring?
-    val saksbehandler: no.nav.tiltakspenger.libs.common.Saksbehandler?
+    val navIdent: String?
 
     data class Register(
         override val fødselsdato: LocalDate,
         override val tidsstempel: LocalDateTime,
     ) : AlderSaksopplysning {
         override val årsakTilEndring = null
-        override val saksbehandler = null
+        override val navIdent = null
 
         companion object {
             fun opprett(fødselsdato: LocalDate): AlderSaksopplysning.Register =
@@ -33,7 +33,7 @@ sealed interface AlderSaksopplysning {
         override val fødselsdato: LocalDate,
         override val årsakTilEndring: ÅrsakTilEndring,
         override val tidsstempel: LocalDateTime,
-        override val saksbehandler: no.nav.tiltakspenger.libs.common.Saksbehandler,
+        override val navIdent: String,
     ) : AlderSaksopplysning {
         init {
             require(fødselsdato.isBefore(LocalDate.now())) { "Kan ikke ha fødselsdag frem i tid" }
