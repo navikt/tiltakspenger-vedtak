@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling.personopplysninger
 
-import no.nav.tiltakspenger.libs.personklient.pdl.dto.PdlPerson
-import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.EnkelPerson
+import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.EnkelPersonMedSkjerming
 
 data class EnkelPersonDTO(
     val fnr: String,
@@ -11,14 +10,10 @@ data class EnkelPersonDTO(
     val fortrolig: Boolean,
     val strengtFortrolig: Boolean,
     val strengtFortroligUtland: Boolean,
-    val skjermet: Boolean?,
+    val skjermet: Boolean,
 )
 
-internal data class PdlResponse(
-    val hentPerson: PdlPerson,
-)
-
-fun EnkelPerson.toDTO(skjerming: Boolean?): EnkelPersonDTO = EnkelPersonDTO(
+fun EnkelPersonMedSkjerming.toDTO(): EnkelPersonDTO = EnkelPersonDTO(
     fnr = fnr.verdi,
     fornavn = fornavn,
     mellomnavn = mellomnavn,
@@ -26,5 +21,5 @@ fun EnkelPerson.toDTO(skjerming: Boolean?): EnkelPersonDTO = EnkelPersonDTO(
     fortrolig = fortrolig,
     strengtFortrolig = strengtFortrolig,
     strengtFortroligUtland = strengtFortroligUtland,
-    skjermet = skjerming,
+    skjermet = skjermet,
 )

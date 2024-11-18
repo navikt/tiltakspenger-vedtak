@@ -7,7 +7,7 @@ import no.nav.tiltakspenger.meldekort.domene.MeldekortStatus
  */
 
 private enum class MeldekortstatusDb {
-    // TODO pre-mvp: Dersom vi skal slette basen vår før vi går i produksjon, kan vi rename denne til IKKE_UTFYLT. Hvis ikke bør vi vurdere å lage et migreringsskript for det.
+    // TODO post-mvp: Rename denne til IKKE_UTFYLT og lag et migreringsskript for det.
     KLAR_TIL_UTFYLLING,
     KLAR_TIL_BESLUTNING,
     GODKJENT,

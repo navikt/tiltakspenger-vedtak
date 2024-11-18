@@ -52,7 +52,6 @@ internal class EnkelPersonMapperTest {
             fortrolig = false,
             strengtFortrolig = false,
             strengtFortroligUtland = false,
-            skjermet = null,
         )
     }
 }

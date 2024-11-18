@@ -42,6 +42,5 @@ fun String.toEnkelPerson(
         fortrolig = adressebeskyttelse.erFortrolig(),
         strengtFortrolig = adressebeskyttelse.erStrengtFortrolig(),
         strengtFortroligUtland = adressebeskyttelse.erStrengtFortroligUtland(),
-        skjermet = null,
     )
 }

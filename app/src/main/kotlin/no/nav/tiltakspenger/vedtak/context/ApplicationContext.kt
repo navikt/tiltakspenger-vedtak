@@ -47,6 +47,7 @@ open class ApplicationContext(
             søknadService = søknadContext.søknadService,
             statistikkSakRepo = statistikkContext.statistikkSakRepo,
             tilgangsstyringService = personContext.tilgangsstyringService,
+            poaoTilgangGateway = personContext.poaoTilgangGateway,
             tiltakGateway = tiltakContext.tiltakGateway,
             personService = personContext.personService,
             gitHash = gitHash,

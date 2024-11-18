@@ -24,7 +24,6 @@ class PersonFakeGateway : PersonGateway {
             fortrolig = it.fortrolig,
             strengtFortrolig = it.strengtFortrolig,
             strengtFortroligUtland = it.strengtFortroligUtland,
-            skjermet = false,
         )
     }
 

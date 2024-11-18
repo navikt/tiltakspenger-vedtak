@@ -153,6 +153,7 @@ class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-gi
             statistikkSakRepo = statistikkSakFakeRepo,
             tiltakGateway = tiltakGatewayFake,
             tilgangsstyringService = tilgangsstyringFakeGateway,
+            poaoTilgangGateway = personContext.poaoTilgangGateway,
             gitHash = "fake-git-hash",
             profile = Profile.LOCAL,
         ) {

@@ -1,12 +1,17 @@
 package no.nav.tiltakspenger.vedtak.clients.poaotilgang
 
+import arrow.core.Either
+import arrow.core.getOrElse
+import io.ktor.client.plugins.ClientRequestException
+import io.ktor.http.HttpStatusCode.Companion.Forbidden
+import io.ktor.http.HttpStatusCode.Companion.Unauthorized
 import kotlinx.coroutines.runBlocking
-import no.nav.poao_tilgang.client.NavAnsattNavIdentBehandleFortroligBrukerePolicyInput
-import no.nav.poao_tilgang.client.NavAnsattNavIdentBehandleSkjermedePersonerPolicyInput
-import no.nav.poao_tilgang.client.NavAnsattNavIdentBehandleStrengtFortroligBrukerePolicyInput
+import mu.KotlinLogging
 import no.nav.poao_tilgang.client.PoaoTilgangClient
 import no.nav.poao_tilgang.client.PoaoTilgangHttpClient
+import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.AccessToken
+import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.saksbehandling.ports.PoaoTilgangGateway
 
@@ -14,41 +19,35 @@ class PoaoTilgangClient(
     baseUrl: String,
     val getToken: suspend () -> AccessToken,
 ) : PoaoTilgangGateway {
-    // TODO post-mvp jah: Her mister vi kontroll over om vi får 401 eller 403. Vi bør håndtere dette og invalidere token.
-    //  Dette bør sees på dersom denne fila taes i bruk.
+    private val log = KotlinLogging.logger {}
     private val poaoTilgangclient: PoaoTilgangClient =
         PoaoTilgangHttpClient(
             baseUrl = baseUrl,
             tokenProvider = { runBlocking { getToken().token } },
         )
 
-    override suspend fun evaluerTilgangTilSkjermet(navAnsattIdent: String): Boolean {
-        val response =
-            poaoTilgangclient.evaluatePolicy(NavAnsattNavIdentBehandleSkjermedePersonerPolicyInput(navAnsattIdent))
-                .getOrThrow()
-        return response.isPermit
-    }
-
-    override suspend fun evaluerTilgangTilFortrolig(navAnsattIdent: String): Boolean {
-        val response =
-            poaoTilgangclient.evaluatePolicy(NavAnsattNavIdentBehandleFortroligBrukerePolicyInput(navAnsattIdent))
-                .getOrThrow()
-        return response.isPermit
-    }
-
-    override suspend fun evaluerTilgangTilStrengtFortrolig(navAnsattIdent: String): Boolean {
-        val response =
-            poaoTilgangclient.evaluatePolicy(NavAnsattNavIdentBehandleStrengtFortroligBrukerePolicyInput(navAnsattIdent))
-                .getOrThrow()
-        return response.isPermit
-    }
-
-    override suspend fun erSkjermet(fnr: Fnr): Boolean {
-        return poaoTilgangclient.erSkjermetPerson(fnr.toString()).getOrThrow()
-    }
-
-    override suspend fun erSkjermetBolk(fnrListe: List<Fnr>): Map<Fnr, Boolean> {
-        val fnrSomStringsListe = fnrListe.map { it.toString() }
-        return poaoTilgangclient.erSkjermetPerson(fnrSomStringsListe).getOrThrow().mapKeys { Fnr.fromString(it.key) }
+    override suspend fun erSkjermet(fnr: Fnr, correlationId: CorrelationId): Boolean {
+        val token = Either.catch { getToken() }.getOrElse {
+            sikkerlogg.error(it) { "Kunne ikke hente token for å hente skjerming. CorrelationId: $correlationId" }
+            throw RuntimeException("Kunne ikke hente token for å hente skjerming. Se sikkerlogg for mer kontekst.")
+        }
+        try {
+            val erSkjermet = poaoTilgangclient.erSkjermetPerson(fnr.verdi).getOrThrow()
+            return erSkjermet
+        } catch (throwable: Throwable) {
+            if (throwable is ClientRequestException) {
+                val status = throwable.response.status
+                if (status == Unauthorized || status == Forbidden) {
+                    log.error(RuntimeException("Trigger stacktrace for debug.")) { "Invaliderer cache for systemtoken mot PoaoTilgang. status: $status." }
+                    token.invaliderCache()
+                }
+            }
+            if (throwable is IllegalStateException) {
+                throw throwable
+            } else {
+                sikkerlogg.error(throwable) { "Ukjent feil fra Poao Tilgang. CorrelationId: $correlationId" }
+                throw RuntimeException("Ukjent feil fra Poao Tilgang, se sikkerlogg for mer kontekst.")
+            }
+        }
     }
 }

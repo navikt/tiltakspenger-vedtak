@@ -30,9 +30,8 @@ fun Route.hentPersonRoute(
         call.withSaksbehandler(tokenService = tokenService) { saksbehandler ->
             call.withSakId { sakId ->
                 val correlationId = call.correlationId()
-                sakService.hentEnkelPersonForSakId(sakId, saksbehandler).map {
-                    // TODO pre-mvp jah: @Benedicte: Skal denne settes statisk slik som dette? :sweat:
-                    it.toDTO(skjerming = false)
+                sakService.hentEnkelPersonForSakId(sakId, saksbehandler, correlationId).map {
+                    it.toDTO()
                 }.fold(
                     {
                         when (it) {
