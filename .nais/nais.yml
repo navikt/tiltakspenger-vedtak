@@ -77,17 +77,12 @@ spec:
     inbound:
       rules:
         - application: tiltakspenger-saksbehandler
-          namespace: tpts
-          cluster: {{ cluster }}
+        - application: tiltakspenger-meldekort-api
         - application: tiltakspenger-datadeling
-          namespace: tpts
-          cluster: {{ cluster }}
           permissions:
             roles:
               - "hente_data"
         - application: tiltakspenger-soknad-api
-          namespace: tpts
-          cluster: {{ cluster }}
           permissions:
             roles:
               - "lage_hendelser"
