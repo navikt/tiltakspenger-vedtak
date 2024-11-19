@@ -17,8 +17,7 @@ internal fun Rammevedtak.toJournalpostRequest(
         kanal = "NAV_NO",
         avsenderMottaker = JoarkRequest.AvsenderMottaker(this.fnr.verdi),
         bruker = JoarkRequest.Bruker(this.fnr.verdi),
-        // TODO bruk saksnummer i stedet for sakId
-        sak = JoarkRequest.Sak.Fagsak(this.sakId.toString()),
+        sak = JoarkRequest.Sak.Fagsak(this.saksnummer.toString()),
         dokumenter = listOf(
             JoarkRequest.JournalpostDokument(
                 tittel = tittel,

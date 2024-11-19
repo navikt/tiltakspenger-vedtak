@@ -20,7 +20,7 @@ internal fun Meldekort.toJournalpostRequest(
         kanal = null,
         avsenderMottaker = JoarkRequest.AvsenderMottaker(this.fnr.verdi),
         bruker = JoarkRequest.Bruker(this.fnr.verdi),
-        sak = JoarkRequest.Sak.Fagsak(this.sakId.toString()),
+        sak = JoarkRequest.Sak.Fagsak(this.saksnummer.toString()),
         dokumenter = listOf(
             JoarkRequest.JournalpostDokument(
                 tittel = tittel,
