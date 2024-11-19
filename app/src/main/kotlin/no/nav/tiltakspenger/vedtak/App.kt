@@ -60,6 +60,7 @@ fun main() {
             runCheckFactory = runCheckFactory,
             tasks =
             listOf { correlationId ->
+                log.error { "Tester ny alert - slett meg raskt." }
                 applicationContext.utbetalingContext.sendUtbetalingerService.send(correlationId)
                 applicationContext.utbetalingContext.journalførUtbetalingsvedtakService.journalfør(correlationId)
                 applicationContext.førstegangsbehandlingContext.journalførVedtaksbrevService.journalfør(correlationId)
