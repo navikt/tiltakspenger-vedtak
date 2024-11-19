@@ -133,7 +133,7 @@ object Configuration {
                 "DOKDIST_URL" to "https://dokdistfordeling.prod-fss-pub.nais.io",
                 "PDFGEN_SCOPE" to "api://prod-gcp.tpts.tiltakspenger-pdfgen/.default",
                 "PDFGEN_URL" to "http://tiltakspenger-pdfgen",
-                "POAO_TILGANG_URL" to "https://poao-tilgang.nais.io",
+                "POAO_TILGANG_URL" to "http://poao-tilgang.poao",
                 "POAO_TILGANG_SCOPE" to "api://prod-gcp.poao.poao-tilgang/.default",
                 "MICROSOFT_SCOPE" to "https://graph.microsoft.com/.default",
                 "MICROSOFT_URL" to "graph.microsoft.com/v1.0",
