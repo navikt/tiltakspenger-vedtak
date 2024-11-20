@@ -8,6 +8,7 @@ import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.personklient.pdl.FellesSkjermingError
 import no.nav.tiltakspenger.libs.personklient.skjerming.FellesSkjermingsklient
+import java.lang.IllegalStateException
 
 class FellesFakeSkjermingsklient : FellesSkjermingsklient {
     private val data = Atomic(mutableMapOf<Fnr, Boolean>())
@@ -23,13 +24,18 @@ class FellesFakeSkjermingsklient : FellesSkjermingsklient {
         fnrListe: NonEmptyList<Fnr>,
         correlationId: CorrelationId,
     ): Either<FellesSkjermingError, Map<Fnr, Boolean>> {
-        return fnrListe.map { it to data.get()[it]!! }.toMap().right()
+        return fnrListe.map { fnr ->
+            fnr to (
+                data.get()[fnr]
+                    ?: throw IllegalStateException("FellesFakeSkjermingsklient: Prøvde slå opp skjerming for ukjent fnr: ${fnr.verdi}. datagrunnlag i fake: ${data.get().keys.map { it.verdi }}")
+                )
+        }.toMap().right()
     }
 
     fun leggTil(
         fnr: Fnr,
         skjermet: Boolean,
     ) {
-        data.get().putIfAbsent(fnr, skjermet)
+        data.get()[fnr] = skjermet
     }
 }

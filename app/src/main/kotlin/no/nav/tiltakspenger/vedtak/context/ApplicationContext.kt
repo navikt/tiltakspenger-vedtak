@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.context
 
+import mu.KotlinLogging
 import no.nav.tiltakspenger.datadeling.service.SendTilDatadelingService
 import no.nav.tiltakspenger.libs.auth.core.EntraIdSystemtokenClient
 import no.nav.tiltakspenger.libs.auth.core.EntraIdSystemtokenHttpClient
@@ -9,9 +10,12 @@ import no.nav.tiltakspenger.libs.common.GenerellSystembruker
 import no.nav.tiltakspenger.libs.common.GenerellSystembrukerrolle
 import no.nav.tiltakspenger.libs.common.GenerellSystembrukerroller
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
+import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
+import no.nav.tiltakspenger.libs.persistering.infrastruktur.SessionCounter
 import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.auth.systembrukerMapper
 import no.nav.tiltakspenger.vedtak.clients.datadeling.DatadelingHttpClient
+import no.nav.tiltakspenger.vedtak.db.DataSourceSetup
 
 /**
  * Inneholder alle klienter, repoer og servicer.
@@ -19,9 +23,15 @@ import no.nav.tiltakspenger.vedtak.clients.datadeling.DatadelingHttpClient
  */
 @Suppress("unused")
 open class ApplicationContext(
-    val sessionFactory: SessionFactory,
-    private val gitHash: String,
+    internal val gitHash: String,
 ) {
+    private val log = KotlinLogging.logger {}
+
+    open val jdbcUrl by lazy { Configuration.database().url }
+    open val dataSource by lazy { DataSourceSetup.createDatasource(jdbcUrl) }
+    open val sessionCounter by lazy { SessionCounter(log) }
+    open val sessionFactory: SessionFactory by lazy { PostgresSessionFactory(dataSource, sessionCounter) }
+
     @Suppress("UNCHECKED_CAST")
     open val tokenService: TokenService by lazy {
         val tokenVerificationToken = Configuration.TokenVerificationConfig()
@@ -49,6 +59,7 @@ open class ApplicationContext(
     open val statistikkContext by lazy { StatistikkContext(sessionFactory) }
     open val søknadContext by lazy { SøknadContext(sessionFactory) }
     open val tiltakContext by lazy { TiltakContext(entraIdSystemtokenClient) }
+    open val profile by lazy { Configuration.applicationProfile() }
     open val sakContext by lazy {
         SakContext(
             sessionFactory = sessionFactory,
@@ -59,7 +70,7 @@ open class ApplicationContext(
             tiltakGateway = tiltakContext.tiltakGateway,
             personService = personContext.personService,
             gitHash = gitHash,
-            profile = Configuration.applicationProfile(),
+            profile = profile,
         )
     }
     open val utbetalingContext by lazy {
@@ -98,10 +109,12 @@ open class ApplicationContext(
         )
     }
 
-    private val datadelingGateway = DatadelingHttpClient(
-        baseUrl = Configuration.datadelingUrl,
-        getToken = { entraIdSystemtokenClient.getSystemtoken(Configuration.datadelingScope) },
-    )
+    private val datadelingGateway by lazy {
+        DatadelingHttpClient(
+            baseUrl = Configuration.datadelingUrl,
+            getToken = { entraIdSystemtokenClient.getSystemtoken(Configuration.datadelingScope) },
+        )
+    }
 
     val sendTilDatadelingService by lazy {
         SendTilDatadelingService(

@@ -43,7 +43,7 @@ open class PersonContext(
             baseUrl = Configuration.microsoftUrl,
         )
     }
-    val poaoTilgangGateway: PoaoTilgangGateway by lazy {
+    open val poaoTilgangGateway: PoaoTilgangGateway by lazy {
         PoaoTilgangClient(
             baseUrl = Configuration.poaoTilgangUrl,
             getToken = { entraIdSystemtokenClient.getSystemtoken(Configuration.poaoTilgangScope) },
