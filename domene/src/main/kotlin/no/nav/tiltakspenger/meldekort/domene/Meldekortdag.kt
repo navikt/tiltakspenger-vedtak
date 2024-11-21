@@ -21,11 +21,15 @@ sealed interface Meldekortdag {
     val beløp: Int get() = beregningsdag?.beløp ?: 0
     val prosent: Int get() = beregningsdag?.prosent ?: 0
 
+    /** Begrenses av maksDagerMedTiltakspengerForPeriode (1-10) per meldeperiode og SPERRET. */
+    val harDeltattEllerFravær: Boolean
+
     data class IkkeUtfylt(
         override val meldekortId: MeldekortId,
         override val dato: LocalDate,
         override val tiltakstype: TiltakstypeSomGirRett,
     ) : Meldekortdag {
+        override val harDeltattEllerFravær = false
         override val reduksjon = null
         override val beregningsdag = null
     }
@@ -34,9 +38,8 @@ sealed interface Meldekortdag {
         override val tiltakstype: TiltakstypeSomGirRett
         override val reduksjon: ReduksjonAvYtelsePåGrunnAvFravær
 
-        /** Begrenses av antallDager (1-5) per uke og vurderingsperioden sine utfall. */
-        val harDeltattEllerFravær: Boolean
-        /* Dersom prosent ved reduksjon endres må denne oppdateres */
+        /** Begrenses av maksDagerMedTiltakspengerForPeriode (1-10) per meldeperiode og SPERRET. */
+        override val harDeltattEllerFravær: Boolean
 
         sealed interface Deltatt : Utfylt {
             override val harDeltattEllerFravær get() = true

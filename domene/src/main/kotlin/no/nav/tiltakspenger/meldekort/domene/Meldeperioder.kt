@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.meldekort.domene
 
 import arrow.core.Either
 import arrow.core.NonEmptyList
+import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.toNonEmptyListOrNull
 import no.nav.tiltakspenger.felles.singleOrNullOrThrow
@@ -31,17 +32,15 @@ data class Meldeperioder(
         kommando: SendMeldekortTilBeslutterKommando,
     ): Either<KanIkkeSendeMeldekortTilBeslutter, Pair<Meldeperioder, UtfyltMeldekort>> {
         val ikkeUtfyltMeldekort = this.ikkeUtfyltMeldekort!!
-        if (kommando.dager.antallDagerMedFraværEllerDeltatt > ikkeUtfyltMeldekort.antallDagerForMeldeperiode) {
-            return KanIkkeSendeMeldekortTilBeslutter.ForMangeDagerUtfylt(
-                antallDagerForMeldeperiode = ikkeUtfyltMeldekort.antallDagerForMeldeperiode,
-                antallDagerUtfylt = kommando.dager.antallDagerMedFraværEllerDeltatt,
-            ).left()
-        }
+
         require(ikkeUtfyltMeldekort.id == kommando.meldekortId) {
             "MeldekortId i kommando (${kommando.meldekortId}) samsvarer ikke med siste meldekortperiode (${ikkeUtfyltMeldekort.id})"
         }
-        val meldekortperiode = kommando.beregnUtbetalingsdager(eksisterendeMeldekort = this)
-        return ikkeUtfyltMeldekort.sendTilBeslutter(meldekortperiode, kommando.saksbehandler, kommando.navkontor).map {
+        val meldekortdager = kommando.beregn(eksisterendeMeldekort = this)
+        val utfyltMeldeperiode = ikkeUtfyltMeldekort.meldeperiode.tilUtfyltMeldeperiode(meldekortdager).getOrElse {
+            return it.left()
+        }
+        return ikkeUtfyltMeldekort.sendTilBeslutter(utfyltMeldeperiode, kommando.saksbehandler, kommando.navkontor).map {
             Pair(
                 Meldeperioder(
                     tiltakstype = tiltakstype,
@@ -61,7 +60,7 @@ data class Meldeperioder(
     val utfylteMeldekort: List<UtfyltMeldekort> = verdi.filterIsInstance<UtfyltMeldekort>()
 
     /** Vil kun returnere hele meldekortperioder som er utfylt. Dersom siste meldekortperiode er delvis utfylt, vil ikke disse komme med. */
-    val utfylteDager: List<Meldekortdag.Utfylt> = utfylteMeldekort.flatMap { it.meldeperiode.verdi }
+    val utfylteDager: List<Meldekortdag.Utfylt> = utfylteMeldekort.flatMap { it.meldeperiode.dager }
 
     /** Så lenge saken er aktiv, vil det siste meldekortet være i tilstanden ikke utfylt. Vil også være null fram til første innvilgelse. */
     val ikkeUtfyltMeldekort: IkkeUtfyltMeldekort? = verdi.filterIsInstance<IkkeUtfyltMeldekort>().singleOrNullOrThrow()

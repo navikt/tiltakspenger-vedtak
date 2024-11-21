@@ -16,4 +16,11 @@ class FellesFakeAdressebeskyttelseKlient : FellesAdressebeskyttelseKlient {
 
     override suspend fun bolk(fnrListe: List<Fnr>): Either<FellesAdressebeskyttelseError, Map<Fnr, List<AdressebeskyttelseGradering>?>> =
         fnrListe.associateWith { data.get()[it] }.right()
+
+    fun leggTil(
+        fnr: Fnr,
+        gradering: List<AdressebeskyttelseGradering>,
+    ) {
+        data.get()[fnr] = gradering
+    }
 }

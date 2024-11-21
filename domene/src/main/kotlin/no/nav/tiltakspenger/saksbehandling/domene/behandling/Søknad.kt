@@ -11,7 +11,6 @@ import java.time.LocalDateTime
 data class Søknad(
     val versjon: String = "1",
     val id: SøknadId,
-    // TODO ?-mvp: Skille ut i Vedlegg-klasse, som bør få annet navn. Trenger å få med filnavn fra mottak!
     val journalpostId: String,
     val personopplysninger: Personopplysninger,
     val tiltak: Søknadstiltak,

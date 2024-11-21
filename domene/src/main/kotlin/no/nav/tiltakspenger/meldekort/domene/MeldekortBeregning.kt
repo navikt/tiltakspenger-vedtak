@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.meldekort.domene
 
+import arrow.core.NonEmptyList
 import arrow.core.toNonEmptyListOrNull
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.tiltak.TiltakstypeSomGirRett
@@ -43,10 +44,10 @@ private data class MeldekortBeregning(
     private var syktBarnKaranteneDag: LocalDate? = null
     private var sisteSyktBarnSykedag: LocalDate? = null
 
-    fun lagUtbetalingsdager(
+    fun beregn(
         kommando: SendMeldekortTilBeslutterKommando,
         eksisterendeMeldekortPåSaken: Meldeperioder,
-    ): Meldeperiode.UtfyltMeldeperiode {
+    ): NonEmptyList<Meldekortdag.Utfylt> {
         require(eksisterendeMeldekortPåSaken.sakId == kommando.sakId) {
             "SakId på eksisterende meldekortperiode ${eksisterendeMeldekortPåSaken.sakId} er ikke likt sakId på kommando ${kommando.sakId}"
         }
@@ -91,10 +92,7 @@ private data class MeldekortBeregning(
                 FRAVÆR_VELFERD_IKKE_GODKJENT_AV_NAV -> ugyldigFravær(meldekortId, tiltakstype, dag, true)
             }
         }
-        return Meldeperiode.UtfyltMeldeperiode(
-            sakId = sakId,
-            verdi = utbetalingDager.toNonEmptyListOrNull()!!,
-        )
+        return utbetalingDager.toNonEmptyListOrNull()!!
     }
 
     private fun deltattUtenLønn(
@@ -434,11 +432,11 @@ private enum class SykTilstand {
     Karantene,
 }
 
-fun SendMeldekortTilBeslutterKommando.beregnUtbetalingsdager(
+fun SendMeldekortTilBeslutterKommando.beregn(
     eksisterendeMeldekort: Meldeperioder,
-): Meldeperiode.UtfyltMeldeperiode {
+): NonEmptyList<Meldekortdag.Utfylt> {
     return MeldekortBeregning(
         utløsendeMeldekortId = this.meldekortId,
         saksbehandler = this.saksbehandler.navIdent,
-    ).lagUtbetalingsdager(this, eksisterendeMeldekort)
+    ).beregn(this, eksisterendeMeldekort)
 }

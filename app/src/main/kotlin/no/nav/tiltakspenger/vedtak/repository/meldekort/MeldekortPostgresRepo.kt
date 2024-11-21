@@ -192,11 +192,15 @@ class MeldekortPostgresRepo(
             val rammevedtakId = VedtakId.fromString(row.string("rammevedtak_id"))
             val fnr = Fnr.fromString(row.string("fnr"))
             val forrigeMeldekortId = row.stringOrNull("forrige_meldekort_id")?.let { MeldekortId.fromString(it) }
-            val antallDagerForMeldeperiode = row.int("antall_dager_per_meldeperiode")
+            val maksDagerMedTiltakspengerForPeriode = row.int("antall_dager_per_meldeperiode")
             val opprettet = row.localDateTime("opprettet")
             return when (val status = row.string("status")) {
                 "GODKJENT", "KLAR_TIL_BESLUTNING" -> {
-                    val meldekortperiode = row.string("meldekortdager").toUtfyltMeldekortperiode(sakId, id)
+                    val meldekortperiode = row.string("meldekortdager").toUtfyltMeldekortperiode(
+                        sakId = sakId,
+                        meldekortId = id,
+                        maksDagerMedTiltakspengerForPeriode = maksDagerMedTiltakspengerForPeriode,
+                    )
 
                     UtfyltMeldekort(
                         id = id,
@@ -215,13 +219,16 @@ class MeldekortPostgresRepo(
                         status = row.string("status").toMeldekortStatus(),
                         iverksattTidspunkt = row.localDateTimeOrNull("iverksatt_tidspunkt"),
                         navkontor = navkontor!!,
-                        antallDagerForMeldeperiode = antallDagerForMeldeperiode,
                     )
                 }
 
                 "KLAR_TIL_UTFYLLING" -> {
                     val meldekortperiode =
-                        row.string("meldekortdager").toIkkeUtfyltMeldekortperiode(sakId, id)
+                        row.string("meldekortdager").toIkkeUtfyltMeldekortperiode(
+                            sakId = sakId,
+                            meldekortId = id,
+                            maksDagerMedTiltakspengerForPeriode = maksDagerMedTiltakspengerForPeriode,
+                        )
                     IkkeUtfyltMeldekort(
                         id = id,
                         meldeperiodeId = meldeperiodeId,
@@ -234,7 +241,6 @@ class MeldekortPostgresRepo(
                         forrigeMeldekortId = forrigeMeldekortId,
                         tiltakstype = meldekortperiode.tiltakstype,
                         navkontor = navkontor,
-                        antallDagerForMeldeperiode = antallDagerForMeldeperiode,
                     )
                 }
 

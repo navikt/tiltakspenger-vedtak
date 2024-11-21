@@ -53,7 +53,10 @@ import no.nav.tiltakspenger.vedtak.context.UtbetalingContext
  * Bruk service-funksjoner og hjelpemetoder for å legge til data.
  */
 @Suppress("UNCHECKED_CAST")
-class TestApplicationContext : ApplicationContext(TestSessionFactory(), "fake-git-hash") {
+class TestApplicationContext(
+    override val sessionFactory: TestSessionFactory = TestSessionFactory(),
+) : ApplicationContext(gitHash = "fake-git-hash") {
+
     val journalpostIdGenerator = JournalpostIdGenerator()
     val distribusjonIdGenerator = DistribusjonIdGenerator()
 

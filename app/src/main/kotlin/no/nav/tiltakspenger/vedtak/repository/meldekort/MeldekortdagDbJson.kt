@@ -129,7 +129,7 @@ internal fun Meldeperiode.toDbJson(): String =
     }
 
 private fun Meldeperiode.IkkeUtfyltMeldeperiode.toDbJson(): String =
-    verdi
+    dager
         .map { meldekortdag ->
             MeldekortdagDbJson(
                 tiltakstype = tiltakstype.toDb(),
@@ -151,7 +151,7 @@ private fun Meldeperiode.IkkeUtfyltMeldeperiode.toDbJson(): String =
         }.let { serialize(it) }
 
 private fun Meldeperiode.UtfyltMeldeperiode.toDbJson(): String =
-    verdi
+    dager
         .map { meldekortdag ->
             MeldekortdagDbJson(
                 tiltakstype = tiltakstype.toDb(),
@@ -179,21 +179,26 @@ private fun ReduksjonAvYtelsePåGrunnAvFravær.toDb(): ReduksjonAvYtelsePåGrunn
         ReduksjonAvYtelsePåGrunnAvFravær.YtelsenFallerBort -> ReduksjonAvYtelsePåGrunnAvFraværDb.YtelsenFallerBort
     }
 
-internal fun String.toUtfyltMeldekortperiode(sakId: SakId, meldekortId: MeldekortId): Meldeperiode.UtfyltMeldeperiode =
+internal fun String.toUtfyltMeldekortperiode(
+    sakId: SakId,
+    meldekortId: MeldekortId,
+    maksDagerMedTiltakspengerForPeriode: Int,
+): Meldeperiode.UtfyltMeldeperiode =
     deserializeList<MeldekortdagDbJson>(this)
         .map {
             it.toMeldekortdag(meldekortId) as Meldekortdag.Utfylt
         }.let {
-            Meldeperiode.UtfyltMeldeperiode(sakId, it.toNonEmptyListOrNull()!!)
+            Meldeperiode.UtfyltMeldeperiode(sakId, maksDagerMedTiltakspengerForPeriode, it.toNonEmptyListOrNull()!!)
         }
 
 internal fun String.toIkkeUtfyltMeldekortperiode(
     sakId: SakId,
     meldekortId: MeldekortId,
+    maksDagerMedTiltakspengerForPeriode: Int,
 ): Meldeperiode.IkkeUtfyltMeldeperiode =
     deserializeList<MeldekortdagDbJson>(this)
         .map {
             it.toMeldekortdag(meldekortId)
         }.let {
-            Meldeperiode.IkkeUtfyltMeldeperiode(sakId, it.toNonEmptyListOrNull()!!)
+            Meldeperiode.IkkeUtfyltMeldeperiode(sakId, maksDagerMedTiltakspengerForPeriode, it.toNonEmptyListOrNull()!!)
         }

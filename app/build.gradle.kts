@@ -1,8 +1,8 @@
 val ktorVersion = "3.0.1"
 val kotestVersion = "5.9.1"
 val mockkVersion = "1.13.13"
-val testContainersVersion = "1.20.3"
-val felleslibVersion = "0.0.280"
+val testContainersVersion = "1.20.4"
+val felleslibVersion = "0.0.282"
 val poaoTilgangVersjon = "2024.10.04_12.38-e183cd9d187f"
 val iverksettVersjon = "1.0_20241029145217_29f9f5d"
 val kotlinxCoroutinesVersion = "1.9.0"
@@ -86,7 +86,7 @@ dependencies {
     api("com.auth0:jwks-rsa:0.22.1")
 
     // DB
-    implementation("org.flywaydb:flyway-database-postgresql:10.21.0")
+    implementation("org.flywaydb:flyway-database-postgresql:10.22.0")
     implementation("com.zaxxer:HikariCP:6.2.1")
     implementation("org.postgresql:postgresql:42.7.4")
     implementation("com.github.seratch:kotliquery:1.9.0")
@@ -120,7 +120,7 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:$testContainersVersion")
     testImplementation("org.testcontainers:postgresql:$testContainersVersion")
     // need quarkus-junit-4-mock because of https://github.com/testcontainers/testcontainers-java/issues/970
-    testImplementation("io.quarkus:quarkus-junit4-mock:3.16.3")
+    testImplementation("io.quarkus:quarkus-junit4-mock:3.17.0")
     testApi(project(":test-common"))
     testApi("com.github.navikt.tiltakspenger-libs:test-common:$felleslibVersion")
     testApi("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")

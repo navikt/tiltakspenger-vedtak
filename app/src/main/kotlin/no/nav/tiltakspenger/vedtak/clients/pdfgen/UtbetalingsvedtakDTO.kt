@@ -57,7 +57,7 @@ suspend fun Utbetalingsvedtak.toJsonRequest(
             fom = periode.fraOgMed.format(norskDatoFormatter),
             tom = periode.tilOgMed.format(norskDatoFormatter),
         ),
-        meldekortDager = meldekort.meldeperiode.verdi.map { dag ->
+        meldekortDager = meldekort.meldeperiode.dager.map { dag ->
             UtbetalingsvedtakDTO.MeldekortDagDTO(
                 dato = dag.dato.format(norskDatoFormatter),
                 tiltakType = dag.tiltakstype.toString(),
