@@ -44,7 +44,7 @@ internal fun mapTiltak(
         .map { tiltakDto ->
             Tiltak(
                 id = TiltakId.random(),
-                eksternId = tiltakDto.id,
+                eksternDeltagelseId = tiltakDto.id,
                 gjennomføringId = tiltakDto.gjennomføringId,
                 typeNavn = tiltakDto.typeNavn,
                 typeKode = tiltakDto.typeKode.toTiltakstypeSomGirRett().getOrElse {

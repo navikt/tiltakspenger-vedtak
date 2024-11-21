@@ -9,7 +9,7 @@ import java.time.LocalDateTime
 
 sealed interface TiltakDeltagelseSaksopplysning {
     val tiltaksnavn: String
-    val eksternTiltakId: String
+    val eksternDeltagelseId: String
     val gjennomføringId: String?
     val kilde: Tiltakskilde
     val deltagelsePeriode: Periode
@@ -22,7 +22,7 @@ sealed interface TiltakDeltagelseSaksopplysning {
 
     data class Register(
         override val tiltaksnavn: String,
-        override val eksternTiltakId: String,
+        override val eksternDeltagelseId: String,
         override val gjennomføringId: String?,
         override val tidsstempel: LocalDateTime,
         override val deltagelsePeriode: Periode,

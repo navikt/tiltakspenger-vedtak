@@ -98,9 +98,6 @@ dependencies {
     implementation("no.nav.poao-tilgang:client:$poaoTilgangVersjon")
 
     // DIV
-    // TODO post-mvp jah: Fjern denne når meldekort er over på pdfgen
-    implementation("org.apache.pdfbox:pdfbox:3.0.3")
-
     // Arrow
     implementation("io.arrow-kt:arrow-core:1.2.4")
 

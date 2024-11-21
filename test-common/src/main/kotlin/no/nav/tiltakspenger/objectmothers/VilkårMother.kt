@@ -287,7 +287,7 @@ interface VilkårMother {
         TiltakDeltagelseSaksopplysning.Register(
             tidsstempel = tidsstempel,
             tiltaksnavn = tiltakNavn,
-            eksternTiltakId = eksternTiltakId,
+            eksternDeltagelseId = eksternTiltakId,
             gjennomføringId = gjennomføringId,
             deltagelsePeriode = vurderingsperiode,
             girRett = girRett,

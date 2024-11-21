@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.vedtak.context
 
 import no.nav.tiltakspenger.distribusjon.ports.DokdistGateway
 import no.nav.tiltakspenger.libs.auth.core.EntraIdSystemtokenClient
-import no.nav.tiltakspenger.meldekort.ports.GenererMeldekortPdfGateway
+import no.nav.tiltakspenger.meldekort.ports.GenererUtbetalingsvedtakGateway
 import no.nav.tiltakspenger.meldekort.ports.JournalførMeldekortGateway
 import no.nav.tiltakspenger.saksbehandling.ports.GenererVedtaksbrevGateway
 import no.nav.tiltakspenger.saksbehandling.ports.JournalførVedtaksbrevGateway
@@ -31,6 +31,6 @@ open class DokumentContext(
     private val pdfgen by lazy {
         PdfgenHttpClient(Configuration.pdfgenUrl)
     }
-    open val genererMeldekortPdfGateway: GenererMeldekortPdfGateway by lazy { pdfgen }
+    open val genererUtbetalingsvedtakGateway: GenererUtbetalingsvedtakGateway by lazy { pdfgen }
     open val genererVedtaksbrevGateway: GenererVedtaksbrevGateway by lazy { pdfgen }
 }

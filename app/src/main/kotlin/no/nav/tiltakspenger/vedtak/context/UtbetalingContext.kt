@@ -4,8 +4,9 @@ import no.nav.tiltakspenger.felles.NavIdentClient
 import no.nav.tiltakspenger.libs.auth.core.EntraIdSystemtokenClient
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
-import no.nav.tiltakspenger.meldekort.ports.GenererMeldekortPdfGateway
+import no.nav.tiltakspenger.meldekort.ports.GenererUtbetalingsvedtakGateway
 import no.nav.tiltakspenger.meldekort.ports.JournalførMeldekortGateway
+import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.UtbetalingGateway
 import no.nav.tiltakspenger.utbetaling.ports.UtbetalingsvedtakRepo
 import no.nav.tiltakspenger.utbetaling.service.JournalførUtbetalingsvedtakService
@@ -16,10 +17,11 @@ import no.nav.tiltakspenger.vedtak.repository.utbetaling.UtbetalingsvedtakPostgr
 
 open class UtbetalingContext(
     sessionFactory: SessionFactory,
-    genererMeldekortPdfGateway: GenererMeldekortPdfGateway,
+    genererUtbetalingsvedtakGateway: GenererUtbetalingsvedtakGateway,
     journalførMeldekortGateway: JournalførMeldekortGateway,
     navIdentClient: NavIdentClient,
     entraIdSystemtokenClient: EntraIdSystemtokenClient,
+    sakRepo: SakRepo,
 ) {
     open val utbetalingGateway: UtbetalingGateway by lazy {
         UtbetalingHttpClient(
@@ -42,8 +44,9 @@ open class UtbetalingContext(
         JournalførUtbetalingsvedtakService(
             utbetalingsvedtakRepo = utbetalingsvedtakRepo,
             journalførMeldekortGateway = journalførMeldekortGateway,
-            genererMeldekortPdfGateway = genererMeldekortPdfGateway,
+            genererUtbetalingsvedtakGateway = genererUtbetalingsvedtakGateway,
             navIdentClient = navIdentClient,
+            sakRepo = sakRepo,
         )
     }
 }

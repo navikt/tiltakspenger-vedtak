@@ -6,7 +6,7 @@ import no.nav.tiltakspenger.libs.tiltak.TiltakstypeSomGirRett
 
 data class Tiltak(
     val id: TiltakId,
-    val eksternId: String,
+    val eksternDeltagelseId: String,
     val gjennomføringId: String?,
     val typeNavn: String,
     val typeKode: TiltakstypeSomGirRett,

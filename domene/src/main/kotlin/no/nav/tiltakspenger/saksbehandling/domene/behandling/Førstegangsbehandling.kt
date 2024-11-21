@@ -107,7 +107,7 @@ data class Førstegangsbehandling(
 
     val tiltaksnavn = vilkårssett.tiltakDeltagelseVilkår.registerSaksopplysning.tiltaksnavn
     val tiltakstype: TiltakstypeSomGirRett = vilkårssett.tiltakDeltagelseVilkår.registerSaksopplysning.tiltakstype
-    val tiltaksid: String = vilkårssett.tiltakDeltagelseVilkår.registerSaksopplysning.eksternTiltakId
+    val tiltaksid: String = vilkårssett.tiltakDeltagelseVilkår.registerSaksopplysning.eksternDeltagelseId
     val gjennomføringId: String? = vilkårssett.tiltakDeltagelseVilkår.registerSaksopplysning.gjennomføringId
     val samletUtfall = vilkårssett.samletUtfall
 
@@ -127,7 +127,7 @@ data class Førstegangsbehandling(
             }
             val tiltak =
                 registrerteTiltak.find {
-                    it.eksternId == søknad.tiltak.id &&
+                    it.eksternDeltagelseId == søknad.tiltak.id &&
                         it.deltakelsesperiode.overlapperMed(vurderingsperiode)
                 }
 

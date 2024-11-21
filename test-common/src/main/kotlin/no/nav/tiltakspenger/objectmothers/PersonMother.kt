@@ -82,7 +82,7 @@ interface PersonMother {
         kilde: Tiltakskilde = Komet,
     ) = Tiltak(
         id = id,
-        eksternId = eksternId,
+        eksternDeltagelseId = eksternId,
         gjennomføringId = gjennomføringId,
         typeKode = typeKode,
         typeNavn = typeNavn,
