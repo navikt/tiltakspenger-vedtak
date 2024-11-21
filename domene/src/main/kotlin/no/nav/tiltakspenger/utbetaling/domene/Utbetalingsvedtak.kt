@@ -58,7 +58,7 @@ fun Meldekort.UtfyltMeldekort.opprettUtbetalingsvedtak(
 
 fun Utbetalingsvedtak.tilStatistikk(): StatistikkUtbetalingDTO =
     StatistikkUtbetalingDTO(
-        // TODO pre-mvp jah: Vi sender uuid-delen av denne til helved som behandlingId som mappes videre til OS/UR i feltet 'henvisning'.
+        // TODO post-mvp jah: Vi sender uuid-delen av denne til helved som behandlingId som mappes videre til OS/UR i feltet 'henvisning'.
         id = this.id.toString(),
         sakId = this.sakId.toString(),
         saksnummer = this.saksnummer.toString(),

@@ -33,7 +33,7 @@ fun stønadStatistikkMapper(
 
         vedtakId = vedtak.id.toString(),
         vedtaksType = "Ny Rettighet",
-        // TODO Post-mvp: Denne skal kanskje egentlig være datoen fra brevet. Ta en prat med statistikk.
+        // TODO post-mvp: Denne skal kanskje egentlig være datoen fra brevet. Ta en prat med statistikk.
         vedtakDato = vedtak.opprettet.toLocalDate(),
         vedtakFom = vedtak.periode.fraOgMed,
         vedtakTom = vedtak.periode.tilOgMed,

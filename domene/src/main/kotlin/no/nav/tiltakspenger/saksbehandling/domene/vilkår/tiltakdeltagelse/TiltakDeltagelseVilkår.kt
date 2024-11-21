@@ -28,7 +28,7 @@ data class TiltakDeltagelseVilkår private constructor(
         val rettTilÅSøke = status.rettTilÅSøke
 
         if (!rettTilÅSøke || !rettTilTiltakspenger) {
-            // TODO pre-mvp jah: Vi utleder girRett i tiltakspenger-tiltak. Her kan vi heller bruke en felles algoritme i libs, istedet for å sende den over nettverk.
+            // TODO post-mvp jah: Vi utleder girRett i tiltakspenger-tiltak. Her kan vi heller bruke en felles algoritme i libs, istedet for å sende den over nettverk.
             throw StøtterIkkeUtfallException(
                 "Per dags dato får brukere kun søke dersom vi har whitelistet tiltakets status og klassekode. Dette tiltaket fører til avslag. RettTilÅSøke: $rettTilÅSøke og RettTilTiltakspenger: $rettTilTiltakspenger",
             )
