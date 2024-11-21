@@ -121,7 +121,7 @@ fun Route.sendMeldekortTilBeslutterRoute(
 
                                     is KanIkkeSendeMeldekortTilBeslutter.ForMangeDagerUtfylt -> {
                                         call.respond400BadRequest(
-                                            melding = "Kan ikke sende meldekort til beslutter. For mange dager er utfylt. Maks antall for dette meldekortet er ${it.antallDagerForMeldeperiode}, mens antall utfylte dager er ${it.antallDagerUtfylt}.",
+                                            melding = "Kan ikke sende meldekort til beslutter. For mange dager er utfylt. Maks antall for dette meldekortet er ${it.maksDagerMedTiltakspengerForPeriode}, mens antall utfylte dager er ${it.antallDagerUtfylt}.",
                                             kode = "for_mange_dager_utfylt",
                                         )
                                     }

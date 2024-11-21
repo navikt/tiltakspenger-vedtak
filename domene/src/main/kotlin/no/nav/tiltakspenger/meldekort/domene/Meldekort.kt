@@ -41,9 +41,6 @@ sealed interface Meldekort {
     val iverksattTidspunkt: LocalDateTime?
     val sendtTilBeslutning: LocalDateTime?
 
-    /** Vil være duplikat av det siste vedtaket som påvirker denne meldeperioden. Vil være et førstegangsvedtak i MVP, men vil på sikt også stamme fra revurderinger. */
-    val antallDagerForMeldeperiode: Int
-
     /** Totalsummen for meldeperioden */
     val beløpTotal: Int?
 
@@ -74,7 +71,6 @@ sealed interface Meldekort {
         override val status: MeldekortStatus,
         override val iverksattTidspunkt: LocalDateTime?,
         override val navkontor: Navkontor,
-        override val antallDagerForMeldeperiode: Int,
     ) : Meldekort {
 
         init {
@@ -118,8 +114,8 @@ sealed interface Meldekort {
                     meldekortId = meldekortId,
                     sakId = this.sakId,
                     utfallsperioder = utfallsperioder,
+                    maksDagerMedTiltakspengerForPeriode = this.meldeperiode.maksDagerMedTiltakspengerForPeriode,
                 ),
-                antallDagerForMeldeperiode = this.antallDagerForMeldeperiode,
             ).right()
         }
 
@@ -156,7 +152,6 @@ sealed interface Meldekort {
         override val tiltakstype: TiltakstypeSomGirRett,
         override val meldeperiode: Meldeperiode.IkkeUtfyltMeldeperiode,
         override val navkontor: Navkontor?,
-        override val antallDagerForMeldeperiode: Int,
     ) : Meldekort {
         override val iverksattTidspunkt = null
         override val sendtTilBeslutning = null
@@ -197,7 +192,6 @@ sealed interface Meldekort {
                 status = MeldekortStatus.KLAR_TIL_BESLUTNING,
                 iverksattTidspunkt = null,
                 navkontor = navkontor,
-                antallDagerForMeldeperiode = this.antallDagerForMeldeperiode,
             ).right()
         }
 
@@ -234,8 +228,8 @@ fun Rammevedtak.opprettFørsteMeldekortForEnSak(): Meldekort.IkkeUtfyltMeldekort
             tiltakstype = tiltakstype,
             meldekortId = meldekortId,
             sakId = this.sakId,
+            maksDagerMedTiltakspengerForPeriode = this.behandling.maksDagerMedTiltakspengerForPeriode,
         ),
-        antallDagerForMeldeperiode = this.behandling.antallDagerPerMeldeperiode,
     )
 }
 

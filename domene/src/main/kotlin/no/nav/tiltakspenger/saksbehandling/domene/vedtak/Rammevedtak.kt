@@ -37,7 +37,7 @@ data class Rammevedtak(
 ) : Vedtak {
     val fnr = behandling.fnr
     val utfallsperioder: Periodisering<AvklartUtfallForPeriode> get() = behandling.avklarteUtfallsperioder
-    override val antallDagerPerMeldeperiode: Int = behandling.antallDagerPerMeldeperiode
+    override val antallDagerPerMeldeperiode: Int = behandling.maksDagerMedTiltakspengerForPeriode
 }
 
 enum class Vedtakstype(

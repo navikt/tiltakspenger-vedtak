@@ -103,7 +103,7 @@ data class Førstegangsbehandling(
     }
 
     val erIverksatt: Boolean = status == INNVILGET
-    val antallDagerPerMeldeperiode: Int = stønadsdager.registerSaksopplysning.antallDager
+    val maksDagerMedTiltakspengerForPeriode: Int = stønadsdager.registerSaksopplysning.antallDager
 
     val tiltaksnavn = vilkårssett.tiltakDeltagelseVilkår.registerSaksopplysning.tiltaksnavn
     val tiltakstype: TiltakstypeSomGirRett = vilkårssett.tiltakDeltagelseVilkår.registerSaksopplysning.tiltakstype
@@ -135,7 +135,7 @@ data class Førstegangsbehandling(
                 return KanIkkeOppretteBehandling.FantIkkeTiltak.left()
             }
 
-            // TODO B og H: Fjern denne når vi begynner å implementere delvis innvilgelse og/eller avslag
+            // TODO post-mvp B og H: Fjern denne når vi begynner å implementere delvis innvilgelse og/eller avslag
             val vilkårssett = Either.catch {
                 Vilkårssett.opprett(
                     søknad = søknad,

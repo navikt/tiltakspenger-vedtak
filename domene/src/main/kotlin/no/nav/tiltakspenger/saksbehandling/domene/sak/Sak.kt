@@ -57,7 +57,7 @@ data class Sak(
     fun hentIkkeUtfyltMeldekort(): Meldekort? = meldeperioder.ikkeUtfyltMeldekort
 
     /** Den er kun trygg inntil vi revurderer antall dager. */
-    fun hentAntallDager(): Int? = rammevedtak?.behandling?.antallDagerPerMeldeperiode
+    fun hentAntallDager(): Int? = rammevedtak?.behandling?.maksDagerMedTiltakspengerForPeriode
     fun hentTynnSak(): TynnSak = TynnSak(this.id, this.fnr, this.saksnummer)
 
     /** Den er kun trygg inntil vi støtter mer enn ett tiltak på én sak. */

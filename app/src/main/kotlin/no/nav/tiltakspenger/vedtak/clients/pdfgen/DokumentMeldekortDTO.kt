@@ -51,7 +51,7 @@ suspend fun Utbetalingsvedtak.toPdf(
             fom = periode.fraOgMed.toString(),
             tom = periode.tilOgMed.toString(),
         ),
-        meldekortDager = meldekort.meldeperiode.verdi.map { dag ->
+        meldekortDager = meldekort.meldeperiode.dager.map { dag ->
             DokumentMeldekortDTO.MeldekortDagDTO(
                 dato = dag.dato.toString(),
                 tiltakType = dag.tiltakstype.toString(),

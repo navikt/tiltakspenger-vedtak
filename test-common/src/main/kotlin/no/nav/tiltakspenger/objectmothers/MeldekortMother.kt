@@ -72,7 +72,6 @@ interface MeldekortMother {
             status = status,
             iverksattTidspunkt = iverksattTidspunkt,
             navkontor = navkontor,
-            antallDagerForMeldeperiode = antallDagerForMeldeperiode,
         )
     }
 
@@ -84,10 +83,12 @@ interface MeldekortMother {
         startDato: LocalDate = LocalDate.of(2023, 1, 2),
         meldekortId: MeldekortId = MeldekortId.random(),
         tiltakstype: TiltakstypeSomGirRett = TiltakstypeSomGirRett.GRUPPE_AMO,
+        maksDagerMedTiltakspengerForPeriode: Int = 10,
     ): Meldeperiode.UtfyltMeldeperiode =
         Meldeperiode.UtfyltMeldeperiode(
-            sakId,
-            maksAntallDeltattTiltaksdagerIMeldekortperiode(startDato, meldekortId, tiltakstype),
+            sakId = sakId,
+            maksDagerMedTiltakspengerForPeriode = maksDagerMedTiltakspengerForPeriode,
+            dager = maksAntallDeltattTiltaksdagerIMeldekortperiode(startDato, meldekortId, tiltakstype),
         )
 
     fun maksAntallDeltattTiltaksdagerIMeldekortperiode(
@@ -209,8 +210,8 @@ interface MeldekortMother {
                     utfallsperioder = utfallsperioder,
                     tiltakstype = tiltakstype,
                     meldekortId = meldekortId,
+                    maksDagerMedTiltakspengerForPeriode = kommando.dager.size,
                 ),
-                antallDagerForMeldeperiode = kommando.dager.size,
             ),
         ),
     ).sendTilBeslutter(kommando).getOrFail()
@@ -250,8 +251,8 @@ interface MeldekortMother {
                     utfallsperioder = utfallsperioder,
                     tiltakstype = tiltakstype,
                     meldekortId = meldekortId,
+                    maksDagerMedTiltakspengerForPeriode = kommando.dager.size,
                 ),
-                antallDagerForMeldeperiode = kommando.dager.size,
             ),
         ).sendTilBeslutter(kommando).getOrFail().first
     }
