@@ -12,3 +12,13 @@ val norskDatoFormatter: DateTimeFormatter =
             .setRegion("NO")
             .build(),
     )
+
+val norskTidspunktFormatter: DateTimeFormatter =
+    DateTimeFormatter.ofPattern(
+        "d. MMMM yyyy HH:mm:ss",
+        Locale
+            .Builder()
+            .setLanguage("no")
+            .setRegion("NO")
+            .build(),
+    )

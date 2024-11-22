@@ -5,6 +5,7 @@ import no.nav.tiltakspenger.meldekort.domene.Meldekortdag
 import no.nav.tiltakspenger.meldekort.domene.ReduksjonAvYtelsePåGrunnAvFravær
 import no.nav.tiltakspenger.utbetaling.domene.Utbetalingsvedtak
 import no.nav.tiltakspenger.vedtak.clients.pdfgen.formattering.norskDatoFormatter
+import no.nav.tiltakspenger.vedtak.clients.pdfgen.formattering.norskTidspunktFormatter
 
 private data class UtbetalingsvedtakDTO(
     val meldekortId: String,
@@ -71,7 +72,7 @@ suspend fun Utbetalingsvedtak.toJsonRequest(
         tiltakstype = meldekort.tiltakstype.name,
         tiltaksnavn = tiltaksnavn,
         eksternDeltagelseId = eksternDeltagelseId,
-        iverksattTidspunkt = opprettet.format(norskDatoFormatter),
+        iverksattTidspunkt = opprettet.format(norskTidspunktFormatter),
     ).let { serialize(it) }
 }
 
