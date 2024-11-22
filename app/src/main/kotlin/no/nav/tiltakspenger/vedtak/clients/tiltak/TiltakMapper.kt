@@ -36,17 +36,17 @@ import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltakskilde
 
 internal fun mapTiltak(
     tiltakDTOListe: List<TiltakTilSaksbehandlingDTO>,
+    maskerTiltaksnavn: Boolean,
 ): List<Tiltak> =
     tiltakDTOListe
         .filterNot { it.deltakelseFom == null }
-        .filterNot { it.deltakelseTom == null }
         .filterNot { it.deltakelseTom == null }
         .map { tiltakDto ->
             Tiltak(
                 id = TiltakId.random(),
                 eksternDeltagelseId = tiltakDto.id,
                 gjennomføringId = tiltakDto.gjennomføringId,
-                typeNavn = tiltakDto.typeNavn,
+                typeNavn = if (maskerTiltaksnavn) "Ikke tilgjengelig" else tiltakDto.typeNavn,
                 typeKode = tiltakDto.typeKode.toTiltakstypeSomGirRett().getOrElse {
                     throw IllegalStateException(
                         "Inneholder tiltakstype som ikke gir rett (som vi ikke støtter i MVP): ${tiltakDto.typeKode}. Tiltaksid: ${tiltakDto.id}",
