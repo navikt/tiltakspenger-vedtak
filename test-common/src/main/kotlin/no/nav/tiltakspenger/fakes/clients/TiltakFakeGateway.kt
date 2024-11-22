@@ -9,7 +9,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.TiltakGateway
 class TiltakFakeGateway : TiltakGateway {
     private val data = Atomic(mutableMapOf<Fnr, List<Tiltak>>())
 
-    override suspend fun hentTiltak(fnr: Fnr, correlationId: CorrelationId): List<Tiltak> = data.get()[fnr]!!
+    override suspend fun hentTiltak(fnr: Fnr, maskerTiltaksnavn: Boolean, correlationId: CorrelationId): List<Tiltak> = data.get()[fnr]!!
 
     fun lagre(
         fnr: Fnr,
