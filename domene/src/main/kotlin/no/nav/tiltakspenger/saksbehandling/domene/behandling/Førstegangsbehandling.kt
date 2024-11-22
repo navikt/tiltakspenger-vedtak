@@ -6,6 +6,7 @@ import arrow.core.left
 import arrow.core.right
 import no.nav.tiltakspenger.felles.exceptions.StøtterIkkeUtfallException
 import no.nav.tiltakspenger.felles.nå
+import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
@@ -112,6 +113,8 @@ data class Førstegangsbehandling(
     val samletUtfall = vilkårssett.samletUtfall
 
     companion object {
+        private val logger = mu.KotlinLogging.logger { }
+
         fun opprettBehandling(
             sakId: SakId,
             saksnummer: Saksnummer,
@@ -145,6 +148,8 @@ data class Førstegangsbehandling(
                 )
             }.getOrElse {
                 if (it is StøtterIkkeUtfallException) {
+                    logger.error(RuntimeException("Trigger stacktrace for enklere debugging")) { "Støtter kun innvilgelse. Se sikkerlogg for mer info." }
+                    sikkerlogg.error(it) { "Støtter kun innvilgelse." }
                     return KanIkkeOppretteBehandling.StøtterKunInnvilgelse.left()
                 } else {
                     throw it

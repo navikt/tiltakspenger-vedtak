@@ -84,7 +84,13 @@ class SakServiceImpl(
                 }
         require(adressebeskyttelseGradering != null) { "Fant ikke adressebeskyttelse for person. SøknadId: $søknadId" }
 
-        val registrerteTiltak = runBlocking { tiltakGateway.hentTiltak(fnr, adressebeskyttelseGradering.isEmpty(), correlationId) }
+        val registrerteTiltak = runBlocking {
+            tiltakGateway.hentTiltak(
+                fnr = fnr,
+                maskerTiltaksnavn = adressebeskyttelseGradering.harStrengtFortroligAdresse(),
+                correlationId = correlationId,
+            )
+        }
         if (registrerteTiltak.isEmpty()) {
             return KanIkkeStarteFørstegangsbehandling.OppretteBehandling(
                 KanIkkeOppretteBehandling.FantIkkeTiltak,
