@@ -13,4 +13,5 @@ sealed interface KanIkkeSendeMeldekortTilBeslutter {
     data class KunneIkkeHenteSak(val underliggende: KunneIkkeHenteSakForSakId) : KanIkkeSendeMeldekortTilBeslutter
     data object KanIkkeEndreDagFraSperret : KanIkkeSendeMeldekortTilBeslutter
     data object KanIkkeEndreDagTilSperret : KanIkkeSendeMeldekortTilBeslutter
+    data object InnsendteDagerMåMatcheMeldeperiode : KanIkkeSendeMeldekortTilBeslutter
 }

@@ -18,6 +18,7 @@ import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.Saksbehandler
+import no.nav.tiltakspenger.meldekort.domene.KanIkkeSendeMeldekortTilBeslutter
 import no.nav.tiltakspenger.meldekort.domene.KanIkkeSendeMeldekortTilBeslutter.ForMangeDagerUtfylt
 import no.nav.tiltakspenger.meldekort.domene.KanIkkeSendeMeldekortTilBeslutter.KanIkkeEndreDagFraSperret
 import no.nav.tiltakspenger.meldekort.domene.KanIkkeSendeMeldekortTilBeslutter.KanIkkeEndreDagTilSperret
@@ -144,6 +145,11 @@ fun Route.sendMeldekortTilBeslutterRoute(
                                     KanIkkeEndreDagTilSperret, KanIkkeEndreDagFraSperret -> call.respond400BadRequest(
                                         melding = "Kan ikke endre dager som er sperret.",
                                         kode = "kan_ikke_endre_dager_som_er_sperret",
+                                    )
+
+                                    KanIkkeSendeMeldekortTilBeslutter.InnsendteDagerMåMatcheMeldeperiode -> call.respond400BadRequest(
+                                        melding = "Innsendte dager må matche meldeperiode.",
+                                        kode = "innsendte_dager_må_matche_meldeperiode",
                                     )
                                 }
                             },

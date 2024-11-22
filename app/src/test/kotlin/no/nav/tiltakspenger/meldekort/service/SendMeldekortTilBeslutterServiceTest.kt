@@ -5,8 +5,6 @@ import arrow.core.nonEmptyListOf
 import arrow.core.toNonEmptyListOrNull
 import io.kotest.assertions.arrow.core.shouldBeLeft
 import io.kotest.assertions.arrow.core.shouldBeRight
-import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.test.runTest
 import no.nav.tiltakspenger.common.TestApplicationContext
 import no.nav.tiltakspenger.felles.januar
@@ -33,25 +31,113 @@ internal class SendMeldekortTilBeslutterServiceTest {
                 val tac = this
                 val sak = this.førstegangsbehandlingIverksatt(correlationId = correlationId)
                 val ikkeUtfyltMeldekort = sak.meldeperioder.ikkeUtfyltMeldekort!!
-                shouldThrow<IllegalArgumentException> {
-                    tac.meldekortContext.sendMeldekortTilBeslutterService.sendMeldekortTilBeslutter(
-                        SendMeldekortTilBeslutterKommando(
-                            sakId = sak.id,
-                            meldekortId = ikkeUtfyltMeldekort.id,
-                            saksbehandler = ObjectMother.saksbehandler(),
-                            correlationId = correlationId,
-                            navkontor = ObjectMother.navkontor(),
-                            dager = SendMeldekortTilBeslutterKommando.Dager(
-                                dager = nonEmptyListOf(
-                                    Dag(
-                                        dag = ikkeUtfyltMeldekort.fraOgMed,
-                                        status = SPERRET,
-                                    ),
+                tac.meldekortContext.sendMeldekortTilBeslutterService.sendMeldekortTilBeslutter(
+                    SendMeldekortTilBeslutterKommando(
+                        sakId = sak.id,
+                        meldekortId = ikkeUtfyltMeldekort.id,
+                        saksbehandler = ObjectMother.saksbehandler(),
+                        correlationId = correlationId,
+                        navkontor = ObjectMother.navkontor(),
+                        dager = SendMeldekortTilBeslutterKommando.Dager(
+                            dager = nonEmptyListOf(
+                                Dag(
+                                    dag = ikkeUtfyltMeldekort.fraOgMed,
+                                    status = SPERRET,
                                 ),
                             ),
                         ),
-                    )
-                }.message shouldBe "En meldekortperiode må være 14 dager, men var 1"
+                    ),
+                ) shouldBeLeft KanIkkeSendeMeldekortTilBeslutter.InnsendteDagerMåMatcheMeldeperiode
+            }
+        }
+    }
+
+    @Test
+    fun `innsendingsperioden kan ikke være før meldeperioden`() {
+        val correlationId = CorrelationId.generate()
+        runTest {
+            with(TestApplicationContext()) {
+                val tac = this
+                val sak = this.førstegangsbehandlingIverksatt(
+                    periode = Periode(3.januar(2023), 31.januar(2023)),
+                    correlationId = correlationId,
+                )
+                val ikkeUtfyltMeldekort = sak.meldeperioder.ikkeUtfyltMeldekort!!
+                val førsteDag = ikkeUtfyltMeldekort.fraOgMed.minusDays(1)
+                tac.meldekortContext.sendMeldekortTilBeslutterService.sendMeldekortTilBeslutter(
+                    SendMeldekortTilBeslutterKommando(
+                        sakId = sak.id,
+                        meldekortId = ikkeUtfyltMeldekort.id,
+                        saksbehandler = ObjectMother.saksbehandler(),
+                        correlationId = correlationId,
+                        navkontor = ObjectMother.navkontor(),
+                        dager = SendMeldekortTilBeslutterKommando.Dager(
+                            dager = dager(
+                                førsteDag,
+                                SPERRET,
+                                SPERRET,
+                                DELTATT_UTEN_LØNN_I_TILTAKET,
+                                DELTATT_UTEN_LØNN_I_TILTAKET,
+                                DELTATT_UTEN_LØNN_I_TILTAKET,
+                                DELTATT_UTEN_LØNN_I_TILTAKET,
+                                IKKE_DELTATT,
+                                IKKE_DELTATT,
+                                DELTATT_UTEN_LØNN_I_TILTAKET,
+                                DELTATT_UTEN_LØNN_I_TILTAKET,
+                                DELTATT_UTEN_LØNN_I_TILTAKET,
+                                DELTATT_UTEN_LØNN_I_TILTAKET,
+                                DELTATT_UTEN_LØNN_I_TILTAKET,
+                                IKKE_DELTATT,
+                                IKKE_DELTATT,
+                            ),
+                        ),
+                    ),
+                ) shouldBeLeft KanIkkeSendeMeldekortTilBeslutter.InnsendteDagerMåMatcheMeldeperiode
+            }
+        }
+    }
+
+    @Test
+    fun `innsendingsperioden kan ikke være etter meldeperioden`() {
+        val correlationId = CorrelationId.generate()
+        runTest {
+            with(TestApplicationContext()) {
+                val tac = this
+                val sak = this.førstegangsbehandlingIverksatt(
+                    periode = Periode(3.januar(2023), 31.januar(2023)),
+                    correlationId = correlationId,
+                )
+                val ikkeUtfyltMeldekort = sak.meldeperioder.ikkeUtfyltMeldekort!!
+                val førsteDag = ikkeUtfyltMeldekort.fraOgMed
+                tac.meldekortContext.sendMeldekortTilBeslutterService.sendMeldekortTilBeslutter(
+                    SendMeldekortTilBeslutterKommando(
+                        sakId = sak.id,
+                        meldekortId = ikkeUtfyltMeldekort.id,
+                        saksbehandler = ObjectMother.saksbehandler(),
+                        correlationId = correlationId,
+                        navkontor = ObjectMother.navkontor(),
+                        dager = SendMeldekortTilBeslutterKommando.Dager(
+                            dager = dager(
+                                førsteDag,
+                                SPERRET,
+                                DELTATT_UTEN_LØNN_I_TILTAKET,
+                                DELTATT_UTEN_LØNN_I_TILTAKET,
+                                DELTATT_UTEN_LØNN_I_TILTAKET,
+                                DELTATT_UTEN_LØNN_I_TILTAKET,
+                                IKKE_DELTATT,
+                                IKKE_DELTATT,
+                                DELTATT_UTEN_LØNN_I_TILTAKET,
+                                DELTATT_UTEN_LØNN_I_TILTAKET,
+                                DELTATT_UTEN_LØNN_I_TILTAKET,
+                                DELTATT_UTEN_LØNN_I_TILTAKET,
+                                DELTATT_UTEN_LØNN_I_TILTAKET,
+                                IKKE_DELTATT,
+                                IKKE_DELTATT,
+                                SPERRET,
+                            ),
+                        ),
+                    ),
+                ) shouldBeLeft KanIkkeSendeMeldekortTilBeslutter.InnsendteDagerMåMatcheMeldeperiode
             }
         }
     }

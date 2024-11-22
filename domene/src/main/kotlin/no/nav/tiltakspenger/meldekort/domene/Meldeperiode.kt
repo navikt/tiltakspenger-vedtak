@@ -10,6 +10,7 @@ import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.libs.tiltak.TiltakstypeSomGirRett
+import no.nav.tiltakspenger.meldekort.domene.KanIkkeSendeMeldekortTilBeslutter.InnsendteDagerMåMatcheMeldeperiode
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.AvklartUtfallForPeriode
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -124,6 +125,9 @@ sealed interface Meldeperiode : List<Meldekortdag> {
         fun tilUtfyltMeldeperiode(
             utfylteDager: NonEmptyList<Meldekortdag.Utfylt>,
         ): Either<KanIkkeSendeMeldekortTilBeslutter, UtfyltMeldeperiode> {
+            if (dager.periode() != utfylteDager.periode()) {
+                return InnsendteDagerMåMatcheMeldeperiode.left()
+            }
             this.dager.zip(utfylteDager).forEach { (dagA, dagB) ->
                 if (dagA is Meldekortdag.Utfylt.Sperret && dagB !is Meldekortdag.Utfylt.Sperret) {
                     log.error { "Kan ikke endre dag fra sperret. Generert base: ${this.dager}. Innsendt: $utfylteDager" }
@@ -177,3 +181,5 @@ private fun Meldeperiode.validerAntallDager(): Either<KanIkkeSendeMeldekortTilBe
         Unit.right()
     }
 }
+
+private fun NonEmptyList<Meldekortdag>.periode() = Periode(this.first().dato, this.last().dato)
