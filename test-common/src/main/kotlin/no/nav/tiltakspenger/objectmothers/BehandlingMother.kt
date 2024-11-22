@@ -322,6 +322,7 @@ suspend fun TestApplicationContext.førstegangsbehandlingIverksatt(
     fnr: Fnr = Fnr.random(),
     saksbehandler: Saksbehandler = saksbehandler(),
     beslutter: Saksbehandler = beslutter(),
+    correlationId: CorrelationId = CorrelationId.generate(),
 ): Sak {
     val tac = this
     val underBeslutning = førstegangsbehandlingUnderBeslutning(
@@ -334,13 +335,13 @@ suspend fun TestApplicationContext.førstegangsbehandlingIverksatt(
         tac.førstegangsbehandlingContext.behandlingService.iverksett(
             behandlingId = underBeslutning.førstegangsbehandling.id,
             beslutter = beslutter,
-            correlationId = CorrelationId.generate(),
+            correlationId = correlationId,
         )
     }
     return this.sakContext.sakService.hentForSakId(
         underBeslutning.id,
         saksbehandler,
-        correlationId = CorrelationId.generate(),
+        correlationId = correlationId,
     ).getOrFail()
 }
 

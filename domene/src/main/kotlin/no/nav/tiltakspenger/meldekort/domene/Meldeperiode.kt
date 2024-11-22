@@ -79,6 +79,8 @@ sealed interface Meldeperiode : List<Meldekortdag> {
 
         override val meldekortId = dager.first().meldekortId
 
+        private val log = mu.KotlinLogging.logger {}
+
         companion object {
             /**
              * @param meldeperiode Perioden meldekortet skal gjelde for. Må være 14 dager, starte på en mandag og slutte på en søndag.
@@ -120,13 +122,23 @@ sealed interface Meldeperiode : List<Meldekortdag> {
         }
 
         fun tilUtfyltMeldeperiode(
-            dager: NonEmptyList<Meldekortdag.Utfylt>,
-        ): Either<KanIkkeSendeMeldekortTilBeslutter.ForMangeDagerUtfylt, UtfyltMeldeperiode> {
+            utfylteDager: NonEmptyList<Meldekortdag.Utfylt>,
+        ): Either<KanIkkeSendeMeldekortTilBeslutter, UtfyltMeldeperiode> {
+            this.dager.zip(utfylteDager).forEach { (dagA, dagB) ->
+                if (dagA is Meldekortdag.Utfylt.Sperret && dagB !is Meldekortdag.Utfylt.Sperret) {
+                    log.error { "Kan ikke endre dag fra sperret. Generert base: ${this.dager}. Innsendt: $utfylteDager" }
+                    return KanIkkeSendeMeldekortTilBeslutter.KanIkkeEndreDagFraSperret.left()
+                }
+                if (dagA !is Meldekortdag.Utfylt.Sperret && dagB is Meldekortdag.Utfylt.Sperret) {
+                    log.error { "Kan ikke endre dag fra til sperret. Generert base: ${this.dager}. Innsendt: $utfylteDager" }
+                    return KanIkkeSendeMeldekortTilBeslutter.KanIkkeEndreDagTilSperret.left()
+                }
+            }
             return validerAntallDager().map {
                 UtfyltMeldeperiode(
                     sakId = sakId,
                     maksDagerMedTiltakspengerForPeriode = maksDagerMedTiltakspengerForPeriode,
-                    dager = dager,
+                    dager = utfylteDager,
                 )
             }
         }

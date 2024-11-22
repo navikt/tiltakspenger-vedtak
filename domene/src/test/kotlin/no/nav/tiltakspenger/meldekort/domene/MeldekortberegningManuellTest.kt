@@ -5,6 +5,7 @@ import no.nav.tiltakspenger.felles.april
 import no.nav.tiltakspenger.felles.februar
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando.Dager.Dag
 import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando.Status.DELTATT_UTEN_LØNN_I_TILTAKET
 import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando.Status.FRAVÆR_SYK
@@ -103,7 +104,8 @@ internal class MeldekortberegningManuellTest {
     @Test
     fun `manuell test av meldekortberegning`() {
         val meldekortBeregning = ObjectMother.beregnMeldekortperioder(
-            perioder = nonEmptyListOf(meldekort1, meldekort2, meldekort3, meldekort4, meldekort5),
+            vurderingsperiode = Periode(29.januar(2024), 7.april(2024)),
+            meldeperioder = nonEmptyListOf(meldekort1, meldekort2, meldekort3, meldekort4, meldekort5),
         )
         for (dag in meldekortBeregning) {
             // TODO post-mvp jah: Vurder og legge til en prettyprint på denne hvis det er nødvendig. Hør med Richard om vi har noe fra før.

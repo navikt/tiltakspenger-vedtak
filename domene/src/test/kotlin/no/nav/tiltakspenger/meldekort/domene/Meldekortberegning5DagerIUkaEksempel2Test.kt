@@ -4,6 +4,7 @@ import arrow.core.nonEmptyListOf
 import no.nav.tiltakspenger.felles.februar
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.meldekort.domene.ReduksjonAvYtelsePåGrunnAvFravær.IngenReduksjon
 import no.nav.tiltakspenger.meldekort.domene.ReduksjonAvYtelsePåGrunnAvFravær.YtelsenFallerBort
 import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando.Status.DELTATT_UTEN_LØNN_I_TILTAKET
@@ -75,6 +76,6 @@ internal class Meldekortberegning5DagerIUkaEksempel2Test {
             meldekort1,
             meldekort2,
             meldekort3,
-        ).assertForventning()
+        ).assertForventning(vurderingsperiode = Periode(1.februar(2024), 26.februar(2024)))
     }
 }

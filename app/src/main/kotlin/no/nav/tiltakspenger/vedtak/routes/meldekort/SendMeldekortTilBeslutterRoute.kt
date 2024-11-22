@@ -4,6 +4,7 @@ import arrow.core.Either
 import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
+import arrow.core.toNonEmptyListOrNull
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -17,7 +18,12 @@ import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.Saksbehandler
-import no.nav.tiltakspenger.meldekort.domene.KanIkkeSendeMeldekortTilBeslutter
+import no.nav.tiltakspenger.meldekort.domene.KanIkkeSendeMeldekortTilBeslutter.ForMangeDagerUtfylt
+import no.nav.tiltakspenger.meldekort.domene.KanIkkeSendeMeldekortTilBeslutter.KanIkkeEndreDagFraSperret
+import no.nav.tiltakspenger.meldekort.domene.KanIkkeSendeMeldekortTilBeslutter.KanIkkeEndreDagTilSperret
+import no.nav.tiltakspenger.meldekort.domene.KanIkkeSendeMeldekortTilBeslutter.KunneIkkeHenteSak
+import no.nav.tiltakspenger.meldekort.domene.KanIkkeSendeMeldekortTilBeslutter.MeldekortperiodenKanIkkeVæreFremITid
+import no.nav.tiltakspenger.meldekort.domene.KanIkkeSendeMeldekortTilBeslutter.MåVæreSaksbehandler
 import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando
 import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando.Dager
 import no.nav.tiltakspenger.meldekort.service.SendMeldekortTilBeslutterService
@@ -70,7 +76,7 @@ private data class Body(
                             else -> throw IllegalArgumentException("Ukjent status: ${dag.status}")
                         },
                     )
-                },
+                }.toNonEmptyListOrNull()!!,
             ),
             meldekortId = meldekortId,
         ).right()
@@ -105,28 +111,28 @@ fun Route.sendMeldekortTilBeslutterRoute(
                         sendMeldekortTilBeslutterService.sendMeldekortTilBeslutter(kommando).fold(
                             ifLeft = {
                                 when (it) {
-                                    is KanIkkeSendeMeldekortTilBeslutter.MeldekortperiodenKanIkkeVæreFremITid -> {
+                                    is MeldekortperiodenKanIkkeVæreFremITid -> {
                                         call.respond400BadRequest(
                                             melding = "Kan ikke sende inn et meldekort før meldekortperioden har begynt.",
                                             kode = "meldekortperioden_kan_ikke_være_frem_i_tid",
                                         )
                                     }
 
-                                    is KanIkkeSendeMeldekortTilBeslutter.MåVæreSaksbehandler -> {
+                                    is MåVæreSaksbehandler -> {
                                         call.respond400BadRequest(
                                             melding = "Kan ikke sende meldekort til beslutter. Krever saksbehandler-rolle.",
                                             kode = "må_være_saksbehandler",
                                         )
                                     }
 
-                                    is KanIkkeSendeMeldekortTilBeslutter.ForMangeDagerUtfylt -> {
+                                    is ForMangeDagerUtfylt -> {
                                         call.respond400BadRequest(
                                             melding = "Kan ikke sende meldekort til beslutter. For mange dager er utfylt. Maks antall for dette meldekortet er ${it.maksDagerMedTiltakspengerForPeriode}, mens antall utfylte dager er ${it.antallDagerUtfylt}.",
                                             kode = "for_mange_dager_utfylt",
                                         )
                                     }
 
-                                    is KanIkkeSendeMeldekortTilBeslutter.KunneIkkeHenteSak -> when (
+                                    is KunneIkkeHenteSak -> when (
                                         val u =
                                             it.underliggende
                                     ) {
@@ -134,6 +140,11 @@ fun Route.sendMeldekortTilBeslutterRoute(
                                             Standardfeil.ikkeTilgang("Må ha en av rollene ${u.kreverEnAvRollene} for å hente sak"),
                                         )
                                     }
+
+                                    KanIkkeEndreDagTilSperret, KanIkkeEndreDagFraSperret -> call.respond400BadRequest(
+                                        melding = "Kan ikke endre dager som er sperret.",
+                                        kode = "kan_ikke_endre_dager_som_er_sperret",
+                                    )
                                 }
                             },
                             ifRight = {
