@@ -95,13 +95,14 @@ interface MeldekortMother {
         startDato: LocalDate,
         meldekortId: MeldekortId,
         tiltakstype: TiltakstypeSomGirRett,
-    ): NonEmptyList<Meldekortdag.Utfylt> =
-        (
+    ): NonEmptyList<Meldekortdag.Utfylt> {
+        return (
             tiltaksdager(startDato, meldekortId, tiltakstype) +
                 ikkeTiltaksdager(startDato.plusDays(5), meldekortId, 2, tiltakstype) +
                 tiltaksdager(startDato.plusDays(7), meldekortId, tiltakstype) +
                 ikkeTiltaksdager(startDato.plusDays(12), meldekortId, 2, tiltakstype)
             ).toNonEmptyListOrNull()!!
+    }
 
     fun tiltaksdager(
         startDato: LocalDate = LocalDate.of(2023, 1, 2),
@@ -140,24 +141,25 @@ interface MeldekortMother {
     }
 
     fun beregnMeldekortperioder(
+        vurderingsperiode: Periode,
         tiltakstype: TiltakstypeSomGirRett = TiltakstypeSomGirRett.GRUPPE_AMO,
         saksbehandler: Saksbehandler = ObjectMother.saksbehandler(),
         sakId: SakId = SakId.random(),
         fnr: Fnr = Fnr.random(),
-        perioder: NonEmptyList<NonEmptyList<Dager.Dag>>,
+        meldeperioder: NonEmptyList<NonEmptyList<Dager.Dag>>,
         rammevedtakId: VedtakId = VedtakId.random(),
         utfallsperioder: Periodisering<AvklartUtfallForPeriode> = Periodisering(
             initiellVerdi = AvklartUtfallForPeriode.OPPFYLT,
-            totalePeriode = Periode(perioder.first().first().dag, perioder.first().last().dag),
+            totalePeriode = vurderingsperiode,
         ),
         navkontor: Navkontor = ObjectMother.navkontor(),
     ): Meldeperioder {
-        val kommandoer = perioder.map { dager ->
+        val kommandoer = meldeperioder.map { meldeperiode ->
             SendMeldekortTilBeslutterKommando(
                 sakId = sakId,
                 meldekortId = MeldekortId.random(),
                 saksbehandler = saksbehandler,
-                dager = Dager(dager),
+                dager = Dager(meldeperiode),
                 correlationId = CorrelationId.generate(),
                 navkontor = navkontor,
             )
@@ -174,7 +176,7 @@ interface MeldekortMother {
                 meldeperiodeId = MeldeperiodeId.fraPeriode(kommandoer.first().periode),
             ).first,
         ) { meldekortperioder, kommando ->
-            meldekortperioder.beregnNesteMeldekort(kommando, fnr)
+            meldekortperioder.beregnNesteMeldekort(vurderingsperiode, kommando, fnr)
         }
     }
 
@@ -190,33 +192,36 @@ interface MeldekortMother {
         meldeperiodeId: MeldeperiodeId = MeldeperiodeId.fraPeriode(kommando.periode),
         utfallsperioder: Periodisering<AvklartUtfallForPeriode>,
         navkontor: Navkontor = ObjectMother.navkontor(),
-    ) = Meldeperioder(
-        tiltakstype = tiltakstype,
-        verdi = nonEmptyListOf(
-            Meldekort.IkkeUtfyltMeldekort(
-                id = meldekortId,
-                meldeperiodeId = meldeperiodeId,
-                sakId = sakId,
-                saksnummer = saksnummer,
-                fnr = fnr,
-                rammevedtakId = rammevedtakId,
-                forrigeMeldekortId = null,
-                opprettet = opprettet,
-                tiltakstype = tiltakstype,
-                navkontor = navkontor,
-                meldeperiode = Meldeperiode.IkkeUtfyltMeldeperiode.fraPeriode(
+    ): Pair<Meldeperioder, Meldekort.UtfyltMeldekort> {
+        return Meldeperioder(
+            tiltakstype = tiltakstype,
+            verdi = nonEmptyListOf(
+                Meldekort.IkkeUtfyltMeldekort(
+                    id = meldekortId,
+                    meldeperiodeId = meldeperiodeId,
                     sakId = sakId,
-                    meldeperiode = kommando.periode,
-                    utfallsperioder = utfallsperioder,
+                    saksnummer = saksnummer,
+                    fnr = fnr,
+                    rammevedtakId = rammevedtakId,
+                    forrigeMeldekortId = null,
+                    opprettet = opprettet,
                     tiltakstype = tiltakstype,
-                    meldekortId = meldekortId,
-                    maksDagerMedTiltakspengerForPeriode = kommando.dager.size,
+                    navkontor = navkontor,
+                    meldeperiode = Meldeperiode.IkkeUtfyltMeldeperiode.fraPeriode(
+                        sakId = sakId,
+                        meldeperiode = kommando.periode,
+                        utfallsperioder = utfallsperioder,
+                        tiltakstype = tiltakstype,
+                        meldekortId = meldekortId,
+                        maksDagerMedTiltakspengerForPeriode = kommando.dager.size,
+                    ),
                 ),
             ),
-        ),
-    ).sendTilBeslutter(kommando).getOrFail()
+        ).sendTilBeslutter(kommando).getOrFail()
+    }
 
     fun Meldeperioder.beregnNesteMeldekort(
+        vurderingsperiode: Periode,
         kommando: SendMeldekortTilBeslutterKommando,
         fnr: Fnr,
         saksnummer: Saksnummer = Saksnummer.genererSaknummer(løpenr = "1001"),
@@ -230,7 +235,7 @@ interface MeldekortMother {
         val tiltakstype = TiltakstypeSomGirRett.GRUPPE_AMO
         val utfallsperioder = Periodisering(
             initiellVerdi = AvklartUtfallForPeriode.OPPFYLT,
-            totalePeriode = Periode(kommando.dager.first().dag, kommando.dager.last().dag),
+            totalePeriode = vurderingsperiode,
         )
         return Meldeperioder(
             tiltakstype = tiltakstype,
@@ -284,7 +289,7 @@ fun Meldekort.IkkeUtfyltMeldekort.tilSendMeldekortTilBeslutterKommando(
                 }
             },
         )
-    }
+    }.toNonEmptyListOrNull()!!
     return SendMeldekortTilBeslutterKommando(
         sakId = sakId,
         meldekortId = id,

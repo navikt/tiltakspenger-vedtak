@@ -5,6 +5,7 @@ import no.nav.tiltakspenger.felles.april
 import no.nav.tiltakspenger.felles.februar
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.mars
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.meldekort.domene.ReduksjonAvYtelsePåGrunnAvFravær.IngenReduksjon
 import no.nav.tiltakspenger.meldekort.domene.ReduksjonAvYtelsePåGrunnAvFravær.Reduksjon
 import no.nav.tiltakspenger.meldekort.domene.ReduksjonAvYtelsePåGrunnAvFravær.YtelsenFallerBort
@@ -115,6 +116,6 @@ internal class Meldekortberegning5DagerIUkaEksempel5ArenaTest {
             meldekort3,
             meldekort4,
             meldekort5,
-        ).assertForventning()
+        ).assertForventning(vurderingsperiode = Periode(1.februar(2024), 31.mars(2024)))
     }
 }

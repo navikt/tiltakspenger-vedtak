@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.meldekort.domene
 
+import arrow.core.NonEmptyList
 import no.nav.tiltakspenger.felles.Navkontor
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.MeldekortId
@@ -28,7 +29,7 @@ class SendMeldekortTilBeslutterKommando(
     val periode: Periode = Periode(dager.first().dag, dager.last().dag)
 
     data class Dager(
-        val dager: List<Dag>,
+        val dager: NonEmptyList<Dag>,
     ) : List<Dag> by dager {
         val antallDager: Int = dager.size
         val antallDagerMedFraværEllerDeltatt: Int = dager.count { it.status.deltattEllerFravær() }
