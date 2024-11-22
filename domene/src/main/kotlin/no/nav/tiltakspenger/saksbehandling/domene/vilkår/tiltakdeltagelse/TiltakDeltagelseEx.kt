@@ -6,7 +6,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
 fun Tiltak.tilRegisterSaksopplysning(): TiltakDeltagelseSaksopplysning.Register =
     TiltakDeltagelseSaksopplysning.Register(
         tiltaksnavn = this.typeNavn,
-        eksternTiltakId = this.eksternId,
+        eksternDeltagelseId = this.eksternDeltagelseId,
         gjennomføringId = this.gjennomføringId,
         deltagelsePeriode = this.deltakelsesperiode,
         kilde = this.kilde,

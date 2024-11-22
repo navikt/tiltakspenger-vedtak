@@ -8,7 +8,7 @@ fun Tiltak.tilStønadsdagerRegisterSaksopplysning(): StønadsdagerSaksopplysning
     if (antallDagerPerUke != null) {
         StønadsdagerSaksopplysning.Register(
             tiltakNavn = typeNavn,
-            eksternTiltakId = eksternId,
+            eksternDeltagelseId = eksternDeltagelseId,
             gjennomføringId = gjennomføringId,
             // Vi får per nå antall dager per uke, men ønsker å ha antall dager per meldeperiode.
             // Ettersom vi kan få desimaler fra komet gjør vi denne om til en int etter sammenleggingen.
@@ -20,7 +20,7 @@ fun Tiltak.tilStønadsdagerRegisterSaksopplysning(): StønadsdagerSaksopplysning
     } else if (deltakelseProsent != null) {
         StønadsdagerSaksopplysning.Register(
             tiltakNavn = typeNavn,
-            eksternTiltakId = eksternId,
+            eksternDeltagelseId = eksternDeltagelseId,
             gjennomføringId = gjennomføringId,
             // B: Så på tidligere kode som gjorde dette, kan deltakelseprosent være noe annet enn 100?
             antallDager = if (deltakelseProsent == 100f) 5 else throw IllegalStateException("Forventet 100% deltakelse. Vi støtter ikke lavere prosenter enn dette i MVP."),

@@ -174,7 +174,7 @@ fun TestApplicationContext.nySøknad(
         personopplysninger = personopplysningerFraSøknad,
         tidsstempelHosOss = tidsstempelHosOss,
         søknadstiltak = søknadstiltak(
-            id = tiltak.eksternId,
+            id = tiltak.eksternDeltagelseId,
             deltakelseFom = periode.fraOgMed,
             deltakelseTom = periode.tilOgMed,
 
@@ -217,7 +217,7 @@ suspend fun TestApplicationContext.førstegangsbehandlingUavklart(
         fnr = fnr,
         personopplysninger = personopplysningerFraSøknad,
         søknadstiltak = søknadstiltak(
-            id = tiltak.eksternId,
+            id = tiltak.eksternDeltagelseId,
             deltakelseFom = periode.fraOgMed,
             deltakelseTom = periode.tilOgMed,
 

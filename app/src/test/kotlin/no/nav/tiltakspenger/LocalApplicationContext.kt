@@ -5,7 +5,7 @@ import no.nav.tiltakspenger.common.JournalpostIdGenerator
 import no.nav.tiltakspenger.fakes.clients.DokdistFakeGateway
 import no.nav.tiltakspenger.fakes.clients.FellesFakeAdressebeskyttelseKlient
 import no.nav.tiltakspenger.fakes.clients.FellesFakeSkjermingsklient
-import no.nav.tiltakspenger.fakes.clients.GenererFakeMeldekortPdfGateway
+import no.nav.tiltakspenger.fakes.clients.GenererFakeUtbetalingsvedtakGateway
 import no.nav.tiltakspenger.fakes.clients.GenererFakeVedtaksbrevGateway
 import no.nav.tiltakspenger.fakes.clients.JournalførFakeMeldekortGateway
 import no.nav.tiltakspenger.fakes.clients.JournalførFakeVedtaksbrevGateway
@@ -43,7 +43,7 @@ class LocalApplicationContext : ApplicationContext(gitHash = "fake-git-hash") {
     private val utbetalingGatewayFake = UtbetalingFakeGateway()
     private val tiltakGatewayFake = TiltakFakeGateway()
     private val personGatewayFake = PersonFakeGateway()
-    private val genererFakeMeldekortPdfGateway = GenererFakeMeldekortPdfGateway()
+    private val genererFakeUtbetalingsvedtakGateway = GenererFakeUtbetalingsvedtakGateway()
     private val genererFakeVedtaksbrevGateway = GenererFakeVedtaksbrevGateway()
     private val journalførFakeMeldekortGateway = JournalførFakeMeldekortGateway(journalpostIdGenerator)
     private val journalførFakeVedtaksbrevGateway = JournalførFakeVedtaksbrevGateway(journalpostIdGenerator)
@@ -105,7 +105,7 @@ class LocalApplicationContext : ApplicationContext(gitHash = "fake-git-hash") {
         object : DokumentContext(entraIdSystemtokenClient) {
             override val journalførMeldekortGateway = journalførFakeMeldekortGateway
             override val journalførVedtaksbrevGateway = journalførFakeVedtaksbrevGateway
-            override val genererMeldekortPdfGateway = genererFakeMeldekortPdfGateway
+            override val genererUtbetalingsvedtakGateway = genererFakeUtbetalingsvedtakGateway
             override val genererVedtaksbrevGateway = genererFakeVedtaksbrevGateway
         }
     }
@@ -158,9 +158,10 @@ class LocalApplicationContext : ApplicationContext(gitHash = "fake-git-hash") {
     override val utbetalingContext by lazy {
         object : UtbetalingContext(
             sessionFactory = sessionFactory,
-            genererMeldekortPdfGateway = genererFakeMeldekortPdfGateway,
+            genererUtbetalingsvedtakGateway = genererFakeUtbetalingsvedtakGateway,
             journalførMeldekortGateway = journalførFakeMeldekortGateway,
             entraIdSystemtokenClient = entraIdSystemtokenClient,
+            sakRepo = sakContext.sakRepo,
             navIdentClient = personContext.navIdentClient,
         ) {
             override val utbetalingGateway = utbetalingGatewayFake

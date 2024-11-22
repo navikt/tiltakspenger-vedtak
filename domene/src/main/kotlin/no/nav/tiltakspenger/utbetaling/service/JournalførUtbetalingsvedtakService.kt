@@ -1,13 +1,15 @@
 package no.nav.tiltakspenger.utbetaling.service
 
 import arrow.core.Either
+import arrow.core.getOrElse
 import mu.KotlinLogging
 import no.nav.tiltakspenger.felles.NavIdentClient
 import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.CorrelationId
-import no.nav.tiltakspenger.meldekort.ports.GenererMeldekortPdfGateway
+import no.nav.tiltakspenger.meldekort.ports.GenererUtbetalingsvedtakGateway
 import no.nav.tiltakspenger.meldekort.ports.JournalførMeldekortGateway
+import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.utbetaling.ports.UtbetalingsvedtakRepo
 
 /**
@@ -17,8 +19,9 @@ import no.nav.tiltakspenger.utbetaling.ports.UtbetalingsvedtakRepo
 class JournalførUtbetalingsvedtakService(
     private val journalførMeldekortGateway: JournalførMeldekortGateway,
     private val utbetalingsvedtakRepo: UtbetalingsvedtakRepo,
-    private val genererMeldekortPdfGateway: GenererMeldekortPdfGateway,
+    private val genererUtbetalingsvedtakGateway: GenererUtbetalingsvedtakGateway,
     private val navIdentClient: NavIdentClient,
+    private val sakRepo: SakRepo,
 ) {
     private val log = KotlinLogging.logger { }
 
@@ -27,11 +30,16 @@ class JournalførUtbetalingsvedtakService(
             utbetalingsvedtakRepo.hentDeSomSkalJournalføres().forEach { utbetalingsvedtak ->
                 log.info { "Journalfører utbetalingsvedtak. Saksnummer: ${utbetalingsvedtak.saksnummer}, sakId: ${utbetalingsvedtak.sakId}, utbetalingsvedtakId: ${utbetalingsvedtak.id}" }
                 Either.catch {
+                    val rammevedtak = sakRepo.hentForSakId(utbetalingsvedtak.sakId)!!.rammevedtak!!
                     val pdfOgJson =
-                        genererMeldekortPdfGateway.genererMeldekortPdf(
+                        genererUtbetalingsvedtakGateway.genererUtbetalingsvedtak(
                             utbetalingsvedtak,
                             hentSaksbehandlersNavn = navIdentClient::hentNavnForNavIdent,
-                        )
+                            tiltaksnavn = rammevedtak.behandling.tiltaksnavn,
+                            eksternDeltagelseId = rammevedtak.behandling.tiltaksid,
+                            eksternGjennomføringId = rammevedtak.behandling.gjennomføringId,
+
+                        ).getOrElse { return@forEach }
                     log.info { "Pdf generert for utbetalingsvedtak. Saksnummer: ${utbetalingsvedtak.saksnummer}, sakId: ${utbetalingsvedtak.sakId}, utbetalingsvedtakId: ${utbetalingsvedtak.id}" }
                     val journalpostId = journalførMeldekortGateway.journalførMeldekort(
                         meldekort = utbetalingsvedtak.meldekort,

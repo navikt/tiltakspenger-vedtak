@@ -1,7 +1,7 @@
 package no.nav.tiltakspenger.common
 
 import no.nav.tiltakspenger.fakes.clients.DokdistFakeGateway
-import no.nav.tiltakspenger.fakes.clients.GenererFakeMeldekortPdfGateway
+import no.nav.tiltakspenger.fakes.clients.GenererFakeUtbetalingsvedtakGateway
 import no.nav.tiltakspenger.fakes.clients.GenererFakeVedtaksbrevGateway
 import no.nav.tiltakspenger.fakes.clients.JournalførFakeMeldekortGateway
 import no.nav.tiltakspenger.fakes.clients.JournalførFakeVedtaksbrevGateway
@@ -71,7 +71,7 @@ class TestApplicationContext(
     private val behandlingFakeRepo = BehandlingFakeRepo()
     private val personGatewayFake = PersonFakeGateway()
     private val tilgangsstyringFakeGateway = TilgangsstyringFakeGateway()
-    private val genererFakeMeldekortPdfGateway = GenererFakeMeldekortPdfGateway()
+    private val genererFakeMeldekortPdfGateway = GenererFakeUtbetalingsvedtakGateway()
     private val genererFakeVedtaksbrevGateway = GenererFakeVedtaksbrevGateway()
     private val journalførFakeMeldekortGateway = JournalførFakeMeldekortGateway(journalpostIdGenerator)
     private val journalførFakeVedtaksbrevGateway = JournalførFakeVedtaksbrevGateway(journalpostIdGenerator)
@@ -132,7 +132,7 @@ class TestApplicationContext(
         object : DokumentContext(entraIdSystemtokenClient) {
             override val journalførMeldekortGateway = journalførFakeMeldekortGateway
             override val journalførVedtaksbrevGateway = journalførFakeVedtaksbrevGateway
-            override val genererMeldekortPdfGateway = genererFakeMeldekortPdfGateway
+            override val genererUtbetalingsvedtakGateway = genererFakeMeldekortPdfGateway
             override val genererVedtaksbrevGateway = genererFakeVedtaksbrevGateway
         }
     }
@@ -210,10 +210,11 @@ class TestApplicationContext(
     override val utbetalingContext by lazy {
         object : UtbetalingContext(
             sessionFactory = sessionFactory,
-            genererMeldekortPdfGateway = genererFakeMeldekortPdfGateway,
+            genererUtbetalingsvedtakGateway = genererFakeMeldekortPdfGateway,
             journalførMeldekortGateway = journalførFakeMeldekortGateway,
             entraIdSystemtokenClient = entraIdSystemtokenClient,
             navIdentClient = personContext.navIdentClient,
+            sakRepo = sakContext.sakRepo,
         ) {
             override val utbetalingGateway = utbetalingGatewayFake
             override val utbetalingsvedtakRepo = utbetalingsvedtakFakeRepo

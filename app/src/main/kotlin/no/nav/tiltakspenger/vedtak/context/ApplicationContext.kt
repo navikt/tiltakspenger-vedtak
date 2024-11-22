@@ -76,10 +76,11 @@ open class ApplicationContext(
     open val utbetalingContext by lazy {
         UtbetalingContext(
             sessionFactory = sessionFactory,
-            genererMeldekortPdfGateway = dokumentContext.genererMeldekortPdfGateway,
+            genererUtbetalingsvedtakGateway = dokumentContext.genererUtbetalingsvedtakGateway,
             journalførMeldekortGateway = dokumentContext.journalførMeldekortGateway,
             entraIdSystemtokenClient = entraIdSystemtokenClient,
             navIdentClient = personContext.navIdentClient,
+            sakRepo = sakContext.sakRepo,
         )
     }
     open val meldekortContext by lazy {

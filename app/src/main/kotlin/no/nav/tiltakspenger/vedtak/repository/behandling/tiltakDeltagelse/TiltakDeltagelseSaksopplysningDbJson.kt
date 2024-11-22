@@ -21,7 +21,7 @@ internal data class TiltakDeltagelseSaksopplysningDbJson(
     fun toDomain(): TiltakDeltagelseSaksopplysning =
         TiltakDeltagelseSaksopplysning.Register(
             tiltaksnavn = tiltakNavn,
-            eksternTiltakId = eksternTiltakId,
+            eksternDeltagelseId = eksternTiltakId,
             gjennomføringId = gjennomføringId,
             tidsstempel = LocalDateTime.parse(tidsstempel),
             deltagelsePeriode = deltagelsePeriode.toDomain(),
@@ -35,7 +35,7 @@ internal data class TiltakDeltagelseSaksopplysningDbJson(
 internal fun TiltakDeltagelseSaksopplysning.toDbJson(): TiltakDeltagelseSaksopplysningDbJson =
     TiltakDeltagelseSaksopplysningDbJson(
         tiltakNavn = tiltaksnavn,
-        eksternTiltakId = eksternTiltakId,
+        eksternTiltakId = eksternDeltagelseId,
         gjennomføringId = gjennomføringId,
         tidsstempel = tidsstempel.toString(),
         deltagelsePeriode = deltagelsePeriode.toDbJson(),

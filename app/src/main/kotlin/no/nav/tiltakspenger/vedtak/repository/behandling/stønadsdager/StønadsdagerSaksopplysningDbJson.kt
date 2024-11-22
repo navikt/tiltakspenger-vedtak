@@ -19,7 +19,7 @@ internal data class StønadsdagerSaksopplysningDbJson(
     fun toDomain(): StønadsdagerSaksopplysning =
         StønadsdagerSaksopplysning.Register(
             tiltakNavn = tiltakNavn,
-            eksternTiltakId = eksternTiltakId,
+            eksternDeltagelseId = eksternTiltakId,
             gjennomføringId = gjennomføringId,
             antallDager = antallDager,
             tidsstempel = LocalDateTime.parse(tidsstempel),
@@ -31,7 +31,7 @@ internal data class StønadsdagerSaksopplysningDbJson(
 internal fun StønadsdagerSaksopplysning.toDbJson(): StønadsdagerSaksopplysningDbJson =
     StønadsdagerSaksopplysningDbJson(
         tiltakNavn = tiltakNavn,
-        eksternTiltakId = eksternTiltakId,
+        eksternTiltakId = eksternDeltagelseId,
         gjennomføringId = gjennomføringId,
         antallDager = antallDager,
         tidsstempel = tidsstempel.toString(),
