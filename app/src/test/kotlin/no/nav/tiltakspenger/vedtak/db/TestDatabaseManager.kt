@@ -117,8 +117,6 @@ internal class TestDatabaseManager {
             .encoding("UTF-8")
             .locations("db/migration")
             .dataSource(dataSource)
-            .cleanDisabled(false)
-            .cleanOnValidationError(true)
             .load()
             .migrate()
     }
