@@ -27,6 +27,9 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 import java.time.LocalDate
 import java.time.LocalDateTime
 
+/**
+ * Unikt for førstegangsbehandling: Søknad?
+ */
 data class Førstegangsbehandling(
     override val id: BehandlingId,
     override val sakId: SakId,
