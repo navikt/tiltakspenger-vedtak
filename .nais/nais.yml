@@ -76,7 +76,7 @@ spec:
         - host: {{ urlMicrosoftGraphApi }}
     inbound:
       rules:
-        - application: tiltakspenger-saksbehandler
+        - application: tiltakspenger-saksbehandling
         - application: tiltakspenger-meldekort-api
         - application: tiltakspenger-datadeling
           permissions:
