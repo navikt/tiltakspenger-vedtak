@@ -4,7 +4,7 @@ val mockkVersion = "1.13.13"
 val testContainersVersion = "1.20.4"
 val felleslibVersion = "0.0.285"
 val poaoTilgangVersjon = "2024.11.26_08.36-ad014162ce23"
-val iverksettVersjon = "1.0_20241029145217_29f9f5d"
+val iverksettVersjon = "1.0_20241126095338_e7e661d"
 val kotlinxCoroutinesVersion = "1.9.0"
 
 plugins {
