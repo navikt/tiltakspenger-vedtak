@@ -7,6 +7,7 @@ import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.Navkontor
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
+import no.nav.tiltakspenger.libs.common.MeldeperiodeId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.VedtakId
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
@@ -15,7 +16,6 @@ import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFacto
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldekort.IkkeUtfyltMeldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldekort.UtfyltMeldekort
-import no.nav.tiltakspenger.meldekort.domene.MeldeperiodeId
 import no.nav.tiltakspenger.meldekort.domene.Meldeperioder
 import no.nav.tiltakspenger.meldekort.domene.tilMeldekortperioder
 import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo

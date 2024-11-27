@@ -9,6 +9,7 @@ import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
+import no.nav.tiltakspenger.libs.common.MeldeperiodeId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.Saksbehandler
 import no.nav.tiltakspenger.libs.common.VedtakId
@@ -21,7 +22,6 @@ import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.meldekort.domene.MeldekortStatus
 import no.nav.tiltakspenger.meldekort.domene.Meldekortdag
 import no.nav.tiltakspenger.meldekort.domene.Meldeperiode
-import no.nav.tiltakspenger.meldekort.domene.MeldeperiodeId
 import no.nav.tiltakspenger.meldekort.domene.Meldeperioder
 import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando
 import no.nav.tiltakspenger.meldekort.domene.SendMeldekortTilBeslutterKommando.Dager
