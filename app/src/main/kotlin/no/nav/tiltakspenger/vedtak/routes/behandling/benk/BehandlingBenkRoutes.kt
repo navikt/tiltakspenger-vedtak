@@ -18,6 +18,7 @@ import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.sak.KanIkkeHenteSaksoversikt
 import no.nav.tiltakspenger.saksbehandling.service.sak.KanIkkeStarteFørstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
+import no.nav.tiltakspenger.saksbehandling.service.sak.StartRevurderingService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLINGER_PATH
@@ -39,6 +40,7 @@ fun Route.behandlingBenkRoutes(
     behandlingService: BehandlingService,
     sakService: SakService,
     auditService: AuditService,
+    startRevurderingService: StartRevurderingService,
 ) {
     val logger = KotlinLogging.logger {}
 
@@ -134,4 +136,6 @@ fun Route.behandlingBenkRoutes(
             )
         }
     }
+
+    startRevurderingRoute(tokenService, startRevurderingService, auditService)
 }

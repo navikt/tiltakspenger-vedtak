@@ -58,8 +58,8 @@ class KvpRoutesTest {
                     routing {
                         kvpRoutes(
                             tokenService = tac.tokenService,
-                            kvpVilkårService = tac.førstegangsbehandlingContext.kvpVilkårService,
-                            behandlingService = tac.førstegangsbehandlingContext.behandlingService,
+                            kvpVilkårService = tac.behandlingContext.kvpVilkårService,
+                            behandlingService = tac.behandlingContext.behandlingService,
                             auditService = tac.personContext.auditService,
                         )
                     }
@@ -97,8 +97,8 @@ class KvpRoutesTest {
                     routing {
                         kvpRoutes(
                             tokenService = tac.tokenService,
-                            kvpVilkårService = tac.førstegangsbehandlingContext.kvpVilkårService,
-                            behandlingService = tac.førstegangsbehandlingContext.behandlingService,
+                            kvpVilkårService = tac.behandlingContext.kvpVilkårService,
+                            behandlingService = tac.behandlingContext.behandlingService,
                             auditService = tac.personContext.auditService,
                         )
                     }

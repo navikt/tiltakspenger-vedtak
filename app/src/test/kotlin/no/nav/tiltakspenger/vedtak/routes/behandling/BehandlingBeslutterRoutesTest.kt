@@ -32,7 +32,7 @@ class BehandlingBeslutterRoutesTest {
                     jacksonSerialization()
                     routing {
                         behandlingBeslutterRoutes(
-                            behandlingService = tac.førstegangsbehandlingContext.behandlingService,
+                            behandlingService = tac.behandlingContext.behandlingService,
                             auditService = tac.personContext.auditService,
                             tokenService = tac.tokenService,
                         )
@@ -51,7 +51,7 @@ class BehandlingBeslutterRoutesTest {
                     status shouldBe HttpStatusCode.OK
                 }
             }
-            tac.førstegangsbehandlingContext.behandlingRepo.hent(behandlingId).attesteringer.single().let {
+            tac.behandlingContext.behandlingRepo.hent(behandlingId).attesteringer.single().let {
                 it shouldBe
                     Attestering(
                         // Ignorerer id+tidspunkt

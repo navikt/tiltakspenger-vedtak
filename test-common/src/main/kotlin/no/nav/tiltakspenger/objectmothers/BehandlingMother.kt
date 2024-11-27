@@ -252,7 +252,7 @@ suspend fun TestApplicationContext.førstegangsbehandlingVilkårsvurdert(
         fnr = fnr,
         saksbehandler = saksbehandler,
     )
-    this.førstegangsbehandlingContext.livsoppholdVilkårService.leggTilSaksopplysning(
+    this.behandlingContext.livsoppholdVilkårService.leggTilSaksopplysning(
         LeggTilLivsoppholdSaksopplysningCommand(
             behandlingId = uavklart.førstegangsbehandling.id,
             saksbehandler = saksbehandler,
@@ -282,7 +282,7 @@ suspend fun TestApplicationContext.førstegangsbehandlingTilBeslutter(
         saksbehandler = saksbehandler,
     )
 
-    this.førstegangsbehandlingContext.behandlingService.sendTilBeslutter(
+    this.behandlingContext.behandlingService.sendTilBeslutter(
         vilkårsvurdert.førstegangsbehandling.id,
         saksbehandler,
         correlationId = CorrelationId.generate(),
@@ -305,7 +305,7 @@ suspend fun TestApplicationContext.førstegangsbehandlingUnderBeslutning(
         fnr = fnr,
         saksbehandler = saksbehandler,
     )
-    this.førstegangsbehandlingContext.behandlingService.taBehandling(
+    this.behandlingContext.behandlingService.taBehandling(
         vilkårsvurdert.førstegangsbehandling.id,
         beslutter,
         correlationId = CorrelationId.generate(),
@@ -332,7 +332,7 @@ suspend fun TestApplicationContext.førstegangsbehandlingIverksatt(
         beslutter = beslutter,
     )
     runBlocking {
-        tac.førstegangsbehandlingContext.behandlingService.iverksett(
+        tac.behandlingContext.behandlingService.iverksett(
             behandlingId = underBeslutning.førstegangsbehandling.id,
             beslutter = beslutter,
             correlationId = correlationId,

@@ -139,7 +139,7 @@ class LocalApplicationContext : ApplicationContext(gitHash = "fake-git-hash") {
             personService = personContext.personService,
         ) {}
     }
-    override val førstegangsbehandlingContext by lazy {
+    override val behandlingContext by lazy {
         object : FørstegangsbehandlingContext(
             sessionFactory = sessionFactory,
             meldekortRepo = meldekortContext.meldekortRepo,
@@ -153,6 +153,7 @@ class LocalApplicationContext : ApplicationContext(gitHash = "fake-git-hash") {
             tilgangsstyringService = personContext.tilgangsstyringService,
             dokdistGateway = dokdistFakeGateway,
             navIdentClient = personContext.navIdentClient,
+            sakService = sakContext.sakService,
         ) {}
     }
     override val utbetalingContext by lazy {

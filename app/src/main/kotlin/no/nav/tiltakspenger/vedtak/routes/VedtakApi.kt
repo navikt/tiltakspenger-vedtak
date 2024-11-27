@@ -45,22 +45,23 @@ internal fun Application.vedtakApi(
         healthRoutes()
         saksbehandlerRoutes(applicationContext.tokenService)
         behandlingRoutes(
-            behandlingService = applicationContext.førstegangsbehandlingContext.behandlingService,
+            behandlingService = applicationContext.behandlingContext.behandlingService,
             sakService = applicationContext.sakContext.sakService,
-            kvpVilkårService = applicationContext.førstegangsbehandlingContext.kvpVilkårService,
-            livsoppholdVilkårService = applicationContext.førstegangsbehandlingContext.livsoppholdVilkårService,
+            kvpVilkårService = applicationContext.behandlingContext.kvpVilkårService,
+            livsoppholdVilkårService = applicationContext.behandlingContext.livsoppholdVilkårService,
             auditService = applicationContext.personContext.auditService,
             tokenService = applicationContext.tokenService,
         )
         behandlingBenkRoutes(
             tokenService = applicationContext.tokenService,
-            behandlingService = applicationContext.førstegangsbehandlingContext.behandlingService,
+            behandlingService = applicationContext.behandlingContext.behandlingService,
             sakService = applicationContext.sakContext.sakService,
             auditService = applicationContext.personContext.auditService,
+            startRevurderingService = applicationContext.behandlingContext.startRevurderingService,
         )
         behandlingBeslutterRoutes(
             tokenService = applicationContext.tokenService,
-            behandlingService = applicationContext.førstegangsbehandlingContext.behandlingService,
+            behandlingService = applicationContext.behandlingContext.behandlingService,
             auditService = applicationContext.personContext.auditService,
         )
         sakRoutes(

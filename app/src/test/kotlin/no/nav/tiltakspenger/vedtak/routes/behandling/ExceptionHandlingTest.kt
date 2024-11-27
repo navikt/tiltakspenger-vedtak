@@ -55,10 +55,11 @@ class ExceptionHandlingTest {
                     configureExceptions()
                     routing {
                         behandlingBenkRoutes(
-                            tokenServiceMock,
-                            mockk<BehandlingServiceImpl>(),
-                            sakService,
-                            mockAuditService,
+                            tokenService = tokenServiceMock,
+                            behandlingService = mockk<BehandlingServiceImpl>(),
+                            sakService = sakService,
+                            auditService = mockAuditService,
+                            startRevurderingService = mockk(),
                         )
                     }
                 }

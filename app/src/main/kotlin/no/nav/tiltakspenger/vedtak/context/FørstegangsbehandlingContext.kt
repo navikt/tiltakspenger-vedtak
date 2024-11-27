@@ -22,6 +22,8 @@ import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphol
 import no.nav.tiltakspenger.saksbehandling.service.distribuering.DistribuerVedtaksbrevService
 import no.nav.tiltakspenger.saksbehandling.service.journalføring.JournalførVedtaksbrevService
 import no.nav.tiltakspenger.saksbehandling.service.person.PersonService
+import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
+import no.nav.tiltakspenger.saksbehandling.service.sak.StartRevurderingService
 import no.nav.tiltakspenger.saksbehandling.service.vedtak.RammevedtakService
 import no.nav.tiltakspenger.saksbehandling.service.vedtak.RammevedtakServiceImpl
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingPostgresRepo
@@ -40,6 +42,7 @@ open class FørstegangsbehandlingContext(
     personService: PersonService,
     dokdistGateway: DokdistGateway,
     navIdentClient: NavIdentClient,
+    sakService: SakService,
 ) {
     open val rammevedtakRepo: RammevedtakRepo by lazy { RammevedtakPostgresRepo(sessionFactory as PostgresSessionFactory) }
     open val behandlingRepo: BehandlingRepo by lazy { BehandlingPostgresRepo(sessionFactory as PostgresSessionFactory) }
@@ -70,6 +73,13 @@ open class FørstegangsbehandlingContext(
         )
     }
     val rammevedtakService: RammevedtakService by lazy { RammevedtakServiceImpl(rammevedtakRepo) }
+    val startRevurderingService: StartRevurderingService by lazy {
+        StartRevurderingService(
+            sakService = sakService,
+            behandlingRepo = behandlingRepo,
+            tilgangsstyringService = tilgangsstyringService,
+        )
+    }
 
     val journalførVedtaksbrevService by lazy {
         JournalførVedtaksbrevService(

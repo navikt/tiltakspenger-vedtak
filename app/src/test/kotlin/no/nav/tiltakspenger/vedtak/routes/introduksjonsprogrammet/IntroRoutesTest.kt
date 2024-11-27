@@ -36,7 +36,7 @@ class IntroRoutesTest {
                     routing {
                         introRoutes(
                             tokenService = tac.tokenService,
-                            behandlingService = tac.førstegangsbehandlingContext.behandlingService,
+                            behandlingService = tac.behandlingContext.behandlingService,
                             auditService = tac.personContext.auditService,
                         )
                     }
@@ -73,7 +73,7 @@ class IntroRoutesTest {
                     routing {
                         introRoutes(
                             tokenService = tac.tokenService,
-                            behandlingService = tac.førstegangsbehandlingContext.behandlingService,
+                            behandlingService = tac.behandlingContext.behandlingService,
                             auditService = tac.personContext.auditService,
                         )
                     }

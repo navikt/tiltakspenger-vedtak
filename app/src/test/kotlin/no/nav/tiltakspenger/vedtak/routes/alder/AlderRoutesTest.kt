@@ -44,7 +44,7 @@ class AlderRoutesTest {
                     jacksonSerialization()
                     routing {
                         alderRoutes(
-                            behandlingService = tac.førstegangsbehandlingContext.behandlingService,
+                            behandlingService = tac.behandlingContext.behandlingService,
                             auditService = tac.personContext.auditService,
                             tokenService = tac.tokenService,
                         )
@@ -81,7 +81,7 @@ class AlderRoutesTest {
                     routing {
                         alderRoutes(
                             tokenService = tac.tokenService,
-                            behandlingService = tac.førstegangsbehandlingContext.behandlingService,
+                            behandlingService = tac.behandlingContext.behandlingService,
                             auditService = tac.personContext.auditService,
                         )
                     }
@@ -121,9 +121,10 @@ class AlderRoutesTest {
                     routing {
                         behandlingBenkRoutes(
                             tokenService = tac.tokenService,
-                            behandlingService = tac.førstegangsbehandlingContext.behandlingService,
+                            behandlingService = tac.behandlingContext.behandlingService,
                             sakService = tac.sakContext.sakService,
                             auditService = tac.personContext.auditService,
+                            startRevurderingService = tac.behandlingContext.startRevurderingService,
                         )
                     }
                 }

@@ -187,7 +187,7 @@ class TestApplicationContext(
         }
     }
 
-    override val førstegangsbehandlingContext by lazy {
+    override val behandlingContext by lazy {
         object : FørstegangsbehandlingContext(
             sessionFactory = sessionFactory,
             meldekortRepo = meldekortFakeRepo,
@@ -201,6 +201,7 @@ class TestApplicationContext(
             tilgangsstyringService = tilgangsstyringFakeGateway,
             dokdistGateway = dokdistFakeGateway,
             navIdentClient = personContext.navIdentClient,
+            sakService = sakContext.sakService,
         ) {
             override val rammevedtakRepo = rammevedtakFakeRepo
             override val behandlingRepo = behandlingFakeRepo

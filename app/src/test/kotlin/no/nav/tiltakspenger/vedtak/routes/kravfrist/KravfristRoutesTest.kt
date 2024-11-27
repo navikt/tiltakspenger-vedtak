@@ -45,7 +45,7 @@ internal class KravfristRoutesTest {
                     routing {
                         kravfristRoutes(
                             tokenService = tac.tokenService,
-                            behandlingService = tac.førstegangsbehandlingContext.behandlingService,
+                            behandlingService = tac.behandlingContext.behandlingService,
                             auditService = tac.personContext.auditService,
                         )
                     }
@@ -83,9 +83,10 @@ internal class KravfristRoutesTest {
                     routing {
                         behandlingBenkRoutes(
                             tokenService = tac.tokenService,
-                            behandlingService = tac.førstegangsbehandlingContext.behandlingService,
+                            behandlingService = tac.behandlingContext.behandlingService,
                             sakService = tac.sakContext.sakService,
                             auditService = tac.personContext.auditService,
+                            startRevurderingService = tac.behandlingContext.startRevurderingService,
                         )
                     }
                 }

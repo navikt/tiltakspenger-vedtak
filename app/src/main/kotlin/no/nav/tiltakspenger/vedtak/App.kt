@@ -64,10 +64,10 @@ internal fun start(
         listOf { correlationId ->
             applicationContext.utbetalingContext.sendUtbetalingerService.send(correlationId)
             applicationContext.utbetalingContext.journalførUtbetalingsvedtakService.journalfør(correlationId)
-            applicationContext.førstegangsbehandlingContext.journalførVedtaksbrevService.journalfør(
+            applicationContext.behandlingContext.journalførVedtaksbrevService.journalfør(
                 correlationId,
             )
-            applicationContext.førstegangsbehandlingContext.distribuerVedtaksbrevService.distribuer(
+            applicationContext.behandlingContext.distribuerVedtaksbrevService.distribuer(
                 correlationId,
             )
             applicationContext.sendTilDatadelingService.send(correlationId, Configuration.isNais())

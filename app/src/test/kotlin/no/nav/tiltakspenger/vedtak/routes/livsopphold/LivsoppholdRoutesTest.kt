@@ -51,8 +51,8 @@ class LivsoppholdRoutesTest {
                     routing {
                         livsoppholdRoutes(
                             tokenService = tac.tokenService,
-                            livsoppholdVilkårService = tac.førstegangsbehandlingContext.livsoppholdVilkårService,
-                            behandlingService = tac.førstegangsbehandlingContext.behandlingService,
+                            livsoppholdVilkårService = tac.behandlingContext.livsoppholdVilkårService,
+                            behandlingService = tac.behandlingContext.behandlingService,
                             auditService = tac.personContext.auditService,
                         )
                     }
@@ -117,8 +117,8 @@ class LivsoppholdRoutesTest {
                     routing {
                         livsoppholdRoutes(
                             tokenService = tac.tokenService,
-                            livsoppholdVilkårService = tac.førstegangsbehandlingContext.livsoppholdVilkårService,
-                            behandlingService = tac.førstegangsbehandlingContext.behandlingService,
+                            livsoppholdVilkårService = tac.behandlingContext.livsoppholdVilkårService,
+                            behandlingService = tac.behandlingContext.behandlingService,
                             auditService = tac.personContext.auditService,
                         )
                     }
@@ -154,8 +154,8 @@ class LivsoppholdRoutesTest {
                     routing {
                         livsoppholdRoutes(
                             tokenService = tac.tokenService,
-                            livsoppholdVilkårService = tac.førstegangsbehandlingContext.livsoppholdVilkårService,
-                            behandlingService = tac.førstegangsbehandlingContext.behandlingService,
+                            livsoppholdVilkårService = tac.behandlingContext.livsoppholdVilkårService,
+                            behandlingService = tac.behandlingContext.behandlingService,
                             auditService = tac.personContext.auditService,
                         )
                     }
@@ -296,8 +296,8 @@ class LivsoppholdRoutesTest {
                     routing {
                         livsoppholdRoutes(
                             tokenService = tac.tokenService,
-                            livsoppholdVilkårService = tac.førstegangsbehandlingContext.livsoppholdVilkårService,
-                            behandlingService = tac.førstegangsbehandlingContext.behandlingService,
+                            livsoppholdVilkårService = tac.behandlingContext.livsoppholdVilkårService,
+                            behandlingService = tac.behandlingContext.behandlingService,
                             auditService = tac.personContext.auditService,
                         )
                     }

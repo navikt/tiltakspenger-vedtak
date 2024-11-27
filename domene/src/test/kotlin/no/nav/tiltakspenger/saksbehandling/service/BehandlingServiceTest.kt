@@ -17,7 +17,7 @@ internal class BehandlingServiceTest {
             val sak = this.førstegangsbehandlingTilBeslutter()
             val behandlingId = sak.førstegangsbehandling.id
 
-            this.førstegangsbehandlingContext.behandlingService.taBehandling(
+            this.behandlingContext.behandlingService.taBehandling(
                 behandlingId,
                 saksbehandlerUtenTilgang(),
                 correlationId = CorrelationId.generate(),
@@ -26,7 +26,7 @@ internal class BehandlingServiceTest {
             val sakEksempel2Test = this.sakContext.sakRepo.hentForSakId(sak.id)!!
             println(sakEksempel2Test.førstegangsbehandling)
 
-            this.førstegangsbehandlingContext.behandlingService.taBehandling(
+            this.behandlingContext.behandlingService.taBehandling(
                 behandlingId,
                 beslutter(),
                 correlationId = CorrelationId.generate(),
@@ -40,11 +40,11 @@ internal class BehandlingServiceTest {
             val sak = this.førstegangsbehandlingTilBeslutter()
             val behandlingId = sak.førstegangsbehandling.id
             val beslutter = beslutter()
-            this.førstegangsbehandlingContext.behandlingService.taBehandling(behandlingId, beslutter, correlationId = CorrelationId.generate())
+            this.behandlingContext.behandlingService.taBehandling(behandlingId, beslutter, correlationId = CorrelationId.generate())
 
-            this.førstegangsbehandlingContext.behandlingService.sendTilbakeTilSaksbehandler(behandlingId, saksbehandlerUtenTilgang(), "begrunnelse", correlationId = CorrelationId.generate()).shouldBeLeft()
+            this.behandlingContext.behandlingService.sendTilbakeTilSaksbehandler(behandlingId, saksbehandlerUtenTilgang(), "begrunnelse", correlationId = CorrelationId.generate()).shouldBeLeft()
 
-            this.førstegangsbehandlingContext.behandlingService.sendTilbakeTilSaksbehandler(behandlingId, beslutter, "begrunnelse", correlationId = CorrelationId.generate()).shouldBeRight()
+            this.behandlingContext.behandlingService.sendTilbakeTilSaksbehandler(behandlingId, beslutter, "begrunnelse", correlationId = CorrelationId.generate()).shouldBeRight()
         }
     }
 }

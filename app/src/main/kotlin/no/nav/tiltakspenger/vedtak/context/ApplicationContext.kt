@@ -93,7 +93,7 @@ open class ApplicationContext(
             personService = personContext.personService,
         )
     }
-    open val førstegangsbehandlingContext by lazy {
+    open val behandlingContext by lazy {
         FørstegangsbehandlingContext(
             sessionFactory = sessionFactory,
             meldekortRepo = meldekortContext.meldekortRepo,
@@ -107,6 +107,7 @@ open class ApplicationContext(
             dokdistGateway = dokumentContext.dokdistGateway,
             personService = personContext.personService,
             navIdentClient = personContext.navIdentClient,
+            sakService = sakContext.sakService,
         )
     }
 
@@ -119,8 +120,8 @@ open class ApplicationContext(
 
     val sendTilDatadelingService by lazy {
         SendTilDatadelingService(
-            rammevedtakRepo = førstegangsbehandlingContext.rammevedtakRepo,
-            behandlingRepo = førstegangsbehandlingContext.behandlingRepo,
+            rammevedtakRepo = behandlingContext.rammevedtakRepo,
+            behandlingRepo = behandlingContext.behandlingRepo,
             datadelingGateway = datadelingGateway,
         )
     }
