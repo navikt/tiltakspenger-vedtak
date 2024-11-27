@@ -17,6 +17,7 @@ import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.attesteringer.toAttesteringer
@@ -228,8 +229,8 @@ class BehandlingPostgresRepo(
             val status = string("status")
             val saksbehandler = stringOrNull("saksbehandler")
             val beslutter = stringOrNull("beslutter")
-            val søknad = SøknadDAO.hentForBehandlingId(id, session)
-                ?: throw IllegalStateException("Forventet å finne tilknyttet søøknad for behandlingId $id")
+            // Kan være null for revurderinger. Domeneobjektet passer på dette selv.
+            val søknad: Søknad? = SøknadDAO.hentForBehandlingId(id, session)
 
             val stønadsdager = string("stønadsdager").toStønadsdager()
             val attesteringer = string("attesteringer").toAttesteringer()

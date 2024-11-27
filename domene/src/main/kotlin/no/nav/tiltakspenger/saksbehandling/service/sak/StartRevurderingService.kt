@@ -14,6 +14,7 @@ import no.nav.tiltakspenger.libs.common.Saksbehandler
 import no.nav.tiltakspenger.libs.common.Saksbehandlerrolle
 import no.nav.tiltakspenger.libs.personklient.pdl.TilgangsstyringService
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.StartRevurderingKommando
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.startRevurdering
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 
@@ -26,7 +27,7 @@ class StartRevurderingService(
     suspend fun startRevurdering(
         kommando: StartRevurderingKommando,
     ): Either<KanIkkeStarteRevurdering, Sak> {
-        val (sakId, periode, correlationId, saksbehandler) = kommando
+        val (sakId, _, correlationId, saksbehandler) = kommando
         if (!saksbehandler.erSaksbehandlerEllerBeslutter()) {
             logger.warn { "Navident ${saksbehandler.navIdent} med rollene ${saksbehandler.roller} har ikke tilgang til å starte revurdering på sak ${kommando.sakId}" }
             return KanIkkeStarteRevurdering.HarIkkeTilgang(
@@ -42,12 +43,15 @@ class StartRevurderingService(
                     harRollene = saksbehandler.roller,
                 ).left()
             }
-        sjekkTilgangTilSak(sak.fnr, sak.id, saksbehandler, correlationId)
-        // TODO post-mvp jah: Start en faktisk revurdering.
-        return sak.right()
+        sjekkSaksbehandlersTilgangTilPerson(sak.fnr, sak.id, saksbehandler, correlationId)
+        val (oppdatertSak, behandling) = sak.startRevurdering(kommando).getOrElse {
+            return it.left()
+        }
+        behandlingRepo.lagre(behandling)
+        return oppdatertSak.right()
     }
 
-    private suspend fun sjekkTilgangTilSak(
+    private suspend fun sjekkSaksbehandlersTilgangTilPerson(
         fnr: Fnr,
         sakId: SakId,
         saksbehandler: Saksbehandler,
