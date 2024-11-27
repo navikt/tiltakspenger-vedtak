@@ -24,7 +24,6 @@ import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attesteringsstatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeHenteBehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeIverksetteBehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeSendeTilBeslutter
@@ -33,18 +32,16 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeUnderkjenne
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.opprettVedtak
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.RammevedtakRepo
-import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.StatistikkSakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.StatistikkStønadRepo
 import no.nav.tiltakspenger.saksbehandling.service.person.PersonService
-import no.nav.tiltakspenger.saksbehandling.service.statistikk.sak.iverksettBehandlingMapper
-import no.nav.tiltakspenger.saksbehandling.service.statistikk.stønad.stønadStatistikkMapper
+import no.nav.tiltakspenger.saksbehandling.service.statistikk.sak.genererStatistikkForIverksattFørstegangsbehandling
+import no.nav.tiltakspenger.saksbehandling.service.statistikk.stønad.genererStønadsstatistikkForRammevedtak
 
 class BehandlingServiceImpl(
     private val førstegangsbehandlingRepo: BehandlingRepo,
     private val rammevedtakRepo: RammevedtakRepo,
     private val meldekortRepo: MeldekortRepo,
-    private val sakRepo: SakRepo,
     private val sessionFactory: SessionFactory,
     private val statistikkSakRepo: StatistikkSakRepo,
     private val statistikkStønadRepo: StatistikkStønadRepo,
@@ -136,10 +133,7 @@ class BehandlingServiceImpl(
             logger.warn { "Navident ${beslutter.navIdent} med rollene ${beslutter.roller} har ikke tilgang til å iverksette behandlingen" }
             return KanIkkeIverksetteBehandling.MåVæreBeslutter.left()
         }
-        val behandling = hentBehandling(behandlingId, beslutter, correlationId) as Førstegangsbehandling
-        val sak =
-            sakRepo.hentDetaljerForSakId(behandling.sakId)
-                ?: throw IllegalStateException("Fant ikke sak ${behandling.sakId} under iverksetting")
+        val behandling = hentBehandling(behandlingId, beslutter, correlationId)
         val attestering =
             Attestering(
                 status = Attesteringsstatus.GODKJENT,
@@ -161,14 +155,13 @@ class BehandlingServiceImpl(
 
         require(adressebeskyttelseGradering != null) { "Fant ikke adressebeskyttelse for person. BehandlingId: $behandlingId" }
 
-        val sakStatistikk = iverksettBehandlingMapper(
-            sak = sak,
+        val sakStatistikk = genererStatistikkForIverksattFørstegangsbehandling(
             behandling = iverksattBehandling,
             vedtak = vedtak,
             gjelderKode6 = adressebeskyttelseGradering.harStrengtFortroligAdresse(),
             versjon = gitHash,
         )
-        val stønadStatistikk = stønadStatistikkMapper(sak, vedtak)
+        val stønadStatistikk = genererStønadsstatistikkForRammevedtak(vedtak)
         val førsteMeldekort = vedtak.opprettFørsteMeldekortForEnSak()
 
         // journalføring og dokumentdistribusjon skjer i egen jobb

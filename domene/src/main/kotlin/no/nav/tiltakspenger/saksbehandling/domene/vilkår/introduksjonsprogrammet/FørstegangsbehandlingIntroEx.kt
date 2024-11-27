@@ -1,8 +1,8 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår.introduksjonsprogrammet
 
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 
-fun Førstegangsbehandling.leggTilIntroSaksopplysning(command: LeggTilIntroSaksopplysningCommand): Førstegangsbehandling {
+fun Behandling.leggTilIntroSaksopplysning(command: LeggTilIntroSaksopplysningCommand): Behandling {
     require(saksbehandler == command.saksbehandler.navIdent) {
         "Kan bare legge til saksopplysninger på egen sak. Saksbehandler på behandling: $saksbehandler, utførendeSaksbehandler: ${command.saksbehandler}, behandlingId: ${command.behandlingId}"
     }

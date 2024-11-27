@@ -51,7 +51,6 @@ open class FørstegangsbehandlingContext(
             førstegangsbehandlingRepo = behandlingRepo,
             rammevedtakRepo = rammevedtakRepo,
             meldekortRepo = meldekortRepo,
-            sakRepo = sakRepo,
             sessionFactory = sessionFactory,
             statistikkSakRepo = statistikkSakRepo,
             statistikkStønadRepo = statistikkStønadRepo,

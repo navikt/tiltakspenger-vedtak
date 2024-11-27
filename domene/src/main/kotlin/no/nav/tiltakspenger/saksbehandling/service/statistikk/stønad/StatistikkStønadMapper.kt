@@ -1,31 +1,32 @@
 package no.nav.tiltakspenger.saksbehandling.service.statistikk.stønad
 
-import no.nav.tiltakspenger.saksbehandling.domene.sak.TynnSak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
-import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 
-fun stønadStatistikkMapper(
-    sak: TynnSak,
+/**
+ * Dette må sees på som en rammesak for stønadstatistikk der vi fyller på med utbetalingsinformasjon i tillegg.
+ * TODO statistikk jah: Hør med stønadsstatistikk om vi kun skal sende denne for førstegangsbehandlingen, eller om de trenger noe nytt ved revurdering.
+ */
+fun genererStønadsstatistikkForRammevedtak(
     vedtak: Rammevedtak,
 ): StatistikkStønadDTO {
     val formatter = DateTimeFormatter.ofPattern("yyyyMMdd")
     return StatistikkStønadDTO(
         id = UUID.randomUUID(),
-        brukerId = sak.fnr.verdi,
+        brukerId = vedtak.fnr.verdi,
 
-        sakId = sak.id.toString(),
-        saksnummer = sak.saksnummer.toString(),
+        sakId = vedtak.sakId.toString(),
+        saksnummer = vedtak.saksnummer.toString(),
         // vår sak har ikke resultat, så bruker vedtak sin resultat
         resultat = vedtak.vedtaksType.navn,
-        sakDato = LocalDate.parse(sak.saksnummer.toString().substring(0, 8), formatter),
+        sakDato = vedtak.saksnummer.dato,
         // sak har ikke periode lengre, så bruker vedtak sin periode
         sakFraDato = vedtak.periode.fraOgMed,
         sakTilDato = vedtak.periode.tilOgMed,
         ytelse = "IND",
 
-        søknadId = vedtak.behandling.søknad.id.toString(),
+        søknadId = vedtak.behandling.søknad!!.id.toString(),
         opplysning = "",
         søknadDato = vedtak.behandling.søknad.opprettet.toLocalDate(),
         søknadFraDato = vedtak.behandling.søknad.tiltak.deltakelseFom,

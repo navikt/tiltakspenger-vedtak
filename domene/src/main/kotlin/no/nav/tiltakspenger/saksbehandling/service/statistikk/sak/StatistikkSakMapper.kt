@@ -2,20 +2,23 @@ package no.nav.tiltakspenger.saksbehandling.service.statistikk.sak
 
 import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
-import no.nav.tiltakspenger.saksbehandling.domene.sak.TynnSak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtakstype
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.UtfallForPeriode
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.Vilkårssett
 
-fun opprettBehandlingMapper(sak: TynnSak, behandling: Behandling, gjelderKode6: Boolean, versjon: String) =
-    StatistikkSakDTO(
-        sakId = sak.id.toString(),
-        saksnummer = sak.saksnummer.toString(),
+fun genererStatistikkForNyFørstegangsbehandling(
+    behandling: Behandling,
+    gjelderKode6: Boolean,
+    versjon: String,
+): StatistikkSakDTO {
+    return StatistikkSakDTO(
+        sakId = behandling.sakId.toString(),
+        saksnummer = behandling.saksnummer.toString(),
         behandlingId = behandling.id.toString(),
         relatertBehandlingId = null,
-        ident = sak.fnr.verdi,
-        mottattTidspunkt = behandling.søknad.opprettet,
+        ident = behandling.fnr.verdi,
+        mottattTidspunkt = behandling.søknad!!.opprettet,
         registrertTidspunkt = behandling.opprettet,
         ferdigBehandletTidspunkt = null,
         vedtakTidspunkt = null,
@@ -45,15 +48,21 @@ fun opprettBehandlingMapper(sak: TynnSak, behandling: Behandling, gjelderKode6: 
         versjon = versjon,
         hendelse = "opprettet_behandling",
     )
+}
 
-fun iverksettBehandlingMapper(sak: TynnSak, behandling: Behandling, vedtak: Rammevedtak, gjelderKode6: Boolean, versjon: String): StatistikkSakDTO {
+fun genererStatistikkForIverksattFørstegangsbehandling(
+    behandling: Behandling,
+    vedtak: Rammevedtak,
+    gjelderKode6: Boolean,
+    versjon: String,
+): StatistikkSakDTO {
     return StatistikkSakDTO(
-        sakId = sak.id.toString(),
-        saksnummer = sak.saksnummer.toString(),
+        sakId = behandling.sakId.toString(),
+        saksnummer = behandling.saksnummer.toString(),
         behandlingId = vedtak.behandling.id.toString(),
         relatertBehandlingId = null,
-        ident = sak.fnr.verdi,
-        mottattTidspunkt = behandling.søknad.opprettet,
+        ident = behandling.fnr.verdi,
+        mottattTidspunkt = behandling.søknad!!.opprettet,
         registrertTidspunkt = behandling.opprettet,
         ferdigBehandletTidspunkt = vedtak.opprettet,
         vedtakTidspunkt = vedtak.opprettet,

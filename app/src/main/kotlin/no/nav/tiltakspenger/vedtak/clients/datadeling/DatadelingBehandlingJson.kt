@@ -3,10 +3,10 @@ package no.nav.tiltakspenger.vedtak.clients.datadeling
 import no.nav.tiltakspenger.libs.datadeling.DatadelingBehandlingDTO
 import no.nav.tiltakspenger.libs.datadeling.DatadelingTiltakDTO
 import no.nav.tiltakspenger.libs.json.serialize
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 
-fun Førstegangsbehandling.toBehandlingJson(): String {
+fun Behandling.toBehandlingJson(): String {
     return DatadelingBehandlingDTO(
         behandlingId = id.toString(),
         sakId = sakId.toString(),
@@ -23,7 +23,8 @@ fun Førstegangsbehandling.toBehandlingJson(): String {
             gjennomføringId = gjennomføringId,
         ),
         fnr = fnr.verdi,
-        søknadJournalpostId = søknad.journalpostId,
+        // Skal kun kalles for førstegangsbehandlinger, men det skal sjekkes lenger ut.
+        søknadJournalpostId = søknad!!.journalpostId,
         opprettetTidspunktSaksbehandlingApi = opprettet,
 
     ).let { serialize(it) }

@@ -81,6 +81,6 @@ class SakFakeRepo(
 
     override fun hentForSøknadId(søknadId: SøknadId): Sak? =
         data.get().values.find {
-            it.behandlinger.any { behandling -> behandling.søknad.id == søknadId }
+            it.behandlinger.any { behandling -> behandling.søknad?.id == søknadId }
         }
 }

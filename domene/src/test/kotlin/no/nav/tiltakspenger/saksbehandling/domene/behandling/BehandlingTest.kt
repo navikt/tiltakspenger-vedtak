@@ -9,7 +9,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.godkjentAttestering
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler123
 import org.junit.jupiter.api.Test
 
-internal class FørstegangsbehandlingTest {
+internal class BehandlingTest {
     @Test
     fun `ikke lov å iverksette en behandling uten beslutter`() {
         val innvilget = behandlingTilBeslutterInnvilget(saksbehandler123())

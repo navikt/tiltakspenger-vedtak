@@ -7,7 +7,6 @@ import kotliquery.Session
 import kotliquery.TransactionalSession
 import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
-import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
@@ -18,7 +17,6 @@ import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.attesteringer.toAttesteringer
@@ -37,19 +35,19 @@ class BehandlingPostgresRepo(
     override fun hent(
         behandlingId: BehandlingId,
         sessionContext: SessionContext?,
-    ): Førstegangsbehandling =
+    ): Behandling =
         hentOrNull(behandlingId, sessionContext)
             ?: throw IkkeFunnetException("Behandling med id $behandlingId ikke funnet")
 
     override fun hentOrNull(
         behandlingId: BehandlingId,
         sessionContext: SessionContext?,
-    ): Førstegangsbehandling? =
+    ): Behandling? =
         sessionFactory.withSession(sessionContext) { session ->
             hentOrNull(behandlingId, session)
         }
 
-    override fun hentAlleForIdent(fnr: Fnr): List<Førstegangsbehandling> =
+    override fun hentAlleForIdent(fnr: Fnr): List<Behandling> =
         sessionFactory.withSession { session ->
             session.run(
                 queryOf(
@@ -63,7 +61,7 @@ class BehandlingPostgresRepo(
             )
         }
 
-    override fun hentForSøknadId(søknadId: SøknadId): Førstegangsbehandling? =
+    override fun hentForSøknadId(søknadId: SøknadId): Behandling? =
         sessionFactory.withSession { session ->
             session.run(
                 queryOf(
@@ -96,7 +94,7 @@ class BehandlingPostgresRepo(
         fun hentOrNull(
             behandlingId: BehandlingId,
             session: Session,
-        ): Førstegangsbehandling? =
+        ): Behandling? =
             session.run(
                 queryOf(
                     sqlHentBehandling,
@@ -111,7 +109,7 @@ class BehandlingPostgresRepo(
         internal fun hentForSakId(
             sakId: SakId,
             session: Session,
-        ): NonEmptyList<Førstegangsbehandling> =
+        ): NonEmptyList<Behandling> =
             session
                 .run(
                     queryOf(
@@ -135,8 +133,8 @@ class BehandlingPostgresRepo(
             val sistEndret = hentSistEndret(behandling.id, tx)
             if (sistEndret == null) {
                 opprettBehandling(behandling, tx)
-                if (behandling is Førstegangsbehandling) {
-                    SøknadDAO.knyttSøknadTilBehandling(behandling.id, behandling.søknad.id, behandling.sakId, tx)
+                if (behandling.erFørstegangsbehandling && behandling.søknad != null) {
+                    SøknadDAO.knyttSøknadTilBehandling(behandling.id, behandling.søknad!!.id, behandling.sakId, tx)
                 }
             } else {
                 oppdaterBehandling(sistEndret, behandling, tx)
@@ -170,6 +168,7 @@ class BehandlingPostgresRepo(
                             "iverksatt_tidspunkt" to behandling.iverksattTidspunkt,
                             "sendt_til_beslutning" to behandling.sendtTilBeslutning,
                             "sendt_til_datadeling" to behandling.sendtTilDatadeling,
+                            "behandlingstype" to behandling.behandlingstype.toDbValue(),
                         ),
                     ).asUpdate,
                 )
@@ -183,8 +182,6 @@ class BehandlingPostgresRepo(
             session: Session,
         ) {
             sikkerlogg.info { "Oppretter behandling ${behandling.id}" }
-
-            val nå = nå()
 
             session.run(
                 queryOf(
@@ -205,6 +202,7 @@ class BehandlingPostgresRepo(
                         "sendt_til_beslutning" to behandling.sendtTilBeslutning,
                         "sendt_til_datadeling" to behandling.sendtTilDatadeling,
                         "sist_endret" to behandling.sistEndret,
+                        "behandlingstype" to behandling.behandlingstype.toDbValue(),
                     ),
                 ).asUpdate,
             )
@@ -223,7 +221,7 @@ class BehandlingPostgresRepo(
                 ).map { row -> row.localDateTime("sist_endret") }.asSingle,
             )
 
-        private fun Row.toBehandling(session: Session): Førstegangsbehandling {
+        private fun Row.toBehandling(session: Session): Behandling {
             val id = BehandlingId.fromString(string("id"))
             val sakId = SakId.fromString(string("sak_id"))
             val vurderingsperiode = Periode(localDate("fra_og_med"), localDate("til_og_med"))
@@ -243,7 +241,7 @@ class BehandlingPostgresRepo(
             val opprettet = localDateTime("opprettet")
             val iverksattTidspunkt = localDateTimeOrNull("iverksatt_tidspunkt")
             val sistEndret = localDateTime("sist_endret")
-            return Førstegangsbehandling(
+            return Behandling(
                 id = id,
                 sakId = sakId,
                 saksnummer = saksnummer,
@@ -261,6 +259,7 @@ class BehandlingPostgresRepo(
                 iverksattTidspunkt = iverksattTidspunkt,
                 sendtTilDatadeling = localDateTimeOrNull("sendt_til_datadeling"),
                 sistEndret = sistEndret,
+                behandlingstype = string("behandlingstype").toBehandlingstype(),
             )
         }
 
@@ -282,7 +281,8 @@ class BehandlingPostgresRepo(
                 attesteringer,
                 iverksatt_tidspunkt,
                 sendt_til_beslutning,
-                sendt_til_datadeling
+                sendt_til_datadeling,
+                behandlingstype
             ) values (
                 :id,
                 :sak_id,
@@ -298,7 +298,8 @@ class BehandlingPostgresRepo(
                 to_jsonb(:attesteringer::jsonb),
                 :iverksatt_tidspunkt,
                 :sendt_til_beslutning,
-                :sendt_til_datadeling
+                :sendt_til_datadeling,
+                :behandlingstype
             )
             """.trimIndent()
 
@@ -318,7 +319,8 @@ class BehandlingPostgresRepo(
                 attesteringer = to_jsonb(:attesteringer::json),
                 iverksatt_tidspunkt = :iverksatt_tidspunkt,
                 sendt_til_beslutning = :sendt_til_beslutning,
-                sendt_til_datadeling = :sendt_til_datadeling
+                sendt_til_datadeling = :sendt_til_datadeling,
+                behandlingstype = :behandlingstype
             where id = :id
               and sist_endret = :sist_endret_old
             """.trimIndent()
@@ -344,16 +346,18 @@ class BehandlingPostgresRepo(
             """.trimIndent()
     }
 
-    override fun hentBehandlingerTilDatadeling(limit: Int): List<Førstegangsbehandling> {
+    override fun hentFørstegangsbehandlingerTilDatadeling(limit: Int): List<Behandling> {
         return sessionFactory.withSession { session ->
             session.run(
                 queryOf(
                     """
                     select b.*,sak.saksnummer,sak.ident
-                      from behandling b
-                      join sak on sak.id = b.sak_id
-                      where b.sendt_til_datadeling is null or b.sendt_til_datadeling < b.sist_endret
-                      limit :limit
+                    from behandling b
+                    join sak on sak.id = b.sak_id
+                    where
+                      b.behandlingstype = 'FØRSTEGANGSBEHANDLING' and
+                      (b.sendt_til_datadeling is null or b.sendt_til_datadeling < b.sist_endret)
+                    limit :limit
                     """.trimIndent(),
                     mapOf(
                         "limit" to limit,

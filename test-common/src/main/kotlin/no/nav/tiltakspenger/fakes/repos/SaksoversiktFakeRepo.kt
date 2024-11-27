@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.fakes.repos
 
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.benk.BehandlingEllerSøknadForSaksoversikt
 import no.nav.tiltakspenger.saksbehandling.domene.benk.BehandlingEllerSøknadForSaksoversikt.Behandlingstype.FØRSTEGANGSBEHANDLING
 import no.nav.tiltakspenger.saksbehandling.domene.benk.BehandlingEllerSøknadForSaksoversikt.Behandlingstype.SØKNAD
@@ -14,11 +13,13 @@ class SaksoversiktFakeRepo(
 ) : SaksoversiktRepo {
 
     override fun hentAlle(sessionContext: SessionContext?): Saksoversikt {
-        val behandlinger = behandlingFakeRepo.alle.associateBy { behandling ->
-            behandling.søknad.id
-        }
+        val behandlinger =
+            behandlingFakeRepo.alle.filter { it.erFørstegangsbehandling }
+                .associateBy { behandling ->
+                    behandling.søknad!!.id
+                }
         return søknadFakeRepo.alle.map { søknad ->
-            val førstegangsbehandling = behandlinger[søknad.id] as Førstegangsbehandling?
+            val førstegangsbehandling = behandlinger[søknad.id]
             val erFørstegangsbehandling = førstegangsbehandling != null
             val status = if (erFørstegangsbehandling) {
                 BehandlingEllerSøknadForSaksoversikt.Status.Behandling(førstegangsbehandling!!.status)

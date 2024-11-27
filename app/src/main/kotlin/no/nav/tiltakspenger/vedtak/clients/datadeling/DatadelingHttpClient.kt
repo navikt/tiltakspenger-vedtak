@@ -9,7 +9,7 @@ import no.nav.tiltakspenger.datadeling.ports.FeilVedSendingTilDatadeling
 import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.libs.common.CorrelationId
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import java.net.URI
 import java.net.http.HttpRequest
@@ -60,7 +60,7 @@ class DatadelingHttpClient(
     }
 
     override suspend fun send(
-        behandling: Førstegangsbehandling,
+        behandling: Behandling,
         correlationId: CorrelationId,
     ): Either<FeilVedSendingTilDatadeling, Unit> {
         val jsonPayload = behandling.toBehandlingJson()

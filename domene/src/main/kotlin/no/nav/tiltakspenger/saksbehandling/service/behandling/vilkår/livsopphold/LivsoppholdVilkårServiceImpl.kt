@@ -3,7 +3,7 @@ package no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsoppho
 import arrow.core.Either
 import arrow.core.left
 import mu.KotlinLogging
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.KanIkkeLeggeTilSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.leggTilLivsoppholdSaksopplysning
@@ -17,13 +17,13 @@ class LivsoppholdVilkårServiceImpl(
     val logger = KotlinLogging.logger { }
     override suspend fun leggTilSaksopplysning(
         command: LeggTilLivsoppholdSaksopplysningCommand,
-    ): Either<KanIkkeLeggeTilSaksopplysning, Førstegangsbehandling> {
+    ): Either<KanIkkeLeggeTilSaksopplysning, Behandling> {
         if (!command.saksbehandler.erSaksbehandler()) {
             logger.warn { "Navident ${command.saksbehandler.navIdent} med rollene ${command.saksbehandler.roller} har ikke tilgang til å legge til saksopplysninger" }
             return KanIkkeLeggeTilSaksopplysning.MåVæreSaksbehandler.left()
         }
         val behandling =
-            behandlingService.hentBehandling(command.behandlingId, command.saksbehandler, correlationId = command.correlationId) as Førstegangsbehandling
+            behandlingService.hentBehandling(command.behandlingId, command.saksbehandler, correlationId = command.correlationId)
         return behandling.leggTilLivsoppholdSaksopplysning(command).onRight {
             behandlingRepo.lagre(it)
         }

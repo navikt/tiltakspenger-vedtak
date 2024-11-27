@@ -33,7 +33,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.TiltakGateway
 import no.nav.tiltakspenger.saksbehandling.service.SøknadService
 import no.nav.tiltakspenger.saksbehandling.service.person.KunneIkkeHenteEnkelPerson
 import no.nav.tiltakspenger.saksbehandling.service.person.PersonService
-import no.nav.tiltakspenger.saksbehandling.service.statistikk.sak.opprettBehandlingMapper
+import no.nav.tiltakspenger.saksbehandling.service.statistikk.sak.genererStatistikkForNyFørstegangsbehandling
 
 class SakServiceImpl(
     private val sakRepo: SakRepo,
@@ -105,8 +105,7 @@ class SakServiceImpl(
                 registrerteTiltak = registrerteTiltak,
             ).getOrElse { return KanIkkeStarteFørstegangsbehandling.OppretteBehandling(it).left() }
         val statistikk =
-            opprettBehandlingMapper(
-                sak = sak.hentTynnSak(),
+            genererStatistikkForNyFørstegangsbehandling(
                 behandling = sak.førstegangsbehandling,
                 gjelderKode6 = adressebeskyttelseGradering.harStrengtFortroligAdresse(),
                 versjon = gitHash,

@@ -24,7 +24,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler123
 import no.nav.tiltakspenger.objectmothers.ObjectMother.søknadstiltak
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attesteringsstatus
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
@@ -58,7 +58,7 @@ interface BehandlingMother {
             ),
         ),
         saksbehandler: Saksbehandler = saksbehandler(),
-    ): Førstegangsbehandling = Førstegangsbehandling.opprettBehandling(
+    ): Behandling = Behandling.opprettFørstegangsbehandling(
         sakId = sakId,
         saksnummer = saksnummer,
         fnr = fnr,
@@ -75,7 +75,7 @@ interface BehandlingMother {
         saksbehandler: Saksbehandler = saksbehandler(),
         årsakTilEndring: ÅrsakTilEndring = ÅrsakTilEndring.ENDRING_ETTER_SØKNADSTIDSPUNKT,
         correlationId: CorrelationId = CorrelationId.generate(),
-        behandling: Førstegangsbehandling = behandlingUnderBehandlingUavklart(
+        behandling: Behandling = behandlingUnderBehandlingUavklart(
             periode = vurderingsperiode,
             sakId = sakId,
             søknad = søknad,
@@ -91,7 +91,7 @@ interface BehandlingMother {
             årsakTilEndring = årsakTilEndring,
             correlationId = correlationId,
         ),
-    ): Førstegangsbehandling = behandlingUnderBehandlingUavklart(
+    ): Behandling = behandlingUnderBehandlingUavklart(
         periode = vurderingsperiode,
         sakId = sakId,
         søknad = søknad,
@@ -106,7 +106,7 @@ interface BehandlingMother {
         søknad: Søknad = ObjectMother.nySøknad(periode = periode),
         saksbehandler: Saksbehandler = saksbehandler(),
         correlationId: CorrelationId = CorrelationId.generate(),
-    ): Førstegangsbehandling {
+    ): Behandling {
         val behandling = behandlingUnderBehandlingUavklart(
             periode = periode,
             sakId = sakId,
@@ -138,16 +138,16 @@ interface BehandlingMother {
         tidspunkt = nå(),
     )
 
-    fun behandlingTilBeslutterInnvilget(saksbehandler: Saksbehandler = saksbehandler123()): Førstegangsbehandling {
+    fun behandlingTilBeslutterInnvilget(saksbehandler: Saksbehandler = saksbehandler123()): Behandling {
         val behandling = behandlingUnderBehandlingInnvilget(saksbehandler = saksbehandler)
         return behandling.tilBeslutning(saksbehandler)
     }
 
-    fun behandlingTilBeslutterAvslag(): Førstegangsbehandling =
+    fun behandlingTilBeslutterAvslag(): Behandling =
         behandlingUnderBehandlingAvslag().copy(saksbehandler = saksbehandler123().navIdent)
             .tilBeslutning(saksbehandler123())
 
-    fun behandlingInnvilgetIverksatt(): Førstegangsbehandling =
+    fun behandlingInnvilgetIverksatt(): Behandling =
         behandlingTilBeslutterInnvilget(saksbehandler123()).copy(beslutter = beslutter().navIdent)
             .iverksett(beslutter(), godkjentAttestering())
 }

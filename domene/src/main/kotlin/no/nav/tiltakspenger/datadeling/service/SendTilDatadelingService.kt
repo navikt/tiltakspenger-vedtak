@@ -49,7 +49,7 @@ class SendTilDatadelingService(
 
     private suspend fun sendBehandlinger(correlationId: CorrelationId) {
         Either.catch {
-            behandlingRepo.hentBehandlingerTilDatadeling().forEach { behandling ->
+            behandlingRepo.hentFørstegangsbehandlingerTilDatadeling().forEach { behandling ->
                 Either.catch {
                     datadelingGateway.send(behandling, correlationId).onRight {
                         logger.info { "Behandling sendt til datadeling. Saksnummer: ${behandling.saksnummer}, sakId: ${behandling.sakId}, behandlingId: ${behandling.id}" }

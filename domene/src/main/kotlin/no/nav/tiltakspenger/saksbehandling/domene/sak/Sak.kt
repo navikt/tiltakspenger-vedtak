@@ -15,7 +15,6 @@ import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldeperioder
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
@@ -38,17 +37,17 @@ data class Sak(
 
     init {
         if (behandlinger.isNotEmpty()) {
-            require(behandlinger.first() is Førstegangsbehandling) { "Første behandlingen må være en førstegangsbehandling" }
+            require(behandlinger.first().erFørstegangsbehandling) { "Første behandlingen må være en førstegangsbehandling" }
         }
-        require(behandlinger.filterIsInstance<Førstegangsbehandling>().size <= 1) { "Kan ikke ha flere enn en førstegangsbehandling" }
+        require(behandlinger.filter { it.erFørstegangsbehandling }.size <= 1) { "Kan ikke ha flere enn en førstegangsbehandling" }
     }
 
     /**
      * En sak kan kun ha en førstegangsbehandling, dersom perioden til den vedtatte førstegangsbehandlingen skal utvides eller minskes (den må fortsatt være sammenhengende) må vi revurdere/omgjøre, ikke førstegangsbehandle på nytt.
      * Dersom den nye søknaden ikke overlapper eller tilstøter den gamle perioden, må vi opprette en ny sak som får en ny førstegangsbehandling.
      */
-    val førstegangsbehandling: Førstegangsbehandling =
-        behandlinger.filterIsInstance<Førstegangsbehandling>().single()
+    val førstegangsbehandling: Behandling =
+        behandlinger.single { it.erFørstegangsbehandling }
 
     fun hentMeldekort(meldekortId: MeldekortId): Meldekort? {
         return meldeperioder.hentMeldekort(meldekortId)
@@ -77,16 +76,15 @@ data class Sak(
             }
             val fnr = søknad.fnr
             val førstegangsbehandling =
-                Førstegangsbehandling
-                    .opprettBehandling(
-                        sakId = sakId,
-                        saksnummer = saksnummer,
-                        fnr = fnr,
-                        søknad = søknad,
-                        fødselsdato = fødselsdato,
-                        saksbehandler = saksbehandler,
-                        registrerteTiltak = registrerteTiltak,
-                    ).getOrElse { return it.left() }
+                Behandling.opprettFørstegangsbehandling(
+                    sakId = sakId,
+                    saksnummer = saksnummer,
+                    fnr = fnr,
+                    søknad = søknad,
+                    fødselsdato = fødselsdato,
+                    saksbehandler = saksbehandler,
+                    registrerteTiltak = registrerteTiltak,
+                ).getOrElse { return it.left() }
             return Sak(
                 id = sakId,
                 fnr = fnr,

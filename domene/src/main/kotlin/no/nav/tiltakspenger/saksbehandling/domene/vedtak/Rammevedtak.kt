@@ -7,8 +7,8 @@ import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.VedtakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Førstegangsbehandling
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.AvklartUtfallForPeriode
 import java.time.LocalDate
@@ -22,7 +22,7 @@ data class Rammevedtak(
     override val opprettet: LocalDateTime,
     val sakId: SakId,
     val saksnummer: Saksnummer,
-    val behandling: Førstegangsbehandling,
+    val behandling: Behandling,
     val vedtaksdato: LocalDate?,
     val vedtaksType: Vedtakstype,
     val periode: Periode,
@@ -49,7 +49,7 @@ enum class Vedtakstype(
     FORLENGELSE("Forlengelse"),
 }
 
-fun Førstegangsbehandling.opprettVedtak(): Rammevedtak {
+fun Behandling.opprettVedtak(): Rammevedtak {
     require(this.status == Behandlingsstatus.INNVILGET) { "Kan ikke lage vedtak for behandling som ikke er iverksatt" }
     return Rammevedtak(
         id = VedtakId.random(),
