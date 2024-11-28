@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.utbetaling.domene
 
 import no.nav.tiltakspenger.felles.desember
 import no.nav.tiltakspenger.felles.januar
-import no.nav.tiltakspenger.felles.november
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.meldekort.domene.Satsdag
 import java.time.LocalDate
@@ -13,30 +12,12 @@ class Satser {
         private val satser =
             listOf(
                 Sats(Periode(1.januar(2023), 31.desember(2023)), 268, 201, 52, 39),
-                // TODO jah sett denne tilOgMed 31. des 2024
-                Sats(
-                    Periode(1.januar(2024), 19.november(2024)),
-                    285,
-                    214,
-                    53,
-                    40,
-                ),
-                // TODO jah: Legg til denne igjen. Vi gjør dette kun for test.
-                // Sats(Periode(1.januar(2025), 31.desember(9999)), 298, 224, 55, 41),
-                // TODO jah slett denne
-                Sats(Periode(20.november(2024), 31.desember(9999)), 298, 224, 55, 41),
+                Sats(Periode(1.januar(2024), 31.desember(2024)), 285, 214, 53, 40),
+                Sats(Periode(1.januar(2025), 31.desember(9999)), 298, 224, 55, 41),
             )
 
         fun sats(dato: LocalDate): Satsdag =
-            satser.find { it.fraOgMed <= dato && it.tilOgMed >= dato }?.let {
-                Satsdag(
-                    sats = it.sats,
-                    satsBarnetillegg = it.satsBarnetillegg,
-                    satsRedusert = it.satsRedusert,
-                    satsBarnetilleggRedusert = it.satsBarnetilleggRedusert,
-                    dato = dato,
-                )
-            }
+            satser.find { it.fraOgMed <= dato && it.tilOgMed >= dato }?.let { Satsdag(sats = it.sats, satsBarnetillegg = it.satsBarnetillegg, satsRedusert = it.satsRedusert, satsBarnetilleggRedusert = it.satsBarnetilleggRedusert, dato = dato) }
                 ?: throw IllegalArgumentException("Fant ingen sats for dato $dato")
     }
 }
