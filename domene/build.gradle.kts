@@ -1,4 +1,4 @@
-val jacksonVersion = "2.18.1"
+val jacksonVersion = "2.18.2"
 val kotestVersion = "5.9.1"
 val mockkVersion = "1.13.13"
 val felleslibVersion = "0.0.286"
