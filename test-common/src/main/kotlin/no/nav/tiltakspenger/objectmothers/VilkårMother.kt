@@ -28,8 +28,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.KvpSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LivsoppholdSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LivsoppholdVilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.TiltakDeltagelseSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.TiltakDeltagelseVilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltaksdeltagelse.TiltaksdeltagelseSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltaksdeltagelse.TiltaksdeltagelseVilkår
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
@@ -45,7 +45,7 @@ interface VilkårMother {
             kvpVilkår(
                 vurderingsperiode = vurderingsperiode,
             ),
-        tiltakDeltagelseVilkår: TiltakDeltagelseVilkår =
+        tiltakDeltagelseVilkår: TiltaksdeltagelseVilkår =
             tiltakDeltagelseVilkår(
                 vurderingsperiode = vurderingsperiode,
             ),
@@ -256,7 +256,7 @@ interface VilkårMother {
         girRett: Boolean = true,
         status: TiltakDeltakerstatus = Deltar,
         kilde: Tiltakskilde = Komet,
-        registerSaksopplysning: TiltakDeltagelseSaksopplysning.Register =
+        registerSaksopplysning: TiltaksdeltagelseSaksopplysning.Register =
             tiltakDeltagelseSaksopplysning(
                 vurderingsperiode = vurderingsperiode,
                 fødselsdato = fødselsdato,
@@ -266,8 +266,8 @@ interface VilkårMother {
                 status = status,
                 kilde = kilde,
             ),
-    ): TiltakDeltagelseVilkår =
-        TiltakDeltagelseVilkår.opprett(
+    ): TiltaksdeltagelseVilkår =
+        TiltaksdeltagelseVilkår.opprett(
             registerSaksopplysning = registerSaksopplysning,
             vurderingsperiode = vurderingsperiode,
         )
@@ -283,8 +283,8 @@ interface VilkårMother {
         status: TiltakDeltakerstatus = Deltar,
         kilde: Tiltakskilde = Komet,
         tiltakstype: TiltakstypeSomGirRett = TiltakstypeSomGirRett.GRUPPE_AMO,
-    ): TiltakDeltagelseSaksopplysning.Register =
-        TiltakDeltagelseSaksopplysning.Register(
+    ): TiltaksdeltagelseSaksopplysning.Register =
+        TiltaksdeltagelseSaksopplysning.Register(
             tidsstempel = tidsstempel,
             tiltaksnavn = tiltakNavn,
             eksternDeltagelseId = eksternTiltakId,

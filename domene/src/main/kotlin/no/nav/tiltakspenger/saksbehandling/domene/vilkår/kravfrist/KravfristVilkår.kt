@@ -30,12 +30,27 @@ data class KravfristVilkår private constructor(
                 .toLocalDate()
 
         when {
-            datoDetKanInnvilgesFra <= vurderingsperiode.fraOgMed -> Periodisering(UtfallForPeriode.OPPFYLT, vurderingsperiode)
+            datoDetKanInnvilgesFra <= vurderingsperiode.fraOgMed -> Periodisering(
+                UtfallForPeriode.OPPFYLT,
+                vurderingsperiode,
+            )
+
             datoDetKanInnvilgesFra > vurderingsperiode.tilOgMed -> throw StøtterIkkeUtfallException("Kravdatoen vil føre til avslag")
             else -> throw StøtterIkkeUtfallException(
                 "Tidligste dato det kan innvilges fra er $datoDetKanInnvilgesFra, ettersom kravdato er (${avklartSaksopplysning.kravdato}). Tiltaksperioden det er søkt for er ($vurderingsperiode). Kravdatoen vil føre til delvis innvilgelse.",
             )
         }
+    }
+
+    override fun oppdaterPeriode(periode: Periode): KravfristVilkår {
+        val nySøknadSaksopplysning = søknadSaksopplysning.oppdaterPeriode(periode)
+        val nySaksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.oppdaterPeriode(periode)
+        return this.copy(
+            vurderingsperiode = periode,
+            søknadSaksopplysning = nySøknadSaksopplysning,
+            saksbehandlerSaksopplysning = nySaksbehandlerSaksopplysning,
+            avklartSaksopplysning = nySaksbehandlerSaksopplysning ?: nySøknadSaksopplysning,
+        )
     }
 
     fun leggTilSaksbehandlerSaksopplysning(command: LeggTilKravfristSaksopplysningCommand): KravfristVilkår {

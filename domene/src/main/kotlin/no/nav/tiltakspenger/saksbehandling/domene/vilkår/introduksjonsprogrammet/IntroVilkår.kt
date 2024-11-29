@@ -33,6 +33,17 @@ data class IntroVilkår private constructor(
             }
         }
 
+    override fun oppdaterPeriode(periode: Periode): IntroVilkår {
+        val nySøknadSaksopplysning = søknadSaksopplysning.oppdaterPeriode(periode)
+        val nySaksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.oppdaterPeriode(periode)
+        return this.copy(
+            vurderingsperiode = periode,
+            søknadSaksopplysning = nySøknadSaksopplysning,
+            saksbehandlerSaksopplysning = nySaksbehandlerSaksopplysning,
+            avklartSaksopplysning = nySaksbehandlerSaksopplysning ?: nySøknadSaksopplysning,
+        )
+    }
+
     fun leggTilSaksbehandlerSaksopplysning(command: LeggTilIntroSaksopplysningCommand): IntroVilkår {
         val introSaksopplysning =
             IntroSaksopplysning.Saksbehandler(
@@ -55,6 +66,7 @@ data class IntroVilkår private constructor(
             require(søknadSaksopplysning.totalePeriode == saksbehandlerSaksopplysning.totalePeriode) {
                 "søknadSaksopplysning (${søknadSaksopplysning.totalePeriode}) og saksbehandlerSaksopplysning(${saksbehandlerSaksopplysning.totalePeriode}) må ha samme totale periode."
             }
+            // TODO jah: Her burde vi kanskje heller sjekke at de er det samme objektet?
             require(saksbehandlerSaksopplysning.totalePeriode == avklartSaksopplysning.totalePeriode) {
                 "saksbehandlerSaksopplysning (${saksbehandlerSaksopplysning.totalePeriode}) og avklartSaksopplysning(${avklartSaksopplysning.totalePeriode}) må ha samme totale periode."
             }

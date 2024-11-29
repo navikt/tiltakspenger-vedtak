@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.tiltakdeltagelse
 
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltakskilde.Arena
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltakskilde.Komet
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.TiltakDeltagelseSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltaksdeltagelse.TiltaksdeltagelseSaksopplysning
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
 import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
 
@@ -13,7 +13,7 @@ internal data class TiltakDeltagelseSaksopplysningDTO(
     val kilde: TiltakKildeDTO,
 )
 
-internal fun TiltakDeltagelseSaksopplysning.toDTO(): TiltakDeltagelseSaksopplysningDTO =
+internal fun TiltaksdeltagelseSaksopplysning.toDTO(): TiltakDeltagelseSaksopplysningDTO =
     TiltakDeltagelseSaksopplysningDTO(
         tiltakNavn = tiltaksnavn,
         kilde =

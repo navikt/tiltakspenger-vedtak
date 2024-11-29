@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.livsopphold
 
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndring
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LivsoppholdSaksopplysning
-import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.livsopphold.LivsoppholdSaksopplysningDTO.ÅrsakTilEndringDTO
+import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.felles.ÅrsakTilEndringDTO
 import java.time.LocalDateTime
 
 /**
@@ -12,12 +12,7 @@ internal data class LivsoppholdSaksopplysningDTO(
     val harLivsoppholdYtelser: Boolean,
     val årsakTilEndringLivsopphold: ÅrsakTilEndringDTO?,
     val tidspunkt: LocalDateTime,
-) {
-    enum class ÅrsakTilEndringDTO {
-        FEIL_I_INNHENTET_DATA,
-        ENDRING_ETTER_SØKNADSTIDSPUNKT,
-    }
-}
+)
 
 internal fun LivsoppholdSaksopplysning.toDTO(): LivsoppholdSaksopplysningDTO =
     LivsoppholdSaksopplysningDTO(

@@ -9,7 +9,6 @@ import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.SøknadId
-import no.nav.tiltakspenger.libs.common.VedtakId
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.EnkelPerson
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.Navn
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
@@ -34,10 +33,6 @@ class PersonService(
     fun hentFnrForSaksnummer(saksnummer: Saksnummer): Fnr =
         personRepo.hentFnrForSaksnummer(saksnummer)
             ?: throw IkkeFunnetException("Fant ikke fnr for saksnummer: $saksnummer")
-
-    fun hentFnrForVedtakId(vedtakId: VedtakId): Fnr =
-        personRepo.hentFnrForVedtakId(vedtakId)
-            ?: throw IkkeFunnetException("Fant ikke fnr for vedtakId: $vedtakId")
 
     fun hentFnrForMeldekortId(meldekortId: MeldekortId): Fnr =
         personRepo.hentFnrForMeldekortId(meldekortId)

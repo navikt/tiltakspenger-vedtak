@@ -46,6 +46,17 @@ data class KVPVilkår private constructor(
             }
         }
 
+    override fun oppdaterPeriode(periode: Periode): KVPVilkår {
+        val nySøknadSaksopplsyning = søknadSaksopplysning.oppdaterPeriode(periode)
+        val nySaksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.oppdaterPeriode(periode)
+        return this.copy(
+            vurderingsperiode = periode,
+            søknadSaksopplysning = nySøknadSaksopplsyning,
+            saksbehandlerSaksopplysning = nySaksbehandlerSaksopplysning,
+            avklartSaksopplysning = nySaksbehandlerSaksopplysning ?: nySøknadSaksopplsyning,
+        )
+    }
+
     fun leggTilSaksbehandlerSaksopplysning(command: LeggTilKvpSaksopplysningCommand): KVPVilkår {
         val kvpSaksopplysning =
             KvpSaksopplysning.Saksbehandler(

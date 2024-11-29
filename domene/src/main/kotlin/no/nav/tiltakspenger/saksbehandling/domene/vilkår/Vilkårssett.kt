@@ -23,8 +23,9 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.kvpSaksopplysning
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LivsoppholdVilkår
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.livsoppholdSaksopplysning
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.TiltakDeltagelseVilkår
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.tilRegisterSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltaksdeltagelse.LeggTilTiltaksdeltagelseKommando
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltaksdeltagelse.TiltaksdeltagelseVilkår
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltaksdeltagelse.tilRegisterSaksopplysning
 import java.time.LocalDate
 
 /**
@@ -36,7 +37,7 @@ data class Vilkårssett(
     val vurderingsperiode: Periode,
     val institusjonsoppholdVilkår: InstitusjonsoppholdVilkår,
     val kvpVilkår: KVPVilkår,
-    val tiltakDeltagelseVilkår: TiltakDeltagelseVilkår,
+    val tiltakDeltagelseVilkår: TiltaksdeltagelseVilkår,
     val introVilkår: IntroVilkår,
     val livsoppholdVilkår: LivsoppholdVilkår,
     val alderVilkår: AlderVilkår,
@@ -90,30 +91,56 @@ data class Vilkårssett(
         }
     }
 
-    fun oppdaterKVP(command: LeggTilKvpSaksopplysningCommand): Vilkårssett =
-        this.copy(
+    fun oppdaterKVP(command: LeggTilKvpSaksopplysningCommand): Vilkårssett {
+        return this.copy(
             kvpVilkår = kvpVilkår.leggTilSaksbehandlerSaksopplysning(command),
         )
+    }
 
-    fun oppdaterIntro(command: LeggTilIntroSaksopplysningCommand): Vilkårssett =
-        this.copy(
+    fun oppdaterIntro(command: LeggTilIntroSaksopplysningCommand): Vilkårssett {
+        return this.copy(
             introVilkår = introVilkår.leggTilSaksbehandlerSaksopplysning(command),
         )
+    }
 
-    fun oppdaterAlder(command: LeggTilAlderSaksopplysningCommand): Vilkårssett =
-        this.copy(
+    fun oppdaterAlder(command: LeggTilAlderSaksopplysningCommand): Vilkårssett {
+        return this.copy(
             alderVilkår = alderVilkår.leggTilSaksbehandlerSaksopplysning(command),
         )
+    }
 
-    fun oppdaterKravdato(command: LeggTilKravfristSaksopplysningCommand): Vilkårssett =
-        this.copy(
+    fun oppdaterKravdato(command: LeggTilKravfristSaksopplysningCommand): Vilkårssett {
+        return this.copy(
             kravfristVilkår = kravfristVilkår.leggTilSaksbehandlerSaksopplysning(command),
         )
+    }
 
-    fun oppdaterLivsopphold(command: LeggTilLivsoppholdSaksopplysningCommand): Either<KanIkkeLeggeTilSaksopplysning, Vilkårssett> =
-        livsoppholdVilkår.leggTilSaksbehandlerSaksopplysning(command).map {
+    fun oppdaterLivsopphold(command: LeggTilLivsoppholdSaksopplysningCommand): Either<KanIkkeLeggeTilSaksopplysning, Vilkårssett> {
+        return livsoppholdVilkår.leggTilSaksbehandlerSaksopplysning(command).map {
             this.copy(livsoppholdVilkår = it)
         }
+    }
+    fun oppdaterTiltaksdeltagelse(kommando: LeggTilTiltaksdeltagelseKommando): Either<KanIkkeLeggeTilSaksopplysning, Vilkårssett> {
+        return tiltakDeltagelseVilkår.leggTilSaksbehandlerSaksopplysning(kommando).map {
+            this.copy(tiltakDeltagelseVilkår = it)
+        }
+    }
+
+    /**
+     * Støtter kun krymping av periode i første versjon.
+     */
+    fun oppdaterPeriode(periode: Periode): Vilkårssett {
+        return this.copy(
+            vurderingsperiode = periode,
+            institusjonsoppholdVilkår = institusjonsoppholdVilkår.oppdaterPeriode(periode),
+            kvpVilkår = kvpVilkår.oppdaterPeriode(periode),
+            tiltakDeltagelseVilkår = tiltakDeltagelseVilkår.oppdaterPeriode(periode),
+            introVilkår = introVilkår.oppdaterPeriode(periode),
+            livsoppholdVilkår = livsoppholdVilkår.oppdaterPeriode(periode),
+            alderVilkår = alderVilkår.oppdaterPeriode(periode),
+            kravfristVilkår = kravfristVilkår.oppdaterPeriode(periode),
+        )
+    }
 
     companion object {
         fun opprett(
@@ -145,7 +172,7 @@ data class Vilkårssett(
                 ),
                 kravfristVilkår = KravfristVilkår.opprett(søknad.kravfristSaksopplysning(), vurderingsperiode),
                 tiltakDeltagelseVilkår =
-                TiltakDeltagelseVilkår.opprett(
+                TiltaksdeltagelseVilkår.opprett(
                     vurderingsperiode = vurderingsperiode,
                     registerSaksopplysning = tiltak.tilRegisterSaksopplysning(),
                 ),

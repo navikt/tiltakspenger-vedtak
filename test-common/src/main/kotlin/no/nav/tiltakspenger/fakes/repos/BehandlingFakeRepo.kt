@@ -27,12 +27,16 @@ class BehandlingFakeRepo : BehandlingRepo {
     override fun hentOrNull(
         behandlingId: BehandlingId,
         sessionContext: no.nav.tiltakspenger.libs.persistering.domene.SessionContext?,
-    ): Behandling? = data.get()[behandlingId]
+    ): Behandling? {
+        return data.get()[behandlingId]
+    }
 
     override fun hent(
         behandlingId: BehandlingId,
         sessionContext: no.nav.tiltakspenger.libs.persistering.domene.SessionContext?,
-    ): Behandling = hentOrNull(behandlingId, sessionContext)!!
+    ): Behandling {
+        return hentOrNull(behandlingId, sessionContext)!!
+    }
 
     override fun hentAlleForIdent(fnr: Fnr): List<Behandling> = data.get().values.filter { it.fnr == fnr }
 

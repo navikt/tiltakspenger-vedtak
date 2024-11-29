@@ -7,6 +7,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndrin
 import java.time.LocalDateTime
 
 sealed interface KvpSaksopplysning {
+    fun oppdaterPeriode(periode: Periode): KvpSaksopplysning
+
     val deltar: Periodisering<Deltagelse>
     val tidsstempel: LocalDateTime
     val totalePeriode: Periode
@@ -22,10 +24,15 @@ sealed interface KvpSaksopplysning {
         override val navIdent = null
 
         init {
-            require(deltar.perioder().isNotEmpty()) { "KvpSaksopplysning må ha minst én periode, men var tom." }
+            require(deltar.isNotEmpty()) { "KvpSaksopplysning må ha minst én periode, men var tom." }
         }
 
         override val totalePeriode: Periode = deltar.totalePeriode
+
+        /** Støtter i førsteomgang kun å krympe perioden. Dersom man skulle utvidet den, måtte man gjort en ny vurdering og ville derfor hatt en ny saksopplysning. */
+        override fun oppdaterPeriode(periode: Periode): Søknad {
+            return copy(deltar = deltar.krymp(periode))
+        }
     }
 
     data class Saksbehandler(
@@ -35,9 +42,14 @@ sealed interface KvpSaksopplysning {
         override val navIdent: String,
     ) : KvpSaksopplysning {
         init {
-            require(deltar.perioder().isNotEmpty()) { "KvpSaksopplysning må ha minst én periode, men var tom." }
+            require(deltar.isNotEmpty()) { "KvpSaksopplysning må ha minst én periode, men var tom." }
         }
 
         override val totalePeriode: Periode = deltar.totalePeriode
+
+        /** Støtter i førsteomgang kun å krympe perioden. Dersom man skulle utvidet den, måtte man gjort en ny vurdering og ville derfor hatt en ny saksopplysning. */
+        override fun oppdaterPeriode(periode: Periode): Saksbehandler {
+            return copy(deltar = deltar.krymp(periode))
+        }
     }
 }

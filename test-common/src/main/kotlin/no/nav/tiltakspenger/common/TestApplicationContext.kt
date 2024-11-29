@@ -119,7 +119,7 @@ class TestApplicationContext(
             utbetalingsvedtakRepo = utbetalingsvedtakFakeRepo,
         )
 
-    private val personFakeRepo = PersonFakeRepo(sakFakeRepo, søknadFakeRepo, meldekortFakeRepo)
+    private val personFakeRepo = PersonFakeRepo(sakFakeRepo, søknadFakeRepo, meldekortFakeRepo, behandlingFakeRepo)
 
     override val entraIdSystemtokenClient = EntraIdSystemtokenFakeClient()
 

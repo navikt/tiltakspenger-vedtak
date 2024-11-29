@@ -6,6 +6,8 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndrin
 import java.time.LocalDateTime
 
 sealed interface InstitusjonsoppholdSaksopplysning {
+    fun oppdaterPeriode(periode: Periode): InstitusjonsoppholdSaksopplysning
+
     val opphold: Periodisering<Opphold>
     val tidsstempel: LocalDateTime
     val totalePeriode: Periode
@@ -21,7 +23,14 @@ sealed interface InstitusjonsoppholdSaksopplysning {
         override val navIdent = null
 
         init {
-            require(opphold.perioder().isNotEmpty()) { "InstitusjonsoppholdSaksopplysning må ha minst én periode, men var tom." }
+            require(
+                opphold.isNotEmpty(),
+            ) { "InstitusjonsoppholdSaksopplysning må ha minst én periode, men var tom." }
+        }
+
+        /** Støtter i førsteomgang kun å krympe perioden. Dersom man skulle utvidet den, måtte man gjort en ny vurdering og ville derfor hatt en ny saksopplysning. */
+        override fun oppdaterPeriode(periode: Periode): Søknad {
+            return copy(opphold = opphold.krymp(periode))
         }
 
         override val totalePeriode: Periode = opphold.totalePeriode
@@ -34,9 +43,16 @@ sealed interface InstitusjonsoppholdSaksopplysning {
         override val navIdent: String,
     ) : InstitusjonsoppholdSaksopplysning {
         init {
-            require(opphold.perioder().isNotEmpty()) { "InstitusjonsoppholdSaksopplysning må ha minst én periode, men var tom." }
+            require(
+                opphold.isNotEmpty(),
+            ) { "InstitusjonsoppholdSaksopplysning må ha minst én periode, men var tom." }
         }
 
         override val totalePeriode: Periode = opphold.totalePeriode
+
+        /** Støtter i førsteomgang kun å krympe perioden. Dersom man skulle utvidet den, måtte man gjort en ny vurdering og ville derfor hatt en ny saksopplysning. */
+        override fun oppdaterPeriode(periode: Periode): Saksbehandler {
+            return copy(opphold = opphold.krymp(periode))
+        }
     }
 }

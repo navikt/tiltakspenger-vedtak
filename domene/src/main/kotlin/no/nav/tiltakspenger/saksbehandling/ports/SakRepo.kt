@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.saksbehandling.ports
 
-import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.SøknadId
@@ -16,7 +15,11 @@ interface SakRepo {
 
     fun hentForSaksnummer(saksnummer: Saksnummer): Sak?
 
-    fun lagre(
+    /**
+     * Denne er kun tenkt kalt når man oppretter en sak med en førstegangsbehandling.
+     * Senere endringer på saken gjøres via methoder og repoer.
+     */
+    fun opprettSakOgFørstegangsbehandling(
         sak: Sak,
         transactionContext: TransactionContext? = null,
     )
@@ -36,8 +39,6 @@ interface SakRepo {
         sakId: SakId,
         sessionContext: SessionContext? = null,
     ): Fnr?
-
-    fun hentForFørstegangsbehandlingId(behandlingId: BehandlingId): Sak?
 
     fun hentForSøknadId(søknadId: SøknadId): Sak?
 }

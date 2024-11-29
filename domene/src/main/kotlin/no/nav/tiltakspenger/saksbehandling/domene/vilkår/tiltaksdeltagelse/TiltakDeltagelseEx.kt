@@ -1,10 +1,10 @@
-package no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse
+package no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltaksdeltagelse
 
 import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
 
-fun Tiltak.tilRegisterSaksopplysning(): TiltakDeltagelseSaksopplysning.Register =
-    TiltakDeltagelseSaksopplysning.Register(
+fun Tiltak.tilRegisterSaksopplysning(): TiltaksdeltagelseSaksopplysning.Register =
+    TiltaksdeltagelseSaksopplysning.Register(
         tiltaksnavn = this.typeNavn,
         eksternDeltagelseId = this.eksternDeltagelseId,
         gjennomføringId = this.gjennomføringId,

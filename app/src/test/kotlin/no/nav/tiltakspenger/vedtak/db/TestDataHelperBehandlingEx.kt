@@ -11,7 +11,10 @@ import no.nav.tiltakspenger.libs.common.random
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.objectmothers.ObjectMother
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.StartRevurderingKommando
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.startRevurdering
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.opprettVedtak
@@ -61,7 +64,7 @@ internal fun TestDataHelper.persisterOpprettetFørstegangsbehandling(
             sakId = sakId,
         )
     søknadRepo.lagre(søknad)
-    sakRepo.lagre(sak)
+    sakRepo.opprettSakOgFørstegangsbehandling(sak)
 
     return Pair(
         sakRepo.hentForSakId(sakId)!!,
@@ -130,11 +133,66 @@ internal fun TestDataHelper.persisterIverksattFørstegangsbehandling(
             .tilBeslutning(saksbehandler)
             .taBehandling(beslutter)
             .iverksett(beslutter, ObjectMother.godkjentAttestering(beslutter))
+    behandlingRepo.lagre(oppdatertFørstegangsbehandling)
     oppdatertFørstegangsbehandling.opprettVedtak().also {
         vedtakRepo.lagre(it)
     }
-    behandlingRepo.lagre(oppdatertFørstegangsbehandling)
     return sakRepo.hentForSakId(sakId)!!
+}
+
+/**
+ * Persisterer førstegangsbehandling med tilhørende rammevedtak og starter en revurdering
+ */
+internal fun TestDataHelper.persisterOpprettetRevurdering(
+    sakId: SakId = SakId.random(),
+    fnr: Fnr = Fnr.random(),
+    deltakelseFom: LocalDate = 1.januar(2023),
+    deltakelseTom: LocalDate = 31.mars(2023),
+    journalpostId: String = random.nextInt().toString(),
+    saksbehandler: Saksbehandler = ObjectMother.saksbehandler(),
+    beslutter: Saksbehandler = ObjectMother.beslutter(),
+    tiltaksOgVurderingsperiode: Periode = Periode(fraOgMed = deltakelseFom, tilOgMed = deltakelseTom),
+    id: SøknadId = Søknad.randomId(),
+    søknad: Søknad =
+        ObjectMother.nySøknad(
+            periode = tiltaksOgVurderingsperiode,
+            journalpostId = journalpostId,
+            personopplysninger =
+            ObjectMother.personSøknad(
+                fnr = fnr,
+            ),
+            id = id,
+            søknadstiltak =
+            ObjectMother.søknadstiltak(
+                deltakelseFom = deltakelseFom,
+                deltakelseTom = deltakelseTom,
+            ),
+            barnetillegg = listOf(),
+        ),
+    revurderingsperiode: Periode = Periode(fraOgMed = deltakelseFom.plusMonths(1), tilOgMed = deltakelseTom),
+): Pair<Sak, Behandling> {
+    val sak = persisterIverksattFørstegangsbehandling(
+        sakId = sakId,
+        fnr = fnr,
+        deltakelseFom = deltakelseFom,
+        deltakelseTom = deltakelseTom,
+        journalpostId = journalpostId,
+        saksbehandler = saksbehandler,
+        beslutter = beslutter,
+        tiltaksOgVurderingsperiode = tiltaksOgVurderingsperiode,
+        id = id,
+        søknad = søknad,
+    )
+    return sak.startRevurdering(
+        kommando = StartRevurderingKommando(
+            sakId = sakId,
+            periode = revurderingsperiode,
+            correlationId = CorrelationId.generate(),
+            saksbehandler = saksbehandler,
+        ),
+    ).getOrNull()!!.also {
+        behandlingRepo.lagre(it.second)
+    }
 }
 
 internal fun TestDataHelper.persisterRammevedtakMedUtfyltMeldekort(

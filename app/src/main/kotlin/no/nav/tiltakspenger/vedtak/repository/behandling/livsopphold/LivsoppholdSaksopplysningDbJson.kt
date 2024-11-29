@@ -2,7 +2,7 @@ package no.nav.tiltakspenger.vedtak.repository.behandling.livsopphold
 
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndring
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LivsoppholdSaksopplysning
-import no.nav.tiltakspenger.vedtak.repository.behandling.livsopphold.LivsoppholdSaksopplysningDbJson.ÅrsakTilEndringLivsoppholdDbJson
+import no.nav.tiltakspenger.vedtak.repository.behandling.felles.ÅrsakTilEndringDbType
 import no.nav.tiltakspenger.vedtak.repository.felles.PeriodeDbJson
 import no.nav.tiltakspenger.vedtak.repository.felles.SaksbehandlerDbJson
 import no.nav.tiltakspenger.vedtak.repository.felles.toDbJson
@@ -10,7 +10,7 @@ import java.time.LocalDateTime
 
 internal data class LivsoppholdSaksopplysningDbJson(
     val harLivsoppholdYtelser: Boolean,
-    val årsakTilEndring: ÅrsakTilEndringLivsoppholdDbJson?,
+    val årsakTilEndring: ÅrsakTilEndringDbType?,
     val saksbehandler: SaksbehandlerDbJson?,
     val periode: PeriodeDbJson,
     val tidsstempel: String,
@@ -34,18 +34,6 @@ internal data class LivsoppholdSaksopplysningDbJson(
                 )
             }
         }
-
-    enum class ÅrsakTilEndringLivsoppholdDbJson {
-        FEIL_I_INNHENTET_DATA,
-        ENDRING_ETTER_SØKNADSTIDSPUNKT,
-        ;
-
-        fun toDomain(): ÅrsakTilEndring =
-            when (this) {
-                FEIL_I_INNHENTET_DATA -> ÅrsakTilEndring.FEIL_I_INNHENTET_DATA
-                ENDRING_ETTER_SØKNADSTIDSPUNKT -> ÅrsakTilEndring.ENDRING_ETTER_SØKNADSTIDSPUNKT
-            }
-    }
 }
 
 internal fun LivsoppholdSaksopplysning.toDbJson(): LivsoppholdSaksopplysningDbJson =
@@ -54,11 +42,11 @@ internal fun LivsoppholdSaksopplysning.toDbJson(): LivsoppholdSaksopplysningDbJs
         årsakTilEndring =
         when (årsakTilEndring) {
             ÅrsakTilEndring.ENDRING_ETTER_SØKNADSTIDSPUNKT -> {
-                ÅrsakTilEndringLivsoppholdDbJson.ENDRING_ETTER_SØKNADSTIDSPUNKT
+                ÅrsakTilEndringDbType.ENDRING_ETTER_SØKNADSTIDSPUNKT
             }
 
             ÅrsakTilEndring.FEIL_I_INNHENTET_DATA -> {
-                ÅrsakTilEndringLivsoppholdDbJson.FEIL_I_INNHENTET_DATA
+                ÅrsakTilEndringDbType.FEIL_I_INNHENTET_DATA
             }
 
             null -> null

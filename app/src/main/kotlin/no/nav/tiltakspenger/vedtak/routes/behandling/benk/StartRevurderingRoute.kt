@@ -28,7 +28,7 @@ import no.nav.tiltakspenger.vedtak.routes.withSakId
  */
 private data class StartRevurderingBody(
     val periode: PeriodeDTO,
-    val type: String,
+    // val type: String,
 ) {
     fun tilKommando(
         sakId: SakId,
@@ -77,7 +77,7 @@ fun Route.startRevurderingRoute(
                                     correlationId = correlationId,
                                 )
 
-                                call.respond(HttpStatusCode.OK, BehandlingIdDTO(it.førstegangsbehandling.id.toString()))
+                                call.respond(HttpStatusCode.OK, BehandlingIdDTO(it.revurderinger.last().id.toString()))
                             },
                         )
                 }
