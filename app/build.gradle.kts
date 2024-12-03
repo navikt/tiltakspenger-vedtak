@@ -1,11 +1,12 @@
+val kotlinxCoroutinesVersion: String by rootProject.extra
+val kotestVersion: String by rootProject.extra
+val felleslibVersion: String by rootProject.extra
+val mockkVersion: String by rootProject.extra
+
 val ktorVersion = "3.0.1"
-val kotestVersion = "5.9.1"
-val mockkVersion = "1.13.13"
 val testContainersVersion = "1.20.4"
-val felleslibVersion = "0.0.290"
 val poaoTilgangVersjon = "2024.11.26_08.36-ad014162ce23"
 val iverksettVersjon = "1.0_20241126095338_e7e661d"
-val kotlinxCoroutinesVersion = "1.9.0"
 
 plugins {
     application
@@ -110,7 +111,7 @@ dependencies {
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("io.mockk:mockk-dsl-jvm:$mockkVersion")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
-    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")
     testImplementation("io.kotest:kotest-assertions-json:$kotestVersion")
     testImplementation("io.kotest:kotest-extensions:$kotestVersion")

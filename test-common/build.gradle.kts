@@ -1,6 +1,6 @@
-val felleslibVersion = "0.0.290"
-val kotestVersion = "5.9.1"
-val kotlinxCoroutinesVersion = "1.9.0"
+val kotlinxCoroutinesVersion: String by rootProject.extra
+val kotestVersion: String by rootProject.extra
+val felleslibVersion: String by rootProject.extra
 
 dependencies {
     api(project(":domene"))
