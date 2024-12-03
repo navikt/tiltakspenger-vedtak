@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.objectmothers
 
-import arrow.core.nonEmptyListOf
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
@@ -13,6 +12,7 @@ import no.nav.tiltakspenger.objectmothers.ObjectMother.godkjentAttestering
 import no.nav.tiltakspenger.objectmothers.ObjectMother.nySøknad
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler
 import no.nav.tiltakspenger.objectmothers.ObjectMother.søknadstiltak
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlinger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
@@ -89,7 +89,7 @@ interface SakMother {
                 ),
             ).getOrNull()!!
             require(it.behandlinger.size == 1)
-            it.copy(behandlinger = nonEmptyListOf(oppdatertFørstegangsbehandling))
+            it.copy(behandlinger = Behandlinger(oppdatertFørstegangsbehandling))
         }
     }
 
@@ -108,7 +108,7 @@ interface SakMother {
             saksbehandler = saksbehandler,
         ).let {
             require(it.behandlinger.size == 1)
-            it.copy(behandlinger = nonEmptyListOf(it.førstegangsbehandling.tilBeslutning(saksbehandler).taBehandling(beslutter)))
+            it.copy(behandlinger = Behandlinger(it.førstegangsbehandling.tilBeslutning(saksbehandler).taBehandling(beslutter)))
         }
     }
 
@@ -128,7 +128,7 @@ interface SakMother {
             require(it.behandlinger.size == 1)
             val iverksattBehandling = it.førstegangsbehandling.iverksett(beslutter, godkjentAttestering())
             it.copy(
-                behandlinger = nonEmptyListOf(iverksattBehandling),
+                behandlinger = Behandlinger(iverksattBehandling),
                 rammevedtak = iverksattBehandling.opprettVedtak(),
             )
         }

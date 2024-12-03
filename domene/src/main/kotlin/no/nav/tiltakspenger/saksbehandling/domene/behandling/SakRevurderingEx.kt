@@ -44,6 +44,5 @@ fun Sak.startRevurdering(
 fun Sak.leggTilRevurdering(
     behandling: Behandling,
 ): Sak {
-    val behandlinger = this.behandlinger + behandling
-    return this.copy(behandlinger = behandlinger)
+    return copy(behandlinger = behandlinger.leggTilRevurdering(behandling))
 }

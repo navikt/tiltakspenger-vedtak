@@ -1,12 +1,14 @@
 package no.nav.tiltakspenger.fakes.repos
 
 import arrow.atomic.Atomic
+import arrow.core.toNonEmptyListOrNull
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlinger
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import java.time.LocalDateTime
 
@@ -32,17 +34,9 @@ class BehandlingFakeRepo : BehandlingRepo {
         sessionContext: no.nav.tiltakspenger.libs.persistering.domene.SessionContext?,
     ): Behandling = hentOrNull(behandlingId, sessionContext)!!
 
-    override fun hentAlleForIdent(fnr: Fnr): List<Behandling> =
-        data
-            .get()
-            .values
-            .filter { it.fnr == fnr }
+    override fun hentAlleForIdent(fnr: Fnr): List<Behandling> = data.get().values.filter { it.fnr == fnr }
 
-    override fun hentForSøknadId(søknadId: SøknadId): Behandling? =
-        data
-            .get()
-            .values
-            .find { it.søknad?.id == søknadId }
+    override fun hentForSøknadId(søknadId: SøknadId): Behandling? = data.get().values.find { it.søknad?.id == søknadId }
 
     override fun hentFørstegangsbehandlingerTilDatadeling(limit: Int): List<Behandling> {
         return data.get().values.filter {
@@ -56,9 +50,9 @@ class BehandlingFakeRepo : BehandlingRepo {
         )
     }
 
-    fun hentFørstegangsbehandlingForSakId(sakId: SakId): Behandling? =
-        data
-            .get()
-            .values
-            .find { it.sakId == sakId }
+    fun hentBehandlingerForSakId(sakId: SakId): Behandlinger {
+        return Behandlinger(
+            data.get().values.filter { it.sakId == sakId }.toNonEmptyListOrNull()!!,
+        )
+    }
 }

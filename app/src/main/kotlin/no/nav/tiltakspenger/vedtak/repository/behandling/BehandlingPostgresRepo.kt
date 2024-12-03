@@ -1,6 +1,5 @@
 package no.nav.tiltakspenger.vedtak.repository.behandling
 
-import arrow.core.NonEmptyList
 import arrow.core.toNonEmptyListOrNull
 import kotliquery.Row
 import kotliquery.Session
@@ -17,6 +16,7 @@ import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlinger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
@@ -48,8 +48,11 @@ class BehandlingPostgresRepo(
             hentOrNull(behandlingId, session)
         }
 
-    override fun hentAlleForIdent(fnr: Fnr): List<Behandling> =
-        sessionFactory.withSession { session ->
+    /**
+     * Denne returnerer ikke [Behandlinger] siden vi ikke har avklart om en person kan ha flere saker. I så fall vil dette bli en liste med [Behandlinger].
+     */
+    override fun hentAlleForIdent(fnr: Fnr): List<Behandling> {
+        return sessionFactory.withSession { session ->
             session.run(
                 queryOf(
                     sqlHentBehandlingForIdent,
@@ -61,6 +64,7 @@ class BehandlingPostgresRepo(
                 }.asList,
             )
         }
+    }
 
     override fun hentForSøknadId(søknadId: SøknadId): Behandling? =
         sessionFactory.withSession { session ->
@@ -110,11 +114,11 @@ class BehandlingPostgresRepo(
         internal fun hentForSakId(
             sakId: SakId,
             session: Session,
-        ): NonEmptyList<Behandling> =
+        ): Behandlinger =
             session
                 .run(
                     queryOf(
-                        sqlHentBehandlingForSak,
+                        "select b.*,s.ident, s.saksnummer from behandling b join sak s on s.id = b.sak_id where b.sak_id = :sak_id order by b.opprettet",
                         mapOf(
                             "sak_id" to sakId.toString(),
                         ),
@@ -122,6 +126,7 @@ class BehandlingPostgresRepo(
                         row.toBehandling(session)
                     }.asList,
                 ).toNonEmptyListOrNull()
+                ?.let { Behandlinger(it) }
                 ?: throw IkkeFunnetException("sak med id $sakId ikke funnet")
 
         /**
@@ -333,20 +338,16 @@ class BehandlingPostgresRepo(
             """.trimIndent()
 
         @Language("SQL")
-        private val sqlHentBehandlingForSak =
-            """
-            select b.*,s.ident, s.saksnummer from behandling b join sak s on s.id = b.sak_id where b.sak_id = :sak_id
-            """.trimIndent()
-
-        @Language("SQL")
         private val sqlHentBehandlingForIdent =
             """
             select b.*,s.ident, s.saksnummer from behandling b
               join sak s on s.id = b.sak_id
-               where s.ident = :ident
+              where s.ident = :ident
+              order by b.opprettet 
             """.trimIndent()
     }
 
+    /** Siden dette er på tvers av saker, gir det ikke mening og bruke [Behandlinger] */
     override fun hentFørstegangsbehandlingerTilDatadeling(limit: Int): List<Behandling> {
         return sessionFactory.withSession { session ->
             session.run(
@@ -358,6 +359,7 @@ class BehandlingPostgresRepo(
                     where
                       b.behandlingstype = 'FØRSTEGANGSBEHANDLING' and
                       (b.sendt_til_datadeling is null or b.sendt_til_datadeling < b.sist_endret)
+                    order by b.opprettet
                     limit :limit
                     """.trimIndent(),
                     mapOf(

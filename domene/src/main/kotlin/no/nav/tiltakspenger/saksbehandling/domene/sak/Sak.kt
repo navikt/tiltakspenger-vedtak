@@ -1,10 +1,8 @@
 package no.nav.tiltakspenger.saksbehandling.domene.sak
 
 import arrow.core.Either
-import arrow.core.NonEmptyList
 import arrow.core.getOrElse
 import arrow.core.left
-import arrow.core.nonEmptyListOf
 import arrow.core.right
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
 import no.nav.tiltakspenger.libs.common.Fnr
@@ -15,6 +13,7 @@ import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldeperioder
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlinger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
@@ -27,20 +26,13 @@ data class Sak(
     val id: SakId,
     val fnr: Fnr,
     val saksnummer: Saksnummer,
-    val behandlinger: NonEmptyList<Behandling>,
+    val behandlinger: Behandlinger,
     val rammevedtak: Rammevedtak?,
     val meldeperioder: Meldeperioder,
     val utbetalinger: Utbetalinger,
 ) {
-    // Kommentar jah: Etter MVP, når vi legger til revurdering, så må vil sakens periode også påvirkes av stansvedtak og forlengelser.
+    // TODO revurdering jah: Etter MVP, når vi legger til revurdering, så må vil sakens periode også påvirkes av stansvedtak og forlengelser.
     val vedtaksperiode: Periode? = rammevedtak?.periode
-
-    init {
-        if (behandlinger.isNotEmpty()) {
-            require(behandlinger.first().erFørstegangsbehandling) { "Første behandlingen må være en førstegangsbehandling" }
-        }
-        require(behandlinger.filter { it.erFørstegangsbehandling }.size <= 1) { "Kan ikke ha flere enn en førstegangsbehandling" }
-    }
 
     /**
      * En sak kan kun ha en førstegangsbehandling, dersom perioden til den vedtatte førstegangsbehandlingen skal utvides eller minskes (den må fortsatt være sammenhengende) må vi revurdere/omgjøre, ikke førstegangsbehandle på nytt.
@@ -89,7 +81,7 @@ data class Sak(
                 id = sakId,
                 fnr = fnr,
                 saksnummer = saksnummer,
-                behandlinger = nonEmptyListOf(førstegangsbehandling),
+                behandlinger = Behandlinger(førstegangsbehandling),
                 rammevedtak = null,
                 meldeperioder = Meldeperioder.empty(førstegangsbehandling.tiltakstype),
                 utbetalinger = Utbetalinger(emptyList()),

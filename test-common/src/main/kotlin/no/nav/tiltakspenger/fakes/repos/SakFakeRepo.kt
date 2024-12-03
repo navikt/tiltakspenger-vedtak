@@ -1,7 +1,6 @@
 package no.nav.tiltakspenger.fakes.repos
 
 import arrow.atomic.Atomic
-import arrow.core.nonEmptyListOf
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
@@ -38,7 +37,7 @@ class SakFakeRepo(
     }
 
     override fun hentForSakId(sakId: SakId): Sak? {
-        val behandlinger = nonEmptyListOf(behandlingRepo.hentFørstegangsbehandlingForSakId(sakId)!!)
+        val behandlinger = behandlingRepo.hentBehandlingerForSakId(sakId)
         return data.get()[sakId]?.copy(
             behandlinger = behandlinger,
             rammevedtak = rammevedtakRepo.hentForSakId(sakId),
