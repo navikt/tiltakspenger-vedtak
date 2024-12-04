@@ -3,7 +3,7 @@ val kotestVersion: String by rootProject.extra
 val felleslibVersion: String by rootProject.extra
 val mockkVersion: String by rootProject.extra
 
-val ktorVersion = "3.0.1"
+val ktorVersion = "3.0.2"
 val testContainersVersion = "1.20.4"
 val poaoTilgangVersjon = "2024.11.26_08.36-ad014162ce23"
 val iverksettVersjon = "1.0_20241126095338_e7e661d"
