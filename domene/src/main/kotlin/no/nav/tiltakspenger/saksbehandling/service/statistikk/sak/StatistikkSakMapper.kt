@@ -50,38 +50,40 @@ fun genererStatistikkForNyFørstegangsbehandling(
     )
 }
 
-fun genererStatistikkForIverksattFørstegangsbehandling(
-    behandling: Behandling,
+fun genererSaksstatistikkForRammevedtak(
     vedtak: Rammevedtak,
     gjelderKode6: Boolean,
     versjon: String,
 ): StatistikkSakDTO {
+    val behandling = vedtak.behandling
     return StatistikkSakDTO(
         sakId = behandling.sakId.toString(),
         saksnummer = behandling.saksnummer.toString(),
         behandlingId = vedtak.behandling.id.toString(),
+        // TODO jah: Denne vil vel kunne være en liste? Vi kan legge den på senere.
         relatertBehandlingId = null,
         ident = behandling.fnr.verdi,
-        mottattTidspunkt = behandling.søknad!!.opprettet,
+        mottattTidspunkt = if (behandling.erFørstegangsbehandling) behandling.søknad!!.opprettet else behandling.opprettet,
         registrertTidspunkt = behandling.opprettet,
         ferdigBehandletTidspunkt = vedtak.opprettet,
         vedtakTidspunkt = vedtak.opprettet,
-        endretTidspunkt = nå(),
+        endretTidspunkt = vedtak.opprettet,
         utbetaltTidspunkt = null,
         tekniskTidspunkt = nå(),
         søknadsformat = Format.DIGITAL.name,
-        forventetOppstartTidspunkt = vedtak.periode.fraOgMed,
+        // TODO jah: Hva gjør vi ved revurdering/stans i dette tilfellet. Skal vi sende førstegangsbehandling sin første innvilget fraOgMed eller null?
+        forventetOppstartTidspunkt = if (behandling.erFørstegangsbehandling) behandling.vurderingsperiode.fraOgMed else null,
         vilkår = mapVilkår(behandling.vilkårssett),
         sakYtelse = "IND",
         sakUtland = "N",
-        behandlingType = BehandlingType.FØRSTEGANGSBEHANDLING,
+        behandlingType = if (behandling.erFørstegangsbehandling) BehandlingType.FØRSTEGANGSBEHANDLING else BehandlingType.REVURDERING,
+        // TODO jah: I følge confluence-dokken så finner jeg ikke dette feltet. Burde det heller vært AVSLUTTET?
         behandlingStatus = BehandlingStatus.FERDIG_BEHANDLET,
         behandlingResultat = when (vedtak.vedtaksType) {
-            Vedtakstype.AVSLAG -> BehandlingResultat.AVSLAG
             Vedtakstype.INNVILGELSE -> BehandlingResultat.INNVILGET
             Vedtakstype.STANS -> BehandlingResultat.STANS
-            Vedtakstype.FORLENGELSE -> BehandlingResultat.FORLENGELSE
         },
+        // TODO jah: Denne bør ikke være null. Vilkårsettet sine saksopplysninger vil ha 'årsakTilEndring'.
         resultatBegrunnelse = null,
         behandlingMetode = BehandlingMetode.MANUELL.name,
 

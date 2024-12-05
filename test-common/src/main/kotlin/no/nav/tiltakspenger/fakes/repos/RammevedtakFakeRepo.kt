@@ -40,7 +40,7 @@ class RammevedtakFakeRepo : RammevedtakRepo {
         journalpostId: JournalpostId,
         tidspunkt: LocalDateTime,
     ) {
-        data.get()[id] = data.get()[id]!!.copy(journalpostId = journalpostId, journalføringstidstpunkt = tidspunkt)
+        data.get()[id] = data.get()[id]!!.copy(journalpostId = journalpostId, journalføringstidspunkt = tidspunkt)
     }
 
     override fun hentRammevedtakSomSkalDistribueres(limit: Int): List<VedtakSomSkalDistribueres> {

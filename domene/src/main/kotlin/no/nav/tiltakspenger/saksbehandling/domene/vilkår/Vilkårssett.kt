@@ -58,7 +58,8 @@ data class Vilkårssett(
         when {
             vilkårliste.any { it.samletUtfall() == SamletUtfall.UAVKLART } -> SamletUtfall.UAVKLART
             vilkårliste.all { it.samletUtfall() == SamletUtfall.OPPFYLT } -> SamletUtfall.OPPFYLT
-            vilkårliste.all { it.samletUtfall() == SamletUtfall.IKKE_OPPFYLT } -> throw StøtterIkkeUtfallException("Vi støtter ikke avslag")
+            // Her har vi allerede sjekket at ingen vilkår er uavklart. Dersom ett er IKKE_OPPFYLT, så er det samlet sett IKKE_OPPFYLT.
+            vilkårliste.any { it.samletUtfall() == SamletUtfall.IKKE_OPPFYLT } -> SamletUtfall.IKKE_OPPFYLT
             else -> throw StøtterIkkeUtfallException("Vi støtter ikke delvis oppfylt")
         }
 

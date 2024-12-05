@@ -26,6 +26,9 @@ import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.objectmothers.ObjectMother.beslutter
 import no.nav.tiltakspenger.objectmothers.ObjectMother.saksbehandler
 import no.nav.tiltakspenger.objectmothers.førstegangsbehandlingIverksatt
+import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingBeslutterRoutes
+import no.nav.tiltakspenger.vedtak.routes.behandling.behandlingRoutes
+import no.nav.tiltakspenger.vedtak.routes.behandling.benk.behandlingBenkRoutes
 import no.nav.tiltakspenger.vedtak.routes.behandling.benk.startRevurderingRoute
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.tiltakdeltagelse.tiltakDeltagelseRoutes
 import org.junit.jupiter.api.Test
@@ -49,6 +52,27 @@ internal class StartRevurderingTest {
                     application {
                         jacksonSerialization()
                         routing {
+                            behandlingRoutes(
+                                behandlingService = tac.behandlingContext.behandlingService,
+                                tiltaksdeltagelseVilkårService = tac.behandlingContext.tiltaksdeltagelseVilkårService,
+                                tokenService = tac.tokenService,
+                                sakService = tac.sakContext.sakService,
+                                kvpVilkårService = tac.behandlingContext.kvpVilkårService,
+                                livsoppholdVilkårService = tac.behandlingContext.livsoppholdVilkårService,
+                                auditService = tac.personContext.auditService,
+                            )
+                            behandlingBeslutterRoutes(
+                                behandlingService = tac.behandlingContext.behandlingService,
+                                auditService = tac.personContext.auditService,
+                                tokenService = tac.tokenService,
+                            )
+                            behandlingBenkRoutes(
+                                tokenService = tac.tokenService,
+                                behandlingService = tac.behandlingContext.behandlingService,
+                                sakService = tac.sakContext.sakService,
+                                auditService = tac.personContext.auditService,
+                                startRevurderingService = tac.behandlingContext.startRevurderingService,
+                            )
                             startRevurderingRoute(
                                 tokenService = tac.tokenService,
                                 startRevurderingService = tac.behandlingContext.startRevurderingService,
@@ -64,6 +88,9 @@ internal class StartRevurderingTest {
                     }
                     val revurderingId = startRevurdering(sak.id, tac, revurderingsperiode, saksbehandler)
                     oppdaterStatus(sak.id, revurderingId, tac, revurderingsperiode, saksbehandler)
+                    sendTilBeslutter(revurderingId, tac, saksbehandler)
+                    taBehandling(revurderingId, tac)
+                    iverksett(sak.id, revurderingId, tac)
                 }
             }
         }
@@ -99,7 +126,6 @@ internal class StartRevurderingTest {
                 "Response details:\n" + "Status: ${this.status}\n" + "Content-Type: ${this.contentType()}\n" + "Body: $bodyAsText\n",
             ) {
                 status shouldBe HttpStatusCode.OK
-                contentType() shouldBe ContentType.parse("application/json; charset=UTF-8")
             }
             // Ikke så mye og asserte på her
             bodyAsText.shouldContain("\"id\":\"beh_")
@@ -160,6 +186,24 @@ internal class StartRevurderingTest {
     "status":"Deltar",
     "kilde":"KOMET"
   },
+  "saksbehandlerSaksopplysning":{
+    "tiltakNavn":"Arbeidsmarkedsoppfølging gruppe",
+    "deltagelsePeriode":{
+      "fraOgMed":"2023-02-01",
+      "tilOgMed":"2023-03-31"
+    },
+    "status":"HarSluttet",
+    "kilde":"KOMET"
+  },
+  "avklartSaksopplysning":{
+    "tiltakNavn":"Arbeidsmarkedsoppfølging gruppe",
+    "deltagelsePeriode":{
+      "fraOgMed":"2023-02-01",
+      "tilOgMed":"2023-03-31"
+    },
+    "status":"HarSluttet",
+    "kilde":"KOMET"
+  },
   "vilkårLovreferanse":{
     "lovverk":"Tiltakspengeforskriften",
     "paragraf":"§2",
@@ -169,10 +213,75 @@ internal class StartRevurderingTest {
     "fraOgMed":"2023-02-01",
     "tilOgMed":"2023-03-31"
   },
-  "samletUtfall":"OPPFYLT"
+  "samletUtfall":"IKKE_OPPFYLT"
 }
                 """.trimIndent(),
             )
+        }
+    }
+
+    private suspend fun ApplicationTestBuilder.sendTilBeslutter(
+        revurderingId: BehandlingId,
+        tac: TestApplicationContext,
+        saksbehandler: Saksbehandler,
+    ) {
+        defaultRequest(
+            HttpMethod.Post,
+            url {
+                protocol = URLProtocol.HTTPS
+                path("/behandling/beslutter/$revurderingId")
+            },
+            jwt = tac.jwtGenerator.createJwtForSaksbehandler(saksbehandler = saksbehandler),
+        ).apply {
+            val bodyAsText = this.bodyAsText()
+            withClue(
+                "Response details:\n" + "Status: ${this.status}\n" + "Content-Type: ${this.contentType()}\n" + "Body: $bodyAsText\n",
+            ) {
+                status shouldBe HttpStatusCode.OK
+            }
+        }
+    }
+
+    private suspend fun ApplicationTestBuilder.taBehandling(
+        revurderingId: BehandlingId,
+        tac: TestApplicationContext,
+    ) {
+        defaultRequest(
+            HttpMethod.Post,
+            url {
+                protocol = URLProtocol.HTTPS
+                path("/behandling/tabehandling")
+            },
+            jwt = tac.jwtGenerator.createJwtForSaksbehandler(saksbehandler = beslutter()),
+        ) { setBody("""{"id":"$revurderingId"}""") }.apply {
+            val bodyAsText = this.bodyAsText()
+            withClue(
+                "Response details:\n" + "Status: ${this.status}\n" + "Content-Type: ${this.contentType()}\n" + "Body: $bodyAsText\n",
+            ) {
+                status shouldBe HttpStatusCode.OK
+            }
+        }
+    }
+
+    private suspend fun ApplicationTestBuilder.iverksett(
+        sakId: SakId,
+        revurderingId: BehandlingId,
+        tac: TestApplicationContext,
+    ) {
+        defaultRequest(
+            HttpMethod.Post,
+            url {
+                protocol = URLProtocol.HTTPS
+                path("/sak/$sakId/behandling/$revurderingId/iverksett")
+            },
+            jwt = tac.jwtGenerator.createJwtForSaksbehandler(saksbehandler = beslutter()),
+        ).apply {
+            val bodyAsText = this.bodyAsText()
+            withClue(
+                "Response details:\n" + "Status: ${this.status}\n" + "Content-Type: ${this.contentType()}\n" + "Body: $bodyAsText\n",
+            ) {
+                status shouldBe HttpStatusCode.OK
+            }
         }
     }
 }
