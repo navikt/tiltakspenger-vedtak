@@ -6,6 +6,7 @@ import no.nav.tiltakspenger.datadeling.ports.DatadelingGateway
 import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.CorrelationId
+import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtakstype
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.RammevedtakRepo
 
@@ -29,6 +30,10 @@ class SendTilDatadelingService(
     private suspend fun sendVedtak(correlationId: CorrelationId) {
         Either.catch {
             rammevedtakRepo.hentRammevedtakTilDatadeling().forEach { rammevedtak ->
+                if (rammevedtak.vedtaksType == Vedtakstype.STANS) {
+                    // TODO pre-revurdering jah: Legg til støtte for å sende og motta stans i tiltakspenger-datadeling. Merk at man også må lage en tidslinje i datadeling.
+                    return@forEach
+                }
                 Either.catch {
                     datadelingGateway.send(rammevedtak, correlationId).onRight {
                         logger.info { "Vedtak sendt til datadeling. VedtakId: ${rammevedtak.id}" }
@@ -49,6 +54,7 @@ class SendTilDatadelingService(
 
     private suspend fun sendBehandlinger(correlationId: CorrelationId) {
         Either.catch {
+            // Kommentar jah: Vi avventer sending av revurderingsbehandlinger til datadeling.
             behandlingRepo.hentFørstegangsbehandlingerTilDatadeling().forEach { behandling ->
                 Either.catch {
                     datadelingGateway.send(behandling, correlationId).onRight {

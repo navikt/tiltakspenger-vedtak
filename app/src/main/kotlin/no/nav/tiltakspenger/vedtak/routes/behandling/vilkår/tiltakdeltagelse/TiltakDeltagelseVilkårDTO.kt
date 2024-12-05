@@ -13,6 +13,8 @@ import no.nav.tiltakspenger.vedtak.routes.dto.toDTO
  */
 internal data class TiltakDeltagelseVilkårDTO(
     val registerSaksopplysning: TiltakDeltagelseSaksopplysningDTO,
+    val saksbehandlerSaksopplysning: TiltakDeltagelseSaksopplysningDTO?,
+    val avklartSaksopplysning: TiltakDeltagelseSaksopplysningDTO,
     val vilkårLovreferanse: LovreferanseDTO,
     val utfallperiode: PeriodeDTO,
     val samletUtfall: SamletUtfallDTO,
@@ -21,6 +23,8 @@ internal data class TiltakDeltagelseVilkårDTO(
 internal fun TiltaksdeltagelseVilkår.toDTO(): TiltakDeltagelseVilkårDTO =
     TiltakDeltagelseVilkårDTO(
         registerSaksopplysning = registerSaksopplysning.toDTO(),
+        saksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.toDTO(),
+        avklartSaksopplysning = avklartSaksopplysning.toDTO(),
         vilkårLovreferanse = lovreferanse.toDTO(),
         utfallperiode = this.utfall.totalePeriode.toDTO(),
         samletUtfall = this.samletUtfall().toDTO(),

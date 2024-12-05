@@ -16,11 +16,11 @@ data class StatistikkStønadDTO(
     val sakTilDato: LocalDate,
     val ytelse: String,
 
-    val søknadId: String,
+    val søknadId: String?,
     val opplysning: String,
-    val søknadDato: LocalDate,
-    val søknadFraDato: LocalDate,
-    val søknadTilDato: LocalDate,
+    val søknadDato: LocalDate?,
+    val søknadFraDato: LocalDate?,
+    val søknadTilDato: LocalDate?,
 
     val vedtakId: String,
     val vedtaksType: String,

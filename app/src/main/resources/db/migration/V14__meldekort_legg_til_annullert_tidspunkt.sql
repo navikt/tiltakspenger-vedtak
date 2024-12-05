@@ -1,0 +1,1 @@
+ALTER TABLE meldekort ADD COLUMN ikke_rett_til_tiltakspenger_tidspunkt TIMESTAMP WITH TIME ZONE;

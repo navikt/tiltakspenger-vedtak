@@ -28,6 +28,10 @@ class JournalførVedtaksbrevService(
     ) {
         Either.catch {
             rammevedtakRepo.hentRammevedtakSomSkalJournalføres().forEach { vedtak ->
+                if (vedtak.erStansvedtak()) {
+                    // TODO pre-revurdering jah: Legg til støtte for å generere stansbrev som skal journalføres og distribueres.
+                    return@forEach
+                }
                 log.info { "Journalfører vedtaksbrev for vedtak ${vedtak.id}" }
                 Either.catch {
                     val vedtaksdato = LocalDate.now()

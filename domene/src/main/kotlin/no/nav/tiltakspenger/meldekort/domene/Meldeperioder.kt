@@ -40,15 +40,16 @@ data class Meldeperioder(
         val utfyltMeldeperiode = ikkeUtfyltMeldekort.meldeperiode.tilUtfyltMeldeperiode(meldekortdager).getOrElse {
             return it.left()
         }
-        return ikkeUtfyltMeldekort.sendTilBeslutter(utfyltMeldeperiode, kommando.saksbehandler, kommando.navkontor).map {
-            Pair(
-                Meldeperioder(
-                    tiltakstype = tiltakstype,
-                    verdi = (verdi.dropLast(1) + it).toNonEmptyListOrNull()!!,
-                ),
-                it,
-            )
-        }
+        return ikkeUtfyltMeldekort.sendTilBeslutter(utfyltMeldeperiode, kommando.saksbehandler, kommando.navkontor)
+            .map {
+                Pair(
+                    Meldeperioder(
+                        tiltakstype = tiltakstype,
+                        verdi = (verdi.dropLast(1) + it).toNonEmptyListOrNull()!!,
+                    ),
+                    it,
+                )
+            }
     }
 
     fun hentMeldekort(meldekortId: MeldekortId): Meldekort? {
@@ -57,13 +58,17 @@ data class Meldeperioder(
 
     val periode: Periode by lazy { Periode(verdi.first().fraOgMed, verdi.last().tilOgMed) }
 
-    val utfylteMeldekort: List<UtfyltMeldekort> = verdi.filterIsInstance<UtfyltMeldekort>()
+    val utfylteMeldekort: List<UtfyltMeldekort> by lazy { verdi.filterIsInstance<UtfyltMeldekort>() }
+
+    val godkjenteMeldekort: List<UtfyltMeldekort> by lazy { utfylteMeldekort.filter { it.status == MeldekortStatus.GODKJENT } }
 
     /** Vil kun returnere hele meldekortperioder som er utfylt. Dersom siste meldekortperiode er delvis utfylt, vil ikke disse komme med. */
-    val utfylteDager: List<Meldekortdag.Utfylt> = utfylteMeldekort.flatMap { it.meldeperiode.dager }
+    val utfylteDager: List<Meldekortdag.Utfylt> by lazy { utfylteMeldekort.flatMap { it.meldeperiode.dager } }
 
     /** Så lenge saken er aktiv, vil det siste meldekortet være i tilstanden ikke utfylt. Vil også være null fram til første innvilgelse. */
-    val ikkeUtfyltMeldekort: IkkeUtfyltMeldekort? = verdi.filterIsInstance<IkkeUtfyltMeldekort>().singleOrNullOrThrow()
+    val ikkeUtfyltMeldekort: IkkeUtfyltMeldekort? by lazy {
+        verdi.filterIsInstance<IkkeUtfyltMeldekort>().singleOrNullOrThrow()
+    }
 
     val sakId: SakId by lazy { verdi.first().sakId }
 

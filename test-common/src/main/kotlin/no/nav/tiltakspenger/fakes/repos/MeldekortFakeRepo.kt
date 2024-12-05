@@ -6,7 +6,6 @@ import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
-import no.nav.tiltakspenger.meldekort.domene.Meldekort.UtfyltMeldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldeperioder
 import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo
 
@@ -21,7 +20,7 @@ class MeldekortFakeRepo : MeldekortRepo {
     }
 
     override fun oppdater(
-        meldekort: UtfyltMeldekort,
+        meldekort: Meldekort,
         transactionContext: TransactionContext?,
     ) {
         lagre(meldekort, transactionContext)
