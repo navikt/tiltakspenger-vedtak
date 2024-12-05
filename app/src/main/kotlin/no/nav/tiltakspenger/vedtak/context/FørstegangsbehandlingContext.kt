@@ -49,7 +49,7 @@ open class FørstegangsbehandlingContext(
     open val behandlingRepo: BehandlingRepo by lazy { BehandlingPostgresRepo(sessionFactory as PostgresSessionFactory) }
     val behandlingService: BehandlingService by lazy {
         BehandlingServiceImpl(
-            førstegangsbehandlingRepo = behandlingRepo,
+            behandlingRepo = behandlingRepo,
             rammevedtakRepo = rammevedtakRepo,
             meldekortRepo = meldekortRepo,
             sessionFactory = sessionFactory,
@@ -58,6 +58,7 @@ open class FørstegangsbehandlingContext(
             tilgangsstyringService = tilgangsstyringService,
             personService = personService,
             gitHash = gitHash,
+            sakService = sakService,
         )
     }
     val tiltaksdeltagelseVilkårService: TiltaksdeltagelseVilkårService by lazy {

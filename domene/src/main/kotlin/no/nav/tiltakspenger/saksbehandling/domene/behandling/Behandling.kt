@@ -76,6 +76,8 @@ data class Behandling(
     val erFørstegangsbehandling: Boolean = behandlingstype == Behandlingstype.FØRSTEGANGSBEHANDLING
     val erRevurdering: Boolean = behandlingstype == Behandlingstype.REVURDERING
 
+    val erHelePeriodenIkkeOppfylt: Boolean = samletUtfall == SamletUtfall.IKKE_OPPFYLT
+
     companion object {
         private val logger = mu.KotlinLogging.logger { }
 

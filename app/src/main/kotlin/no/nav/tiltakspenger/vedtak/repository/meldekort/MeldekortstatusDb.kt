@@ -11,6 +11,7 @@ private enum class MeldekortstatusDb {
     KLAR_TIL_UTFYLLING,
     KLAR_TIL_BESLUTNING,
     GODKJENT,
+    ANNULLERT,
 }
 
 fun String.toMeldekortStatus(): MeldekortStatus =
@@ -18,6 +19,7 @@ fun String.toMeldekortStatus(): MeldekortStatus =
         MeldekortstatusDb.KLAR_TIL_UTFYLLING -> MeldekortStatus.IKKE_UTFYLT
         MeldekortstatusDb.KLAR_TIL_BESLUTNING -> MeldekortStatus.KLAR_TIL_BESLUTNING
         MeldekortstatusDb.GODKJENT -> MeldekortStatus.GODKJENT
+        MeldekortstatusDb.ANNULLERT -> MeldekortStatus.ANNULLERT
     }
 
 fun MeldekortStatus.toDb(): String =
@@ -25,4 +27,5 @@ fun MeldekortStatus.toDb(): String =
         MeldekortStatus.IKKE_UTFYLT -> MeldekortstatusDb.KLAR_TIL_UTFYLLING
         MeldekortStatus.KLAR_TIL_BESLUTNING -> MeldekortstatusDb.KLAR_TIL_BESLUTNING
         MeldekortStatus.GODKJENT -> MeldekortstatusDb.GODKJENT
+        MeldekortStatus.ANNULLERT -> MeldekortstatusDb.ANNULLERT
     }.toString()

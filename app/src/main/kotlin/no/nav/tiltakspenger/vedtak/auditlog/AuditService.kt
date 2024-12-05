@@ -236,7 +236,7 @@ class AuditService(
         action: AuditLogEvent.Action,
         correlationId: CorrelationId,
         contextMessage: String,
-        behandlingUUID: UUID? = null,
+        behandlingId: BehandlingId? = null,
     ) {
         Either.catch {
             val berørtBrukerId = personService.hentFnrForMeldekortId(meldekortId)
@@ -246,7 +246,7 @@ class AuditService(
                     navIdent = navIdent,
                     berørtBrukerId = berørtBrukerId.verdi,
                     action = action,
-                    behandlingId = behandlingUUID,
+                    behandlingId = behandlingId?.uuid(),
                     correlationId = correlationId,
                     message = contextMessage,
                     logLevel = AuditLogEvent.Level.INFO,
@@ -261,7 +261,7 @@ class AuditService(
         action: AuditLogEvent.Action,
         correlationId: CorrelationId,
         contextMessage: String,
-        behandlingUUID: UUID? = null,
+        behandlingId: BehandlingId? = null,
     ) {
         Either.catch {
             val berørtBrukerId = personService.hentFnrForSakId(sakId)
@@ -271,7 +271,7 @@ class AuditService(
                     navIdent = navIdent,
                     berørtBrukerId = berørtBrukerId.verdi,
                     action = action,
-                    behandlingId = behandlingUUID,
+                    behandlingId = behandlingId?.uuid(),
                     correlationId = correlationId,
                     message = contextMessage,
                     logLevel = AuditLogEvent.Level.INFO,
@@ -286,7 +286,7 @@ class AuditService(
         action: AuditLogEvent.Action,
         correlationId: CorrelationId,
         contextMessage: String,
-        behandlingUUID: UUID? = null,
+        behandlingId: BehandlingId? = null,
     ) {
         Either.catch {
             val berørtBrukerId = personService.hentFnrForSaksnummer(saksnummer = saksnummer)
@@ -296,7 +296,7 @@ class AuditService(
                     navIdent = navIdent,
                     berørtBrukerId = berørtBrukerId.verdi,
                     action = action,
-                    behandlingId = behandlingUUID,
+                    behandlingId = behandlingId?.uuid(),
                     correlationId = correlationId,
                     message = contextMessage,
                     logLevel = AuditLogEvent.Level.INFO,
@@ -311,7 +311,7 @@ class AuditService(
         action: AuditLogEvent.Action,
         correlationId: CorrelationId,
         contextMessage: String,
-        behandlingUUID: UUID? = null,
+        behandlingId: BehandlingId? = null,
     ) {
         Either.catch {
             AuditLogger.log(
@@ -319,7 +319,7 @@ class AuditService(
                     navIdent = navIdent,
                     berørtBrukerId = brukerId.verdi,
                     action = action,
-                    behandlingId = behandlingUUID,
+                    behandlingId = behandlingId?.uuid(),
                     correlationId = correlationId,
                     message = contextMessage,
                     logLevel = AuditLogEvent.Level.INFO,
@@ -334,7 +334,7 @@ class AuditService(
         action: AuditLogEvent.Action,
         correlationId: CorrelationId,
         contextMessage: String,
-        behandlingUUID: UUID? = null,
+        behandlingId: BehandlingId? = null,
     ) {
         Either.catch {
             val berørtBrukerFnr = personService.hentFnrForSøknadId(søknadId)
@@ -344,7 +344,7 @@ class AuditService(
                     navIdent = navIdent,
                     berørtBrukerId = berørtBrukerFnr.verdi,
                     action = action,
-                    behandlingId = behandlingUUID,
+                    behandlingId = behandlingId?.uuid(),
                     correlationId = correlationId,
                     message = contextMessage,
                     logLevel = AuditLogEvent.Level.INFO,

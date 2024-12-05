@@ -1,0 +1,1 @@
+ALTER TABLE meldekort ADD COLUMN annullert_tidspunkt TIMESTAMP WITH TIME ZONE;

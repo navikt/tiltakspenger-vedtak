@@ -8,6 +8,7 @@ enum class MeldekortstatusDTO {
     KLAR_TIL_UTFYLLING,
     KLAR_TIL_BESLUTNING,
     GODKJENT,
+    ANNULLERT,
 }
 
 fun Meldekort.toMeldekortstatusDTO(): MeldekortstatusDTO {
@@ -17,6 +18,7 @@ fun Meldekort.toMeldekortstatusDTO(): MeldekortstatusDTO {
             MeldekortStatus.KLAR_TIL_BESLUTNING -> MeldekortstatusDTO.KLAR_TIL_BESLUTNING
             MeldekortStatus.GODKJENT -> MeldekortstatusDTO.GODKJENT
             MeldekortStatus.IKKE_UTFYLT -> throw IllegalStateException("Utfylt meldekort kan ikke ha status IKKE_UTFYLT")
+            MeldekortStatus.ANNULLERT -> MeldekortstatusDTO.ANNULLERT
         }
     }
 }

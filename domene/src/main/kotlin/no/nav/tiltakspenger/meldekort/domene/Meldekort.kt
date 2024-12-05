@@ -23,6 +23,8 @@ import java.time.LocalDateTime
 import java.time.temporal.TemporalAdjusters
 
 sealed interface Meldekort {
+    fun annuller(periode: Periode): Meldekort
+
     val id: MeldekortId
     val sakId: SakId
     val saksnummer: Saksnummer
@@ -41,6 +43,7 @@ sealed interface Meldekort {
     val navkontor: Navkontor?
     val iverksattTidspunkt: LocalDateTime?
     val sendtTilBeslutning: LocalDateTime?
+    val annullertTidspunkt: LocalDateTime?
 
     /** Totalsummen for meldeperioden */
     val beløpTotal: Int?
@@ -72,17 +75,28 @@ sealed interface Meldekort {
         override val status: MeldekortStatus,
         override val iverksattTidspunkt: LocalDateTime?,
         override val navkontor: Navkontor,
+        override val annullertTidspunkt: LocalDateTime?,
     ) : Meldekort {
 
         init {
-            require(status in listOf(MeldekortStatus.GODKJENT, MeldekortStatus.KLAR_TIL_BESLUTNING))
-            if (status == MeldekortStatus.GODKJENT) {
-                requireNotNull(iverksattTidspunkt)
-                requireNotNull(beslutter)
-                requireNotNull(sendtTilBeslutning)
-            } else {
-                require(iverksattTidspunkt == null)
-                require(beslutter == null)
+            when (status) {
+                MeldekortStatus.IKKE_UTFYLT -> throw IllegalStateException("Et utfylt meldekort kan ikke ha status IKKE_UTFYLT")
+                MeldekortStatus.KLAR_TIL_BESLUTNING -> {
+                    require(iverksattTidspunkt == null)
+                    require(beslutter == null)
+                }
+
+                MeldekortStatus.GODKJENT -> {
+                    require(annullertTidspunkt == null)
+                    requireNotNull(iverksattTidspunkt)
+                    requireNotNull(beslutter)
+                    requireNotNull(sendtTilBeslutning)
+                }
+
+                MeldekortStatus.ANNULLERT -> {
+                    require(iverksattTidspunkt == null)
+                    require(beslutter == null)
+                }
             }
         }
 
@@ -117,6 +131,7 @@ sealed interface Meldekort {
                     utfallsperioder = utfallsperioder,
                     maksDagerMedTiltakspengerForPeriode = this.meldeperiode.maksDagerMedTiltakspengerForPeriode,
                 ),
+                annullertTidspunkt = null,
             ).right()
         }
 
@@ -138,6 +153,13 @@ sealed interface Meldekort {
             ).right()
         }
 
+        override fun annuller(periode: Periode): UtfyltMeldekort {
+            return this.copy(
+                status = MeldekortStatus.ANNULLERT,
+                annullertTidspunkt = nå(),
+            )
+        }
+
         override val beløpTotal: Int = meldeperiode.beregnTotalbeløp()
     }
 
@@ -153,12 +175,14 @@ sealed interface Meldekort {
         override val tiltakstype: TiltakstypeSomGirRett,
         override val meldeperiode: Meldeperiode.IkkeUtfyltMeldeperiode,
         override val navkontor: Navkontor?,
+        override val annullertTidspunkt: LocalDateTime?,
     ) : Meldekort {
         override val iverksattTidspunkt = null
         override val sendtTilBeslutning = null
 
         override val beløpTotal = null
-        override val status = MeldekortStatus.IKKE_UTFYLT
+        override val status =
+            if (annullertTidspunkt == null) MeldekortStatus.IKKE_UTFYLT else MeldekortStatus.ANNULLERT
 
         fun sendTilBeslutter(
             utfyltMeldeperiode: Meldeperiode.UtfyltMeldeperiode,
@@ -193,14 +217,22 @@ sealed interface Meldekort {
                 status = MeldekortStatus.KLAR_TIL_BESLUTNING,
                 iverksattTidspunkt = null,
                 navkontor = navkontor,
+                annullertTidspunkt = null,
             ).right()
         }
 
         override val beslutter = null
+
         override val saksbehandler = null
 
         fun erKlarTilUtfylling(): Boolean {
             return !LocalDate.now().isBefore(periode.fraOgMed)
+        }
+
+        override fun annuller(periode: Periode): IkkeUtfyltMeldekort {
+            return this.copy(
+                annullertTidspunkt = nå(),
+            )
         }
     }
 }
@@ -231,6 +263,7 @@ fun Rammevedtak.opprettFørsteMeldekortForEnSak(): Meldekort.IkkeUtfyltMeldekort
             sakId = this.sakId,
             maksDagerMedTiltakspengerForPeriode = this.behandling.maksDagerMedTiltakspengerForPeriode,
         ),
+        annullertTidspunkt = null,
     )
 }
 
