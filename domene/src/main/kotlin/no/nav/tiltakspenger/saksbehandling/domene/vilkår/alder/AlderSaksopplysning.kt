@@ -1,16 +1,20 @@
 package no.nav.tiltakspenger.saksbehandling.domene.vilkår.alder
 
 import no.nav.tiltakspenger.felles.nå
+import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndring
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 sealed interface AlderSaksopplysning {
+
     val fødselsdato: LocalDate
     val tidsstempel: LocalDateTime
 
     val årsakTilEndring: ÅrsakTilEndring?
     val navIdent: String?
+
+    fun oppdaterPeriode(periode: Periode): AlderSaksopplysning
 
     data class Register(
         override val fødselsdato: LocalDate,
@@ -20,12 +24,17 @@ sealed interface AlderSaksopplysning {
         override val navIdent = null
 
         companion object {
-            fun opprett(fødselsdato: LocalDate): AlderSaksopplysning.Register =
+            fun opprett(fødselsdato: LocalDate): Register =
                 Register(fødselsdato = fødselsdato, tidsstempel = nå())
         }
 
         init {
             require(fødselsdato.isBefore(LocalDate.now())) { "Kan ikke ha fødselsdag frem i tid" }
+        }
+
+        /** NOOP - men åpner for muligheten å periodisere denne */
+        override fun oppdaterPeriode(periode: Periode): Register {
+            return this
         }
     }
 
@@ -37,6 +46,11 @@ sealed interface AlderSaksopplysning {
     ) : AlderSaksopplysning {
         init {
             require(fødselsdato.isBefore(LocalDate.now())) { "Kan ikke ha fødselsdag frem i tid" }
+        }
+
+        /** NOOP - men åpner for muligheten å periodisere denne */
+        override fun oppdaterPeriode(periode: Periode): Saksbehandler {
+            return this
         }
     }
 }

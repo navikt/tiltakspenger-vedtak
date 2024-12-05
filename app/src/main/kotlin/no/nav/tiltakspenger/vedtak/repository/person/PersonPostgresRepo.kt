@@ -6,7 +6,6 @@ import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.SøknadId
-import no.nav.tiltakspenger.libs.common.VedtakId
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.ports.PersonRepo
@@ -50,7 +49,7 @@ class PersonPostgresRepo(
         sessionFactory.withSession { session ->
             session.run(
                 queryOf(
-                    """select ident from søknad where behandling_id = :behandlingId""",
+                    """select s.ident from behandling b join sak s on s.id = b.sak_id where b.id = :behandlingId""",
                     mapOf(
                         "behandlingId" to behandlingId.toString(),
                     ),
@@ -67,24 +66,6 @@ class PersonPostgresRepo(
                     """select ident from søknad where id = :id""",
                     mapOf(
                         "id" to søknadId.toString(),
-                    ),
-                ).map { row ->
-                    Fnr.fromString(row.string("ident"))
-                }.asSingle,
-            )
-        }
-
-    override fun hentFnrForVedtakId(vedtakId: VedtakId): Fnr? =
-        sessionFactory.withSession { session ->
-            session.run(
-                queryOf(
-                    """
-                        select sak.ident from utbetalingsvedtak vedtak
-                        join public.sak sak on sak.id = vedtak.sak_id
-                        where vedtak.id = :vedtak_id
-                    """.trimIndent(),
-                    mapOf(
-                        "vedtak_id" to vedtakId.toString(),
                     ),
                 ).map { row ->
                     Fnr.fromString(row.string("ident"))

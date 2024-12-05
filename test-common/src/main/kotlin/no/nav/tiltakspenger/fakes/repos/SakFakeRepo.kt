@@ -25,10 +25,12 @@ class SakFakeRepo(
 
     override fun hentForFnr(fnr: Fnr): Saker = Saker(fnr, data.get().values.filter { it.fnr == fnr })
 
-    override fun hentForSaksnummer(saksnummer: Saksnummer): Sak? =
-        data.get().values.find { it.saksnummer == saksnummer }
+    override fun hentForSaksnummer(saksnummer: Saksnummer): Sak? {
+        val sakId = data.get().values.find { it.saksnummer == saksnummer }?.id ?: return null
+        return hentSak(sakId)
+    }
 
-    override fun lagre(
+    override fun opprettSakOgFørstegangsbehandling(
         sak: Sak,
         transactionContext: TransactionContext?,
     ) {
@@ -37,6 +39,17 @@ class SakFakeRepo(
     }
 
     override fun hentForSakId(sakId: SakId): Sak? {
+        return hentSak(sakId)
+    }
+
+    fun hentForBehandlingId(behandlingId: BehandlingId): Sak? {
+        val sakId = data.get().values.find { it.behandlinger.any { it.id == behandlingId } }?.id ?: return null
+        return hentSak(sakId)
+    }
+
+    private fun hentSak(
+        sakId: SakId,
+    ): Sak? {
         val behandlinger = behandlingRepo.hentBehandlingerForSakId(sakId)
         return data.get()[sakId]?.copy(
             behandlinger = behandlinger,
@@ -71,15 +84,14 @@ class SakFakeRepo(
     override fun hentFnrForSakId(
         sakId: SakId,
         sessionContext: SessionContext?,
-    ): Fnr? = data.get()[sakId]?.fnr
+    ): Fnr? {
+        return data.get()[sakId]?.fnr
+    }
 
-    override fun hentForFørstegangsbehandlingId(behandlingId: BehandlingId): Sak? =
-        data.get().values.find {
-            it.behandlinger.any { behandling -> behandling.id == behandlingId }
-        }
-
-    override fun hentForSøknadId(søknadId: SøknadId): Sak? =
-        data.get().values.find {
+    override fun hentForSøknadId(søknadId: SøknadId): Sak? {
+        val sakId = data.get().values.find {
             it.behandlinger.any { behandling -> behandling.søknad?.id == søknadId }
-        }
+        }?.id ?: return null
+        return hentSak(sakId)
+    }
 }

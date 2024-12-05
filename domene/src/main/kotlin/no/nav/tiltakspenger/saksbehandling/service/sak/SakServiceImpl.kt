@@ -112,7 +112,7 @@ class SakServiceImpl(
             )
 
         sessionFactory.withTransactionContext { tx ->
-            sakRepo.lagre(sak, tx)
+            sakRepo.opprettSakOgFørstegangsbehandling(sak, tx)
             statistikkSakRepo.lagre(statistikk, tx)
         }
 

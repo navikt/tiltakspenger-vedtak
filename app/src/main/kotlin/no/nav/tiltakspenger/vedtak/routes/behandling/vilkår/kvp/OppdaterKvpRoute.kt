@@ -14,6 +14,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.kvp.LeggTilKvpSaksoppl
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
+import no.nav.tiltakspenger.vedtak.repository.behandling.felles.ÅrsakTilEndringDbType
 import no.nav.tiltakspenger.vedtak.routes.behandling.BEHANDLING_PATH
 import no.nav.tiltakspenger.vedtak.routes.correlationId
 import no.nav.tiltakspenger.vedtak.routes.dto.PeriodeDTO
@@ -38,7 +39,7 @@ fun Route.oppdaterKvpRoute(
     data class Body(
         val ytelseForPeriode: List<DeltarForPeriode>,
         /** Drop-down i frontend. */
-        val årsakTilEndring: ÅrsakTilEndringDTO,
+        val årsakTilEndring: ÅrsakTilEndringDbType,
     ) {
         fun toCommand(
             behandlingId: BehandlingId,

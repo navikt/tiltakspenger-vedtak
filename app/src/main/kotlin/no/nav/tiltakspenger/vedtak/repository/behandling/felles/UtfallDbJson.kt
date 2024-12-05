@@ -25,13 +25,14 @@ internal data class PeriodisertUtfallDbJson(
     }
 }
 
-internal fun Periodisering<UtfallForPeriode>.toDbJson(): List<PeriodisertUtfallDbJson> =
-    this.perioder().map {
+internal fun Periodisering<UtfallForPeriode>.toDbJson(): List<PeriodisertUtfallDbJson> {
+    return this.perioderMedVerdi.map {
         PeriodisertUtfallDbJson(
             utfall = it.verdi.toDbJson(),
             periode = it.periode.toDbJson(),
         )
     }
+}
 
 internal fun UtfallForPeriode.toDbJson(): PeriodisertUtfallDbJson.UtfallDbJson =
     when (this) {

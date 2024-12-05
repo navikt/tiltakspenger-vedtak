@@ -46,6 +46,7 @@ internal fun Application.vedtakApi(
         saksbehandlerRoutes(applicationContext.tokenService)
         behandlingRoutes(
             behandlingService = applicationContext.behandlingContext.behandlingService,
+            tiltaksdeltagelseVilkårService = applicationContext.behandlingContext.tiltaksdeltagelseVilkårService,
             sakService = applicationContext.sakContext.sakService,
             kvpVilkårService = applicationContext.behandlingContext.kvpVilkårService,
             livsoppholdVilkårService = applicationContext.behandlingContext.livsoppholdVilkårService,

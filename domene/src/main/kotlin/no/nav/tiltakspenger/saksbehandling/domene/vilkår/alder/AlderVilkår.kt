@@ -32,6 +32,17 @@ data class AlderVilkår private constructor(
         )
     }
 
+    override fun oppdaterPeriode(periode: Periode): AlderVilkår {
+        val nyRegisterSaksopplysning = registerSaksopplysning.oppdaterPeriode(periode)
+        val nySaksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.oppdaterPeriode(periode)
+        return this.copy(
+            vurderingsperiode = periode,
+            saksbehandlerSaksopplysning = nySaksbehandlerSaksopplysning,
+            registerSaksopplysning = nyRegisterSaksopplysning,
+            avklartSaksopplysning = nySaksbehandlerSaksopplysning ?: nyRegisterSaksopplysning,
+        )
+    }
+
     fun leggTilSaksbehandlerSaksopplysning(command: LeggTilAlderSaksopplysningCommand): AlderVilkår {
         val introSaksopplysning =
             AlderSaksopplysning.Saksbehandler(

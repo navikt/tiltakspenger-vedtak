@@ -6,8 +6,12 @@ import no.nav.tiltakspenger.saksbehandling.domene.vilkår.felles.ÅrsakTilEndrin
 import java.time.LocalDateTime
 
 sealed interface LivsoppholdSaksopplysning {
+    fun oppdaterPeriode(periode: Periode): LivsoppholdSaksopplysning
+
     val harLivsoppholdYtelser: Boolean
     val tidsstempel: LocalDateTime
+
+    // TODO jah: Periodiser denne.
     val periode: Periode
 
     val årsakTilEndring: ÅrsakTilEndring?
@@ -20,6 +24,11 @@ sealed interface LivsoppholdSaksopplysning {
     ) : LivsoppholdSaksopplysning {
         override val navIdent = null
         override val årsakTilEndring = null
+
+        /** Støtter i førsteomgang kun å krympe perioden. Dersom man skulle utvidet den, måtte man gjort en ny vurdering og ville derfor hatt en ny saksopplysning. */
+        override fun oppdaterPeriode(periode: Periode): Søknad {
+            return copy(periode = periode)
+        }
     }
 
     data class Saksbehandler(
@@ -33,6 +42,11 @@ sealed interface LivsoppholdSaksopplysning {
             if (harLivsoppholdYtelser) {
                 throw IkkeImplementertException("Støtter ikke avslag enda.")
             }
+        }
+
+        /** Støtter i førsteomgang kun å krympe perioden. Dersom man skulle utvidet den, måtte man gjort en ny vurdering og ville derfor hatt en ny saksopplysning. */
+        override fun oppdaterPeriode(periode: Periode): Saksbehandler {
+            return copy(periode = periode)
         }
     }
 }

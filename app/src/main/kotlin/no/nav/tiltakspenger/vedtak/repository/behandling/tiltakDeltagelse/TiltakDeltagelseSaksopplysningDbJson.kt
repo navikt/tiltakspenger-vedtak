@@ -1,6 +1,8 @@
 package no.nav.tiltakspenger.vedtak.repository.behandling.tiltakDeltagelse
 
-import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltakdeltagelse.TiltakDeltagelseSaksopplysning
+import no.nav.tiltakspenger.saksbehandling.domene.vilkår.tiltaksdeltagelse.TiltaksdeltagelseSaksopplysning
+import no.nav.tiltakspenger.vedtak.repository.behandling.felles.toDbType
+import no.nav.tiltakspenger.vedtak.repository.behandling.felles.ÅrsakTilEndringDbType
 import no.nav.tiltakspenger.vedtak.repository.felles.PeriodeDbJson
 import no.nav.tiltakspenger.vedtak.repository.felles.toDbJson
 import no.nav.tiltakspenger.vedtak.repository.tiltak.toDb
@@ -17,22 +19,41 @@ internal data class TiltakDeltagelseSaksopplysningDbJson(
     val status: String,
     val kilde: String,
     val tiltakstype: String,
+    val navIdent: String?,
+    val årsakTilEndring: ÅrsakTilEndringDbType?,
 ) {
-    fun toDomain(): TiltakDeltagelseSaksopplysning =
-        TiltakDeltagelseSaksopplysning.Register(
-            tiltaksnavn = tiltakNavn,
-            eksternDeltagelseId = eksternTiltakId,
-            gjennomføringId = gjennomføringId,
-            tidsstempel = LocalDateTime.parse(tidsstempel),
-            deltagelsePeriode = deltagelsePeriode.toDomain(),
-            girRett = girRett,
-            status = status.toTiltakDeltakerstatus(),
-            kilde = kilde.toTiltakskilde(),
-            tiltakstype = tiltakstype.toTiltakstypeSomGirRett(),
-        )
+    fun toDomain(): TiltaksdeltagelseSaksopplysning {
+        return if (navIdent == null) {
+            TiltaksdeltagelseSaksopplysning.Register(
+                tiltaksnavn = tiltakNavn,
+                eksternDeltagelseId = eksternTiltakId,
+                gjennomføringId = gjennomføringId,
+                tidsstempel = LocalDateTime.parse(tidsstempel),
+                deltagelsePeriode = deltagelsePeriode.toDomain(),
+                girRett = girRett,
+                status = status.toTiltakDeltakerstatus(),
+                kilde = kilde.toTiltakskilde(),
+                tiltakstype = tiltakstype.toTiltakstypeSomGirRett(),
+            )
+        } else {
+            TiltaksdeltagelseSaksopplysning.Saksbehandler(
+                tiltaksnavn = tiltakNavn,
+                eksternDeltagelseId = eksternTiltakId,
+                gjennomføringId = gjennomføringId,
+                tidsstempel = LocalDateTime.parse(tidsstempel),
+                deltagelsePeriode = deltagelsePeriode.toDomain(),
+                girRett = girRett,
+                status = status.toTiltakDeltakerstatus(),
+                kilde = kilde.toTiltakskilde(),
+                tiltakstype = tiltakstype.toTiltakstypeSomGirRett(),
+                navIdent = navIdent,
+                årsakTilEndring = årsakTilEndring!!.toDomain(),
+            )
+        }
+    }
 }
 
-internal fun TiltakDeltagelseSaksopplysning.toDbJson(): TiltakDeltagelseSaksopplysningDbJson =
+internal fun TiltaksdeltagelseSaksopplysning.toDbJson(): TiltakDeltagelseSaksopplysningDbJson =
     TiltakDeltagelseSaksopplysningDbJson(
         tiltakNavn = tiltaksnavn,
         eksternTiltakId = eksternDeltagelseId,
@@ -43,4 +64,6 @@ internal fun TiltakDeltagelseSaksopplysning.toDbJson(): TiltakDeltagelseSaksoppl
         status = status.toDb(),
         kilde = kilde.toDb(),
         tiltakstype = tiltakstype.toDb(),
+        navIdent = navIdent,
+        årsakTilEndring = årsakTilEndring?.toDbType(),
     )

@@ -14,6 +14,8 @@ sealed interface IntroSaksopplysning {
     val årsakTilEndring: ÅrsakTilEndring?
     val navIdent: String?
 
+    fun oppdaterPeriode(periode: Periode): IntroSaksopplysning
+
     data class Søknad(
         override val deltar: Periodisering<Deltagelse>,
         override val tidsstempel: LocalDateTime,
@@ -22,10 +24,15 @@ sealed interface IntroSaksopplysning {
         override val navIdent = null
 
         init {
-            require(deltar.perioder().isNotEmpty()) { "IntroSaksopplysning må ha minst én periode, men var tom." }
+            require(deltar.isNotEmpty()) { "IntroSaksopplysning må ha minst én periode, men var tom." }
         }
 
         override val totalePeriode: Periode = deltar.totalePeriode
+
+        /** Støtter i førsteomgang kun å krympe perioden. Dersom man skulle utvidet den, måtte man gjort en ny vurdering og ville derfor hatt en ny saksopplysning. */
+        override fun oppdaterPeriode(periode: Periode): Søknad {
+            return copy(deltar = deltar.krymp(periode))
+        }
     }
 
     data class Saksbehandler(
@@ -35,9 +42,14 @@ sealed interface IntroSaksopplysning {
         override val navIdent: String,
     ) : IntroSaksopplysning {
         init {
-            require(deltar.perioder().isNotEmpty()) { "IntroSaksopplysning må ha minst én periode, men var tom." }
+            require(deltar.isNotEmpty()) { "IntroSaksopplysning må ha minst én periode, men var tom." }
         }
 
         override val totalePeriode: Periode = deltar.totalePeriode
+
+        /** Støtter i førsteomgang kun å krympe perioden. Dersom man skulle utvidet den, måtte man gjort en ny vurdering og ville derfor hatt en ny saksopplysning. */
+        override fun oppdaterPeriode(periode: Periode): Saksbehandler {
+            return copy(deltar = deltar.krymp(periode))
+        }
     }
 }

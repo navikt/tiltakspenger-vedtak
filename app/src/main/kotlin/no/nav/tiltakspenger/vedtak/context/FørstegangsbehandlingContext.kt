@@ -19,6 +19,7 @@ import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVil
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårServiceImpl
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårServiceImpl
+import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.tiltaksdeltagelse.TiltaksdeltagelseVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.distribuering.DistribuerVedtaksbrevService
 import no.nav.tiltakspenger.saksbehandling.service.journalføring.JournalførVedtaksbrevService
 import no.nav.tiltakspenger.saksbehandling.service.person.PersonService
@@ -57,6 +58,12 @@ open class FørstegangsbehandlingContext(
             tilgangsstyringService = tilgangsstyringService,
             personService = personService,
             gitHash = gitHash,
+        )
+    }
+    val tiltaksdeltagelseVilkårService: TiltaksdeltagelseVilkårService by lazy {
+        TiltaksdeltagelseVilkårService(
+            behandlingRepo = behandlingRepo,
+            behandlingService = behandlingService,
         )
     }
     val kvpVilkårService: KvpVilkårService by lazy {

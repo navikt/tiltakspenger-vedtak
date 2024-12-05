@@ -11,6 +11,7 @@ import no.nav.tiltakspenger.libs.auth.ktor.withSaksbehandler
 import no.nav.tiltakspenger.saksbehandling.service.behandling.BehandlingService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.kvp.KvpVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.livsopphold.LivsoppholdVilkårService
+import no.nav.tiltakspenger.saksbehandling.service.behandling.vilkår.tiltaksdeltagelse.TiltaksdeltagelseVilkårService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.vedtak.auditlog.AuditLogEvent
 import no.nav.tiltakspenger.vedtak.auditlog.AuditService
@@ -34,6 +35,7 @@ internal const val BEHANDLINGER_PATH = "/behandlinger"
 
 fun Route.behandlingRoutes(
     behandlingService: BehandlingService,
+    tiltaksdeltagelseVilkårService: TiltaksdeltagelseVilkårService,
     tokenService: TokenService,
     sakService: SakService,
     kvpVilkårService: KvpVilkårService,
@@ -90,7 +92,7 @@ fun Route.behandlingRoutes(
     }
 
     hentPersonRoute(tokenService, sakService, auditService)
-    tiltakDeltagelseRoutes(behandlingService, auditService, tokenService)
+    tiltakDeltagelseRoutes(behandlingService, tiltaksdeltagelseVilkårService, auditService, tokenService)
     institusjonsoppholdRoutes(behandlingService, auditService, tokenService)
     kvpRoutes(kvpVilkårService, behandlingService, auditService, tokenService)
     livsoppholdRoutes(livsoppholdVilkårService, behandlingService, auditService, tokenService)

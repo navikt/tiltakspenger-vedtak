@@ -21,6 +21,17 @@ data class InstitusjonsoppholdVilkår private constructor(
     val saksbehandlerSaksopplysning: InstitusjonsoppholdSaksopplysning.Saksbehandler?,
     val avklartSaksopplysning: InstitusjonsoppholdSaksopplysning,
 ) : Vilkår {
+    override fun oppdaterPeriode(periode: Periode): InstitusjonsoppholdVilkår {
+        val nySøknadSaksopplysning = søknadSaksopplysning.oppdaterPeriode(periode)
+        val nySaksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.oppdaterPeriode(periode)
+        return InstitusjonsoppholdVilkår(
+            vurderingsperiode = periode,
+            søknadSaksopplysning = nySøknadSaksopplysning,
+            saksbehandlerSaksopplysning = nySaksbehandlerSaksopplysning,
+            avklartSaksopplysning = nySaksbehandlerSaksopplysning ?: nySøknadSaksopplysning,
+        )
+    }
+
     override val lovreferanse = Lovreferanse.INSTITUSJONSOPPHOLD
 
     override val utfall: Periodisering<UtfallForPeriode> =

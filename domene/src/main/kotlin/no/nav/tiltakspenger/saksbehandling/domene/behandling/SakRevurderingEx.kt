@@ -28,7 +28,7 @@ fun Sak.startRevurdering(
         saksbehandler = kommando.saksbehandler.navIdent,
         sendtTilBeslutning = null,
         beslutter = null,
-        vilkårssett = vilkårssett,
+        vilkårssett = vilkårssett.oppdaterPeriode(kommando.periode),
         stønadsdager = stønadsdager,
         status = Behandlingsstatus.UNDER_BEHANDLING,
         attesteringer = emptyList(),

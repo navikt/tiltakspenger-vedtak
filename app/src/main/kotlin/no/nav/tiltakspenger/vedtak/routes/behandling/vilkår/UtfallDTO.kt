@@ -17,7 +17,7 @@ internal data class PeriodisertUtfallDTO(
 }
 
 internal fun Periodisering<UtfallForPeriode>.toDTO(): List<PeriodisertUtfallDTO> =
-    this.perioder().map {
+    this.perioderMedVerdi.map {
         PeriodisertUtfallDTO(
             utfall = it.verdi.toDTO(),
             periode = it.periode.toDTO(),

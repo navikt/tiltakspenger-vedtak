@@ -16,7 +16,6 @@ internal fun InstitusjonsoppholdSaksopplysning.toDTO(kilde: KildeDTO): Institusj
     InstitusjonsoppholdSaksopplysningDTO(
         periodeMedOpphold =
         this.opphold
-            .perioder()
             .tilEnkelPeriode()
             .toDTO(),
         årsakTilEndring =

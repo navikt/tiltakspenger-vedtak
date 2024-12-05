@@ -23,7 +23,7 @@ allprojects {
 allprojects {
     val kotlinxCoroutinesVersion by extra("1.9.0")
     val kotestVersion by extra("5.9.1")
-    val felleslibVersion by extra("0.0.290")
+    val felleslibVersion by extra("0.0.294")
     // Dependabot should find version 1.13.13 for this asap!
     val mockkVersion by extra("1.13.12")
 }

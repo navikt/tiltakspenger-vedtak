@@ -51,6 +51,17 @@ data class LivsoppholdVilkår private constructor(
             else -> throw IllegalStateException("Andre ytelser til livsopphold har ugyldig utfall")
         }
 
+    override fun oppdaterPeriode(periode: Periode): LivsoppholdVilkår {
+        val nySøknadSaksopplysning = søknadssaksopplysning.oppdaterPeriode(periode = periode)
+        val nySaksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.oppdaterPeriode(periode = periode)
+        return this.copy(
+            vurderingsperiode = periode,
+            søknadssaksopplysning = nySøknadSaksopplysning,
+            saksbehandlerSaksopplysning = nySaksbehandlerSaksopplysning,
+            avklartSaksopplysning = nySaksbehandlerSaksopplysning ?: nySøknadSaksopplysning,
+        )
+    }
+
     init {
         if (avklartSaksopplysning !=
             null

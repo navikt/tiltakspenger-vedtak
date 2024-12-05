@@ -1,11 +1,9 @@
 package no.nav.tiltakspenger.vedtak.repository.sak
 
 import kotliquery.Row
-import kotliquery.Session
 import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.felles.sikkerlogg
-import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.SøknadId
@@ -27,7 +25,6 @@ import no.nav.tiltakspenger.vedtak.repository.utbetaling.UtbetalingsvedtakPostgr
 import no.nav.tiltakspenger.vedtak.repository.vedtak.RammevedtakPostgresRepo
 import org.intellij.lang.annotations.Language
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 internal class SakPostgresRepo(
     private val sessionFactory: PostgresSessionFactory,
@@ -125,17 +122,40 @@ internal class SakPostgresRepo(
             )
         }
 
-    override fun lagre(
+    override fun opprettSakOgFørstegangsbehandling(
         sak: Sak,
         transactionContext: TransactionContext?,
     ) {
         sessionFactory.withTransaction(transactionContext) { txSession ->
-            val sistEndret = hentSistEndret(sak.id, txSession)
-            if (sistEndret == null) {
-                opprettSak(sak, txSession)
-            } else {
-                oppdaterSak(sistEndret, sak, txSession)
-            }
+            sikkerlogg.info { "Oppretter sak ${sak.id}" }
+
+            val nå = nå()
+            txSession.run(
+                queryOf(
+                    """
+                    insert into sak (
+                        id,
+                        ident,
+                        saksnummer,
+                        sist_endret,
+                        opprettet
+                    ) values (
+                        :id,
+                        :ident,
+                        :saksnummer,
+                        :sist_endret,
+                        :opprettet
+                    )
+                    """.trimIndent(),
+                    mapOf(
+                        "id" to sak.id.toString(),
+                        "ident" to sak.fnr.verdi,
+                        "saksnummer" to sak.saksnummer.verdi,
+                        "sist_endret" to nå,
+                        "opprettet" to nå,
+                    ),
+                ).asUpdate,
+            )
             BehandlingPostgresRepo.lagre(sak.førstegangsbehandling, txSession)
         }
     }
@@ -157,20 +177,6 @@ internal class SakPostgresRepo(
         } ?: saksnummerGenerator.generer(dato = iDag)
     }
 
-    override fun hentForFørstegangsbehandlingId(behandlingId: BehandlingId): Sak? =
-        sessionFactory.withSessionContext { sessionContext ->
-            sessionContext.withSession { session ->
-                session.run(
-                    queryOf(
-                        "select * from sak where id = (select sak_id from behandling where id = :behandling_id)",
-                        mapOf("behandling_id" to behandlingId.toString()),
-                    ).map { row ->
-                        row.toSak(sessionContext)
-                    }.asSingle,
-                )
-            }
-        }
-
     override fun hentForSøknadId(søknadId: SøknadId): Sak? =
         sessionFactory.withSessionContext { sessionContext ->
             sessionContext.withSession { session ->
@@ -191,65 +197,6 @@ internal class SakPostgresRepo(
         }
 
     companion object {
-
-        private fun hentSistEndret(
-            sakId: SakId,
-            session: Session,
-        ): LocalDateTime? =
-            session.run(
-                queryOf(
-                    sqlHentSistEndret,
-                    mapOf("id" to sakId.toString()),
-                ).map { row -> row.localDateTime("sist_endret") }.asSingle,
-            )
-
-        private fun oppdaterSak(
-            sistEndret: LocalDateTime,
-            sak: Sak,
-            session: Session,
-        ): Sak {
-            sikkerlogg.info { "Oppdaterer sak ${sak.id}" }
-
-            val antRaderOppdatert =
-                session.run(
-                    queryOf(
-                        sqlOppdaterSak,
-                        mapOf(
-                            "id" to sak.id.toString(),
-                            "ident" to sak.fnr.verdi,
-                            "sist_endret_old" to sistEndret,
-                            "sist_endret" to nå(),
-                        ),
-                    ).asUpdate,
-                )
-            if (antRaderOppdatert == 0) {
-                throw IllegalStateException("Noen andre har endret denne saken ${sak.id}")
-            }
-            return sak
-        }
-
-        private fun opprettSak(
-            sak: Sak,
-            session: Session,
-        ): Sak {
-            sikkerlogg.info { "Oppretter sak ${sak.id}" }
-
-            val nå = nå()
-
-            session.run(
-                queryOf(
-                    sqlOpprettSak,
-                    mapOf(
-                        "id" to sak.id.toString(),
-                        "ident" to sak.fnr.verdi,
-                        "saksnummer" to sak.saksnummer.verdi,
-                        "sist_endret" to nå,
-                        "opprettet" to nå,
-                    ),
-                ).asUpdate,
-            )
-            return sak
-        }
 
         private fun Row.toSak(sessionContext: SessionContext): Sak {
             val id = SakId.fromString(string("id"))
@@ -285,33 +232,6 @@ internal class SakPostgresRepo(
         }
 
         @Language("SQL")
-        private val sqlOpprettSak =
-            """
-            insert into sak (
-                id,
-                ident,
-                saksnummer,
-                sist_endret,
-                opprettet
-            ) values (
-                :id,
-                :ident,
-                :saksnummer,
-                :sist_endret,
-                :opprettet
-            )
-            """.trimIndent()
-
-        @Language("SQL")
-        private val sqlOppdaterSak =
-            """update sak set 
-              ident = :ident,
-              sist_endret = :sistEndret
-           where id = :id
-             and sist_endret = :sist_endret_old
-            """.trimMargin()
-
-        @Language("SQL")
         private val sqlHent =
             """select * from sak where id = :id""".trimIndent()
 
@@ -322,10 +242,6 @@ internal class SakPostgresRepo(
         @Language("SQL")
         private val sqlHentSakForSaksnummer =
             """select * from sak where saksnummer = :saksnummer""".trimIndent()
-
-        @Language("SQL")
-        private val sqlHentSistEndret =
-            """select sist_endret from sak where id = :id""".trimIndent()
 
         @Language("SQL")
         private val sqlHentNesteLøpenummer =
