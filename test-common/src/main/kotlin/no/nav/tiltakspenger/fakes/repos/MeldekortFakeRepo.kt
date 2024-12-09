@@ -9,6 +9,7 @@ import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldekort.UtfyltMeldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldeperioder
 import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo
+import java.time.LocalDateTime
 
 class MeldekortFakeRepo : MeldekortRepo {
     private val data = Atomic(mutableMapOf<MeldekortId, Meldekort>())
@@ -25,6 +26,14 @@ class MeldekortFakeRepo : MeldekortRepo {
         transactionContext: TransactionContext?,
     ) {
         lagre(meldekort, transactionContext)
+    }
+
+    override fun hentTilBrukerUtfylling(): List<Meldekort> {
+        TODO("Not yet implemented")
+    }
+
+    override fun markerSomSendtTilBrukerUtfylling(meldekortId: MeldekortId, tidspunkt: LocalDateTime) {
+        TODO("Not yet implemented")
     }
 
     fun hentForSakId(

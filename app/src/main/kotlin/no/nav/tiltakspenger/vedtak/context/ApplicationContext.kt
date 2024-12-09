@@ -91,7 +91,7 @@ open class ApplicationContext(
             utbetalingsvedtakRepo = utbetalingContext.utbetalingsvedtakRepo,
             statistikkStønadRepo = statistikkContext.statistikkStønadRepo,
             personService = personContext.personService,
-            entraIdSystemtokenClient = entraIdSystemtokenClient
+            entraIdSystemtokenClient = entraIdSystemtokenClient,
         )
     }
     open val behandlingContext by lazy {

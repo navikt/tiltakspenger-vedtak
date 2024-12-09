@@ -72,6 +72,7 @@ interface MeldekortMother {
             status = status,
             iverksattTidspunkt = iverksattTidspunkt,
             navkontor = navkontor,
+            sendtTilMeldekortApi = null,
         )
     }
 
