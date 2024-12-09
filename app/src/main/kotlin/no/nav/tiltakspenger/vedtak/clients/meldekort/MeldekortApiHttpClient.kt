@@ -15,7 +15,6 @@ import no.nav.tiltakspenger.meldekort.ports.MeldekortApiHttpClientGateway
 import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.clients.defaultHttpClient
 
-
 class MeldekortApiHttpClient(
     private val entraIdSystemtokenClient: EntraIdSystemtokenClient,
 ) : MeldekortApiHttpClientGateway {

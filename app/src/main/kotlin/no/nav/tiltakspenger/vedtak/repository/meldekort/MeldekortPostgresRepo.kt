@@ -152,10 +152,13 @@ class MeldekortPostgresRepo(
                     where id = :id                                    
                 """.trimIndent()
             session.run(
-                queryOf(query, mapOf(
-                    "id" to meldekortId.toString(),
-                    "tidspunkt" to tidspunkt
-                )).asUpdate,
+                queryOf(
+                    query,
+                    mapOf(
+                        "id" to meldekortId.toString(),
+                        "tidspunkt" to tidspunkt,
+                    ),
+                ).asUpdate,
             )
         }
     }

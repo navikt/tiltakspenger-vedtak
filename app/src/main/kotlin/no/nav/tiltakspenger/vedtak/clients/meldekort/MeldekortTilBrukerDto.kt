@@ -29,8 +29,8 @@ fun Meldekort.tilUtfyllingDTO(): MeldekortTilUtfyllingDTO {
         meldekortDager = this.meldeperiode.dager.map {
             MeldekortDagTilUtfyllingDTO(
                 dag = it.dato,
-                status = it.toStatusDTO()
+                status = it.toStatusDTO(),
             )
-        }
+        },
     )
 }
