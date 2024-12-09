@@ -69,15 +69,16 @@ fun Route.startRevurderingRoute(
                                 }
                             },
                             {
+                                val revurderingId = it.revurderinger.last().id
                                 auditService.logMedSakId(
                                     sakId = sakId,
                                     navIdent = saksbehandler.navIdent,
                                     action = AuditLogEvent.Action.CREATE,
                                     contextMessage = "Oppretter revurdering på sak $sakId",
                                     correlationId = correlationId,
+                                    behandlingId = revurderingId,
                                 )
-
-                                call.respond(HttpStatusCode.OK, BehandlingIdDTO(it.revurderinger.last().id.toString()))
+                                call.respond(HttpStatusCode.OK, BehandlingIdDTO(revurderingId.toString()))
                             },
                         )
                 }

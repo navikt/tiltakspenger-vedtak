@@ -32,6 +32,43 @@ import java.time.LocalDateTime
 
 interface MeldekortMother {
 
+    fun ikkeUtfyltMeldekort(
+        id: MeldekortId = MeldekortId.random(),
+        sakId: SakId = SakId.random(),
+        saksnummer: Saksnummer = Saksnummer.genererSaknummer(løpenr = "1001"),
+        fnr: Fnr = Fnr.random(),
+        rammevedtakId: VedtakId = VedtakId.random(),
+        periode: Periode,
+        meldekortperiode: Meldeperiode.IkkeUtfyltMeldeperiode = ikkeUtfyltMeldekortperiode(
+            meldekortId = id,
+            sakId = sakId,
+            meldeperiode = periode,
+        ),
+        meldeperiodeId: MeldeperiodeId = MeldeperiodeId.fraPeriode(meldekortperiode.periode),
+        saksbehandler: String = "saksbehandler",
+        beslutter: String = "beslutter",
+        forrigeMeldekortId: MeldekortId? = null,
+        tiltakstype: TiltakstypeSomGirRett = TiltakstypeSomGirRett.GRUPPE_AMO,
+        status: MeldekortStatus = MeldekortStatus.GODKJENT,
+        navkontor: Navkontor? = null,
+        opprettet: LocalDateTime = nå(),
+    ): Meldekort.IkkeUtfyltMeldekort {
+        return Meldekort.IkkeUtfyltMeldekort(
+            id = id,
+            meldeperiodeId = meldeperiodeId,
+            sakId = sakId,
+            saksnummer = saksnummer,
+            fnr = fnr,
+            rammevedtakId = rammevedtakId,
+            opprettet = opprettet,
+            meldeperiode = meldekortperiode,
+            forrigeMeldekortId = forrigeMeldekortId,
+            tiltakstype = tiltakstype,
+            navkontor = navkontor,
+            ikkeRettTilTiltakspengerTidspunkt = null,
+        )
+    }
+
     fun utfyltMeldekort(
         id: MeldekortId = MeldekortId.random(),
         sakId: SakId = SakId.random(),
@@ -49,7 +86,7 @@ interface MeldekortMother {
         forrigeMeldekortId: MeldekortId? = null,
         tiltakstype: TiltakstypeSomGirRett = TiltakstypeSomGirRett.GRUPPE_AMO,
         status: MeldekortStatus = MeldekortStatus.GODKJENT,
-        iverksattTidspunkt: LocalDateTime = nå(),
+        iverksattTidspunkt: LocalDateTime? = nå(),
         navkontor: Navkontor = ObjectMother.navkontor(),
         antallDagerForMeldeperiode: Int = 10,
         opprettet: LocalDateTime = nå(),
@@ -72,6 +109,7 @@ interface MeldekortMother {
             status = status,
             iverksattTidspunkt = iverksattTidspunkt,
             navkontor = navkontor,
+            ikkeRettTilTiltakspengerTidspunkt = null,
         )
     }
 
@@ -84,12 +122,39 @@ interface MeldekortMother {
         meldekortId: MeldekortId = MeldekortId.random(),
         tiltakstype: TiltakstypeSomGirRett = TiltakstypeSomGirRett.GRUPPE_AMO,
         maksDagerMedTiltakspengerForPeriode: Int = 10,
-    ): Meldeperiode.UtfyltMeldeperiode =
-        Meldeperiode.UtfyltMeldeperiode(
+    ): Meldeperiode.UtfyltMeldeperiode {
+        return Meldeperiode.UtfyltMeldeperiode(
             sakId = sakId,
             maksDagerMedTiltakspengerForPeriode = maksDagerMedTiltakspengerForPeriode,
             dager = maksAntallDeltattTiltaksdagerIMeldekortperiode(startDato, meldekortId, tiltakstype),
         )
+    }
+
+    /**
+     * @param startDato Må starte på en mandag.
+     */
+    fun ikkeUtfyltMeldekortperiode(
+        sakId: SakId = SakId.random(),
+        meldeperiode: Periode,
+        startDato: LocalDate = LocalDate.of(2023, 1, 2),
+        meldekortId: MeldekortId = MeldekortId.random(),
+        tiltakstype: TiltakstypeSomGirRett = TiltakstypeSomGirRett.GRUPPE_AMO,
+        maksDagerMedTiltakspengerForPeriode: Int = 10,
+        utfallsperioder: Periodisering<AvklartUtfallForPeriode> = Periodisering(
+            initiellVerdi = AvklartUtfallForPeriode.OPPFYLT,
+            totalePeriode = meldeperiode,
+        ),
+    ): Meldeperiode.IkkeUtfyltMeldeperiode {
+        return Meldeperiode.IkkeUtfyltMeldeperiode.fraPeriode(
+            sakId = sakId,
+            maksDagerMedTiltakspengerForPeriode = maksDagerMedTiltakspengerForPeriode,
+            meldeperiode = meldeperiode,
+            utfallsperioder = utfallsperioder,
+            tiltakstype = tiltakstype,
+            meldekortId = meldekortId,
+
+        )
+    }
 
     fun maksAntallDeltattTiltaksdagerIMeldekortperiode(
         startDato: LocalDate,
@@ -215,6 +280,7 @@ interface MeldekortMother {
                         meldekortId = meldekortId,
                         maksDagerMedTiltakspengerForPeriode = kommando.dager.size,
                     ),
+                    ikkeRettTilTiltakspengerTidspunkt = null,
                 ),
             ),
         ).sendTilBeslutter(kommando).getOrFail()
@@ -258,6 +324,7 @@ interface MeldekortMother {
                     meldekortId = meldekortId,
                     maksDagerMedTiltakspengerForPeriode = kommando.dager.size,
                 ),
+                ikkeRettTilTiltakspengerTidspunkt = null,
             ),
         ).sendTilBeslutter(kommando).getOrFail().first
     }

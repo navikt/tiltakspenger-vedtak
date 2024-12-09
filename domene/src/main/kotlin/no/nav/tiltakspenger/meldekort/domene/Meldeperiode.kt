@@ -82,6 +82,38 @@ sealed interface Meldeperiode : List<Meldekortdag> {
 
         private val log = mu.KotlinLogging.logger {}
 
+        fun settPeriodeTilSperret(periode: Periode): IkkeUtfyltMeldeperiode {
+            return this.copy(
+                dager = this.dager.map {
+                    if (periode.inneholder(it.dato)) {
+                        Meldekortdag.Utfylt.Sperret(
+                            dato = it.dato,
+                            meldekortId = it.meldekortId,
+                            tiltakstype = it.tiltakstype,
+                        )
+                    } else {
+                        it
+                    }
+                }.toNonEmptyListOrNull()!!,
+            )
+        }
+
+        /**
+         * Brukes når et nytt vedtak sperrer hele denne meldeperioden.
+         */
+        fun settAlleDagerTilSperret(): IkkeUtfyltMeldeperiode {
+            return this.copy(
+                maksDagerMedTiltakspengerForPeriode = 0,
+                dager = dager.map {
+                    Meldekortdag.Utfylt.Sperret(
+                        dato = it.dato,
+                        meldekortId = it.meldekortId,
+                        tiltakstype = it.tiltakstype,
+                    )
+                }.toNonEmptyListOrNull()!!,
+            )
+        }
+
         companion object {
             /**
              * @param meldeperiode Perioden meldekortet skal gjelde for. Må være 14 dager, starte på en mandag og slutte på en søndag.

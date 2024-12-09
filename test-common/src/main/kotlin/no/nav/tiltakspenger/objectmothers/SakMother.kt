@@ -129,7 +129,7 @@ interface SakMother {
             val iverksattBehandling = it.førstegangsbehandling.iverksett(beslutter, godkjentAttestering())
             it.copy(
                 behandlinger = Behandlinger(iverksattBehandling),
-                rammevedtak = iverksattBehandling.opprettVedtak(),
+                rammevedtak = it.opprettVedtak(iverksattBehandling),
             )
         }
     }

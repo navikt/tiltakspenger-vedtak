@@ -5,6 +5,7 @@ import no.nav.tiltakspenger.felles.Systembruker
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.Saksbehandler
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
@@ -68,6 +69,7 @@ interface BehandlingService {
         behandlingId: BehandlingId,
         beslutter: Saksbehandler,
         correlationId: CorrelationId,
+        sakId: SakId,
     ): Either<KanIkkeIverksetteBehandling, Behandling>
 
     suspend fun taBehandling(

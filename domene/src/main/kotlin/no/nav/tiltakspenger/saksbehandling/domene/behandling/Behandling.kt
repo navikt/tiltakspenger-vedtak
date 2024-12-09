@@ -76,6 +76,8 @@ data class Behandling(
     val erFørstegangsbehandling: Boolean = behandlingstype == Behandlingstype.FØRSTEGANGSBEHANDLING
     val erRevurdering: Boolean = behandlingstype == Behandlingstype.REVURDERING
 
+    val erHelePeriodenIkkeOppfylt: Boolean = samletUtfall == SamletUtfall.IKKE_OPPFYLT
+
     companion object {
         private val logger = mu.KotlinLogging.logger { }
 
@@ -180,8 +182,11 @@ data class Behandling(
         }
 
     fun tilBeslutning(saksbehandler: Saksbehandler): Behandling {
-        if (vilkårssett.samletUtfall != SamletUtfall.OPPFYLT) {
-            throw IllegalStateException("Kan ikke sende en behandling til beslutning som ikke er innvilget i MVP 1")
+        if (behandlingstype == Behandlingstype.FØRSTEGANGSBEHANDLING && vilkårssett.samletUtfall != SamletUtfall.OPPFYLT) {
+            throw IllegalStateException("Kan ikke sende en behandling til beslutning som ikke er innvilget i MVP")
+        }
+        if (behandlingstype == Behandlingstype.REVURDERING && vilkårssett.samletUtfall != SamletUtfall.IKKE_OPPFYLT) {
+            throw IllegalStateException("Kan ikke sende en revurdering til beslutning som er (delvis)innvilget i MVP")
         }
         check(status == UNDER_BEHANDLING) {
             "Behandlingen må være under behandling, det innebærer også at en saksbehandler må ta saken før den kan sendes til beslutter. Behandlingsstatus: ${this.status}. Utøvende saksbehandler: $saksbehandler. Saksbehandler på behandling: ${this.saksbehandler}"
@@ -199,8 +204,11 @@ data class Behandling(
         utøvendeBeslutter: Saksbehandler,
         attestering: Attestering,
     ): Behandling {
-        if (vilkårssett.samletUtfall != SamletUtfall.OPPFYLT) {
-            throw IllegalStateException("Kan ikke iverksette en behandling som ikke er innvilget i MVP 1")
+        if (this.behandlingstype == Behandlingstype.FØRSTEGANGSBEHANDLING && vilkårssett.samletUtfall != SamletUtfall.OPPFYLT) {
+            throw IllegalStateException("Kan ikke iverksette en førstegangsbehandling som ikke er innvilget i MVP")
+        }
+        if (this.behandlingstype == Behandlingstype.REVURDERING && vilkårssett.samletUtfall != SamletUtfall.IKKE_OPPFYLT) {
+            throw IllegalStateException("Kan ikke iverksette en revurdering som ikke er 'IKKE_OPPFYLT' i MVP")
         }
         return when (status) {
             UNDER_BESLUTNING -> {
