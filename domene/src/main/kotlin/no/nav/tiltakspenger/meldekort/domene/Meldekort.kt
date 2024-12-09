@@ -41,6 +41,7 @@ sealed interface Meldekort {
     val navkontor: Navkontor?
     val iverksattTidspunkt: LocalDateTime?
     val sendtTilBeslutning: LocalDateTime?
+    val sendtTilMeldekortApi: LocalDateTime?
 
     /** Totalsummen for meldeperioden */
     val beløpTotal: Int?
@@ -72,6 +73,7 @@ sealed interface Meldekort {
         override val status: MeldekortStatus,
         override val iverksattTidspunkt: LocalDateTime?,
         override val navkontor: Navkontor,
+        override val sendtTilMeldekortApi: LocalDateTime?,
     ) : Meldekort {
 
         init {
@@ -156,6 +158,7 @@ sealed interface Meldekort {
     ) : Meldekort {
         override val iverksattTidspunkt = null
         override val sendtTilBeslutning = null
+        override val sendtTilMeldekortApi = null
 
         override val beløpTotal = null
         override val status = MeldekortStatus.IKKE_UTFYLT
@@ -193,6 +196,7 @@ sealed interface Meldekort {
                 status = MeldekortStatus.KLAR_TIL_BESLUTNING,
                 iverksattTidspunkt = null,
                 navkontor = navkontor,
+                sendtTilMeldekortApi = this.sendtTilMeldekortApi,
             ).right()
         }
 

@@ -82,6 +82,8 @@ object Configuration {
                 "MICROSOFT_URL" to "host.docker.internal:8091",
                 "DATADELING_SCOPE" to "localhost",
                 "DATADELING_URL" to "http://host.docker.internal:8082",
+                "MELDEKORT_API_SCOPE" to "localhost",
+                "MELDEKORT_API_URL" to "http://localhost:8083",
             ),
         )
 
@@ -111,6 +113,8 @@ object Configuration {
                 "MICROSOFT_URL" to "graph.microsoft.com/v1.0",
                 "DATADELING_SCOPE" to "api://dev-gcp.tpts.tiltakspenger-datadeling/.default",
                 "DATADELING_URL" to "http://tiltakspenger-datadeling",
+                "MELDEKORT_API_SCOPE" to "api://dev-gcp.tpts.tiltakspenger-meldekort-api/.default",
+                "MELDEKORT_API_URL" to "http://tiltakspenger-meldekort-api",
             ),
         )
     private val prodProperties =
@@ -139,6 +143,8 @@ object Configuration {
                 "MICROSOFT_URL" to "graph.microsoft.com/v1.0",
                 "DATADELING_SCOPE" to "api://prod-gcp.tpts.tiltakspenger-datadeling/.default",
                 "DATADELING_URL" to "http://tiltakspenger-datadeling",
+                "MELDEKORT_API_SCOPE" to "api://prod-gcp.tpts.tiltakspenger-meldekort-api/.default",
+                "MELDEKORT_API_URL" to "http://tiltakspenger-meldekort-api",
             ),
         )
 
@@ -201,6 +207,7 @@ object Configuration {
     val utbetalingScope: String by lazy { config()[Key("UTBETALING_SCOPE", stringType)] }
     val microsoftScope: String by lazy { config()[Key("MICROSOFT_SCOPE", stringType)] }
     val datadelingScope: String by lazy { config()[Key("DATADELING_SCOPE", stringType)] }
+    val meldekortApiScope: String by lazy { config()[Key("MELDEKORT_API_SCOPE", stringType)] }
 
     val pdlUrl by lazy { config()[Key("PDL_ENDPOINT_URL", stringType)] }
     val pdlPipUrl by lazy { config()[Key("PDL_PIP_ENDPOINT_URL", stringType)] }
@@ -213,6 +220,7 @@ object Configuration {
     val utbetalingUrl: String by lazy { config()[Key("UTBETALING_URL", stringType)] }
     val microsoftUrl: String by lazy { config()[Key("MICROSOFT_URL", stringType)] }
     val datadelingUrl: String by lazy { config()[Key("DATADELING_URL", stringType)] }
+    val meldekortApiUrl: String by lazy { config()[Key("MELDEKORT_API_URL", stringType)] }
 
     fun httpPort() = config()[Key("application.httpPort", intType)]
 
