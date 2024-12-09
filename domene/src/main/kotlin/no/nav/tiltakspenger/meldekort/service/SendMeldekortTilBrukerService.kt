@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.meldekort.service
 
 import mu.KotlinLogging
+import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.meldekort.ports.MeldekortApiHttpClientGateway
 import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo
 
@@ -13,7 +14,7 @@ class SendMeldekortTilBrukerService(
 ) {
     private val logger = KotlinLogging.logger { }
 
-    suspend fun send() {
+    suspend fun send(correlationId: CorrelationId) {
         val meldekortTilUtfylling = meldekortRepo.hentTilBrukerUtfylling()
 
         logger.info("Fant ${meldekortTilUtfylling.count()} meldekort for sending til meldekort-api")
@@ -23,7 +24,7 @@ class SendMeldekortTilBrukerService(
                 logger.info { "Sendte meldekort til utfylling med id ${meldekort.id} for ${meldekort.fnr}" }
 //                meldekortRepo.markerSomSendtTilBrukerUtfylling(meldekort.id, nå())
             }.onLeft {
-                logger.error { "Kunne ikke sende meldekort til utfylling med id ${meldekort.id} for ${meldekort.fnr}" }
+                logger.error { "Kunne ikke sende meldekort til utfylling med id ${meldekort.id} for ${meldekort.fnr} - $correlationId" }
             }
         }
     }
