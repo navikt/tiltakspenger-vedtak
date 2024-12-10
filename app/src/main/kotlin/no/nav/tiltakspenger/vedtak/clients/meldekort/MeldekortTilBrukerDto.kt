@@ -40,6 +40,7 @@ data class MeldekortDagTilBrukerDTO(
 
 data class MeldekortTilBrukerDTO(
     val id: String,
+    val fnr: String,
     val fraOgMed: LocalDate,
     val tilOgMed: LocalDate,
     val status: MeldekortStatusTilBruker,
@@ -49,6 +50,7 @@ data class MeldekortTilBrukerDTO(
 fun Meldekort.tilBrukerDTO(): MeldekortTilBrukerDTO {
     return MeldekortTilBrukerDTO(
         id = this.id.toString(),
+        fnr = this.fnr.verdi,
         fraOgMed = this.fraOgMed,
         tilOgMed = this.tilOgMed,
         status = this.tilBrukerStatusDTO(),

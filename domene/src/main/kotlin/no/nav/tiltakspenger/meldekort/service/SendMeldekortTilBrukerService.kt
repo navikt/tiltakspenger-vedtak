@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.meldekort.service
 
 import arrow.core.Either
 import mu.KotlinLogging
+import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.meldekort.ports.MeldekortApiHttpClientGateway
 import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo
 
@@ -23,7 +24,7 @@ class SendMeldekortTilBrukerService(
             meldekortTilUtfylling.forEach { meldekort ->
                 meldekortApiHttpClient.sendMeldekort(meldekort).onRight {
                     logger.debug { "Sendte meldekort til utfylling med id ${meldekort.id}" }
-//                meldekortRepo.markerSomSendtTilBrukerUtfylling(meldekort.id, nå())
+                    meldekortRepo.markerSomSendtTilBrukerUtfylling(meldekort.id, nå())
                 }.onLeft {
                     logger.error { "Kunne ikke sende meldekort til utfylling med id ${meldekort.id}" }
                 }
