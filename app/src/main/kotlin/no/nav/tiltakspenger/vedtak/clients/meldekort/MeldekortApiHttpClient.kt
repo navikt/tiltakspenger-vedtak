@@ -25,7 +25,7 @@ class MeldekortApiHttpClient(
 
     override suspend fun sendMeldekort(meldekort: Meldekort): Either<FeilVedSendingTilMeldekortApi, Unit> {
         return Either.catch {
-            val body = meldekort.tilUtfyllingDTO()
+            val body = meldekort.tilBrukerDTO()
             val token = entraIdSystemtokenClient.getSystemtoken(scope)
             val response = client.preparePost("$baseUrl/saksbehandling/meldekort") {
                 bearerAuth(token.token)

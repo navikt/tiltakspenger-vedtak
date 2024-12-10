@@ -15,8 +15,6 @@ class SendMeldekortTilBrukerService(
     private val logger = KotlinLogging.logger { }
 
     suspend fun send() {
-        logger.info("Prøver å hente meldekort som skal sendes til bruker!")
-
         Either.catch {
             val meldekortTilUtfylling = meldekortRepo.hentTilBrukerUtfylling()
 
