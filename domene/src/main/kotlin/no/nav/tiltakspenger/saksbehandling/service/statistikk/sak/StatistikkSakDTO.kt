@@ -8,22 +8,28 @@ data class StatistikkSakDTO(
     val sakId: String,
     val saksnummer: String,
     val behandlingId: String,
+    /** Hvis behandlingen har oppstått med bakgrunn i en annen, skal den foregående behandlingen refereres til her. Når det gjelder klage skal denne vise til påklaget behandling. */
     val relatertBehandlingId: String?,
     val ident: String,
-    // tidspunkt da behandlingen oppstår (søknad mottatt)
+    // TODO jah: Her skriver de at de ikke ønsker millisekunder. Men vi lagrer den med millisekunder. Bør vi gjøre en avsjekk med team statistikk sak? Bør gå over alle stedet vi bruker tidspunkt/LocalDateTime.
+    /** Tidspunktet da behandlingen oppstår (eks. søknad mottas). Dette er starten på beregning av saksbehandlingstid. Denne verdien må være før eller samtidig som registrertTidspunkt. Dette feltet må være utfylt bør behandlingen avsluttes. Tidligere meldinger må re-sendes ved oppdatering av dette feltet. */
     val mottattTidspunkt: LocalDateTime,
-    // tidspunkt da behandlingen registreres i basen
+    /** Tidspunkt da behandlingen første gang ble registrert i fagsystemet. Ved digitale søknader bør denne være tilnærmet lik mottatt tid. */
     val registrertTidspunkt: LocalDateTime,
+    /** Tidspunkt når behandlinge ble avsluttet, enten avbrutt, henlagt, vedtak innvilget/avslått osv. */
     val ferdigBehandletTidspunkt: LocalDateTime?,
+    /** TODO jah: Jeg finner ikke denne i confluence-siden til navdvh. Gir det mening og ta den vekk og heller bruke [ferdigBehandletTidspunkt] */
     val vedtakTidspunkt: LocalDateTime?,
-    // nå
+    /** Også kalt funksjonell tid. Tidspunkt for siste endring på behandlingen. Ved første melding vil denne være lik registrert tid. */
     val endretTidspunkt: LocalDateTime,
+    /** Tidspunkt for første utbetaling av ytelse. */
     val utbetaltTidspunkt: LocalDateTime?,
     // papir, digital
     val søknadsformat: String,
-    // forventet oppstart av tiltak
-    val forventetOppstartTidspunkt: LocalDate,
-    // forventet oppstart av tiltak
+
+    /** Hvis systemet eller bruker har et forhold til når ytelsen normalt skal utbetales (planlagt uttak, ønsket oppstart etc.) */
+    val forventetOppstartTidspunkt: LocalDate?,
+    /** Tidspunktet da fagsystemet legger hendelsen på grensesnittet/topicen. */
     val tekniskTidspunkt: LocalDateTime,
     val vilkår: List<VilkårStatistikkDTO>,
     // IND
@@ -45,11 +51,11 @@ data class StatistikkSakDTO(
     val ansvarligBeslutter: String?,
     // Settes til -5 hvis kode 6
     val ansvarligEnhet: String?,
-    // beløp som skal tilbakekreves
+    /** Kun for tilbakekreving: beløp som skal tilbakekreves */
     val tilbakekrevingsbeløp: Double?,
-    // funksjonell periode for tilbakekreving
+    /** Kun for tilbakekreving: funksjonell periode for tilbakekreving */
     val funksjonellPeriodeFom: LocalDate?,
-    // funksjonell periode for tilbakekreving
+    /** Kun for tilbakekreving: funksjonell periode for tilbakekreving */
     val funksjonellPeriodeTom: LocalDate?,
     val avsender: String,
     // commit hash

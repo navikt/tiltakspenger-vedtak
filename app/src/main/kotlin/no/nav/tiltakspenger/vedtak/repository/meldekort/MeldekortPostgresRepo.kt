@@ -89,7 +89,7 @@ class MeldekortPostgresRepo(
     }
 
     override fun oppdater(
-        meldekort: UtfyltMeldekort,
+        meldekort: Meldekort,
         transactionContext: TransactionContext?,
     ) {
         sessionFactory.withTransaction(transactionContext) { tx ->
@@ -112,7 +112,7 @@ class MeldekortPostgresRepo(
                         "saksbehandler" to meldekort.saksbehandler,
                         "beslutter" to meldekort.beslutter,
                         "status" to meldekort.status.toDb(),
-                        "navkontor" to meldekort.navkontor.kontornummer,
+                        "navkontor" to meldekort.navkontor?.kontornummer,
                         "iverksatt_tidspunkt" to meldekort.iverksattTidspunkt,
                         "sendt_til_beslutning" to meldekort.sendtTilBeslutning,
                     ),
@@ -135,7 +135,6 @@ class MeldekortPostgresRepo(
             meldekortId: MeldekortId,
             session: Session,
         ): Meldekort? {
-            // TODO post-mvp jah: Når vi legger til revurdering, må denne endres dersom vi får nye tabeller for revurdering og/eller dets vedtak.
             return session.run(
                 queryOf(
                     """
@@ -219,6 +218,7 @@ class MeldekortPostgresRepo(
                         status = row.string("status").toMeldekortStatus(),
                         iverksattTidspunkt = row.localDateTimeOrNull("iverksatt_tidspunkt"),
                         navkontor = navkontor!!,
+                        ikkeRettTilTiltakspengerTidspunkt = row.localDateTimeOrNull("ikke_rett_til_tiltakspenger_tidspunkt"),
                     )
                 }
 
@@ -241,6 +241,7 @@ class MeldekortPostgresRepo(
                         forrigeMeldekortId = forrigeMeldekortId,
                         tiltakstype = meldekortperiode.tiltakstype,
                         navkontor = navkontor,
+                        ikkeRettTilTiltakspengerTidspunkt = row.localDateTimeOrNull("ikke_rett_til_tiltakspenger_tidspunkt"),
                     )
                 }
 

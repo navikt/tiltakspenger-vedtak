@@ -26,11 +26,11 @@ fun genererStønadsstatistikkForRammevedtak(
         sakTilDato = vedtak.periode.tilOgMed,
         ytelse = "IND",
 
-        søknadId = vedtak.behandling.søknad!!.id.toString(),
+        søknadId = vedtak.behandling.søknad?.id?.toString(),
         opplysning = "",
-        søknadDato = vedtak.behandling.søknad.opprettet.toLocalDate(),
-        søknadFraDato = vedtak.behandling.søknad.tiltak.deltakelseFom,
-        søknadTilDato = vedtak.behandling.søknad.tiltak.deltakelseTom,
+        søknadDato = vedtak.behandling.søknad?.opprettet?.toLocalDate(),
+        søknadFraDato = vedtak.behandling.søknad?.tiltak?.deltakelseFom,
+        søknadTilDato = vedtak.behandling.søknad?.tiltak?.deltakelseTom,
 
         vedtakId = vedtak.id.toString(),
         vedtaksType = "Ny Rettighet",

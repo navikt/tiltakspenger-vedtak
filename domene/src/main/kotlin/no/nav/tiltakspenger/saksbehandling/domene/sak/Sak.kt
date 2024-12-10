@@ -5,6 +5,7 @@ import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
+import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
 import no.nav.tiltakspenger.libs.common.SakId
@@ -53,6 +54,8 @@ data class Sak(
 
     /** Den er kun trygg inntil vi støtter mer enn ett tiltak på én sak. */
     fun hentTiltaksnavn(): String? = rammevedtak?.behandling?.tiltaksnavn
+
+    fun hentBehandling(behandlingId: BehandlingId): Behandling? = behandlinger.hentBehandling(behandlingId)
 
     companion object {
         fun lagSak(

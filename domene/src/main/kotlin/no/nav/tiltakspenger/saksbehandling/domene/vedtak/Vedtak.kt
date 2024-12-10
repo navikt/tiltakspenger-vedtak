@@ -12,4 +12,6 @@ interface Vedtak {
 
     // TODO post-mvp jah: Dette er nok en forenkling, siden må kunne anta at antallDagerForMeldeperiode forandrer seg innenfor et vedtak.
     val antallDagerPerMeldeperiode: Int
+
+    fun erStansvedtak(): Boolean
 }

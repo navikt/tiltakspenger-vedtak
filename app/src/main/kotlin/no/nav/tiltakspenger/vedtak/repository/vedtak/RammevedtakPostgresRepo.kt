@@ -13,7 +13,6 @@ import no.nav.tiltakspenger.libs.common.VedtakId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
-import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtakstype
 import no.nav.tiltakspenger.saksbehandling.ports.RammevedtakRepo
@@ -29,7 +28,7 @@ class RammevedtakPostgresRepo(
         return sessionFactory.withSession { session ->
             session.run(
                 queryOf(
-                    "select v.*, s.saksnummer from rammevedtak v join sak s on s.id = v.sak_id where v.id = :id",
+                    "select * from rammevedtak where id = :id",
                     mapOf(
                         "id" to vedtakId.toString(),
                     ),
@@ -46,9 +45,8 @@ class RammevedtakPostgresRepo(
                 session.run(
                     queryOf(
                         """
-                            select v.*,
-                                   s.saksnummer
-                              from rammevedtak v
+                            select v.*
+                            from rammevedtak v
                             join sak s
                               on s.id = v.sak_id 
                             where s.ident = :ident
@@ -70,11 +68,9 @@ class RammevedtakPostgresRepo(
             session.run(
                 queryOf(
                     """
-                    select v.*, s.saksnummer
-                    from rammevedtak v
-                    join sak s 
-                      on s.id = v.sak_id
-                    where v.journalpost_id is null
+                    select *
+                    from rammevedtak
+                    where journalpost_id is null
                     limit :limit
                     """.trimIndent(),
                     mapOf(
@@ -182,11 +178,9 @@ class RammevedtakPostgresRepo(
             session.run(
                 queryOf(
                     """
-                    select v.*, s.saksnummer
-                    from rammevedtak v
-                    join sak s 
-                      on s.id = v.sak_id
-                    where v.sendt_til_datadeling is null
+                    select *
+                    from rammevedtak
+                    where sendt_til_datadeling is null
                     limit $limit
                     """.trimIndent(),
                 ).map { row ->
@@ -212,7 +206,7 @@ class RammevedtakPostgresRepo(
         ): Rammevedtak? {
             return session.run(
                 queryOf(
-                    "select v.*, s.saksnummer from rammevedtak v join sak s on s.id = v.sak_id where v.sak_id = :sak_id",
+                    "select * from rammevedtak where sak_id = :sak_id",
                     mapOf(
                         "sak_id" to sakId.toString(),
                     ),
@@ -276,7 +270,6 @@ class RammevedtakPostgresRepo(
             return Rammevedtak(
                 id = id,
                 sakId = SakId.fromString(string("sak_id")),
-                saksnummer = Saksnummer(string("saksnummer")),
                 behandling =
                 BehandlingPostgresRepo.hentOrNull(
                     BehandlingId.fromString(string("behandling_id")),
@@ -285,10 +278,8 @@ class RammevedtakPostgresRepo(
                 vedtaksdato = localDateOrNull("vedtaksdato"),
                 vedtaksType = Vedtakstype.valueOf(string("vedtakstype")),
                 periode = Periode(fraOgMed = localDate("fra_og_med"), tilOgMed = localDate("til_og_med")),
-                saksbehandlerNavIdent = string("saksbehandler"),
-                beslutterNavIdent = string("beslutter"),
                 journalpostId = stringOrNull("journalpost_id")?.let { JournalpostId(it) },
-                journalføringstidstpunkt = localDateTimeOrNull("journalføringstidspunkt"),
+                journalføringstidspunkt = localDateTimeOrNull("journalføringstidspunkt"),
                 distribusjonId = stringOrNull("distribusjon_id")?.let { DistribusjonId(it) },
                 distribusjonstidspunkt = localDateTimeOrNull("distribusjonstidspunkt"),
                 sendtTilDatadeling = localDateTimeOrNull("sendt_til_datadeling"),

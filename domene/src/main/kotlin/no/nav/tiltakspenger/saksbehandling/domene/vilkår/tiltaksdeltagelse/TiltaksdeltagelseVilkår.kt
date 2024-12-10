@@ -25,13 +25,16 @@ data class TiltaksdeltagelseVilkår private constructor(
     private val logger = KotlinLogging.logger { }
 
     init {
+        if (saksbehandlerSaksopplysning != null) {
+            require(avklartSaksopplysning == saksbehandlerSaksopplysning) { "Avklart saksopplysning må være lik saksbehandler saksopplysning" }
+        }
         check(vurderingsperiode == registerSaksopplysning.deltagelsePeriode) { "Vurderingsperioden ($vurderingsperiode) må være lik deltagelsesperioden (${registerSaksopplysning.deltagelsePeriode})" }
     }
 
     override val utfall: Periodisering<UtfallForPeriode> = run {
-        val rettTilTiltakspenger = registerSaksopplysning.girRett
-        val deltagelsePeriode = registerSaksopplysning.deltagelsePeriode
-        val status = registerSaksopplysning.status
+        val rettTilTiltakspenger = avklartSaksopplysning.girRett
+        val deltagelsePeriode = avklartSaksopplysning.deltagelsePeriode
+        val status = avklartSaksopplysning.status
         val rettTilÅSøke = status.rettTilÅSøke
 
         if (!rettTilÅSøke || !rettTilTiltakspenger) {
@@ -40,7 +43,7 @@ data class TiltaksdeltagelseVilkår private constructor(
                 "Per dags dato får brukere kun søke dersom vi har whitelistet tiltakets status og klassekode. Dette tiltaket fører til avslag. RettTilÅSøke: $rettTilÅSøke og RettTilTiltakspenger: $rettTilTiltakspenger",
             )
         }
-        Periodisering(UtfallForPeriode.OPPFYLT, deltagelsePeriode)
+        Periodisering(avklartSaksopplysning.utfallForPeriode, deltagelsePeriode)
     }
 
     override fun oppdaterPeriode(periode: Periode): TiltaksdeltagelseVilkår {

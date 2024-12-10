@@ -1,9 +1,13 @@
 package no.nav.tiltakspenger.vedtak.repository.meldekort
 
 import io.kotest.matchers.shouldBe
+import no.nav.tiltakspenger.felles.Navkontor
+import no.nav.tiltakspenger.felles.januar
+import no.nav.tiltakspenger.felles.mars
 import no.nav.tiltakspenger.libs.common.getOrFail
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
+import no.nav.tiltakspenger.meldekort.domene.Meldeperioder
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.AvklartUtfallForPeriode
 import no.nav.tiltakspenger.vedtak.db.persisterIverksattFørstegangsbehandling
@@ -11,6 +15,7 @@ import no.nav.tiltakspenger.vedtak.db.withMigratedDb
 import org.junit.jupiter.api.Test
 
 class MeldekortRepoImplTest {
+
     @Test
     fun `kan lagre og hente`() {
         withMigratedDb { testDataHelper ->
@@ -34,10 +39,13 @@ class MeldekortRepoImplTest {
             ).getOrFail()
             val meldekortRepo = testDataHelper.meldekortRepo
             meldekortRepo.lagre(meldekort)
-            val hentForMeldekortId = testDataHelper.sessionFactory.withSession {
-                MeldekortPostgresRepo.hentForMeldekortId(meldekort.id, it)!!
+            testDataHelper.sessionFactory.withSession {
+                MeldekortPostgresRepo.hentForMeldekortId(meldekort.id, it)!! shouldBe meldekort
+                MeldekortPostgresRepo.hentForSakId(sak.id, it)!! shouldBe Meldeperioder(
+                    meldekort.tiltakstype,
+                    listOf(meldekort),
+                )
             }
-            hentForMeldekortId shouldBe meldekort
             meldekortRepo.lagre(nesteMeldekort)
             val hentForMeldekortId2 =
                 testDataHelper.sessionFactory.withSession {
@@ -47,6 +55,41 @@ class MeldekortRepoImplTest {
                     )
                 }
             hentForMeldekortId2 shouldBe nesteMeldekort
+        }
+    }
+
+    @Test
+    fun `kan oppdatere`() {
+        withMigratedDb { testDataHelper ->
+            val sak = testDataHelper.persisterIverksattFørstegangsbehandling(
+                deltakelseFom = 1.januar(2024),
+                deltakelseTom = 31.mars(2024),
+            )
+            val meldekort = ObjectMother.ikkeUtfyltMeldekort(
+                sakId = sak.id,
+                rammevedtakId = sak.rammevedtak!!.id,
+                fnr = sak.fnr,
+                saksnummer = sak.saksnummer,
+                periode = Periode(
+                    fraOgMed = 1.januar(2024),
+                    tilOgMed = 14.januar(2024),
+                ),
+            )
+            val meldekortRepo = testDataHelper.meldekortRepo
+            meldekortRepo.lagre(meldekort)
+            val oppdatertMeldekort = meldekort.sendTilBeslutter(
+                utfyltMeldeperiode = ObjectMother.utfyltMeldekortperiode(
+                    sakId = sak.id,
+                    meldekortId = meldekort.id,
+                    startDato = meldekort.periode.fraOgMed,
+                ),
+                saksbehandler = ObjectMother.saksbehandler(),
+                navkontor = Navkontor("0222"),
+            ).getOrFail()
+            meldekortRepo.oppdater(oppdatertMeldekort)
+            testDataHelper.sessionFactory.withSession {
+                MeldekortPostgresRepo.hentForMeldekortId(meldekort.id, it)!! shouldBe oppdatertMeldekort
+            }
         }
     }
 }

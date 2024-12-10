@@ -336,6 +336,7 @@ suspend fun TestApplicationContext.førstegangsbehandlingIverksatt(
             behandlingId = underBeslutning.førstegangsbehandling.id,
             beslutter = beslutter,
             correlationId = correlationId,
+            sakId = underBeslutning.id,
         )
     }
     return this.sakContext.sakService.hentForSakId(

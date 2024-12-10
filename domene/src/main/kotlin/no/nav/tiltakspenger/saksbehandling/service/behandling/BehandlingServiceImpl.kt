@@ -12,6 +12,7 @@ import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.Saksbehandler
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
@@ -19,27 +20,34 @@ import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 import no.nav.tiltakspenger.libs.person.AdressebeskyttelseGradering
 import no.nav.tiltakspenger.libs.person.harStrengtFortroligAdresse
 import no.nav.tiltakspenger.libs.personklient.pdl.TilgangsstyringService
+import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.meldekort.domene.opprettFørsteMeldekortForEnSak
 import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attesteringsstatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingstype
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeHenteBehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeIverksetteBehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeSendeTilBeslutter
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeTaBehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeUnderkjenne
+import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.opprettVedtak
 import no.nav.tiltakspenger.saksbehandling.ports.BehandlingRepo
 import no.nav.tiltakspenger.saksbehandling.ports.RammevedtakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.StatistikkSakRepo
 import no.nav.tiltakspenger.saksbehandling.ports.StatistikkStønadRepo
 import no.nav.tiltakspenger.saksbehandling.service.person.PersonService
-import no.nav.tiltakspenger.saksbehandling.service.statistikk.sak.genererStatistikkForIverksattFørstegangsbehandling
+import no.nav.tiltakspenger.saksbehandling.service.sak.KunneIkkeHenteSakForSakId
+import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
+import no.nav.tiltakspenger.saksbehandling.service.statistikk.sak.StatistikkSakDTO
+import no.nav.tiltakspenger.saksbehandling.service.statistikk.sak.genererSaksstatistikkForRammevedtak
+import no.nav.tiltakspenger.saksbehandling.service.statistikk.stønad.StatistikkStønadDTO
 import no.nav.tiltakspenger.saksbehandling.service.statistikk.stønad.genererStønadsstatistikkForRammevedtak
 
 class BehandlingServiceImpl(
-    private val førstegangsbehandlingRepo: BehandlingRepo,
+    private val behandlingRepo: BehandlingRepo,
     private val rammevedtakRepo: RammevedtakRepo,
     private val meldekortRepo: MeldekortRepo,
     private val sessionFactory: SessionFactory,
@@ -47,6 +55,7 @@ class BehandlingServiceImpl(
     private val statistikkStønadRepo: StatistikkStønadRepo,
     private val tilgangsstyringService: TilgangsstyringService,
     private val personService: PersonService,
+    private val sakService: SakService,
     private val gitHash: String,
 ) : BehandlingService {
     val logger = KotlinLogging.logger { }
@@ -54,7 +63,7 @@ class BehandlingServiceImpl(
     override fun hentBehandlingForSystem(
         behandlingId: BehandlingId,
         sessionContext: SessionContext?,
-    ): Behandling = førstegangsbehandlingRepo.hent(behandlingId, sessionContext)
+    ): Behandling = behandlingRepo.hent(behandlingId, sessionContext)
 
     override suspend fun hentBehandling(
         behandlingId: BehandlingId,
@@ -95,7 +104,7 @@ class BehandlingServiceImpl(
             return KanIkkeSendeTilBeslutter.MåVæreSaksbehandler.left()
         }
         return hentBehandling(behandlingId, saksbehandler, correlationId).tilBeslutning(saksbehandler).also {
-            førstegangsbehandlingRepo.lagre(it)
+            behandlingRepo.lagre(it)
         }.right()
     }
 
@@ -116,11 +125,12 @@ class BehandlingServiceImpl(
                 beslutter = beslutter.navIdent,
             )
 
-        val behandling = hentBehandling(behandlingId, beslutter, correlationId).sendTilbake(beslutter, attestering).also {
-            sessionFactory.withTransactionContext { tx ->
-                førstegangsbehandlingRepo.lagre(it, tx)
+        val behandling =
+            hentBehandling(behandlingId, beslutter, correlationId).sendTilbake(beslutter, attestering).also {
+                sessionFactory.withTransactionContext { tx ->
+                    behandlingRepo.lagre(it, tx)
+                }
             }
-        }
         return behandling.right()
     }
 
@@ -128,51 +138,101 @@ class BehandlingServiceImpl(
         behandlingId: BehandlingId,
         beslutter: Saksbehandler,
         correlationId: CorrelationId,
+        sakId: SakId,
     ): Either<KanIkkeIverksetteBehandling, Behandling> {
         if (!beslutter.erBeslutter()) {
             logger.warn { "Navident ${beslutter.navIdent} med rollene ${beslutter.roller} har ikke tilgang til å iverksette behandlingen" }
             return KanIkkeIverksetteBehandling.MåVæreBeslutter.left()
         }
-        val behandling = hentBehandling(behandlingId, beslutter, correlationId)
-        val attestering =
-            Attestering(
-                status = Attesteringsstatus.GODKJENT,
-                begrunnelse = "",
-                beslutter = beslutter.navIdent,
-            )
+        @Suppress("USELESS_IS_CHECK")
+        val sak = sakService.hentForSakId(sakId, beslutter, correlationId).getOrElse {
+            when (it) {
+                is KunneIkkeHenteSakForSakId -> return KanIkkeIverksetteBehandling.MåVæreBeslutter.left()
+            }
+        }
+        val behandling = sak.hentBehandling(behandlingId)!!
+        val attestering = Attestering(
+            status = Attesteringsstatus.GODKJENT,
+            begrunnelse = "",
+            beslutter = beslutter.navIdent,
+        )
         val iverksattBehandling = behandling.iverksett(beslutter, attestering)
 
-        val vedtak = iverksattBehandling.opprettVedtak()
+        val vedtak = sak.opprettVedtak(iverksattBehandling)
 
         val fnr = personService.hentFnrForBehandlingId(behandlingId)
         val adressebeskyttelseGradering: List<AdressebeskyttelseGradering>? =
-            tilgangsstyringService.adressebeskyttelseEnkel(fnr)
-                .getOrElse {
-                    throw IllegalArgumentException(
-                        "Kunne ikke hente adressebeskyttelsegradering for person. BehandlingId: $behandlingId",
-                    )
-                }
+            tilgangsstyringService.adressebeskyttelseEnkel(fnr).getOrElse {
+                throw IllegalArgumentException(
+                    "Kunne ikke hente adressebeskyttelsegradering for person. BehandlingId: $behandlingId",
+                )
+            }
 
         require(adressebeskyttelseGradering != null) { "Fant ikke adressebeskyttelse for person. BehandlingId: $behandlingId" }
 
-        val sakStatistikk = genererStatistikkForIverksattFørstegangsbehandling(
-            behandling = iverksattBehandling,
+        val sakStatistikk = genererSaksstatistikkForRammevedtak(
             vedtak = vedtak,
             gjelderKode6 = adressebeskyttelseGradering.harStrengtFortroligAdresse(),
             versjon = gitHash,
         )
         val stønadStatistikk = genererStønadsstatistikkForRammevedtak(vedtak)
+        when (behandling.behandlingstype) {
+            Behandlingstype.FØRSTEGANGSBEHANDLING -> iverksettFørstegangsbehandling(
+                vedtak = vedtak,
+                sakStatistikk = sakStatistikk,
+                stønadStatistikk = stønadStatistikk,
+            )
+
+            Behandlingstype.REVURDERING -> iverksettRevurdering(
+                vedtak = vedtak,
+                sakStatistikk = sakStatistikk,
+                stønadStatistikk = stønadStatistikk,
+                // Kommentar jah: Antar vi åpner for mer enn 1 samtidig ikke-utfylt meldekort i fremtiden.
+                ikkeUtfylteMeldekort = listOfNotNull(sak.meldeperioder.ikkeUtfyltMeldekort),
+            )
+        }
+        return iverksattBehandling.right()
+    }
+
+    private fun iverksettFørstegangsbehandling(
+        vedtak: Rammevedtak,
+        sakStatistikk: StatistikkSakDTO,
+        stønadStatistikk: StatistikkStønadDTO,
+    ) {
         val førsteMeldekort = vedtak.opprettFørsteMeldekortForEnSak()
 
         // journalføring og dokumentdistribusjon skjer i egen jobb
         sessionFactory.withTransactionContext { tx ->
-            førstegangsbehandlingRepo.lagre(iverksattBehandling, tx)
+            behandlingRepo.lagre(vedtak.behandling, tx)
             rammevedtakRepo.lagre(vedtak, tx)
             statistikkSakRepo.lagre(sakStatistikk, tx)
             statistikkStønadRepo.lagre(stønadStatistikk, tx)
             meldekortRepo.lagre(førsteMeldekort, tx)
         }
-        return iverksattBehandling.right()
+    }
+
+    private fun iverksettRevurdering(
+        vedtak: Rammevedtak,
+        sakStatistikk: StatistikkSakDTO,
+        stønadStatistikk: StatistikkStønadDTO,
+        ikkeUtfylteMeldekort: List<Meldekort.IkkeUtfyltMeldekort>,
+    ) {
+        // journalføring og dokumentdistribusjon skjer i egen jobb
+        sessionFactory.withTransactionContext { tx ->
+            behandlingRepo.lagre(vedtak.behandling, tx)
+            rammevedtakRepo.lagre(vedtak, tx)
+            statistikkSakRepo.lagre(sakStatistikk, tx)
+            statistikkStønadRepo.lagre(stønadStatistikk, tx)
+            ikkeUtfylteMeldekort.forEach {
+                meldekortRepo.oppdater(
+                    it.settIkkeRettTilTiltakspenger(
+                        periode = vedtak.periode,
+                        tidspunkt = vedtak.opprettet,
+                    ),
+                    tx,
+                )
+            }
+        }
     }
 
     override suspend fun taBehandling(
@@ -186,7 +246,7 @@ class BehandlingServiceImpl(
         }
         val behandling = hentBehandling(behandlingId, saksbehandler, correlationId)
         behandling.taBehandling(saksbehandler).also {
-            førstegangsbehandlingRepo.lagre(it)
+            behandlingRepo.lagre(it)
         }
         return behandling.right()
     }
@@ -198,7 +258,7 @@ class BehandlingServiceImpl(
         systembruker: Systembruker,
     ): List<Behandling> {
         require(systembruker.roller.harHenteData()) { "Systembruker mangler rollen HENTE_DATA. Systembrukers roller: ${systembruker.roller}" }
-        return førstegangsbehandlingRepo
+        return behandlingRepo
             .hentAlleForIdent(fnr)
             .filter { behandling -> !behandling.erIverksatt }
             .filter { behandling ->
