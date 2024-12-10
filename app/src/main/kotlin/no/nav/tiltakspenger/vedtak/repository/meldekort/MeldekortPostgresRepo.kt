@@ -131,10 +131,16 @@ class MeldekortPostgresRepo(
             @Language("PostgreSQL")
             val query =
                 """
-                    select 
-                        *
-                    from meldekort
-                    where sendt_til_meldekort_api is null                                    
+                    select
+                        m.*,
+                        s.ident as fnr,
+                        s.saksnummer,
+                        (b.stønadsdager -> 'registerSaksopplysning' ->> 'antallDager')::int as antall_dager_per_meldeperiode
+                    from meldekort m
+                    join sak s on s.id = m.sak_id
+                    join rammevedtak r on r.id = m.rammevedtak_id
+                    join behandling b on b.id = r.behandling_id
+                    where sendt_til_meldekort_api is null                           
                 """.trimIndent()
             session.run(
                 queryOf(query, mapOf()).map { fromRow(it) }.asList,

@@ -11,6 +11,7 @@ import no.nav.tiltakspenger.libs.jobber.LeaderPodLookup
 import no.nav.tiltakspenger.libs.jobber.LeaderPodLookupClient
 import no.nav.tiltakspenger.libs.jobber.LeaderPodLookupFeil
 import no.nav.tiltakspenger.libs.jobber.RunCheckFactory
+import no.nav.tiltakspenger.vedtak.Configuration.applicationProfile
 import no.nav.tiltakspenger.vedtak.Configuration.httpPort
 import no.nav.tiltakspenger.vedtak.context.ApplicationContext
 import no.nav.tiltakspenger.vedtak.jobber.TaskExecutor
@@ -57,7 +58,7 @@ internal fun start(
         )
     }
 
-    val stoppableTasks = TaskExecutor.startJob(
+    TaskExecutor.startJob(
         initialDelay = if (isNais) 1.minutes else 1.seconds,
         runCheckFactory = runCheckFactory,
         tasks =
@@ -71,7 +72,10 @@ internal fun start(
                 correlationId,
             )
             applicationContext.sendTilDatadelingService.send(correlationId, Configuration.isNais())
-            applicationContext.meldekortContext.sendMeldekortTilBrukerService.send(correlationId)
+
+            if (applicationProfile() != Profile.PROD) {
+                applicationContext.meldekortContext.sendMeldekortTilBrukerService.send(correlationId)
+            }
         },
     )
 
