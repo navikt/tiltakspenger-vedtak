@@ -74,7 +74,7 @@ internal fun start(
             applicationContext.sendTilDatadelingService.send(correlationId, Configuration.isNais())
 
             if (applicationProfile() != Profile.PROD) {
-                applicationContext.meldekortContext.sendMeldekortTilBrukerService.send(correlationId)
+                applicationContext.meldekortContext.sendMeldekortTilBrukerService.send()
             }
         },
     )

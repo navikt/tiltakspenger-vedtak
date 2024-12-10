@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.meldekort.service
 
 import arrow.core.Either
 import mu.KotlinLogging
-import no.nav.tiltakspenger.libs.common.CorrelationId
 import no.nav.tiltakspenger.meldekort.ports.MeldekortApiHttpClientGateway
 import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo
 
@@ -15,7 +14,7 @@ class SendMeldekortTilBrukerService(
 ) {
     private val logger = KotlinLogging.logger { }
 
-    suspend fun send(correlationId: CorrelationId) {
+    suspend fun send() {
         logger.info("Prøver å hente meldekort som skal sendes til bruker!")
 
         Either.catch {
@@ -25,10 +24,10 @@ class SendMeldekortTilBrukerService(
 
             meldekortTilUtfylling.forEach { meldekort ->
                 meldekortApiHttpClient.sendMeldekort(meldekort).onRight {
-                    logger.info { "Sendte meldekort til utfylling med id ${meldekort.id} for ${meldekort.fnr}" }
+                    logger.debug { "Sendte meldekort til utfylling med id ${meldekort.id}" }
 //                meldekortRepo.markerSomSendtTilBrukerUtfylling(meldekort.id, nå())
                 }.onLeft {
-                    logger.error { "Kunne ikke sende meldekort til utfylling med id ${meldekort.id} for ${meldekort.fnr} - $correlationId" }
+                    logger.error { "Kunne ikke sende meldekort til utfylling med id ${meldekort.id}" }
                 }
             }
         }.onLeft {
