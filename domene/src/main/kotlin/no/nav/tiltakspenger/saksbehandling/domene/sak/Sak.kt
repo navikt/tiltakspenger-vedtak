@@ -18,22 +18,21 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlinger
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeOppretteBehandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
-import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
+import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtaksliste
 import no.nav.tiltakspenger.utbetaling.domene.Utbetalinger
 import java.time.LocalDate
 
 data class Sak(
-    // TODO post-mvp jah: Foreløpig kan vi kun ha én førstegangsbehandling.
     val id: SakId,
     val fnr: Fnr,
     val saksnummer: Saksnummer,
     val behandlinger: Behandlinger,
-    val rammevedtak: Rammevedtak?,
+    val vedtaksliste: Vedtaksliste,
     val meldeperioder: Meldeperioder,
     val utbetalinger: Utbetalinger,
 ) {
-    // TODO revurdering jah: Etter MVP, når vi legger til revurdering, så må vil sakens periode også påvirkes av stansvedtak og forlengelser.
-    val vedtaksperiode: Periode? = rammevedtak?.periode
+    /** Dette er sakens totale vedtaksperiode. Per tidspunkt er den sammenhengende, men hvis vi lar en sak gjelde på tvers av tiltak, vil den kunne ha hull. */
+    val vedtaksperiode: Periode? = vedtaksliste.vedtaksperiode
 
     /**
      * En sak kan kun ha en førstegangsbehandling, dersom perioden til den vedtatte førstegangsbehandlingen skal utvides eller minskes (den må fortsatt være sammenhengende) må vi revurdere/omgjøre, ikke førstegangsbehandle på nytt.
@@ -49,11 +48,11 @@ data class Sak(
     fun hentIkkeUtfyltMeldekort(): Meldekort? = meldeperioder.ikkeUtfyltMeldekort
 
     /** Den er kun trygg inntil vi revurderer antall dager. */
-    fun hentAntallDager(): Int? = rammevedtak?.behandling?.maksDagerMedTiltakspengerForPeriode
+    fun hentAntallDager(): Int? = vedtaksliste.førstegangsvedtak?.behandling?.maksDagerMedTiltakspengerForPeriode
     fun hentTynnSak(): TynnSak = TynnSak(this.id, this.fnr, this.saksnummer)
 
     /** Den er kun trygg inntil vi støtter mer enn ett tiltak på én sak. */
-    fun hentTiltaksnavn(): String? = rammevedtak?.behandling?.tiltaksnavn
+    fun hentTiltaksnavn(): String? = vedtaksliste.førstegangsvedtak?.behandling?.tiltaksnavn
 
     fun hentBehandling(behandlingId: BehandlingId): Behandling? = behandlinger.hentBehandling(behandlingId)
 
@@ -85,7 +84,7 @@ data class Sak(
                 fnr = fnr,
                 saksnummer = saksnummer,
                 behandlinger = Behandlinger(førstegangsbehandling),
-                rammevedtak = null,
+                vedtaksliste = Vedtaksliste.empty(),
                 meldeperioder = Meldeperioder.empty(førstegangsbehandling.tiltakstype),
                 utbetalinger = Utbetalinger(emptyList()),
             ).right()

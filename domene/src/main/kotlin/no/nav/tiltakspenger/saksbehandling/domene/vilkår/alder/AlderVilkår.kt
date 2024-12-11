@@ -32,11 +32,13 @@ data class AlderVilkår private constructor(
         )
     }
 
-    override fun oppdaterPeriode(periode: Periode): AlderVilkår {
-        val nyRegisterSaksopplysning = registerSaksopplysning.oppdaterPeriode(periode)
-        val nySaksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.oppdaterPeriode(periode)
+    override fun krymp(nyPeriode: Periode): AlderVilkår {
+        if (vurderingsperiode == nyPeriode) return this
+        require(vurderingsperiode.inneholderHele(nyPeriode)) { "Ny periode ($nyPeriode) må være innenfor vurderingsperioden ($vurderingsperiode)" }
+        val nyRegisterSaksopplysning = registerSaksopplysning.oppdaterPeriode(nyPeriode)
+        val nySaksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.oppdaterPeriode(nyPeriode)
         return this.copy(
-            vurderingsperiode = periode,
+            vurderingsperiode = nyPeriode,
             saksbehandlerSaksopplysning = nySaksbehandlerSaksopplysning,
             registerSaksopplysning = nyRegisterSaksopplysning,
             avklartSaksopplysning = nySaksbehandlerSaksopplysning ?: nyRegisterSaksopplysning,

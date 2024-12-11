@@ -98,6 +98,11 @@ data class Søknad(
     }
 }
 
+/**
+ * @param id mappes fra aktivitetId som vi mottar fra søknadsfrontenden (via søknad-api). Dette er tiltaksdeltagelseIDen og vil kun være forskjellig avhengig om den kommer fra Arena (TA1234567), Komet (UUID) eller team Tiltak (?). Kalles ekstern_id i databasen.
+ * @param typeKode f.eks. JOBBK, GRUPPEAMO, INDOPPFAG, ARBTREN
+ * @param typeNavn f.eks. Jobbklubb, Arbeidsmarkedsopplæring (gruppe), Oppfølging, Arbeidstrening
+ */
 data class Søknadstiltak(
     val id: String,
     val deltakelseFom: LocalDate,

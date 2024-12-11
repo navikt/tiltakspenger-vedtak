@@ -11,6 +11,15 @@ data class Stønadsdager(
     val lovreferanse = Lovreferanse.STØNADSDAGER
     val logger = KotlinLogging.logger { }
 
+    fun krymp(nyPeriode: Periode): Stønadsdager {
+        if (vurderingsperiode == nyPeriode) return this
+        require(vurderingsperiode.inneholderHele(nyPeriode)) { "Ny periode ($nyPeriode) må være innenfor vurderingsperioden ($vurderingsperiode)" }
+        return this.copy(
+            vurderingsperiode = nyPeriode,
+            registerSaksopplysning = registerSaksopplysning.krymp(nyPeriode),
+        )
+    }
+
     init {
         check(vurderingsperiode == registerSaksopplysning.periode) { "Vurderingsperioden må være lik perioden for antall dager" }
     }

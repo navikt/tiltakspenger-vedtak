@@ -14,6 +14,6 @@ class SøknadServiceImpl(
     }
 
     override fun hentSøknad(søknadId: SøknadId): Søknad {
-        return søknadRepo.hentForSøknadId(søknadId)
+        return søknadRepo.hentForSøknadId(søknadId)!!
     }
 }

@@ -11,6 +11,7 @@ import java.time.LocalDate
  *
  * Vi vet at det på et tidspunkt kommer til å være mulig å fylle ut en meldekortdag for flere enn ett tiltak. Da vil man kunne rename Meldekortdag til MeldekortdagForTiltak og wrappe den i en Meldekortdag(List<MeldekortdagForTiltak>)
  */
+
 sealed interface Meldekortdag {
     val dato: LocalDate
     val meldekortId: MeldekortId

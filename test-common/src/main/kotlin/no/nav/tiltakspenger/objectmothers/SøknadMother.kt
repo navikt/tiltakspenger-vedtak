@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.objectmothers
 
+import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.felles.januar
 import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.felles.juni
@@ -12,14 +13,15 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknadstiltak
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.UUID
 
 interface SøknadMother {
     fun søknadstiltak(
-        id: String = "arenaId",
+        id: String = UUID.randomUUID().toString(),
         deltakelseFom: LocalDate = 1.januar(2022),
         deltakelseTom: LocalDate = 31.januar(2022),
         typeKode: String = "JOBBK",
-        typeNavn: String = "JOBBK",
+        typeNavn: String = "Jobbklubb",
     ): Søknadstiltak =
         Søknadstiltak(
             id = id,
@@ -77,7 +79,8 @@ interface SøknadMother {
         opprettet: LocalDateTime = 1.januarDateTime(2022),
         barnetillegg: List<Barnetillegg> = listOf(),
         tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
-        søknadstiltak: Søknadstiltak = søknadstiltak(deltakelseFom = periode.fraOgMed, deltakelseTom = periode.tilOgMed),
+        eksternId: TiltakId = TiltakId.random(),
+        søknadstiltak: Søknadstiltak = søknadstiltak(deltakelseFom = periode.fraOgMed, deltakelseTom = periode.tilOgMed, id = eksternId.toString()),
         trygdOgPensjon: Søknad.PeriodeSpm = periodeNei(),
         vedlegg: Int = 0,
         etterlønn: Søknad.JaNeiSpm = nei(),

@@ -13,13 +13,18 @@ import no.nav.tiltakspenger.fakes.clients.PersonFakeGateway
 import no.nav.tiltakspenger.fakes.clients.PoaoTilgangskontrollFake
 import no.nav.tiltakspenger.fakes.clients.TiltakFakeGateway
 import no.nav.tiltakspenger.fakes.clients.UtbetalingFakeGateway
+import no.nav.tiltakspenger.felles.TiltakId
 import no.nav.tiltakspenger.libs.auth.test.core.EntraIdSystemtokenFakeClient
 import no.nav.tiltakspenger.libs.common.Fnr
+import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.person.AdressebeskyttelseGradering
 import no.nav.tiltakspenger.libs.personklient.tilgangsstyring.TilgangsstyringServiceImpl
+import no.nav.tiltakspenger.libs.tiltak.TiltakstypeSomGirRett
 import no.nav.tiltakspenger.objectmothers.ObjectMother
+import no.nav.tiltakspenger.objectmothers.toSøknadstiltak
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
+import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltakskilde
 import no.nav.tiltakspenger.vedtak.Profile
 import no.nav.tiltakspenger.vedtak.context.ApplicationContext
 import no.nav.tiltakspenger.vedtak.context.DokumentContext
@@ -52,30 +57,38 @@ class LocalApplicationContext : ApplicationContext(gitHash = "fake-git-hash") {
     private val fellesFakeSkjermingsklient = FellesFakeSkjermingsklient()
     private val poaoTilgangskontrollFake = PoaoTilgangskontrollFake()
 
+    private val søknadId: SøknadId = SøknadId.fromString("soknad_01HSTRQBRM443VGB4WA822TE01")
+    private val fnr: Fnr = Fnr.fromString("50218274152")
+    private val tiltakId: TiltakId = TiltakId.fromString("tilt_01JETND3NDGHE0YHWFTVAN93B0")
+    private val tiltak: Tiltak = ObjectMother.tiltak(
+        id = tiltakId,
+        // Siden Komet eier GRUPPE_AMO, vil dette være en UUID. Hadde det vært Arena som var master ville det vært eksempelvis TA6509186.
+        // Kommentar jah: Litt usikker på om Komet sender UUIDen til Arena, eller om de genererer en Arena-ID på formatet TA...
+        eksternTiltaksdeltagelseId = "fa287e7-ddbb-44a2-9bfa-4da4661f8b6d",
+        eksternTiltaksgjennomføringsId = "5667273f-784e-4521-89c3-75b0be8ee250",
+        typeKode = TiltakstypeSomGirRett.GRUPPE_AMO,
+        typeNavn = "Arbeidsmarkedsoppfølging gruppe",
+        fom = ObjectMother.vurderingsperiode().fraOgMed,
+        tom = ObjectMother.vurderingsperiode().tilOgMed,
+        kilde = Tiltakskilde.Komet,
+    )
+    private val søknadstiltak = tiltak.toSøknadstiltak()
+
     init {
-        // Må henge sammen med V1004__sak.sql og V1011__soknad.sql (lokal migration)
-        listOf(
-            "29927899076",
-            "12828098533",
-            "24496837246",
-            "04488337357",
-            "15850598247",
-            "24918297193",
-            "04880298335",
-            "25927798800",
-            "22888699787",
-            "14838098925",
-            "21838099944",
-            "31528732014",
-            "16498425414",
-        ).forEach {
-            val fnr = Fnr.fromString(it)
-            leggTilPerson(
-                fnr = fnr,
-                personopplysningerForBruker = ObjectMother.personopplysningKjedeligFyr(fnr = fnr),
-                tiltak = ObjectMother.tiltak(),
-            )
+        val søknad = søknadContext.søknadRepo.hentForSøknadId(søknadId) ?: ObjectMother.nySøknad(
+            fnr = fnr,
+            id = søknadId,
+            eksternId = tiltakId,
+            søknadstiltak = søknadstiltak,
+        ).also { søknadContext.søknadRepo.lagre(it) }
+        require(søknadstiltak == søknad.tiltak) {
+            "Diff mellom søknadstiltak i lokal database og statiske tiltaksdata i LocalApplicationContext. Mulig løsning: Tøm lokal db."
         }
+        leggTilPerson(
+            fnr = fnr,
+            personopplysningerForBruker = ObjectMother.personopplysningKjedeligFyr(fnr = fnr),
+            tiltak = tiltak,
+        )
     }
 
     fun leggTilPerson(

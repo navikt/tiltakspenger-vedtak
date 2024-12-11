@@ -1,6 +1,7 @@
 package no.nav.tiltakspenger.vedtak.routes.behandling
 
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingstype
 import no.nav.tiltakspenger.vedtak.routes.behandling.stønadsdager.StønadsdagerDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.stønadsdager.toDTO
 import no.nav.tiltakspenger.vedtak.routes.behandling.vilkår.VilkårssettDTO
@@ -15,6 +16,7 @@ internal data class BehandlingDTO(
     val status: BehandlingsstatusDTO,
     val saksbehandler: String?,
     val beslutter: String?,
+    val behandlingstype: Behandlingstype,
     val vurderingsperiode: PeriodeDTO,
     val vilkårssett: VilkårssettDTO,
     val stønadsdager: StønadsdagerDTO,
@@ -33,4 +35,5 @@ internal fun Behandling.toDTO() =
         attesteringer = this.attesteringer.toDTO(),
         vilkårssett = this.vilkårssett.toDTO(),
         stønadsdager = this.stønadsdager.toDTO(),
+        behandlingstype = behandlingstype,
     )

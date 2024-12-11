@@ -130,16 +130,18 @@ data class Vilkårssett(
     /**
      * Støtter kun krymping av periode i første versjon.
      */
-    fun oppdaterPeriode(periode: Periode): Vilkårssett {
+    fun krymp(nyPeriode: Periode): Vilkårssett {
+        if (vurderingsperiode == nyPeriode) return this
+        require(vurderingsperiode.inneholderHele(nyPeriode)) { "Ny periode ($nyPeriode) må være innenfor vedtakets periode ($vurderingsperiode)" }
         return this.copy(
-            vurderingsperiode = periode,
-            institusjonsoppholdVilkår = institusjonsoppholdVilkår.oppdaterPeriode(periode),
-            kvpVilkår = kvpVilkår.oppdaterPeriode(periode),
-            tiltakDeltagelseVilkår = tiltakDeltagelseVilkår.oppdaterPeriode(periode),
-            introVilkår = introVilkår.oppdaterPeriode(periode),
-            livsoppholdVilkår = livsoppholdVilkår.oppdaterPeriode(periode),
-            alderVilkår = alderVilkår.oppdaterPeriode(periode),
-            kravfristVilkår = kravfristVilkår.oppdaterPeriode(periode),
+            vurderingsperiode = nyPeriode,
+            institusjonsoppholdVilkår = institusjonsoppholdVilkår.krymp(nyPeriode),
+            kvpVilkår = kvpVilkår.krymp(nyPeriode),
+            tiltakDeltagelseVilkår = tiltakDeltagelseVilkår.krymp(nyPeriode),
+            introVilkår = introVilkår.krymp(nyPeriode),
+            livsoppholdVilkår = livsoppholdVilkår.krymp(nyPeriode),
+            alderVilkår = alderVilkår.krymp(nyPeriode),
+            kravfristVilkår = kravfristVilkår.krymp(nyPeriode),
         )
     }
 

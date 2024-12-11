@@ -178,7 +178,7 @@ internal class StartRevurderingTest {
                 """
 {
   "registerSaksopplysning":{
-    "tiltakNavn":"Arbeidsmarkedsoppfølging gruppe",
+    "tiltakNavn":"Jobbklubb",
     "deltagelsePeriode":{
       "fraOgMed":"2023-02-01",
       "tilOgMed":"2023-03-31"
@@ -187,7 +187,7 @@ internal class StartRevurderingTest {
     "kilde":"KOMET"
   },
   "saksbehandlerSaksopplysning":{
-    "tiltakNavn":"Arbeidsmarkedsoppfølging gruppe",
+    "tiltakNavn":"Jobbklubb",
     "deltagelsePeriode":{
       "fraOgMed":"2023-02-01",
       "tilOgMed":"2023-03-31"
@@ -196,7 +196,7 @@ internal class StartRevurderingTest {
     "kilde":"KOMET"
   },
   "avklartSaksopplysning":{
-    "tiltakNavn":"Arbeidsmarkedsoppfølging gruppe",
+    "tiltakNavn":"Jobbklubb",
     "deltagelsePeriode":{
       "fraOgMed":"2023-02-01",
       "tilOgMed":"2023-03-31"

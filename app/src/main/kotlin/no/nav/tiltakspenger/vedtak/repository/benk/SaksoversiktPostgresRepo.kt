@@ -8,14 +8,16 @@ import no.nav.tiltakspenger.libs.common.SøknadId
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.benk.BehandlingEllerSøknadForSaksoversikt
-import no.nav.tiltakspenger.saksbehandling.domene.benk.BehandlingEllerSøknadForSaksoversikt.Behandlingstype.FØRSTEGANGSBEHANDLING
-import no.nav.tiltakspenger.saksbehandling.domene.benk.BehandlingEllerSøknadForSaksoversikt.Behandlingstype.SØKNAD
+import no.nav.tiltakspenger.saksbehandling.domene.benk.BenkBehandlingstype
 import no.nav.tiltakspenger.saksbehandling.domene.benk.Saksoversikt
+import no.nav.tiltakspenger.saksbehandling.domene.benk.toBenkBehandlingstype
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.ports.SaksoversiktRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.attesteringer.toAttesteringer
 import no.nav.tiltakspenger.vedtak.repository.behandling.toBehandlingsstatus
+import no.nav.tiltakspenger.vedtak.repository.behandling.toBehandlingstype
 
 class SaksoversiktPostgresRepo(
     private val sessionFactory: PostgresSessionFactory,
@@ -39,6 +41,7 @@ class SaksoversiktPostgresRepo(
                           b.beslutter,
                           b.attesteringer,
                           b.sak_id,
+                          b.behandlingstype,
                           (b.vilkårssett -> 'kravfristVilkår' -> 'avklartSaksopplysning' ->> 'kravdato') as kravdato
                           
                         from søknad s 
@@ -47,38 +50,44 @@ class SaksoversiktPostgresRepo(
                         order by s.id, sak.saksnummer, b.id
                         """.trimIndent(),
                     ).map { row ->
-                        val erFørstegangsbehandling = row.stringOrNull("behandling_id") != null
+                        val erSøknad = row.stringOrNull("behandling_id") == null
                         val id =
                             row.stringOrNull("behandling_id")?.let { BehandlingId.fromString(it) }
                                 ?: SøknadId.fromString(row.string("søknad_id"))
                         val periode =
-                            if (erFørstegangsbehandling) {
+                            if (erSøknad) {
+                                null
+                            } else {
                                 Periode(
                                     fraOgMed = row.localDate("fra_og_med"),
                                     tilOgMed = row.localDate("til_og_med"),
                                 )
-                            } else {
-                                null
                             }
                         // B: Vil kanskje bruke kravdato fra vilkåret på sikt, men bruker kun søknaden for nå
                         val opprettet = row.localDateTime("opprettet")
                         val beslutter = row.stringOrNull("beslutter")
                         val saksbehandler = row.stringOrNull("saksbehandler")
+                        val behandlingstype =
+                            if (erSøknad) {
+                                BenkBehandlingstype.SØKNAD
+                            } else {
+                                row.string("behandlingstype").toBehandlingstype().toBenkBehandlingstype()
+                            }
                         val status =
-                            if (erFørstegangsbehandling) {
+                            if (erSøknad) {
+                                BehandlingEllerSøknadForSaksoversikt.Status.Søknad
+                            } else {
                                 BehandlingEllerSøknadForSaksoversikt.Status.Behandling(
                                     row.string("status").toBehandlingsstatus(),
                                 )
-                            } else {
-                                null
                             }
-                        val attesteringer = if (erFørstegangsbehandling) row.string("attesteringer").toAttesteringer() else null
+                        val attesteringer = if (erSøknad) emptyList<Attestering>() else row.string("attesteringer").toAttesteringer()
                         BehandlingEllerSøknadForSaksoversikt(
                             periode = periode,
-                            status = if (erFørstegangsbehandling) status!! else BehandlingEllerSøknadForSaksoversikt.Status.Søknad,
-                            underkjent = if (erFørstegangsbehandling) attesteringer?.any { attestering -> attestering.isUnderkjent() } else false,
+                            status = status,
+                            underkjent = attesteringer.any { attestering -> attestering.isUnderkjent() },
                             kravtidspunkt = opprettet,
-                            behandlingstype = if (erFørstegangsbehandling) FØRSTEGANGSBEHANDLING else SØKNAD,
+                            behandlingstype = behandlingstype,
                             fnr = Fnr.fromString(row.string("ident")),
                             saksnummer = row.stringOrNull("saksnummer")?.let { Saksnummer(it) },
                             id = id,

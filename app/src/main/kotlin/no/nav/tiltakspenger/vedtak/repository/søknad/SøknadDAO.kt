@@ -57,12 +57,12 @@ internal object SøknadDAO {
     fun hentForSøknadId(
         søknadId: SøknadId,
         session: Session,
-    ): Søknad =
+    ): Søknad? =
         session.run(
             queryOf("select * from søknad where id = ?", søknadId.toString())
                 .map { row -> row.toSøknad(session) }
                 .asSingle,
-        )!!
+        )
 
     /**
      * Knytter en søknad til en sak og behandling.

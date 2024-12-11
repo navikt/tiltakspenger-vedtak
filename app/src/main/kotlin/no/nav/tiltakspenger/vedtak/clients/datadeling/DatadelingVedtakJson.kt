@@ -2,6 +2,7 @@ package no.nav.tiltakspenger.vedtak.clients.datadeling
 
 import no.nav.tiltakspenger.libs.json.serialize
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
+import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtakstype
 import java.time.LocalDate
 
 private data class DatadelingVedtakJson(
@@ -24,8 +25,10 @@ fun Rammevedtak.toDatadelingJson(): String {
         fom = periode.fraOgMed,
         tom = periode.tilOgMed,
         antallDagerPerMeldeperiode = antallDagerPerMeldeperiode,
-        // TODO post-mvp B og J Når vi behandler med flere rettigheter må vi sette denne dynamisk
-        rettighet = "TILTAKSPENGER",
+        rettighet = when (this.vedtaksType) {
+            Vedtakstype.INNVILGELSE -> "TILTAKSPENGER"
+            Vedtakstype.STANS -> "INGENTING"
+        },
         fnr = fnr.verdi,
         opprettet = opprettet.toString(),
     ).let { serialize(it) }

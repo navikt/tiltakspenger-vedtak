@@ -15,7 +15,7 @@ private fun localFlyway(dataSource: javax.sql.DataSource) =
         .configure()
         .loggers("slf4j")
         .encoding("UTF-8")
-        .locations("db/migration", "db/local-migration")
+        .locations("db/migration")
         .dataSource(dataSource)
         .load()
 
