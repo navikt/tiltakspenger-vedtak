@@ -110,6 +110,7 @@ interface MeldekortMother {
             iverksattTidspunkt = iverksattTidspunkt,
             navkontor = navkontor,
             ikkeRettTilTiltakspengerTidspunkt = null,
+            sendtTilMeldekortApi = null,
         )
     }
 

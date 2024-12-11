@@ -181,7 +181,7 @@ class TestApplicationContext(
                 utbetalingsvedtakRepo = utbetalingsvedtakFakeRepo,
                 statistikkStønadRepo = statistikkStønadFakeRepo,
                 personService = personContext.personService,
-
+                entraIdSystemtokenClient = entraIdSystemtokenClient,
             ) {
             override val meldekortRepo = meldekortFakeRepo
         }

@@ -1,0 +1,3 @@
+insert into public.søknad_barnetillegg (id, søknad_id, type, fodselsdato, fornavn, mellomnavn, etternavn, opphold_i_eos_type)
+values  ('btil_01JCZQFQQY8KTQC6XSBKF7HETP', 'soknad_01JCZQE17B5Q6QPE7FFEBQ6A89', 'PDL', '2012-02-07', 'ARTIG', null, 'JERNBANE', 'JA'),
+        ('btil_01JCZQFQR6Q4CDXNJ1WA0CJA7J', 'soknad_01JCZQE17B5Q6QPE7FFEBQ6A89', 'PDL', '2014-04-25', 'REKTANGULÆR', null, 'MINIBANK', 'NEI');

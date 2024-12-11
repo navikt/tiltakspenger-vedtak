@@ -20,6 +20,8 @@ import no.nav.tiltakspenger.meldekort.domene.Meldeperioder
 import no.nav.tiltakspenger.meldekort.domene.tilMeldekortperioder
 import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
+import org.intellij.lang.annotations.Language
+import java.time.LocalDateTime
 
 class MeldekortPostgresRepo(
     private val sessionFactory: PostgresSessionFactory,
@@ -47,7 +49,8 @@ class MeldekortPostgresRepo(
                         status,
                         navkontor,
                         iverksatt_tidspunkt,
-                        sendt_til_beslutning
+                        sendt_til_beslutning,
+                        sendt_til_meldekort_api
                     ) values (
                         :id,
                         :forrige_meldekort_id,
@@ -63,7 +66,8 @@ class MeldekortPostgresRepo(
                         :status,
                         :navkontor,
                         :iverksatt_tidspunkt,
-                        :sendt_til_beslutning
+                        :sendt_til_beslutning,                        
+                        :sendt_til_meldekort_api
                     )
                     """.trimIndent(),
                     mapOf(
@@ -82,6 +86,7 @@ class MeldekortPostgresRepo(
                         "navkontor" to meldekort.navkontor?.kontornummer,
                         "iverksatt_tidspunkt" to meldekort.iverksattTidspunkt,
                         "sendt_til_beslutning" to meldekort.sendtTilBeslutning,
+                        "sendt_til_meldekort_api" to meldekort.sendtTilMeldekortApi,
                     ),
                 ).asUpdate,
             )
@@ -115,6 +120,49 @@ class MeldekortPostgresRepo(
                         "navkontor" to meldekort.navkontor?.kontornummer,
                         "iverksatt_tidspunkt" to meldekort.iverksattTidspunkt,
                         "sendt_til_beslutning" to meldekort.sendtTilBeslutning,
+                    ),
+                ).asUpdate,
+            )
+        }
+    }
+
+    override fun hentTilBrukerUtfylling(): List<Meldekort> {
+        return sessionFactory.withSession { session ->
+            @Language("PostgreSQL")
+            val query =
+                """
+                    select
+                        m.*,
+                        s.ident as fnr,
+                        s.saksnummer,
+                        (b.stønadsdager -> 'registerSaksopplysning' ->> 'antallDager')::int as antall_dager_per_meldeperiode
+                    from meldekort m
+                    join sak s on s.id = m.sak_id
+                    join rammevedtak r on r.id = m.rammevedtak_id
+                    join behandling b on b.id = r.behandling_id
+                    where sendt_til_meldekort_api is null                           
+                """.trimIndent()
+            session.run(
+                queryOf(query, mapOf()).map { fromRow(it) }.asList,
+            )
+        }
+    }
+
+    override fun markerSomSendtTilBrukerUtfylling(meldekortId: MeldekortId, tidspunkt: LocalDateTime) {
+        return sessionFactory.withSession { session ->
+            @Language("PostgreSQL")
+            val query =
+                """
+                    update meldekort set
+                        sendt_til_meldekort_api = :tidspunkt
+                    where id = :id                                    
+                """.trimIndent()
+            session.run(
+                queryOf(
+                    query,
+                    mapOf(
+                        "id" to meldekortId.toString(),
+                        "tidspunkt" to tidspunkt,
                     ),
                 ).asUpdate,
             )
@@ -219,6 +267,7 @@ class MeldekortPostgresRepo(
                         iverksattTidspunkt = row.localDateTimeOrNull("iverksatt_tidspunkt"),
                         navkontor = navkontor!!,
                         ikkeRettTilTiltakspengerTidspunkt = row.localDateTimeOrNull("ikke_rett_til_tiltakspenger_tidspunkt"),
+                        sendtTilMeldekortApi = row.localDateTimeOrNull("sendt_til_meldekort_api"),
                     )
                 }
 

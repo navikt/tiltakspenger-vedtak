@@ -23,6 +23,7 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:tiltak-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:person-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:personklient-domene:$felleslibVersion")
+    implementation("com.github.navikt.tiltakspenger-libs:auth-core:$felleslibVersion")
 
     implementation("io.arrow-kt:arrow-core:1.2.4")
 
