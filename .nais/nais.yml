@@ -45,7 +45,7 @@ spec:
   gcp:
     sqlInstances:
       - name: tiltakspenger-saksbehandling-api
-        type: POSTGRES_16
+        type: POSTGRES_17
         tier: {{ sqlInstances.tier }}
         diskAutoresize: {{ sqlInstances.diskAutoresize }}
         pointInTimeRecovery: {{ sqlInstances.pointInTimeRecovery }}
