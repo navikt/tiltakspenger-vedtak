@@ -1,8 +1,7 @@
-val kotlinxCoroutinesVersion: String by rootProject.extra
-val kotestVersion: String by rootProject.extra
-val felleslibVersion: String by rootProject.extra
-val mockkVersion: String by rootProject.extra
-
+val kotlinxCoroutinesVersion = "1.9.0"
+val kotestVersion = "5.9.1"
+val felleslibVersion = "0.0.294"
+val mockkVersion = "1.13.12"
 val jacksonVersion = "2.18.2"
 
 dependencies {

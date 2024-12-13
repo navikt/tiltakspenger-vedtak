@@ -18,18 +18,18 @@ class SendTilDatadelingService(
     val logger = KotlinLogging.logger { }
 
     suspend fun send(
-        correlationId: CorrelationId,
         erNais: Boolean,
     ) {
         if (erNais) {
-            sendBehandlinger(correlationId)
-            sendVedtak(correlationId)
+            sendBehandlinger()
+            sendVedtak()
         }
     }
 
-    private suspend fun sendVedtak(correlationId: CorrelationId) {
+    private suspend fun sendVedtak() {
         Either.catch {
             rammevedtakRepo.hentRammevedtakTilDatadeling().forEach { rammevedtak ->
+                val correlationId = CorrelationId.generate()
                 if (rammevedtak.vedtaksType == Vedtakstype.STANS) {
                     // TODO pre-revurdering jah: Legg til støtte for å sende og motta stans i tiltakspenger-datadeling. Merk at man også må lage en tidslinje i datadeling.
                     return@forEach
@@ -52,10 +52,11 @@ class SendTilDatadelingService(
         }
     }
 
-    private suspend fun sendBehandlinger(correlationId: CorrelationId) {
+    private suspend fun sendBehandlinger() {
         Either.catch {
             // Kommentar jah: Vi avventer sending av revurderingsbehandlinger til datadeling.
             behandlingRepo.hentFørstegangsbehandlingerTilDatadeling().forEach { behandling ->
+                val correlationId = CorrelationId.generate()
                 Either.catch {
                     datadelingGateway.send(behandling, correlationId).onRight {
                         logger.info { "Behandling sendt til datadeling. Saksnummer: ${behandling.saksnummer}, sakId: ${behandling.sakId}, behandlingId: ${behandling.id}" }

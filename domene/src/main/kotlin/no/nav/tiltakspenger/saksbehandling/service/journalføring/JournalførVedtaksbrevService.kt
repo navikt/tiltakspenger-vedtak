@@ -23,11 +23,10 @@ class JournalførVedtaksbrevService(
     private val log = KotlinLogging.logger {}
 
     /** Ment å kalles fra en jobb - journalfører alle rammevedtak som skal sende brev. */
-    suspend fun journalfør(
-        correlationId: CorrelationId,
-    ) {
+    suspend fun journalfør() {
         Either.catch {
             rammevedtakRepo.hentRammevedtakSomSkalJournalføres().forEach { vedtak ->
+                val correlationId = CorrelationId.generate()
                 if (vedtak.erStansvedtak()) {
                     // TODO pre-revurdering jah: Legg til støtte for å generere stansbrev som skal journalføres og distribueres.
                     return@forEach
