@@ -8,25 +8,22 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
-import no.nav.tiltakspenger.libs.auth.core.EntraIdSystemtokenClient
+import no.nav.tiltakspenger.libs.common.AccessToken
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.meldekort.ports.FeilVedSendingTilMeldekortApi
 import no.nav.tiltakspenger.meldekort.ports.MeldekortApiHttpClientGateway
-import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.clients.defaultHttpClient
 
 class MeldekortApiHttpClient(
-    private val entraIdSystemtokenClient: EntraIdSystemtokenClient,
+    private val baseUrl: String,
+    private val getToken: suspend () -> AccessToken,
 ) : MeldekortApiHttpClientGateway {
     private val client = defaultHttpClient()
-
-    private val baseUrl = Configuration.meldekortApiUrl
-    private val scope = Configuration.meldekortApiScope
 
     override suspend fun sendMeldekort(meldekort: Meldekort): Either<FeilVedSendingTilMeldekortApi, Unit> {
         return Either.catch {
             val body = meldekort.tilBrukerDTO()
-            val token = entraIdSystemtokenClient.getSystemtoken(scope)
+            val token = getToken()
             val response = client.preparePost("$baseUrl/saksbehandling/meldekort") {
                 bearerAuth(token.token)
                 contentType(ContentType.Application.Json)

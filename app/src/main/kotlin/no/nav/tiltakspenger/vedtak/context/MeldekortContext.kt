@@ -12,6 +12,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.StatistikkStønadRepo
 import no.nav.tiltakspenger.saksbehandling.service.person.PersonService
 import no.nav.tiltakspenger.saksbehandling.service.sak.SakService
 import no.nav.tiltakspenger.utbetaling.ports.UtbetalingsvedtakRepo
+import no.nav.tiltakspenger.vedtak.Configuration
 import no.nav.tiltakspenger.vedtak.clients.meldekort.MeldekortApiHttpClient
 import no.nav.tiltakspenger.vedtak.repository.meldekort.MeldekortPostgresRepo
 
@@ -52,10 +53,18 @@ open class MeldekortContext(
             sakService = sakService,
         )
     }
+
+    private val meldekortApiHttpClient by lazy {
+        MeldekortApiHttpClient(
+            baseUrl = Configuration.meldekortApiUrl,
+            getToken = { entraIdSystemtokenClient.getSystemtoken(Configuration.meldekortApiScope) },
+        )
+    }
+
     val sendMeldekortTilBrukerService by lazy {
         SendMeldekortTilBrukerService(
             meldekortRepo = meldekortRepo,
-            meldekortApiHttpClient = MeldekortApiHttpClient(entraIdSystemtokenClient),
+            meldekortApiHttpClient = meldekortApiHttpClient,
         )
     }
 }
