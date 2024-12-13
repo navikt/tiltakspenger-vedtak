@@ -24,7 +24,7 @@ class MeldekortApiHttpClient(
         return Either.catch {
             val body = meldekort.tilBrukerDTO()
             val token = getToken()
-            val response = client.preparePost("$baseUrl/saksbehandling/meldekort") {
+            val response = client.preparePost("$baseUrl/meldekort") {
                 bearerAuth(token.token)
                 contentType(ContentType.Application.Json)
                 setBody(body)
