@@ -16,11 +16,10 @@ class DistribuerVedtaksbrevService(
     private val log = KotlinLogging.logger {}
 
     /** Ment å kalles fra en jobb - journalfører alle rammevedtak som skal sende brev. */
-    suspend fun distribuer(
-        correlationId: CorrelationId,
-    ) {
+    suspend fun distribuer() {
         Either.catch {
             rammevedtakRepo.hentRammevedtakSomSkalDistribueres().forEach { vedtakSomSkalDistribueres ->
+                val correlationId = CorrelationId.generate()
                 log.info { "Prøver å distribuere journalpost  for rammevedtak. $vedtakSomSkalDistribueres" }
                 Either.catch {
                     val distribusjonId =

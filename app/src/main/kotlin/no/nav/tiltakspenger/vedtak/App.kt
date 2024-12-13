@@ -61,16 +61,12 @@ internal fun start(
         initialDelay = if (isNais) 1.minutes else 1.seconds,
         runCheckFactory = runCheckFactory,
         tasks =
-        listOf { correlationId ->
-            applicationContext.utbetalingContext.sendUtbetalingerService.send(correlationId)
-            applicationContext.utbetalingContext.journalførUtbetalingsvedtakService.journalfør(correlationId)
-            applicationContext.behandlingContext.journalførVedtaksbrevService.journalfør(
-                correlationId,
-            )
-            applicationContext.behandlingContext.distribuerVedtaksbrevService.distribuer(
-                correlationId,
-            )
-            applicationContext.sendTilDatadelingService.send(correlationId, Configuration.isNais())
+        listOf {
+            applicationContext.utbetalingContext.sendUtbetalingerService.send()
+            applicationContext.utbetalingContext.journalførUtbetalingsvedtakService.journalfør()
+            applicationContext.behandlingContext.journalførVedtaksbrevService.journalfør()
+            applicationContext.behandlingContext.distribuerVedtaksbrevService.distribuer()
+            applicationContext.sendTilDatadelingService.send(Configuration.isNais())
         },
     )
 

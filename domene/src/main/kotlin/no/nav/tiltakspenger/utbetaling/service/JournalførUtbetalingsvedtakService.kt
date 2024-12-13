@@ -25,9 +25,10 @@ class JournalførUtbetalingsvedtakService(
 ) {
     private val log = KotlinLogging.logger { }
 
-    suspend fun journalfør(correlationId: CorrelationId) {
+    suspend fun journalfør() {
         Either.catch {
             utbetalingsvedtakRepo.hentDeSomSkalJournalføres().forEach { utbetalingsvedtak ->
+                val correlationId = CorrelationId.generate()
                 log.info { "Journalfører utbetalingsvedtak. Saksnummer: ${utbetalingsvedtak.saksnummer}, sakId: ${utbetalingsvedtak.sakId}, utbetalingsvedtakId: ${utbetalingsvedtak.id}" }
                 Either.catch {
                     val rammevedtak = sakRepo.hentForSakId(utbetalingsvedtak.sakId)!!.rammevedtak!!
