@@ -17,4 +17,6 @@ fun Route.meldekortRoutes(
     hentMeldekortRoute(sakService, auditService, tokenService)
     iverksettMeldekortRoute(iverksettMeldekortService, auditService, tokenService)
     sendMeldekortTilBeslutterRoute(sendMeldekortTilBeslutterService, auditService, tokenService)
+    // TODO K&H: kommenter inn denne når jobben som mottar meldekort skal lages skikkelig
+    // mottaMeldekortRoutes()
 }
