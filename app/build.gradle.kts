@@ -1,8 +1,7 @@
-val kotlinxCoroutinesVersion: String by rootProject.extra
-val kotestVersion: String by rootProject.extra
-val felleslibVersion: String by rootProject.extra
-val mockkVersion: String by rootProject.extra
-
+val kotlinxCoroutinesVersion = "1.9.0"
+val kotestVersion = "5.9.1"
+val felleslibVersion = "0.0.294"
+val mockkVersion = "1.13.12"
 val ktorVersion = "3.0.2"
 val testContainersVersion = "1.20.4"
 val poaoTilgangVersjon = "2024.11.26_08.36-ad014162ce23"
