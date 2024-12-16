@@ -2,7 +2,6 @@ package no.nav.tiltakspenger.meldekort.service
 
 import arrow.core.Either
 import mu.KotlinLogging
-import no.nav.tiltakspenger.felles.nå
 import no.nav.tiltakspenger.meldekort.ports.MeldekortApiHttpClientGateway
 import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo
 
@@ -17,18 +16,18 @@ class SendMeldekortTilBrukerService(
 
     suspend fun send() {
         Either.catch {
-            val meldekortTilUtfylling = meldekortRepo.hentTilBrukerUtfylling()
-
-            logger.info("Fant ${meldekortTilUtfylling.count()} meldekort for sending til meldekort-api")
-
-            meldekortTilUtfylling.forEach { meldekort ->
-                meldekortApiHttpClient.sendMeldekort(meldekort).onRight {
-                    logger.debug { "Sendte meldekort til utfylling med id ${meldekort.id}" }
-                    meldekortRepo.markerSomSendtTilBrukerUtfylling(meldekort.id, nå())
-                }.onLeft {
-                    logger.error { "Kunne ikke sende meldekort til utfylling med id ${meldekort.id}" }
-                }
-            }
+//            val meldekortTilBruker = meldekortRepo.hentUsendteTilBruker()
+//
+//            logger.info("Fant ${meldekortTilBruker.count()} meldekort for sending til meldekort-api")
+//
+//            meldekortTilBruker.forEach { meldekort ->
+//                meldekortApiHttpClient.sendMeldekort(meldekort).onRight {
+//                    logger.info { "Sendte meldekort til meldekort-api med id ${meldekort.id}" }
+//                    meldekortRepo.markerSomSendtTilBruker(meldekort.id, nå())
+//                }.onLeft {
+//                    logger.error { "Kunne ikke sende meldekort til utfylling med id ${meldekort.id}" }
+//                }
+//            }
         }.onLeft {
             logger.error(RuntimeException("Oh noes")) { "Feil ved sending av meldekort til meldekort-api! ${it.message}" }
         }

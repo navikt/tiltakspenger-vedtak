@@ -27,11 +27,11 @@ class MeldekortFakeRepo : MeldekortRepo {
         lagre(meldekort, transactionContext)
     }
 
-    override fun hentTilBrukerUtfylling(): List<Meldekort> {
+    override fun hentUsendteTilBruker(): List<Meldekort> {
         TODO("Not yet implemented")
     }
 
-    override fun markerSomSendtTilBrukerUtfylling(meldekortId: MeldekortId, tidspunkt: LocalDateTime) {
+    override fun markerSomSendtTilBruker(meldekortId: MeldekortId, tidspunkt: LocalDateTime) {
         TODO("Not yet implemented")
     }
 

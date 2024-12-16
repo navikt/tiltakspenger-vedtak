@@ -20,7 +20,7 @@ interface MeldekortRepo {
         transactionContext: TransactionContext? = null,
     )
 
-    fun hentTilBrukerUtfylling(): List<Meldekort>
+    fun hentUsendteTilBruker(): List<Meldekort>
 
-    fun markerSomSendtTilBrukerUtfylling(meldekortId: MeldekortId, tidspunkt: LocalDateTime)
+    fun markerSomSendtTilBruker(meldekortId: MeldekortId, tidspunkt: LocalDateTime)
 }
