@@ -5,7 +5,7 @@ val mockkVersion = "1.13.12"
 val ktorVersion = "3.0.2"
 val testContainersVersion = "1.20.4"
 val poaoTilgangVersjon = "2024.11.26_08.36-ad014162ce23"
-val iverksettVersjon = "1.0_20241126095338_e7e661d"
+val iverksettVersjon = "1.0_20241213145703_7ff5f9c"
 
 plugins {
     application
