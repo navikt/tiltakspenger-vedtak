@@ -24,18 +24,25 @@ enum class MeldekortStatusTilBruker {
 }
 
 enum class MeldekortDagStatusTilBruker {
-    DELTATT,
+    RETT,
+    IKKE_RETT,
+}
+
+enum class MeldekortDagRapportering {
+    DELTATT_UTEN_LØNN,
+    DELTATT_MED_LØNN,
     FRAVÆR_SYK,
     FRAVÆR_SYKT_BARN,
-    FRAVÆR_ANNET,
+    FRAVÆR_ANNET_MED_RETT,
+    FRAVÆR_ANNET_UTEN_RETT,
     IKKE_DELTATT,
     IKKE_REGISTRERT,
-    SPERRET,
 }
 
 data class MeldekortDagTilBrukerDTO(
     val dag: LocalDate,
     val status: MeldekortDagStatusTilBruker,
+    val rapportering: MeldekortDagRapportering,
 )
 
 data class MeldekortTilBrukerDTO(
@@ -58,6 +65,7 @@ fun Meldekort.tilBrukerDTO(): MeldekortTilBrukerDTO {
             MeldekortDagTilBrukerDTO(
                 dag = it.dato,
                 status = it.tilBrukerStatusDTO(),
+                rapportering = it.tilRapporteringDTO(),
             )
         },
     )
@@ -74,13 +82,20 @@ fun Meldekort.tilBrukerStatusDTO(): MeldekortStatusTilBruker =
 
 fun Meldekortdag.tilBrukerStatusDTO(): MeldekortDagStatusTilBruker =
     when (this) {
-        is IkkeUtfylt -> MeldekortDagStatusTilBruker.IKKE_REGISTRERT
-        is DeltattMedLønnITiltaket -> MeldekortDagStatusTilBruker.DELTATT
-        is DeltattUtenLønnITiltaket -> MeldekortDagStatusTilBruker.DELTATT
-        is SykBruker -> MeldekortDagStatusTilBruker.FRAVÆR_SYK
-        is SyktBarn -> MeldekortDagStatusTilBruker.FRAVÆR_SYKT_BARN
-        is VelferdGodkjentAvNav -> MeldekortDagStatusTilBruker.FRAVÆR_ANNET
-        is VelferdIkkeGodkjentAvNav -> MeldekortDagStatusTilBruker.IKKE_DELTATT
-        is IkkeDeltatt -> MeldekortDagStatusTilBruker.IKKE_DELTATT
-        is Sperret -> MeldekortDagStatusTilBruker.SPERRET
+        is IkkeUtfylt -> MeldekortDagStatusTilBruker.RETT
+        is Sperret -> MeldekortDagStatusTilBruker.IKKE_RETT
+        else -> throw RuntimeException("Oh noes")
+    }
+
+fun Meldekortdag.tilRapporteringDTO(): MeldekortDagRapportering =
+    when (this) {
+        is DeltattMedLønnITiltaket -> MeldekortDagRapportering.DELTATT_MED_LØNN
+        is DeltattUtenLønnITiltaket -> MeldekortDagRapportering.DELTATT_UTEN_LØNN
+        is SykBruker -> MeldekortDagRapportering.FRAVÆR_SYK
+        is SyktBarn -> MeldekortDagRapportering.FRAVÆR_SYKT_BARN
+        is VelferdGodkjentAvNav -> MeldekortDagRapportering.FRAVÆR_ANNET_MED_RETT
+        is VelferdIkkeGodkjentAvNav -> MeldekortDagRapportering.FRAVÆR_ANNET_UTEN_RETT
+        is IkkeDeltatt -> MeldekortDagRapportering.IKKE_DELTATT
+        is IkkeUtfylt -> MeldekortDagRapportering.IKKE_REGISTRERT
+        is Sperret -> MeldekortDagRapportering.IKKE_REGISTRERT
     }
