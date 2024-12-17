@@ -7,7 +7,7 @@ val jacksonVersion = "2.18.2"
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation(kotlin("stdlib"))
-    implementation("com.google.guava:guava:33.3.1-jre")
+    implementation("com.google.guava:guava:33.4.0-jre")
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
