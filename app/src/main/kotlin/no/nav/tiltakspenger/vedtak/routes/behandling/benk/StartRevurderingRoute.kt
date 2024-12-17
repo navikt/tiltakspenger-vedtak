@@ -69,7 +69,7 @@ fun Route.startRevurderingRoute(
                                 }
                             },
                             {
-                                val revurderingId = it.revurderinger.last().id
+                                val revurderingId = it.second.id
                                 auditService.logMedSakId(
                                     sakId = sakId,
                                     navIdent = saksbehandler.navIdent,

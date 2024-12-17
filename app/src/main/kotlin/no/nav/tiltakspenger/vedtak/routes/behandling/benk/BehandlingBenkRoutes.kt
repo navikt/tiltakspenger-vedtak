@@ -33,6 +33,7 @@ import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.Standardfeil.støtte
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond400BadRequest
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond403Forbidden
 import no.nav.tiltakspenger.vedtak.routes.exceptionhandling.respond500InternalServerError
+import no.nav.tiltakspenger.vedtak.routes.sak.toDTO
 import no.nav.tiltakspenger.vedtak.routes.withBody
 
 fun Route.behandlingBenkRoutes(
@@ -59,7 +60,7 @@ fun Route.behandlingBenkRoutes(
                     }
                 },
                 {
-                    call.respond(status = HttpStatusCode.OK, it.fraBehandlingToBehandlingBenkDto())
+                    call.respond(status = HttpStatusCode.OK, it.toDTO())
                 },
             )
         }

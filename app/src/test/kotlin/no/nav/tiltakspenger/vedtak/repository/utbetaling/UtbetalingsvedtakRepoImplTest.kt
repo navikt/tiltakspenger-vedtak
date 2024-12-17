@@ -18,7 +18,7 @@ class UtbetalingsvedtakRepoImplTest {
 
             val (sak, meldekort) = testDataHelper.persisterRammevedtakMedUtfyltMeldekort()
             val utbetalingsvedtakRepo = testDataHelper.utbetalingsvedtakRepo as UtbetalingsvedtakPostgresRepo
-            val utbetalingsvedtak = meldekort.opprettUtbetalingsvedtak(sak.rammevedtak!!, null)
+            val utbetalingsvedtak = meldekort.opprettUtbetalingsvedtak(sak.saksnummer, sak.fnr, null)
             utbetalingsvedtakRepo.lagre(utbetalingsvedtak)
             utbetalingsvedtakRepo.hentUtbetalingsvedtakForUtsjekk() shouldBe listOf(utbetalingsvedtak)
             utbetalingsvedtakRepo.hentUtbetalingsvedtakForUtsjekk() shouldBe listOf(utbetalingsvedtak)

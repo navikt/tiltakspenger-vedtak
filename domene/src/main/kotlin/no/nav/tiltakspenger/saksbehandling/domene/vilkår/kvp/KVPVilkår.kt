@@ -46,11 +46,13 @@ data class KVPVilkår private constructor(
             }
         }
 
-    override fun oppdaterPeriode(periode: Periode): KVPVilkår {
-        val nySøknadSaksopplsyning = søknadSaksopplysning.oppdaterPeriode(periode)
-        val nySaksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.oppdaterPeriode(periode)
+    override fun krymp(nyPeriode: Periode): KVPVilkår {
+        if (vurderingsperiode == nyPeriode) return this
+        require(vurderingsperiode.inneholderHele(nyPeriode)) { "Ny periode ($nyPeriode) må være innenfor vurderingsperioden ($vurderingsperiode)" }
+        val nySøknadSaksopplsyning = søknadSaksopplysning.oppdaterPeriode(nyPeriode)
+        val nySaksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.oppdaterPeriode(nyPeriode)
         return this.copy(
-            vurderingsperiode = periode,
+            vurderingsperiode = nyPeriode,
             søknadSaksopplysning = nySøknadSaksopplsyning,
             saksbehandlerSaksopplysning = nySaksbehandlerSaksopplysning,
             avklartSaksopplysning = nySaksbehandlerSaksopplysning ?: nySøknadSaksopplsyning,

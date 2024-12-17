@@ -31,15 +31,15 @@ class JournalførUtbetalingsvedtakService(
                 val correlationId = CorrelationId.generate()
                 log.info { "Journalfører utbetalingsvedtak. Saksnummer: ${utbetalingsvedtak.saksnummer}, sakId: ${utbetalingsvedtak.sakId}, utbetalingsvedtakId: ${utbetalingsvedtak.id}" }
                 Either.catch {
-                    val rammevedtak = sakRepo.hentForSakId(utbetalingsvedtak.sakId)!!.rammevedtak!!
+                    val sak = sakRepo.hentForSakId(utbetalingsvedtak.sakId)!!
+                    val tiltak = sak.vedtaksliste.hentTiltaksdataForPeriode(utbetalingsvedtak.periode)!!
                     val pdfOgJson =
                         genererUtbetalingsvedtakGateway.genererUtbetalingsvedtak(
                             utbetalingsvedtak,
                             hentSaksbehandlersNavn = navIdentClient::hentNavnForNavIdent,
-                            tiltaksnavn = rammevedtak.behandling.tiltaksnavn,
-                            eksternDeltagelseId = rammevedtak.behandling.tiltaksid,
-                            eksternGjennomføringId = rammevedtak.behandling.gjennomføringId,
-
+                            tiltaksnavn = tiltak.tiltaksnavn,
+                            eksternDeltagelseId = tiltak.eksternDeltagelseId,
+                            eksternGjennomføringId = tiltak.eksternGjennomføringId,
                         ).getOrElse { return@forEach }
                     log.info { "Pdf generert for utbetalingsvedtak. Saksnummer: ${utbetalingsvedtak.saksnummer}, sakId: ${utbetalingsvedtak.sakId}, utbetalingsvedtakId: ${utbetalingsvedtak.id}" }
                     val journalpostId = journalførMeldekortGateway.journalførMeldekort(

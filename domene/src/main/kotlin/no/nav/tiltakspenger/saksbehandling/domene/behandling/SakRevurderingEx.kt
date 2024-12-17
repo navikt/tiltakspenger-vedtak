@@ -5,18 +5,16 @@ import arrow.core.right
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.nå
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
-import no.nav.tiltakspenger.saksbehandling.domene.vedtak.stønadsdagerTidslinje
-import no.nav.tiltakspenger.saksbehandling.domene.vedtak.vilkårssettTidslinje
+import no.nav.tiltakspenger.saksbehandling.domene.vedtak.krympStønadsdager
+import no.nav.tiltakspenger.saksbehandling.domene.vedtak.krympVilkårssett
 import no.nav.tiltakspenger.saksbehandling.service.sak.KanIkkeStarteRevurdering
-import java.lang.IllegalArgumentException
 
 fun Sak.startRevurdering(
     kommando: StartRevurderingKommando,
 ): Either<KanIkkeStarteRevurdering, Pair<Sak, Behandling>> {
-    val vilkårssett = this.vilkårssettTidslinje()
-        ?: throw IllegalArgumentException("Må finnes et rammevedtak før man kan starte revurdering. sakId: ${this.id}")
-    val stønadsdager = this.stønadsdagerTidslinje()
-        ?: throw IllegalArgumentException("Må finnes et rammevedtak før man kan starte revurdering. sakId: ${this.id}")
+    // Merk at vi beholder eventuelle tidspunkt og IDer.
+    val vilkårssett = this.krympVilkårssett(kommando.periode).single()
+    val stønadsdager = this.krympStønadsdager(kommando.periode).single()
     val opprettet = nå()
     val behandling = Behandling(
         id = BehandlingId.random(),
@@ -28,8 +26,8 @@ fun Sak.startRevurdering(
         saksbehandler = kommando.saksbehandler.navIdent,
         sendtTilBeslutning = null,
         beslutter = null,
-        vilkårssett = vilkårssett.oppdaterPeriode(kommando.periode),
-        stønadsdager = stønadsdager,
+        vilkårssett = vilkårssett.verdi,
+        stønadsdager = stønadsdager.verdi,
         status = Behandlingsstatus.UNDER_BEHANDLING,
         attesteringer = emptyList(),
         opprettet = opprettet,

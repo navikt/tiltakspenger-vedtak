@@ -21,11 +21,13 @@ data class InstitusjonsoppholdVilkår private constructor(
     val saksbehandlerSaksopplysning: InstitusjonsoppholdSaksopplysning.Saksbehandler?,
     val avklartSaksopplysning: InstitusjonsoppholdSaksopplysning,
 ) : Vilkår {
-    override fun oppdaterPeriode(periode: Periode): InstitusjonsoppholdVilkår {
-        val nySøknadSaksopplysning = søknadSaksopplysning.oppdaterPeriode(periode)
-        val nySaksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.oppdaterPeriode(periode)
+    override fun krymp(nyPeriode: Periode): InstitusjonsoppholdVilkår {
+        if (vurderingsperiode == nyPeriode) return this
+        require(vurderingsperiode.inneholderHele(nyPeriode)) { "Ny periode ($nyPeriode) må være innenfor vurderingsperioden ($vurderingsperiode)" }
+        val nySøknadSaksopplysning = søknadSaksopplysning.oppdaterPeriode(nyPeriode)
+        val nySaksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.oppdaterPeriode(nyPeriode)
         return InstitusjonsoppholdVilkår(
-            vurderingsperiode = periode,
+            vurderingsperiode = nyPeriode,
             søknadSaksopplysning = nySøknadSaksopplysning,
             saksbehandlerSaksopplysning = nySaksbehandlerSaksopplysning,
             avklartSaksopplysning = nySaksbehandlerSaksopplysning ?: nySøknadSaksopplysning,

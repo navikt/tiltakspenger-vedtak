@@ -13,6 +13,7 @@ import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.Saksbehandler
 import no.nav.tiltakspenger.libs.common.Saksbehandlerrolle
 import no.nav.tiltakspenger.libs.personklient.pdl.TilgangsstyringService
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.StartRevurderingKommando
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.startRevurdering
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
@@ -26,7 +27,7 @@ class StartRevurderingService(
     val logger = KotlinLogging.logger { }
     suspend fun startRevurdering(
         kommando: StartRevurderingKommando,
-    ): Either<KanIkkeStarteRevurdering, Sak> {
+    ): Either<KanIkkeStarteRevurdering, Pair<Sak, Behandling>> {
         val (sakId, _, correlationId, saksbehandler) = kommando
         if (!saksbehandler.erSaksbehandlerEllerBeslutter()) {
             logger.warn { "Navident ${saksbehandler.navIdent} med rollene ${saksbehandler.roller} har ikke tilgang til å starte revurdering på sak ${kommando.sakId}" }
@@ -48,7 +49,7 @@ class StartRevurderingService(
             return it.left()
         }
         behandlingRepo.lagre(behandling)
-        return oppdatertSak.right()
+        return Pair(oppdatertSak, behandling).right()
     }
 
     private suspend fun sjekkSaksbehandlersTilgangTilPerson(

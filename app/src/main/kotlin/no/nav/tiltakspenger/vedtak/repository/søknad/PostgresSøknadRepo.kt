@@ -9,7 +9,7 @@ import no.nav.tiltakspenger.saksbehandling.ports.SøknadRepo
 internal class PostgresSøknadRepo(
     private val sessionFactory: PostgresSessionFactory,
 ) : SøknadRepo {
-    override fun hentForSøknadId(søknadId: SøknadId): Søknad =
+    override fun hentForSøknadId(søknadId: SøknadId): Søknad? =
         sessionFactory.withSession {
             SøknadDAO.hentForSøknadId(søknadId, it)
         }

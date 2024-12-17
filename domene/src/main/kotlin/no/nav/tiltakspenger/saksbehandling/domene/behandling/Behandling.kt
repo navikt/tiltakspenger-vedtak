@@ -254,6 +254,20 @@ data class Behandling(
         }
     }
 
+    /**
+     * Krymper [vurderingsperiode], [vilkårssett] og [stønadsdager] til [nyPeriode].
+     * Endrer ikke [Søknad].
+     */
+    fun krymp(nyPeriode: Periode): Behandling {
+        if (vurderingsperiode == nyPeriode) return this
+        require(vurderingsperiode.inneholderHele(nyPeriode)) { "Ny periode ($nyPeriode) må være innenfor vedtakets periode ($vurderingsperiode)" }
+        return this.copy(
+            vurderingsperiode = nyPeriode,
+            vilkårssett = vilkårssett.krymp(nyPeriode),
+            stønadsdager = stønadsdager.krymp(nyPeriode),
+        )
+    }
+
     init {
         require(vilkårssett.vurderingsperiode == vurderingsperiode) {
             "Vilkårssettets periode (${vilkårssett.vurderingsperiode} må være lik vurderingsperioden $vurderingsperiode"

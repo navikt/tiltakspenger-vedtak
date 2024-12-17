@@ -6,7 +6,7 @@ data class SakDTO(
     val saksnummer: String,
     val sakId: String,
     val fnr: String,
-    val behandlingsoversikt: List<BehandlingsoversiktDTO>,
+    val behandlingsoversikt: List<SaksoversiktDTO>,
     val meldekortoversikt: List<MeldekortoversiktDTO>,
 )
 
@@ -15,6 +15,6 @@ fun Sak.toDTO() =
         saksnummer = saksnummer.verdi,
         sakId = id.toString(),
         fnr = fnr.verdi,
-        behandlingsoversikt = behandlinger.toBehandlingOversiktDTO(),
+        behandlingsoversikt = behandlinger.toSaksoversiktDTO(),
         meldekortoversikt = meldeperioder.verdi.toMeldekortoversiktDTO(),
     )

@@ -17,7 +17,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.tiltak.Tiltak
-import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
+import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtaksliste
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.opprettVedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand.HarYtelseForPeriode
@@ -42,14 +42,7 @@ interface SakMother {
                     deltakelseTom = vurderingsperiode.tilOgMed,
                 ),
             ),
-        registrerteTiltak: List<Tiltak> =
-            listOf(
-                ObjectMother.tiltak(
-                    eksternId = søknad.tiltak.id,
-                    fom = vurderingsperiode.fraOgMed,
-                    tom = vurderingsperiode.tilOgMed,
-                ),
-            ),
+        registrerteTiltak: List<Tiltak> = listOf(søknad.tiltak.toTiltak()),
     ): Sak {
         return Sak.lagSak(
             sakId = sakId,
@@ -67,13 +60,16 @@ interface SakMother {
         løpenummer: Int = 1001,
         saksnummer: Saksnummer = Saksnummer(iDag, løpenummer),
         saksbehandler: Saksbehandler = saksbehandler(),
-        vedtak: List<Rammevedtak> = emptyList(),
         correlationId: CorrelationId = CorrelationId.generate(),
+        vurderingsperiode: Periode = Periode(fraOgMed = 1.januar(2023), tilOgMed = 31.januar(2023)),
     ): Sak {
         return sakMedOpprettetBehandling(
+            iDag = iDag,
+            løpenummer = løpenummer,
             sakId = sakId,
             saksnummer = saksnummer,
             saksbehandler = saksbehandler,
+            vurderingsperiode = vurderingsperiode,
         ).let {
             val oppdatertFørstegangsbehandling = it.førstegangsbehandling.leggTilLivsoppholdSaksopplysning(
                 LeggTilLivsoppholdSaksopplysningCommand(
@@ -100,15 +96,22 @@ interface SakMother {
         saksnummer: Saksnummer = Saksnummer(iDag, løpenummer),
         saksbehandler: Saksbehandler = saksbehandler(),
         beslutter: Saksbehandler = beslutter(),
-        vedtak: List<Rammevedtak> = emptyList(),
+        vurderingsperiode: Periode = Periode(fraOgMed = 1.januar(2023), tilOgMed = 31.januar(2023)),
     ): Sak {
         return sakMedInnvilgetVilkårssett(
+            iDag = iDag,
+            løpenummer = løpenummer,
+            vurderingsperiode = vurderingsperiode,
             sakId = sakId,
             saksnummer = saksnummer,
             saksbehandler = saksbehandler,
         ).let {
             require(it.behandlinger.size == 1)
-            it.copy(behandlinger = Behandlinger(it.førstegangsbehandling.tilBeslutning(saksbehandler).taBehandling(beslutter)))
+            it.copy(
+                behandlinger = Behandlinger(
+                    it.førstegangsbehandling.tilBeslutning(saksbehandler).taBehandling(beslutter),
+                ),
+            )
         }
     }
 
@@ -119,17 +122,21 @@ interface SakMother {
         saksnummer: Saksnummer = Saksnummer(iDag, løpenummer),
         saksbehandler: Saksbehandler = saksbehandler(),
         beslutter: Saksbehandler = beslutter(),
+        vurderingsperiode: Periode = Periode(fraOgMed = 1.januar(2023), tilOgMed = 31.januar(2023)),
     ): Sak {
         return sakTilBeslutter(
             sakId = sakId,
             saksnummer = saksnummer,
+            iDag = iDag,
+            vurderingsperiode = vurderingsperiode,
+            løpenummer = løpenummer,
             saksbehandler = saksbehandler,
         ).let {
             require(it.behandlinger.size == 1)
             val iverksattBehandling = it.førstegangsbehandling.iverksett(beslutter, godkjentAttestering())
             it.copy(
                 behandlinger = Behandlinger(iverksattBehandling),
-                rammevedtak = it.opprettVedtak(iverksattBehandling),
+                vedtaksliste = Vedtaksliste(it.opprettVedtak(iverksattBehandling)),
             )
         }
     }

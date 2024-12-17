@@ -1,7 +1,7 @@
 val kotlinxCoroutinesVersion = "1.9.0"
 val kotestVersion = "5.9.1"
 val felleslibVersion = "0.0.304"
-val mockkVersion = "1.13.12"
+val mockkVersion = "1.13.13"
 val ktorVersion = "3.0.2"
 val testContainersVersion = "1.20.4"
 val poaoTilgangVersjon = "2024.11.26_08.36-ad014162ce23"
@@ -104,7 +104,7 @@ dependencies {
     // Caffeine
     implementation("com.github.ben-manes.caffeine:caffeine:3.1.8")
 
-    testImplementation(platform("org.junit:junit-bom:5.11.3"))
+    testImplementation(platform("org.junit:junit-bom:5.11.4"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.junit.jupiter:junit-jupiter-params")
     testImplementation("io.mockk:mockk:$mockkVersion")
@@ -126,3 +126,4 @@ dependencies {
     testApi("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")
     testApi("com.github.navikt.tiltakspenger-libs:persistering-domene:$felleslibVersion")
 }
+

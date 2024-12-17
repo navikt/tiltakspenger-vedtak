@@ -27,7 +27,7 @@ data class BehandlingEllerSøknadForSaksoversikt(
     val status: Status,
     val underkjent: Boolean?,
     val kravtidspunkt: LocalDateTime,
-    val behandlingstype: Behandlingstype,
+    val behandlingstype: BenkBehandlingstype,
     val fnr: Fnr,
     val saksnummer: Saksnummer?,
     val id: Ulid,
@@ -41,10 +41,5 @@ data class BehandlingEllerSøknadForSaksoversikt(
         data class Behandling(
             val behandlingsstatus: Behandlingsstatus,
         ) : Status
-    }
-
-    enum class Behandlingstype {
-        SØKNAD,
-        FØRSTEGANGSBEHANDLING,
     }
 }

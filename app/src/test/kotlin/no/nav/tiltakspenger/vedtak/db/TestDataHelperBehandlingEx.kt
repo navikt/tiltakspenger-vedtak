@@ -17,6 +17,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.startRevurdering
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
+import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.opprettVedtak
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand
 import no.nav.tiltakspenger.saksbehandling.domene.vilkår.livsopphold.LeggTilLivsoppholdSaksopplysningCommand.HarYtelseForPeriode
@@ -68,7 +69,7 @@ internal fun TestDataHelper.persisterOpprettetFørstegangsbehandling(
 
     return Pair(
         sakRepo.hentForSakId(sakId)!!,
-        søknadRepo.hentForSøknadId(søknad.id),
+        søknadRepo.hentForSøknadId(søknad.id)!!,
     )
 }
 
@@ -101,19 +102,18 @@ internal fun TestDataHelper.persisterIverksattFørstegangsbehandling(
             ),
             barnetillegg = listOf(),
         ),
-): Sak {
-    val (sak, _) =
-        persisterOpprettetFørstegangsbehandling(
-            sakId = sakId,
-            fnr = fnr,
-            deltakelseFom = deltakelseFom,
-            deltakelseTom = deltakelseTom,
-            journalpostId = journalpostId,
-            saksbehandler = saksbehandler,
-            tiltaksOgVurderingsperiode = tiltaksOgVurderingsperiode,
-            id = id,
-            søknad = søknad,
-        )
+): Pair<Sak, Rammevedtak> {
+    val (sak, _) = persisterOpprettetFørstegangsbehandling(
+        sakId = sakId,
+        fnr = fnr,
+        deltakelseFom = deltakelseFom,
+        deltakelseTom = deltakelseTom,
+        journalpostId = journalpostId,
+        saksbehandler = saksbehandler,
+        tiltaksOgVurderingsperiode = tiltaksOgVurderingsperiode,
+        id = id,
+        søknad = søknad,
+    )
     val førstegangsbehandling = sak.førstegangsbehandling
     val oppdatertFørstegangsbehandling =
         førstegangsbehandling
@@ -134,10 +134,9 @@ internal fun TestDataHelper.persisterIverksattFørstegangsbehandling(
             .taBehandling(beslutter)
             .iverksett(beslutter, ObjectMother.godkjentAttestering(beslutter))
     behandlingRepo.lagre(oppdatertFørstegangsbehandling)
-    sak.opprettVedtak(oppdatertFørstegangsbehandling).also {
-        vedtakRepo.lagre(it)
-    }
-    return sakRepo.hentForSakId(sakId)!!
+    val vedtak = sak.opprettVedtak(oppdatertFørstegangsbehandling)
+    vedtakRepo.lagre(vedtak)
+    return sakRepo.hentForSakId(sakId)!! to vedtak
 }
 
 /**
@@ -171,7 +170,7 @@ internal fun TestDataHelper.persisterOpprettetRevurdering(
         ),
     revurderingsperiode: Periode = Periode(fraOgMed = deltakelseFom.plusMonths(1), tilOgMed = deltakelseTom),
 ): Pair<Sak, Behandling> {
-    val sak = persisterIverksattFørstegangsbehandling(
+    val (sak, _) = persisterIverksattFørstegangsbehandling(
         sakId = sakId,
         fnr = fnr,
         deltakelseFom = deltakelseFom,
@@ -222,23 +221,22 @@ internal fun TestDataHelper.persisterRammevedtakMedUtfyltMeldekort(
             barnetillegg = listOf(),
         ),
 ): Pair<Sak, Meldekort.UtfyltMeldekort> {
-    val sak =
-        persisterIverksattFørstegangsbehandling(
-            sakId = sakId,
-            fnr = fnr,
-            deltakelseFom = deltakelseFom,
-            deltakelseTom = deltakelseTom,
-            journalpostId = journalpostId,
-            saksbehandler = saksbehandler,
-            tiltaksOgVurderingsperiode = tiltaksOgVurderingsperiode,
-            id = id,
-            søknad = søknad,
-            beslutter = beslutter,
-        )
+    val (sak, vedtak) = persisterIverksattFørstegangsbehandling(
+        sakId = sakId,
+        fnr = fnr,
+        deltakelseFom = deltakelseFom,
+        deltakelseTom = deltakelseTom,
+        journalpostId = journalpostId,
+        saksbehandler = saksbehandler,
+        tiltaksOgVurderingsperiode = tiltaksOgVurderingsperiode,
+        id = id,
+        søknad = søknad,
+        beslutter = beslutter,
+    )
     val utfyltMeldekort =
         ObjectMother.utfyltMeldekort(
             sakId = sak.id,
-            rammevedtakId = sak.rammevedtak!!.id,
+            rammevedtakId = vedtak.id,
             fnr = sak.fnr,
             saksnummer = sak.saksnummer,
         )

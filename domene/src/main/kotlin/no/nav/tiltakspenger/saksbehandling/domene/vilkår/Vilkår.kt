@@ -19,5 +19,5 @@ interface Vilkår {
         }
     }
 
-    fun oppdaterPeriode(periode: Periode): Vilkår
+    fun krymp(nyPeriode: Periode): Vilkår
 }

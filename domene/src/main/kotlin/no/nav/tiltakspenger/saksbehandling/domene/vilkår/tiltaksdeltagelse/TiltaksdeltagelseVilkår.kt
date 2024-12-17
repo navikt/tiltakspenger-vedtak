@@ -46,11 +46,13 @@ data class TiltaksdeltagelseVilkår private constructor(
         Periodisering(avklartSaksopplysning.utfallForPeriode, deltagelsePeriode)
     }
 
-    override fun oppdaterPeriode(periode: Periode): TiltaksdeltagelseVilkår {
-        val nyRegisterSaksopplysning = registerSaksopplysning.oppdaterPeriode(periode)
-        val nySaksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.oppdaterPeriode(periode)
+    override fun krymp(nyPeriode: Periode): TiltaksdeltagelseVilkår {
+        if (vurderingsperiode == nyPeriode) return this
+        require(vurderingsperiode.inneholderHele(nyPeriode)) { "Ny periode ($nyPeriode) må være innenfor vurderingsperioden ($vurderingsperiode)" }
+        val nyRegisterSaksopplysning = registerSaksopplysning.oppdaterPeriode(nyPeriode)
+        val nySaksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.oppdaterPeriode(nyPeriode)
         return this.copy(
-            vurderingsperiode = periode,
+            vurderingsperiode = nyPeriode,
             registerSaksopplysning = nyRegisterSaksopplysning,
             saksbehandlerSaksopplysning = nySaksbehandlerSaksopplysning,
             avklartSaksopplysning = nySaksbehandlerSaksopplysning ?: nyRegisterSaksopplysning,

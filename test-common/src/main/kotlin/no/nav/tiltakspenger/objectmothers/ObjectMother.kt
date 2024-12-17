@@ -12,7 +12,8 @@ object ObjectMother :
     VilkårMother,
     PersonMother,
     MeldekortMother,
-    UtbetalingsvedtakMother {
+    UtbetalingsvedtakMother,
+    TiltakMother {
     fun navn() = Navn("Fornavn", "Mellomnavn", "Etternavn")
     fun navkontor() = Navkontor("0220")
 }

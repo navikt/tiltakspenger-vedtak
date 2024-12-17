@@ -19,14 +19,14 @@ class MeldekortRepoImplTest {
     @Test
     fun `kan lagre og hente`() {
         withMigratedDb { testDataHelper ->
-            val sak = testDataHelper.persisterIverksattFørstegangsbehandling()
+            val (sak, vedtak) = testDataHelper.persisterIverksattFørstegangsbehandling()
             val meldekort =
                 ObjectMother.utfyltMeldekort(
                     sakId = sak.id,
-                    rammevedtakId = sak.rammevedtak!!.id,
+                    rammevedtakId = vedtak.id,
                     fnr = sak.fnr,
                     saksnummer = sak.saksnummer,
-                    antallDagerForMeldeperiode = sak.rammevedtak!!.antallDagerPerMeldeperiode,
+                    antallDagerForMeldeperiode = vedtak.antallDagerPerMeldeperiode,
                 )
             val nesteMeldekort = meldekort.opprettNesteMeldekort(
                 utfallsperioder = Periodisering(
@@ -61,13 +61,13 @@ class MeldekortRepoImplTest {
     @Test
     fun `kan oppdatere`() {
         withMigratedDb { testDataHelper ->
-            val sak = testDataHelper.persisterIverksattFørstegangsbehandling(
+            val (sak, vedtak) = testDataHelper.persisterIverksattFørstegangsbehandling(
                 deltakelseFom = 1.januar(2024),
                 deltakelseTom = 31.mars(2024),
             )
             val meldekort = ObjectMother.ikkeUtfyltMeldekort(
                 sakId = sak.id,
-                rammevedtakId = sak.rammevedtak!!.id,
+                rammevedtakId = vedtak.id,
                 fnr = sak.fnr,
                 saksnummer = sak.saksnummer,
                 periode = Periode(

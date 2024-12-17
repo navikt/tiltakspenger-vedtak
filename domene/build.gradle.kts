@@ -1,13 +1,13 @@
 val kotlinxCoroutinesVersion = "1.9.0"
 val kotestVersion = "5.9.1"
 val felleslibVersion = "0.0.304"
-val mockkVersion = "1.13.12"
+val mockkVersion = "1.13.13"
 val jacksonVersion = "2.18.2"
 
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation(kotlin("stdlib"))
-    implementation("com.google.guava:guava:33.3.1-jre")
+    implementation("com.google.guava:guava:33.4.0-jre")
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
@@ -26,7 +26,7 @@ dependencies {
 
     implementation("io.arrow-kt:arrow-core:1.2.4")
 
-    testImplementation(platform("org.junit:junit-bom:5.11.3"))
+    testImplementation(platform("org.junit:junit-bom:5.11.4"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.junit.jupiter:junit-jupiter-params")
     testImplementation("io.kotest:kotest-assertions-core:$kotestVersion")

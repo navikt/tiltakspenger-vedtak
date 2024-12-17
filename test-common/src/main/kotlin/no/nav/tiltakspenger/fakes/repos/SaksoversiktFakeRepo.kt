@@ -2,8 +2,7 @@ package no.nav.tiltakspenger.fakes.repos
 
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.saksbehandling.domene.benk.BehandlingEllerSøknadForSaksoversikt
-import no.nav.tiltakspenger.saksbehandling.domene.benk.BehandlingEllerSøknadForSaksoversikt.Behandlingstype.FØRSTEGANGSBEHANDLING
-import no.nav.tiltakspenger.saksbehandling.domene.benk.BehandlingEllerSøknadForSaksoversikt.Behandlingstype.SØKNAD
+import no.nav.tiltakspenger.saksbehandling.domene.benk.BenkBehandlingstype
 import no.nav.tiltakspenger.saksbehandling.domene.benk.Saksoversikt
 import no.nav.tiltakspenger.saksbehandling.ports.SaksoversiktRepo
 
@@ -33,7 +32,7 @@ class SaksoversiktFakeRepo(
                     ?.any { attestering -> attestering.isUnderkjent() }
                     ?: false,
                 kravtidspunkt = søknad.opprettet,
-                behandlingstype = if (erFørstegangsbehandling) FØRSTEGANGSBEHANDLING else SØKNAD,
+                behandlingstype = if (erFørstegangsbehandling) BenkBehandlingstype.FØRSTEGANGSBEHANDLING else BenkBehandlingstype.SØKNAD,
                 fnr = søknad.fnr,
                 saksnummer = førstegangsbehandling?.saksnummer,
                 id = førstegangsbehandling?.id ?: søknad.id,

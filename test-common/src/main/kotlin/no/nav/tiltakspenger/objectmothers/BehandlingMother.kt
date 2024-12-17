@@ -26,6 +26,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attestering
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Attesteringsstatus
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknad
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Søknadstiltak
 import no.nav.tiltakspenger.saksbehandling.domene.personopplysninger.PersonopplysningerSøker
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Sak
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
@@ -50,13 +51,7 @@ interface BehandlingMother {
         fnr: Fnr = Fnr.random(),
         søknad: Søknad = ObjectMother.nySøknad(periode = periode),
         personopplysningFødselsdato: LocalDate = 1.januar(2000),
-        registrerteTiltak: List<Tiltak> = listOf(
-            ObjectMother.tiltak(
-                eksternId = søknad.tiltak.id,
-                fom = periode.fraOgMed,
-                tom = periode.tilOgMed,
-            ),
-        ),
+        registrerteTiltak: List<Tiltak> = listOf(søknad.tiltak.toTiltak()),
         saksbehandler: Saksbehandler = saksbehandler(),
     ): Behandling = Behandling.opprettFørstegangsbehandling(
         sakId = sakId,
@@ -167,19 +162,16 @@ fun TestApplicationContext.nySøknad(
     ),
     deltarPåIntroduksjonsprogram: Boolean = false,
     deltarPåKvp: Boolean = false,
-    tiltak: Tiltak = ObjectMother.tiltak(fom = periode.fraOgMed, tom = periode.tilOgMed),
     tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
+    tiltak: Tiltak? = null,
+    søknadstiltak: Søknadstiltak? = tiltak?.toSøknadstiltak(),
     søknad: Søknad = ObjectMother.nySøknad(
         fnr = fnr,
         personopplysninger = personopplysningerFraSøknad,
         tidsstempelHosOss = tidsstempelHosOss,
-        søknadstiltak = søknadstiltak(
-            id = tiltak.eksternDeltagelseId,
+        søknadstiltak = søknadstiltak ?: ObjectMother.søknadstiltak(
             deltakelseFom = periode.fraOgMed,
             deltakelseTom = periode.tilOgMed,
-
-            typeKode = tiltak.typeKode.toString(),
-            typeNavn = tiltak.typeNavn,
         ),
         intro = if (deltarPåIntroduksjonsprogram) Søknad.PeriodeSpm.Ja(periode) else Søknad.PeriodeSpm.Nei,
         kvp = if (deltarPåKvp) Søknad.PeriodeSpm.Ja(periode) else Søknad.PeriodeSpm.Nei,
@@ -187,7 +179,7 @@ fun TestApplicationContext.nySøknad(
     systembruker: Systembruker = ObjectMother.systembrukerLageHendelser(),
 ): Søknad {
     this.søknadContext.søknadService.nySøknad(søknad, systembruker)
-    this.leggTilPerson(fnr, personopplysningerForBrukerFraPdl, tiltak)
+    this.leggTilPerson(fnr, personopplysningerForBrukerFraPdl, tiltak ?: søknad.tiltak.toTiltak())
     return søknad
 }
 
@@ -205,7 +197,6 @@ suspend fun TestApplicationContext.førstegangsbehandlingUavklart(
     ),
     deltarPåIntroduksjonsprogram: Boolean = false,
     deltarPåKvp: Boolean = false,
-    tiltak: Tiltak = ObjectMother.tiltak(fom = periode.fraOgMed, tom = periode.tilOgMed),
     fornavn: String = "Fornavn",
     etternavn: String = "Etternavn",
     personopplysningerFraSøknad: Søknad.Personopplysninger = personSøknad(
@@ -213,24 +204,28 @@ suspend fun TestApplicationContext.førstegangsbehandlingUavklart(
         fornavn = fornavn,
         etternavn = etternavn,
     ),
+    tidsstempelHosOss: LocalDateTime = 1.januarDateTime(2022),
+    tiltak: Tiltak? = null,
+    søknadstiltak: Søknadstiltak? = tiltak?.toSøknadstiltak(),
     søknad: Søknad = ObjectMother.nySøknad(
         fnr = fnr,
         personopplysninger = personopplysningerFraSøknad,
-        søknadstiltak = søknadstiltak(
-            id = tiltak.eksternDeltagelseId,
+        tidsstempelHosOss = tidsstempelHosOss,
+        søknadstiltak = søknadstiltak ?: ObjectMother.søknadstiltak(
             deltakelseFom = periode.fraOgMed,
             deltakelseTom = periode.tilOgMed,
-
-            typeKode = tiltak.typeKode.toString(),
-            typeNavn = tiltak.typeNavn,
         ),
         intro = if (deltarPåIntroduksjonsprogram) Søknad.PeriodeSpm.Ja(periode) else Søknad.PeriodeSpm.Nei,
         kvp = if (deltarPåKvp) Søknad.PeriodeSpm.Ja(periode) else Søknad.PeriodeSpm.Nei,
     ),
 ): Sak {
     this.nySøknad(
+        periode = periode,
         fnr = fnr,
+        fornavn = fornavn,
+        etternavn = etternavn,
         søknad = søknad,
+        personopplysningerFraSøknad = personopplysningerFraSøknad,
         personopplysningerForBrukerFraPdl = personopplysningerForBrukerFraPdl,
         tiltak = tiltak,
     )
