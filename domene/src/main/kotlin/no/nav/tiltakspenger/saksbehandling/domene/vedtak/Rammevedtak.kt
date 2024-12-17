@@ -64,7 +64,7 @@ data class Rammevedtak(
     }
 
     init {
-        require(behandling.erIverksatt) { "Kan ikke lage vedtak for behandling som ikke er iverksatt. BehandlingId: ${behandling.id}" }
+        require(behandling.erVedtatt) { "Kan ikke lage vedtak for behandling som ikke er vedtatt. BehandlingId: ${behandling.id}" }
         require(sakId == behandling.sakId) { "SakId i vedtak og behandling må være lik. SakId: $sakId, BehandlingId: ${behandling.id}" }
         require(periode == behandling.vurderingsperiode) { "Periode i vedtak og behandling må være lik. Periode: $periode, BehandlingId: ${behandling.id}" }
     }
@@ -80,7 +80,7 @@ enum class Vedtakstype(
 fun Sak.opprettVedtak(
     behandling: Behandling,
 ): Rammevedtak {
-    require(behandling.status == Behandlingsstatus.INNVILGET) { "Kan ikke lage vedtak for behandling som ikke er iverksatt" }
+    require(behandling.status == Behandlingsstatus.VEDTATT) { "Krever behandlingsstatus VEDTATT når vi skal opprette et vedtak." }
     return Rammevedtak(
         id = VedtakId.random(),
         opprettet = nå(),

@@ -14,11 +14,11 @@ import no.nav.tiltakspenger.libs.common.Saksbehandler
 import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.periodisering.Periodisering
 import no.nav.tiltakspenger.libs.tiltak.TiltakstypeSomGirRett
-import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus.INNVILGET
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus.KLAR_TIL_BEHANDLING
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus.KLAR_TIL_BESLUTNING
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus.UNDER_BEHANDLING
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus.UNDER_BESLUTNING
+import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus.VEDTATT
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.stønadsdager.Stønadsdager
 import no.nav.tiltakspenger.saksbehandling.domene.stønadsdager.tilStønadsdagerRegisterSaksopplysning
@@ -61,7 +61,7 @@ data class Behandling(
     val sistEndret: LocalDateTime,
     val behandlingstype: Behandlingstype,
 ) {
-    val erIverksatt: Boolean = status == INNVILGET
+    val erVedtatt: Boolean = status == VEDTATT
     val maksDagerMedTiltakspengerForPeriode: Int = stønadsdager.registerSaksopplysning.antallDager
 
     val tiltaksnavn = vilkårssett.tiltakDeltagelseVilkår.registerSaksopplysning.tiltaksnavn
@@ -174,9 +174,9 @@ data class Behandling(
                 this.copy(beslutter = saksbehandler.navIdent, status = UNDER_BESLUTNING)
             }
 
-            INNVILGET -> {
+            VEDTATT -> {
                 throw IllegalArgumentException(
-                    "Kan ikke ta behandling når behandlingen er IVERKSATT. Behandlingsstatus: ${this.status}. Utøvende saksbehandler: $saksbehandler. Saksbehandler på behandling: ${this.saksbehandler}",
+                    "Kan ikke ta behandling når behandlingen er VEDTATT. Behandlingsstatus: ${this.status}. Utøvende saksbehandler: $saksbehandler. Saksbehandler på behandling: ${this.saksbehandler}",
                 )
             }
         }
@@ -218,13 +218,13 @@ data class Behandling(
                     "Behandlingen er allerede godkjent"
                 }
                 this.copy(
-                    status = INNVILGET,
+                    status = VEDTATT,
                     attesteringer = attesteringer + attestering,
                     iverksattTidspunkt = nå(),
                 )
             }
 
-            KLAR_TIL_BEHANDLING, UNDER_BEHANDLING, KLAR_TIL_BESLUTNING, INNVILGET -> throw IllegalStateException(
+            KLAR_TIL_BEHANDLING, UNDER_BEHANDLING, KLAR_TIL_BESLUTNING, VEDTATT -> throw IllegalStateException(
                 "Må ha status UNDER_BESLUTNING for å iverksette. Behandlingsstatus: $status",
             )
         }
@@ -248,7 +248,7 @@ data class Behandling(
                 this.copy(status = UNDER_BEHANDLING, attesteringer = attesteringer + attestering)
             }
 
-            KLAR_TIL_BEHANDLING, UNDER_BEHANDLING, KLAR_TIL_BESLUTNING, INNVILGET -> throw IllegalStateException(
+            KLAR_TIL_BEHANDLING, UNDER_BEHANDLING, KLAR_TIL_BESLUTNING, VEDTATT -> throw IllegalStateException(
                 "Må ha status UNDER_BESLUTNING for å sende tilbake. Behandlingsstatus: $status",
             )
         }
@@ -317,13 +317,13 @@ data class Behandling(
             require(iverksattTidspunkt == null)
         }
 
-        if (status == INNVILGET) {
-            // Det er viktig at vi ikke tar saksbehandler og beslutter av behandlingen når status er INNVILGET.
-            requireNotNull(beslutter) { "Behandlingen må ha beslutter når status er INNVILGET" }
-            requireNotNull(saksbehandler) { "Behandlingen må ha saksbehandler når status er INNVILGET" }
+        if (status == VEDTATT) {
+            // Det er viktig at vi ikke tar saksbehandler og beslutter av behandlingen når status er VEDTATT.
+            requireNotNull(beslutter) { "Behandlingen må ha beslutter når status er VEDTATT" }
+            requireNotNull(saksbehandler) { "Behandlingen må ha saksbehandler når status er VEDTATT" }
             require(
                 vilkårssett.samletUtfall != SamletUtfall.UAVKLART,
-            ) { "Behandlingen kan ikke være innvilget når samlet utfall er UAVKLART" }
+            ) { "Vi støtter ikke samlet utfall: UAVKLART på dette tidspunktet." }
             requireNotNull(iverksattTidspunkt)
             requireNotNull(sendtTilBeslutning)
         }

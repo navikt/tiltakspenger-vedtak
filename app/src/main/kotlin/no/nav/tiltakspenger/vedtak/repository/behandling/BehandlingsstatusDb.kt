@@ -1,10 +1,10 @@
 package no.nav.tiltakspenger.vedtak.repository.behandling
 
-import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingsstatusDb.INNVILGET
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingsstatusDb.KLAR_TIL_BEHANDLING
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingsstatusDb.KLAR_TIL_BESLUTNING
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingsstatusDb.UNDER_BEHANDLING
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingsstatusDb.UNDER_BESLUTNING
+import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingsstatusDb.VEDTATT
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus as BehandlingsstatusDomain
 
 /**
@@ -15,7 +15,7 @@ private enum class BehandlingsstatusDb {
     UNDER_BEHANDLING,
     KLAR_TIL_BESLUTNING,
     UNDER_BESLUTNING,
-    INNVILGET,
+    VEDTATT,
 }
 
 fun String.toBehandlingsstatus(): BehandlingsstatusDomain =
@@ -24,7 +24,7 @@ fun String.toBehandlingsstatus(): BehandlingsstatusDomain =
         UNDER_BEHANDLING -> BehandlingsstatusDomain.UNDER_BEHANDLING
         KLAR_TIL_BESLUTNING -> BehandlingsstatusDomain.KLAR_TIL_BESLUTNING
         UNDER_BESLUTNING -> BehandlingsstatusDomain.UNDER_BESLUTNING
-        INNVILGET -> BehandlingsstatusDomain.INNVILGET
+        VEDTATT -> BehandlingsstatusDomain.VEDTATT
     }
 
 fun BehandlingsstatusDomain.toDb(): String =
@@ -33,5 +33,5 @@ fun BehandlingsstatusDomain.toDb(): String =
         BehandlingsstatusDomain.UNDER_BEHANDLING -> UNDER_BEHANDLING
         BehandlingsstatusDomain.KLAR_TIL_BESLUTNING -> KLAR_TIL_BESLUTNING
         BehandlingsstatusDomain.UNDER_BESLUTNING -> UNDER_BESLUTNING
-        BehandlingsstatusDomain.INNVILGET -> INNVILGET
+        BehandlingsstatusDomain.VEDTATT -> VEDTATT
     }.toString()
