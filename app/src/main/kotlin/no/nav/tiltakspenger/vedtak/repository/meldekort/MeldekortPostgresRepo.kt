@@ -137,7 +137,6 @@ class MeldekortPostgresRepo(
                     join rammevedtak r on r.id = m.rammevedtak_id
                     join behandling b on b.id = r.behandling_id
                     where m.sendt_til_meldekort_api is null
-                        and m.status = 'KLAR_TIL_UTFYLLING'
                     """,
                 ).map { fromRow(it) }.asList,
             )

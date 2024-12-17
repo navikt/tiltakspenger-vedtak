@@ -1,5 +1,6 @@
 package no.nav.tiltakspenger.vedtak.clients.meldekort
 
+import no.nav.tiltakspenger.libs.tiltak.TiltakstypeSomGirRett
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.meldekort.domene.MeldekortStatus
 import no.nav.tiltakspenger.meldekort.domene.Meldekortdag
@@ -17,18 +18,15 @@ import java.time.LocalDate
 // TODO abn: Dette er veldig work in progress
 // Bør inn i felles libs når vi får landet en modell, brukes også i meldekort-api
 
-enum class MeldekortStatusTilBruker {
+enum class MeldekortStatusTilBrukerDTO {
     KAN_UTFYLLES,
     KAN_IKKE_UTFYLLES,
     GODKJENT,
 }
 
-enum class MeldekortDagStatusTilBruker {
-    RETT,
-    IKKE_RETT,
-}
-
-enum class MeldekortDagRapportering {
+// TODO abn: bør kanskje splittes opp i rapportering for dagen, og status (ie sperret/godkjent/ikke utfylt etc)
+// (Se det ann når vi skriver om datamodellen for meldekort/behandling/periode)
+enum class MeldekortDagStatusTilBrukerDTO {
     DELTATT_UTEN_LØNN,
     DELTATT_MED_LØNN,
     FRAVÆR_SYK,
@@ -37,12 +35,12 @@ enum class MeldekortDagRapportering {
     FRAVÆR_ANNET_UTEN_RETT,
     IKKE_DELTATT,
     IKKE_REGISTRERT,
+    IKKE_RETT,
 }
 
 data class MeldekortDagTilBrukerDTO(
     val dag: LocalDate,
-    val status: MeldekortDagStatusTilBruker,
-    val rapportering: MeldekortDagRapportering,
+    val status: MeldekortDagStatusTilBrukerDTO,
 )
 
 data class MeldekortTilBrukerDTO(
@@ -50,7 +48,8 @@ data class MeldekortTilBrukerDTO(
     val fnr: String,
     val fraOgMed: LocalDate,
     val tilOgMed: LocalDate,
-    val status: MeldekortStatusTilBruker,
+    val tiltakstype: TiltakstypeSomGirRett,
+    val status: MeldekortStatusTilBrukerDTO,
     val meldekortDager: List<MeldekortDagTilBrukerDTO>,
 )
 
@@ -60,42 +59,35 @@ fun Meldekort.tilBrukerDTO(): MeldekortTilBrukerDTO {
         fnr = this.fnr.verdi,
         fraOgMed = this.fraOgMed,
         tilOgMed = this.tilOgMed,
+        tiltakstype = this.tiltakstype,
         status = this.tilBrukerStatusDTO(),
         meldekortDager = this.meldeperiode.dager.map {
             MeldekortDagTilBrukerDTO(
                 dag = it.dato,
                 status = it.tilBrukerStatusDTO(),
-                rapportering = it.tilRapporteringDTO(),
             )
         },
     )
 }
 
-fun Meldekort.tilBrukerStatusDTO(): MeldekortStatusTilBruker =
+fun Meldekort.tilBrukerStatusDTO(): MeldekortStatusTilBrukerDTO =
     when (this) {
-        is Meldekort.IkkeUtfyltMeldekort -> if (this.erKlarTilUtfylling()) MeldekortStatusTilBruker.KAN_UTFYLLES else MeldekortStatusTilBruker.KAN_IKKE_UTFYLLES
+        is Meldekort.IkkeUtfyltMeldekort -> if (this.erKlarTilUtfylling()) MeldekortStatusTilBrukerDTO.KAN_UTFYLLES else MeldekortStatusTilBrukerDTO.KAN_IKKE_UTFYLLES
         is Meldekort.UtfyltMeldekort -> when (this.status) {
-            MeldekortStatus.GODKJENT -> MeldekortStatusTilBruker.GODKJENT
-            else -> MeldekortStatusTilBruker.KAN_IKKE_UTFYLLES
+            MeldekortStatus.GODKJENT -> MeldekortStatusTilBrukerDTO.GODKJENT
+            else -> MeldekortStatusTilBrukerDTO.KAN_IKKE_UTFYLLES
         }
     }
 
-fun Meldekortdag.tilBrukerStatusDTO(): MeldekortDagStatusTilBruker =
+fun Meldekortdag.tilBrukerStatusDTO(): MeldekortDagStatusTilBrukerDTO =
     when (this) {
-        is IkkeUtfylt -> MeldekortDagStatusTilBruker.RETT
-        is Sperret -> MeldekortDagStatusTilBruker.IKKE_RETT
-        else -> throw RuntimeException("Oh noes")
-    }
-
-fun Meldekortdag.tilRapporteringDTO(): MeldekortDagRapportering =
-    when (this) {
-        is DeltattMedLønnITiltaket -> MeldekortDagRapportering.DELTATT_MED_LØNN
-        is DeltattUtenLønnITiltaket -> MeldekortDagRapportering.DELTATT_UTEN_LØNN
-        is SykBruker -> MeldekortDagRapportering.FRAVÆR_SYK
-        is SyktBarn -> MeldekortDagRapportering.FRAVÆR_SYKT_BARN
-        is VelferdGodkjentAvNav -> MeldekortDagRapportering.FRAVÆR_ANNET_MED_RETT
-        is VelferdIkkeGodkjentAvNav -> MeldekortDagRapportering.FRAVÆR_ANNET_UTEN_RETT
-        is IkkeDeltatt -> MeldekortDagRapportering.IKKE_DELTATT
-        is IkkeUtfylt -> MeldekortDagRapportering.IKKE_REGISTRERT
-        is Sperret -> MeldekortDagRapportering.IKKE_REGISTRERT
+        is DeltattMedLønnITiltaket -> MeldekortDagStatusTilBrukerDTO.DELTATT_MED_LØNN
+        is DeltattUtenLønnITiltaket -> MeldekortDagStatusTilBrukerDTO.DELTATT_UTEN_LØNN
+        is SykBruker -> MeldekortDagStatusTilBrukerDTO.FRAVÆR_SYK
+        is SyktBarn -> MeldekortDagStatusTilBrukerDTO.FRAVÆR_SYKT_BARN
+        is VelferdGodkjentAvNav -> MeldekortDagStatusTilBrukerDTO.FRAVÆR_ANNET_MED_RETT
+        is VelferdIkkeGodkjentAvNav -> MeldekortDagStatusTilBrukerDTO.FRAVÆR_ANNET_UTEN_RETT
+        is IkkeDeltatt -> MeldekortDagStatusTilBrukerDTO.IKKE_DELTATT
+        is IkkeUtfylt -> MeldekortDagStatusTilBrukerDTO.IKKE_REGISTRERT
+        is Sperret -> MeldekortDagStatusTilBrukerDTO.IKKE_RETT
     }
