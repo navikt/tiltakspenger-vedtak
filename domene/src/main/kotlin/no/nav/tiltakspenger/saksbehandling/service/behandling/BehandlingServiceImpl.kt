@@ -5,16 +5,13 @@ import arrow.core.getOrElse
 import arrow.core.left
 import arrow.core.right
 import mu.KotlinLogging
-import no.nav.tiltakspenger.felles.Systembruker
 import no.nav.tiltakspenger.felles.exceptions.IkkeFunnetException
 import no.nav.tiltakspenger.felles.exceptions.TilgangException
 import no.nav.tiltakspenger.felles.sikkerlogg
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.CorrelationId
-import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.Saksbehandler
-import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.SessionFactory
 import no.nav.tiltakspenger.libs.person.AdressebeskyttelseGradering
@@ -249,21 +246,6 @@ class BehandlingServiceImpl(
             behandlingRepo.lagre(it)
         }
         return behandling.right()
-    }
-
-    // er tenkt brukt fra datadeling og henter alle behandlinger som ikke er iverksatt for en ident
-    override fun hentBehandlingerUnderBehandlingForIdent(
-        fnr: Fnr,
-        periode: Periode,
-        systembruker: Systembruker,
-    ): List<Behandling> {
-        require(systembruker.roller.harHenteData()) { "Systembruker mangler rollen HENTE_DATA. Systembrukers roller: ${systembruker.roller}" }
-        return behandlingRepo
-            .hentAlleForIdent(fnr)
-            .filter { behandling -> !behandling.erIverksatt }
-            .filter { behandling ->
-                behandling.vurderingsperiode.overlapperMed(periode)
-            }
     }
 
     private suspend fun sjekkTilgang(

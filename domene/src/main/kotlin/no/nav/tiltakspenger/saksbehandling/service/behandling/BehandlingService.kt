@@ -1,13 +1,10 @@
 package no.nav.tiltakspenger.saksbehandling.service.behandling
 
 import arrow.core.Either
-import no.nav.tiltakspenger.felles.Systembruker
 import no.nav.tiltakspenger.libs.common.BehandlingId
 import no.nav.tiltakspenger.libs.common.CorrelationId
-import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.Saksbehandler
-import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandling
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.KanIkkeHenteBehandling
@@ -77,10 +74,4 @@ interface BehandlingService {
         saksbehandler: Saksbehandler,
         correlationId: CorrelationId,
     ): Either<KanIkkeTaBehandling, Behandling>
-
-    fun hentBehandlingerUnderBehandlingForIdent(
-        fnr: Fnr,
-        periode: Periode,
-        systembruker: Systembruker,
-    ): List<Behandling>
 }

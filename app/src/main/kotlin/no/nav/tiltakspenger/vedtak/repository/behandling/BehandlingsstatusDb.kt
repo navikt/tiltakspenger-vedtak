@@ -15,6 +15,8 @@ private enum class BehandlingsstatusDb {
     UNDER_BEHANDLING,
     KLAR_TIL_BESLUTNING,
     UNDER_BESLUTNING,
+
+    // TODO behandlingsstatus jah: Lag et migreringsskript som endrer denne til VEDTATT
     INNVILGET,
 }
 
@@ -24,7 +26,7 @@ fun String.toBehandlingsstatus(): BehandlingsstatusDomain =
         UNDER_BEHANDLING -> BehandlingsstatusDomain.UNDER_BEHANDLING
         KLAR_TIL_BESLUTNING -> BehandlingsstatusDomain.KLAR_TIL_BESLUTNING
         UNDER_BESLUTNING -> BehandlingsstatusDomain.UNDER_BESLUTNING
-        INNVILGET -> BehandlingsstatusDomain.INNVILGET
+        INNVILGET -> BehandlingsstatusDomain.VEDTATT
     }
 
 fun BehandlingsstatusDomain.toDb(): String =
@@ -33,5 +35,5 @@ fun BehandlingsstatusDomain.toDb(): String =
         BehandlingsstatusDomain.UNDER_BEHANDLING -> UNDER_BEHANDLING
         BehandlingsstatusDomain.KLAR_TIL_BESLUTNING -> KLAR_TIL_BESLUTNING
         BehandlingsstatusDomain.UNDER_BESLUTNING -> UNDER_BESLUTNING
-        BehandlingsstatusDomain.INNVILGET -> INNVILGET
+        BehandlingsstatusDomain.VEDTATT -> INNVILGET
     }.toString()

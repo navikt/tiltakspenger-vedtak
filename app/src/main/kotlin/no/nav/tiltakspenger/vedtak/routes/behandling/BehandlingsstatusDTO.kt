@@ -7,6 +7,8 @@ enum class BehandlingsstatusDTO {
     UNDER_BEHANDLING,
     KLAR_TIL_BESLUTNING,
     UNDER_BESLUTNING,
+
+    // TODO behandlingsstatus jah: Endre denne til VEDATT her, samtidig med tiltakspenger-saksbehandling (frontend)
     INNVILGET,
 }
 
@@ -16,5 +18,5 @@ fun Behandlingsstatus.toDTO(): BehandlingsstatusDTO =
         Behandlingsstatus.UNDER_BEHANDLING -> BehandlingsstatusDTO.UNDER_BEHANDLING
         Behandlingsstatus.KLAR_TIL_BESLUTNING -> BehandlingsstatusDTO.KLAR_TIL_BESLUTNING
         Behandlingsstatus.UNDER_BESLUTNING -> BehandlingsstatusDTO.UNDER_BESLUTNING
-        Behandlingsstatus.INNVILGET -> BehandlingsstatusDTO.INNVILGET
+        Behandlingsstatus.VEDTATT -> BehandlingsstatusDTO.INNVILGET
     }
