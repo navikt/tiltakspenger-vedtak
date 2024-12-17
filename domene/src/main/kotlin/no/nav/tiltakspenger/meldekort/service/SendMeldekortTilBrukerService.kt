@@ -27,11 +27,11 @@ class SendMeldekortTilBrukerService(
                     logger.info { "Sendte meldekort til meldekort-api med id ${meldekort.id}" }
                     meldekortRepo.markerSomSendtTilBruker(meldekort.id, nå())
                 }.onLeft {
-                    logger.error { "Kunne ikke sende meldekort til utfylling med id ${meldekort.id}" }
+                    logger.error { "Kunne ikke sende meldekort til meldekort-api med id ${meldekort.id}" }
                 }
             }
         }.onLeft {
-            "Feil ved sending av meldekort til meldekort-api!".let { msg ->
+            "Uventet feil ved sending av meldekort til meldekort-api!".let { msg ->
                 logger.error(RuntimeException("Uventet feil!")) { msg }
                 sikkerlogg.error(it) { msg }
             }
