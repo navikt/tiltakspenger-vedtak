@@ -42,11 +42,13 @@ data class KravfristVilkår private constructor(
         }
     }
 
-    override fun oppdaterPeriode(periode: Periode): KravfristVilkår {
-        val nySøknadSaksopplysning = søknadSaksopplysning.oppdaterPeriode(periode)
-        val nySaksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.oppdaterPeriode(periode)
+    override fun krymp(nyPeriode: Periode): KravfristVilkår {
+        if (vurderingsperiode == nyPeriode) return this
+        require(vurderingsperiode.inneholderHele(nyPeriode)) { "Ny periode ($nyPeriode) må være innenfor vurderingsperioden ($vurderingsperiode)" }
+        val nySøknadSaksopplysning = søknadSaksopplysning.oppdaterPeriode(nyPeriode)
+        val nySaksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.oppdaterPeriode(nyPeriode)
         return this.copy(
-            vurderingsperiode = periode,
+            vurderingsperiode = nyPeriode,
             søknadSaksopplysning = nySøknadSaksopplysning,
             saksbehandlerSaksopplysning = nySaksbehandlerSaksopplysning,
             avklartSaksopplysning = nySaksbehandlerSaksopplysning ?: nySøknadSaksopplysning,

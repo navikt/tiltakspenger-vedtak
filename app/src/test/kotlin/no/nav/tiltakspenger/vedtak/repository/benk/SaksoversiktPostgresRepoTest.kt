@@ -5,8 +5,7 @@ import no.nav.tiltakspenger.felles.januarDateTime
 import no.nav.tiltakspenger.objectmothers.ObjectMother
 import no.nav.tiltakspenger.saksbehandling.domene.behandling.Behandlingsstatus
 import no.nav.tiltakspenger.saksbehandling.domene.benk.BehandlingEllerSøknadForSaksoversikt
-import no.nav.tiltakspenger.saksbehandling.domene.benk.BehandlingEllerSøknadForSaksoversikt.Behandlingstype.FØRSTEGANGSBEHANDLING
-import no.nav.tiltakspenger.saksbehandling.domene.benk.BehandlingEllerSøknadForSaksoversikt.Behandlingstype.SØKNAD
+import no.nav.tiltakspenger.saksbehandling.domene.benk.BenkBehandlingstype
 import no.nav.tiltakspenger.saksbehandling.domene.benk.Saksoversikt
 import no.nav.tiltakspenger.vedtak.db.persisterOpprettetFørstegangsbehandling
 import no.nav.tiltakspenger.vedtak.db.persisterSøknad
@@ -28,7 +27,7 @@ class SaksoversiktPostgresRepoTest {
                             BehandlingEllerSøknadForSaksoversikt(
                                 periode = null,
                                 status = BehandlingEllerSøknadForSaksoversikt.Status.Søknad,
-                                behandlingstype = SØKNAD,
+                                behandlingstype = BenkBehandlingstype.SØKNAD,
                                 fnr = søknad1.fnr,
                                 saksnummer = null,
                                 saksbehandler = null,
@@ -41,7 +40,7 @@ class SaksoversiktPostgresRepoTest {
                             BehandlingEllerSøknadForSaksoversikt(
                                 periode = ObjectMother.vurderingsperiode(),
                                 status = BehandlingEllerSøknadForSaksoversikt.Status.Behandling(Behandlingsstatus.UNDER_BEHANDLING),
-                                behandlingstype = FØRSTEGANGSBEHANDLING,
+                                behandlingstype = BenkBehandlingstype.FØRSTEGANGSBEHANDLING,
                                 fnr = søknad2.fnr,
                                 saksnummer = sak.saksnummer,
                                 saksbehandler = sak.førstegangsbehandling.saksbehandler!!,

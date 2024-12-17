@@ -8,7 +8,6 @@ import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.VedtakId
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
-import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
 import no.nav.tiltakspenger.saksbehandling.service.statistikk.stønad.StatistikkUtbetalingDTO
 import java.time.LocalDateTime
 
@@ -39,15 +38,16 @@ data class Utbetalingsvedtak(
 }
 
 fun Meldekort.UtfyltMeldekort.opprettUtbetalingsvedtak(
-    rammevedtak: Rammevedtak,
+    saksnummer: Saksnummer,
+    fnr: Fnr,
     forrigeUtbetalingsvedtak: VedtakId?,
 ): Utbetalingsvedtak =
     Utbetalingsvedtak(
         id = VedtakId.random(),
         opprettet = nå(),
         sakId = this.sakId,
-        saksnummer = rammevedtak.saksnummer,
-        fnr = rammevedtak.fnr,
+        saksnummer = saksnummer,
+        fnr = fnr,
         rammevedtakId = this.rammevedtakId,
         meldekort = this,
         forrigeUtbetalingsvedtakId = forrigeUtbetalingsvedtak,

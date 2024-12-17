@@ -14,6 +14,7 @@ import no.nav.tiltakspenger.libs.periodisering.Periode
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
+import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtaksliste
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtakstype
 import no.nav.tiltakspenger.saksbehandling.ports.RammevedtakRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingPostgresRepo
@@ -116,7 +117,7 @@ class RammevedtakPostgresRepo(
                     """
                     update rammevedtak set 
                         vedtaksdato = :vedtaksdato,
-                        brev_json = to_jsonb(:brev_json::jsonb),
+                        brev_json = to_jsonb(:brev_json),
                         journalpost_id = :journalpost_id,
                         journalføringstidspunkt = :tidspunkt
                     where id = :id
@@ -203,7 +204,7 @@ class RammevedtakPostgresRepo(
         fun hentForSakId(
             sakId: SakId,
             session: Session,
-        ): Rammevedtak? {
+        ): Vedtaksliste {
             return session.run(
                 queryOf(
                     "select * from rammevedtak where sak_id = :sak_id",
@@ -212,8 +213,8 @@ class RammevedtakPostgresRepo(
                     ),
                 ).map { row ->
                     row.toVedtak(session)
-                }.asSingle,
-            )
+                }.asList,
+            ).let { Vedtaksliste(it) }
         }
 
         internal fun lagreVedtak(

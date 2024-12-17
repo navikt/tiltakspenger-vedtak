@@ -210,11 +210,9 @@ class LivsoppholdRoutesTest {
 
     @Test
     fun `test alle livsoppholdytelser stemmer overens med søknadsdata`() = runTest {
-        val søknadMedSykepenger =
-            nySøknad(
-                sykepenger = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
-            )
-
+        val søknadMedSykepenger = nySøknad(
+            sykepenger = periodeJa(fom = 1.januar(2023), tom = 31.mars(2023)),
+        )
         val livsoppholdVilkårSykepenger = opprettSakOgKjørGetPåLivsopphold(søknadMedSykepenger)
         livsoppholdVilkårSykepenger.avklartSaksopplysning.shouldBeNull()
         livsoppholdVilkårSykepenger.samletUtfall shouldBe SamletUtfallDTO.UAVKLART

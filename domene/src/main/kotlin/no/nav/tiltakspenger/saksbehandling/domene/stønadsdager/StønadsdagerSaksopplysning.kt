@@ -21,5 +21,11 @@ sealed interface StønadsdagerSaksopplysning {
         override val periode: Periode,
         override val tidsstempel: LocalDateTime,
         override val kilde: Tiltakskilde,
-    ) : StønadsdagerSaksopplysning
+    ) : StønadsdagerSaksopplysning {
+        fun krymp(nyPeriode: Periode): Register {
+            if (periode == nyPeriode) return this
+            require(periode.inneholderHele(nyPeriode)) { "Ny periode ($nyPeriode) må være innenfor saksopplysningen periode ($periode)" }
+            return this.copy(periode = nyPeriode)
+        }
+    }
 }

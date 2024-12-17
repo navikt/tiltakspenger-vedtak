@@ -66,7 +66,7 @@ class SøknadRoutesTest {
             actualSøknad shouldBe
                 Søknad(
                     versjon = "3",
-                    id = actualSøknad.id,
+                    id = actualSøknad!!.id,
                     journalpostId = JOURNALPOSTID,
                     personopplysninger =
                     Søknad.Personopplysninger(

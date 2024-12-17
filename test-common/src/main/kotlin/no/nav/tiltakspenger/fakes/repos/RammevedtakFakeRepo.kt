@@ -10,6 +10,7 @@ import no.nav.tiltakspenger.libs.common.SakId
 import no.nav.tiltakspenger.libs.common.VedtakId
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
+import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtaksliste
 import no.nav.tiltakspenger.saksbehandling.ports.RammevedtakRepo
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -61,7 +62,9 @@ class RammevedtakFakeRepo : RammevedtakRepo {
         data.get()[id] = data.get()[id]!!.copy(sendtTilDatadeling = tidspunkt)
     }
 
-    fun hentForSakId(sakId: SakId): Rammevedtak? = data.get().values.find { it.behandling.sakId == sakId }
+    fun hentForSakId(sakId: SakId): Vedtaksliste = data.get().values.filter { it.behandling.sakId == sakId }.let {
+        Vedtaksliste(it)
+    }
 
     fun hentForBehandlingId(behandlingId: BehandlingId): Rammevedtak? =
         data.get().values.find { it.behandling.id == behandlingId }

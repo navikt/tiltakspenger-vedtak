@@ -126,3 +126,4 @@ dependencies {
     testApi("com.github.navikt.tiltakspenger-libs:common:$felleslibVersion")
     testApi("com.github.navikt.tiltakspenger-libs:persistering-domene:$felleslibVersion")
 }
+

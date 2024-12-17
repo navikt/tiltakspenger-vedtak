@@ -51,11 +51,13 @@ data class LivsoppholdVilkår private constructor(
             else -> throw IllegalStateException("Andre ytelser til livsopphold har ugyldig utfall")
         }
 
-    override fun oppdaterPeriode(periode: Periode): LivsoppholdVilkår {
-        val nySøknadSaksopplysning = søknadssaksopplysning.oppdaterPeriode(periode = periode)
-        val nySaksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.oppdaterPeriode(periode = periode)
+    override fun krymp(nyPeriode: Periode): LivsoppholdVilkår {
+        if (vurderingsperiode == nyPeriode) return this
+        require(vurderingsperiode.inneholderHele(nyPeriode)) { "Ny periode ($nyPeriode) må være innenfor vurderingsperioden ($vurderingsperiode)" }
+        val nySøknadSaksopplysning = søknadssaksopplysning.oppdaterPeriode(periode = nyPeriode)
+        val nySaksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.oppdaterPeriode(periode = nyPeriode)
         return this.copy(
-            vurderingsperiode = periode,
+            vurderingsperiode = nyPeriode,
             søknadssaksopplysning = nySøknadSaksopplysning,
             saksbehandlerSaksopplysning = nySaksbehandlerSaksopplysning,
             avklartSaksopplysning = nySaksbehandlerSaksopplysning ?: nySøknadSaksopplysning,

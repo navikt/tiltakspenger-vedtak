@@ -17,7 +17,7 @@ import no.nav.tiltakspenger.saksbehandling.domene.sak.Saker
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
 import no.nav.tiltakspenger.saksbehandling.domene.sak.SaksnummerGenerator
 import no.nav.tiltakspenger.saksbehandling.domene.sak.TynnSak
-import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Rammevedtak
+import no.nav.tiltakspenger.saksbehandling.domene.vedtak.Vedtaksliste
 import no.nav.tiltakspenger.saksbehandling.ports.SakRepo
 import no.nav.tiltakspenger.vedtak.repository.behandling.BehandlingPostgresRepo
 import no.nav.tiltakspenger.vedtak.repository.meldekort.MeldekortPostgresRepo
@@ -202,8 +202,8 @@ internal class SakPostgresRepo(
             val id = SakId.fromString(string("id"))
             return sessionContext.withSession { session ->
                 val behandlinger = BehandlingPostgresRepo.hentForSakId(id, session)
-                val rammevedtak: Rammevedtak? = RammevedtakPostgresRepo.hentForSakId(id, session)
-                val meldeperioder = rammevedtak?.let {
+                val vedtaksliste: Vedtaksliste = RammevedtakPostgresRepo.hentForSakId(id, session)
+                val meldeperioder = vedtaksliste.førstegangsvedtak?.let {
                     MeldekortPostgresRepo.hentForSakId(id, session)
                 } ?: Meldeperioder.empty(behandlinger.first().tiltakstype)
                 Sak(
@@ -211,7 +211,7 @@ internal class SakPostgresRepo(
                     saksnummer = Saksnummer(verdi = string("saksnummer")),
                     fnr = Fnr.fromString(string("ident")),
                     behandlinger = behandlinger,
-                    rammevedtak = rammevedtak,
+                    vedtaksliste = vedtaksliste,
                     meldeperioder = meldeperioder,
                     utbetalinger = UtbetalingsvedtakPostgresRepo.hentForSakId(id, session),
                 )

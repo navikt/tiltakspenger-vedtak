@@ -33,11 +33,13 @@ data class IntroVilkår private constructor(
             }
         }
 
-    override fun oppdaterPeriode(periode: Periode): IntroVilkår {
-        val nySøknadSaksopplysning = søknadSaksopplysning.oppdaterPeriode(periode)
-        val nySaksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.oppdaterPeriode(periode)
+    override fun krymp(nyPeriode: Periode): IntroVilkår {
+        if (vurderingsperiode == nyPeriode) return this
+        require(vurderingsperiode.inneholderHele(nyPeriode)) { "Ny periode ($nyPeriode) må være innenfor vurderingsperioden ($vurderingsperiode)" }
+        val nySøknadSaksopplysning = søknadSaksopplysning.oppdaterPeriode(nyPeriode)
+        val nySaksbehandlerSaksopplysning = saksbehandlerSaksopplysning?.oppdaterPeriode(nyPeriode)
         return this.copy(
-            vurderingsperiode = periode,
+            vurderingsperiode = nyPeriode,
             søknadSaksopplysning = nySøknadSaksopplysning,
             saksbehandlerSaksopplysning = nySaksbehandlerSaksopplysning,
             avklartSaksopplysning = nySaksbehandlerSaksopplysning ?: nySøknadSaksopplysning,

@@ -53,7 +53,7 @@ class SakFakeRepo(
         val behandlinger = behandlingRepo.hentBehandlingerForSakId(sakId)
         return data.get()[sakId]?.copy(
             behandlinger = behandlinger,
-            rammevedtak = rammevedtakRepo.hentForSakId(sakId),
+            vedtaksliste = rammevedtakRepo.hentForSakId(sakId),
             meldeperioder = meldekortRepo.hentForSakId(sakId) ?: Meldeperioder.empty(behandlinger.first().tiltakstype),
             utbetalinger = utbetalingsvedtakRepo.hentForSakId(sakId),
         )
