@@ -23,7 +23,7 @@ dependencies {
     implementation("com.github.navikt.tiltakspenger-libs:person-dtos:$felleslibVersion")
     implementation("com.github.navikt.tiltakspenger-libs:personklient-domene:$felleslibVersion")
 
-    implementation("io.arrow-kt:arrow-core:1.2.4")
+    implementation("io.arrow-kt:arrow-core:2.0.0")
 
     testImplementation(platform("org.junit:junit-bom:5.11.4"))
     testImplementation("org.junit.jupiter:junit-jupiter")
