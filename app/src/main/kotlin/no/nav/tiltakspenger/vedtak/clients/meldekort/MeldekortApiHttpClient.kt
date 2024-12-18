@@ -38,16 +38,16 @@ class MeldekortApiHttpClient(
 
             if (status !in 200..299) {
                 val body: String = response.body()
-                "Feilrespons ved sending av ${meldekort.id} til meldekort-api - status: $status".let { msg ->
-                    logger.error(msg)
-                    sikkerlogg.error { "$msg - Response body: $body" }
+                with("Feilrespons ved sending av ${meldekort.id} til meldekort-api - status: $status") {
+                    logger.error(this)
+                    sikkerlogg.error { "$this - Response body: $body" }
                 }
                 return FeilVedSendingTilMeldekortApi.left()
             }
         }.mapLeft {
-            "Feil ved sending av ${meldekort.id} til meldekort-api".let { msg ->
-                logger.error { msg }
-                sikkerlogg.error(it) { msg }
+            with("Feil ved sending av ${meldekort.id} til meldekort-api") {
+                logger.error { this }
+                sikkerlogg.error(it) { this }
             }
             FeilVedSendingTilMeldekortApi
         }

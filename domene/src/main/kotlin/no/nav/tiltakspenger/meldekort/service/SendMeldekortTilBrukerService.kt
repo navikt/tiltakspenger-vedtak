@@ -31,9 +31,9 @@ class SendMeldekortTilBrukerService(
                 }
             }
         }.onLeft {
-            "Uventet feil ved sending av meldekort til meldekort-api!".let { msg ->
-                logger.error(RuntimeException("Uventet feil!")) { msg }
-                sikkerlogg.error(it) { msg }
+            with("Uventet feil ved sending av meldekort til meldekort-api!") {
+                logger.error(RuntimeException("Uventet feil!")) { this }
+                sikkerlogg.error(it) { this }
             }
         }
     }
