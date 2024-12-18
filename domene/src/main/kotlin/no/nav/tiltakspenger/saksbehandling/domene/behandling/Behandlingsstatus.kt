@@ -4,7 +4,6 @@ package no.nav.tiltakspenger.saksbehandling.domene.behandling
  * Kun tenkt brukt for Førstegangsbehandling i første omgang.
  * Det kan hende den passer for Revurdering også, men vurderer det når vi kommer dit.
  */
-// TODO post-mvp B&H: Burde endre INNVILGET til IVERKSATT
 enum class Behandlingsstatus {
     /** Det står ikke en saksbehandler på behandlingen. Kan også være underkjent dersom en saksbehandler har meldt seg av behandlingen. */
     KLAR_TIL_BEHANDLING,
