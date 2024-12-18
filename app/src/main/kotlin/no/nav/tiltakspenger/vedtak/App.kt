@@ -11,6 +11,7 @@ import no.nav.tiltakspenger.libs.jobber.LeaderPodLookup
 import no.nav.tiltakspenger.libs.jobber.LeaderPodLookupClient
 import no.nav.tiltakspenger.libs.jobber.LeaderPodLookupFeil
 import no.nav.tiltakspenger.libs.jobber.RunCheckFactory
+import no.nav.tiltakspenger.vedtak.Configuration.applicationProfile
 import no.nav.tiltakspenger.vedtak.Configuration.httpPort
 import no.nav.tiltakspenger.vedtak.context.ApplicationContext
 import no.nav.tiltakspenger.vedtak.jobber.TaskExecutor
@@ -67,6 +68,10 @@ internal fun start(
             applicationContext.behandlingContext.journalførVedtaksbrevService.journalfør()
             applicationContext.behandlingContext.distribuerVedtaksbrevService.distribuer()
             applicationContext.sendTilDatadelingService.send(Configuration.isNais())
+
+            if (applicationProfile() != Profile.PROD) {
+                applicationContext.meldekortContext.sendMeldekortTilBrukerService.send()
+            }
         },
     )
 

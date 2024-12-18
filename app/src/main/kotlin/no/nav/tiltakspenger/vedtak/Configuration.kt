@@ -74,7 +74,7 @@ object Configuration {
                 "AZURE_APP_CLIENT_ID" to "tiltakspenger-saksbehandling-api",
                 "AZURE_APP_CLIENT_SECRET" to "secret",
                 "AZURE_APP_WELL_KNOWN_URL" to "http://host.docker.internal:6969/azuread/.well-known/openid-configuration",
-                "AZURE_OPENID_CONFIG_TOKEN_ENDPOINT" to "http://host.docker.internal:6969/default/token",
+                "AZURE_OPENID_CONFIG_TOKEN_ENDPOINT" to "http://host.docker.internal:6969/azuread/token",
                 "AZURE_OPENID_CONFIG_ISSUER" to "http://host.docker.internal:6969/azuread",
                 "AZURE_OPENID_CONFIG_JWKS_URI" to "http://host.docker.internal:6969/azuread/jwks",
                 "DB_JDBC_URL" to "jdbc:postgresql://host.docker.internal:5433/saksbehandling?user=postgres&password=test",
@@ -82,6 +82,8 @@ object Configuration {
                 "MICROSOFT_URL" to "host.docker.internal:8091",
                 "DATADELING_SCOPE" to "localhost",
                 "DATADELING_URL" to "http://host.docker.internal:8082",
+                "MELDEKORT_API_SCOPE" to "tiltakspenger-meldekort-api",
+                "MELDEKORT_API_URL" to "http://localhost:8083",
             ),
         )
 
@@ -111,6 +113,8 @@ object Configuration {
                 "MICROSOFT_URL" to "graph.microsoft.com/v1.0",
                 "DATADELING_SCOPE" to "api://dev-gcp.tpts.tiltakspenger-datadeling/.default",
                 "DATADELING_URL" to "http://tiltakspenger-datadeling",
+                "MELDEKORT_API_SCOPE" to "api://dev-gcp.tpts.tiltakspenger-meldekort-api/.default",
+                "MELDEKORT_API_URL" to "http://tiltakspenger-meldekort-api",
             ),
         )
     private val prodProperties =
@@ -139,6 +143,8 @@ object Configuration {
                 "MICROSOFT_URL" to "graph.microsoft.com/v1.0",
                 "DATADELING_SCOPE" to "api://prod-gcp.tpts.tiltakspenger-datadeling/.default",
                 "DATADELING_URL" to "http://tiltakspenger-datadeling",
+                "MELDEKORT_API_SCOPE" to "api://prod-gcp.tpts.tiltakspenger-meldekort-api/.default",
+                "MELDEKORT_API_URL" to "http://tiltakspenger-meldekort-api",
             ),
         )
 
@@ -201,6 +207,7 @@ object Configuration {
     val utbetalingScope: String by lazy { config()[Key("UTBETALING_SCOPE", stringType)] }
     val microsoftScope: String by lazy { config()[Key("MICROSOFT_SCOPE", stringType)] }
     val datadelingScope: String by lazy { config()[Key("DATADELING_SCOPE", stringType)] }
+    val meldekortApiScope: String by lazy { config()[Key("MELDEKORT_API_SCOPE", stringType)] }
 
     val pdlUrl by lazy { config()[Key("PDL_ENDPOINT_URL", stringType)] }
     val pdlPipUrl by lazy { config()[Key("PDL_PIP_ENDPOINT_URL", stringType)] }
@@ -213,6 +220,7 @@ object Configuration {
     val utbetalingUrl: String by lazy { config()[Key("UTBETALING_URL", stringType)] }
     val microsoftUrl: String by lazy { config()[Key("MICROSOFT_URL", stringType)] }
     val datadelingUrl: String by lazy { config()[Key("DATADELING_URL", stringType)] }
+    val meldekortApiUrl: String by lazy { config()[Key("MELDEKORT_API_URL", stringType)] }
 
     fun httpPort() = config()[Key("application.httpPort", intType)]
 

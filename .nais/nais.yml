@@ -63,6 +63,7 @@ spec:
         - application: tiltakspenger-tiltak
         - application: tiltakspenger-pdfgen
         - application: tiltakspenger-datadeling
+        - application: tiltakspenger-meldekort-api
         - application: utsjekk
           namespace: helved
         - application: poao-tilgang

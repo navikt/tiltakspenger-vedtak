@@ -3,7 +3,6 @@ package no.nav.tiltakspenger.vedtak.repository.meldekort
 import arrow.core.toNonEmptyListOrNull
 import kotliquery.Row
 import kotliquery.Session
-import kotliquery.queryOf
 import no.nav.tiltakspenger.felles.Navkontor
 import no.nav.tiltakspenger.libs.common.Fnr
 import no.nav.tiltakspenger.libs.common.MeldekortId
@@ -13,6 +12,7 @@ import no.nav.tiltakspenger.libs.common.VedtakId
 import no.nav.tiltakspenger.libs.persistering.domene.SessionContext
 import no.nav.tiltakspenger.libs.persistering.domene.TransactionContext
 import no.nav.tiltakspenger.libs.persistering.infrastruktur.PostgresSessionFactory
+import no.nav.tiltakspenger.libs.persistering.infrastruktur.sqlQuery
 import no.nav.tiltakspenger.meldekort.domene.Meldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldekort.IkkeUtfyltMeldekort
 import no.nav.tiltakspenger.meldekort.domene.Meldekort.UtfyltMeldekort
@@ -20,6 +20,7 @@ import no.nav.tiltakspenger.meldekort.domene.Meldeperioder
 import no.nav.tiltakspenger.meldekort.domene.tilMeldekortperioder
 import no.nav.tiltakspenger.meldekort.ports.MeldekortRepo
 import no.nav.tiltakspenger.saksbehandling.domene.sak.Saksnummer
+import java.time.LocalDateTime
 
 class MeldekortPostgresRepo(
     private val sessionFactory: PostgresSessionFactory,
@@ -30,7 +31,7 @@ class MeldekortPostgresRepo(
     ) {
         sessionFactory.withTransaction(transactionContext) { tx ->
             tx.run(
-                queryOf(
+                sqlQuery(
                     """
                     insert into meldekort (
                         id,
@@ -47,7 +48,8 @@ class MeldekortPostgresRepo(
                         status,
                         navkontor,
                         iverksatt_tidspunkt,
-                        sendt_til_beslutning
+                        sendt_til_beslutning,
+                        sendt_til_meldekort_api
                     ) values (
                         :id,
                         :forrige_meldekort_id,
@@ -63,26 +65,26 @@ class MeldekortPostgresRepo(
                         :status,
                         :navkontor,
                         :iverksatt_tidspunkt,
-                        :sendt_til_beslutning
+                        :sendt_til_beslutning,                        
+                        :sendt_til_meldekort_api
                     )
-                    """.trimIndent(),
-                    mapOf(
-                        "id" to meldekort.id.toString(),
-                        "forrige_meldekort_id" to meldekort.forrigeMeldekortId?.toString(),
-                        "meldeperiode_id" to meldekort.meldeperiodeId.toString(),
-                        "sak_id" to meldekort.sakId.toString(),
-                        "rammevedtak_id" to meldekort.rammevedtakId.toString(),
-                        "opprettet" to meldekort.opprettet,
-                        "fra_og_med" to meldekort.fraOgMed,
-                        "til_og_med" to meldekort.periode.tilOgMed,
-                        "meldekortdager" to meldekort.meldeperiode.toDbJson(),
-                        "saksbehandler" to meldekort.saksbehandler,
-                        "beslutter" to meldekort.beslutter,
-                        "status" to meldekort.status.toDb(),
-                        "navkontor" to meldekort.navkontor?.kontornummer,
-                        "iverksatt_tidspunkt" to meldekort.iverksattTidspunkt,
-                        "sendt_til_beslutning" to meldekort.sendtTilBeslutning,
-                    ),
+                    """,
+                    "id" to meldekort.id.toString(),
+                    "forrige_meldekort_id" to meldekort.forrigeMeldekortId?.toString(),
+                    "meldeperiode_id" to meldekort.meldeperiodeId.toString(),
+                    "sak_id" to meldekort.sakId.toString(),
+                    "rammevedtak_id" to meldekort.rammevedtakId.toString(),
+                    "opprettet" to meldekort.opprettet,
+                    "fra_og_med" to meldekort.fraOgMed,
+                    "til_og_med" to meldekort.periode.tilOgMed,
+                    "meldekortdager" to meldekort.meldeperiode.toDbJson(),
+                    "saksbehandler" to meldekort.saksbehandler,
+                    "beslutter" to meldekort.beslutter,
+                    "status" to meldekort.status.toDb(),
+                    "navkontor" to meldekort.navkontor?.kontornummer,
+                    "iverksatt_tidspunkt" to meldekort.iverksattTidspunkt,
+                    "sendt_til_beslutning" to meldekort.sendtTilBeslutning,
+                    "sendt_til_meldekort_api" to meldekort.sendtTilMeldekortApi,
                 ).asUpdate,
             )
         }
@@ -94,7 +96,7 @@ class MeldekortPostgresRepo(
     ) {
         sessionFactory.withTransaction(transactionContext) { tx ->
             tx.run(
-                queryOf(
+                sqlQuery(
                     """
                     update meldekort set 
                         meldekortdager = to_jsonb(:meldekortdager::jsonb),
@@ -105,17 +107,53 @@ class MeldekortPostgresRepo(
                         iverksatt_tidspunkt = :iverksatt_tidspunkt,
                         sendt_til_beslutning = :sendt_til_beslutning
                     where id = :id
-                    """.trimIndent(),
-                    mapOf(
-                        "id" to meldekort.id.toString(),
-                        "meldekortdager" to meldekort.meldeperiode.toDbJson(),
-                        "saksbehandler" to meldekort.saksbehandler,
-                        "beslutter" to meldekort.beslutter,
-                        "status" to meldekort.status.toDb(),
-                        "navkontor" to meldekort.navkontor?.kontornummer,
-                        "iverksatt_tidspunkt" to meldekort.iverksattTidspunkt,
-                        "sendt_til_beslutning" to meldekort.sendtTilBeslutning,
-                    ),
+                    """,
+                    "id" to meldekort.id.toString(),
+                    "meldekortdager" to meldekort.meldeperiode.toDbJson(),
+                    "saksbehandler" to meldekort.saksbehandler,
+                    "beslutter" to meldekort.beslutter,
+                    "status" to meldekort.status.toDb(),
+                    "navkontor" to meldekort.navkontor?.kontornummer,
+                    "iverksatt_tidspunkt" to meldekort.iverksattTidspunkt,
+                    "sendt_til_beslutning" to meldekort.sendtTilBeslutning,
+                ).asUpdate,
+            )
+        }
+    }
+
+    override fun hentUsendteTilBruker(): List<Meldekort> {
+        return sessionFactory.withSession { session ->
+            session.run(
+                // TODO abn: vi trenger neppe alle disse dataene til brukers meldekort
+                sqlQuery(
+                    """
+                    select
+                        m.*,
+                        s.ident as fnr,
+                        s.saksnummer,
+                        (b.stønadsdager -> 'registerSaksopplysning' ->> 'antallDager')::int as antall_dager_per_meldeperiode
+                    from meldekort m
+                    join sak s on s.id = m.sak_id
+                    join rammevedtak r on r.id = m.rammevedtak_id
+                    join behandling b on b.id = r.behandling_id
+                    where m.sendt_til_meldekort_api is null
+                    """,
+                ).map { fromRow(it) }.asList,
+            )
+        }
+    }
+
+    override fun markerSomSendtTilBruker(meldekortId: MeldekortId, tidspunkt: LocalDateTime) {
+        return sessionFactory.withSession { session ->
+            session.run(
+                sqlQuery(
+                    """
+                    update meldekort set
+                        sendt_til_meldekort_api = :tidspunkt
+                    where id = :id                                    
+                    """,
+                    "id" to meldekortId.toString(),
+                    "tidspunkt" to tidspunkt,
                 ).asUpdate,
             )
         }
@@ -136,20 +174,20 @@ class MeldekortPostgresRepo(
             session: Session,
         ): Meldekort? {
             return session.run(
-                queryOf(
+                sqlQuery(
                     """
-                        select
-                          m.*,
-                          s.ident as fnr,
-                          s.saksnummer,
-                          (b.stønadsdager -> 'registerSaksopplysning' ->> 'antallDager')::int as antall_dager_per_meldeperiode
-                        from meldekort m
-                        join sak s on s.id = m.sak_id
-                        join rammevedtak r on r.id = m.rammevedtak_id
-                        join behandling b on b.id = r.behandling_id
-                        where m.id = :id
-                    """.trimIndent(),
-                    mapOf("id" to meldekortId.toString()),
+                    select
+                      m.*,
+                      s.ident as fnr,
+                      s.saksnummer,
+                      (b.stønadsdager -> 'registerSaksopplysning' ->> 'antallDager')::int as antall_dager_per_meldeperiode
+                    from meldekort m
+                    join sak s on s.id = m.sak_id
+                    join rammevedtak r on r.id = m.rammevedtak_id
+                    join behandling b on b.id = r.behandling_id
+                    where m.id = :id
+                    """,
+                    "id" to meldekortId.toString(),
                 ).map { row ->
                     fromRow(row)
                 }.asSingle,
@@ -161,21 +199,21 @@ class MeldekortPostgresRepo(
             session: Session,
         ): Meldeperioder? {
             return session.run(
-                queryOf(
+                sqlQuery(
                     """
-                        select
-                          m.*,
-                          s.ident as fnr,
-                          s.saksnummer,
-                          (b.stønadsdager -> 'registerSaksopplysning' ->> 'antallDager')::int as antall_dager_per_meldeperiode
-                        from meldekort m
-                        join sak s on s.id = m.sak_id
-                        join rammevedtak r on r.id = m.rammevedtak_id
-                        join behandling b on b.id = r.behandling_id
-                        where s.id = :sakId
-                        order by m.fra_og_med
-                    """.trimIndent(),
-                    mapOf("sakId" to sakId.toString()),
+                    select
+                      m.*,
+                      s.ident as fnr,
+                      s.saksnummer,
+                      (b.stønadsdager -> 'registerSaksopplysning' ->> 'antallDager')::int as antall_dager_per_meldeperiode
+                    from meldekort m
+                    join sak s on s.id = m.sak_id
+                    join rammevedtak r on r.id = m.rammevedtak_id
+                    join behandling b on b.id = r.behandling_id
+                    where s.id = :sakId
+                    order by m.fra_og_med
+                    """,
+                    "sakId" to sakId.toString(),
                 ).map { fromRow(it) }.asList,
             ).let { it.toNonEmptyListOrNull()?.tilMeldekortperioder() }
         }
@@ -219,6 +257,7 @@ class MeldekortPostgresRepo(
                         iverksattTidspunkt = row.localDateTimeOrNull("iverksatt_tidspunkt"),
                         navkontor = navkontor!!,
                         ikkeRettTilTiltakspengerTidspunkt = row.localDateTimeOrNull("ikke_rett_til_tiltakspenger_tidspunkt"),
+                        sendtTilMeldekortApi = row.localDateTimeOrNull("sendt_til_meldekort_api"),
                     )
                 }
 

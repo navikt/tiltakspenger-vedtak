@@ -150,6 +150,7 @@ class LocalApplicationContext : ApplicationContext(gitHash = "fake-git-hash") {
             utbetalingsvedtakRepo = utbetalingContext.utbetalingsvedtakRepo,
             statistikkStønadRepo = statistikkContext.statistikkStønadRepo,
             personService = personContext.personService,
+            entraIdSystemtokenClient = entraIdSystemtokenClient,
         ) {}
     }
     override val behandlingContext by lazy {
