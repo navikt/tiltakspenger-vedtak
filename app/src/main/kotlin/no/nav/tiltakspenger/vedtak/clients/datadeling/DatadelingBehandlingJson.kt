@@ -36,6 +36,5 @@ fun Behandlingsstatus.toDatadelingDTO(): DatadelingBehandlingDTO.Behandlingsstat
         Behandlingsstatus.UNDER_BEHANDLING -> DatadelingBehandlingDTO.Behandlingsstatus.UNDER_BEHANDLING
         Behandlingsstatus.KLAR_TIL_BESLUTNING -> DatadelingBehandlingDTO.Behandlingsstatus.KLAR_TIL_BESLUTNING
         Behandlingsstatus.UNDER_BESLUTNING -> DatadelingBehandlingDTO.Behandlingsstatus.UNDER_BESLUTNING
-        // TODO behandlingsstatus jah: Endre grensesnittet og deretter dette feltet i både saksbehandling-api+datadeling samtidig.
-        Behandlingsstatus.VEDTATT -> DatadelingBehandlingDTO.Behandlingsstatus.INNVILGET
+        Behandlingsstatus.VEDTATT -> DatadelingBehandlingDTO.Behandlingsstatus.VEDTATT
     }
