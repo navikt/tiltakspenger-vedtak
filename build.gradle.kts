@@ -1,3 +1,4 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 val jvmVersion = JvmTarget.JVM_21
@@ -49,6 +50,11 @@ subprojects {
             systemProperty("junit.jupiter.testinstance.lifecycle.default", "per_class")
             // https://github.com/mockito/mockito/issues/3037#issuecomment-1588199599
             jvmArgs("-XX:+EnableDynamicAgentLoading")
+            testLogging {
+                // We only want to log failed and skipped tests when running Gradle.
+                events("skipped", "failed")
+                exceptionFormat = TestExceptionFormat.FULL
+            }
         }
     }
 
