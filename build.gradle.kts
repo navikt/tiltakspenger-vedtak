@@ -35,16 +35,10 @@ subprojects {
     }
 
     tasks {
-        compileKotlin {
+        kotlin {
             compilerOptions {
                 jvmTarget.set(jvmVersion)
-            }
-        }
-
-        compileTestKotlin {
-            compilerOptions {
-                jvmTarget.set(jvmVersion)
-                freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
+                freeCompilerArgs.add("-Xconsistent-data-class-copy-visibility")
             }
         }
 
